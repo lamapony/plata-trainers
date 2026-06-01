@@ -9,10 +9,10 @@ Each trainer is a self-contained single-page app. Progress is stored in browser 
 
 | Trainer | Status | Description |
 |---------|--------|-------------|
-| [bøjning-drill](./bojning-drill/) | v0.1 | Verb tenses (nutid/datid/førnutid) + noun bøjning (bestemt/ubestemt, ental/flertal) |
-| ordstilling | planned | V2 rule, inversion, subordinate clauses |
+| [bøjning-drill](./bojning-drill/) | v0.2 | Verb tenses (nutid/datid/førnutid) + noun bøjning (bestemt/ubestemt, ental/flertal). Type the answer. |
+| [ordstilling-drill](./ordstilling-drill/) | v0.1 | V2 rule, inversion, ledsætninger. Multiple choice with explanations. |
+| [vocab-sr](./vocab-sr/) | v0.1 | Spaced-repetition vocabulary, DA ↔ RU. 36 high-frequency A2 words. |
 | skriveøvelser | planned | Production exercises with self-grade rubric |
-| vocab-SR | planned | Spaced-repetition vocabulary (lite SM-2) |
 | lytteøvelser | planned | DR P1 klip with comprehension questions |
 | læseøvelser | planned | Timed reading + comprehension Q |
 | udtale | planned | Audio playback + IPA highlight |

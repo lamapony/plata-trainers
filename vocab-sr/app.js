@@ -1,0 +1,291 @@
+/* platå · vocab-SR · app v0.1
+ *
+ * Spaced-repetition vocabulary drill. DA ↔ RU.
+ * Lite SM-2 (same shape as bojning + ordstilling).
+ */
+
+(function () {
+  "use strict";
+
+  const STORAGE_KEY = "plata-vocab-v0";
+  const SESSION_SIZE = 10;
+
+  let state = loadState();
+  let direction = "da2ru";
+  let session = [];
+  let sessionPos = 0;
+  let sessionResults = [];
+  let awaitingInput = true;
+
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    statToday: $("stat-today"),
+    statCorrect: $("stat-correct"),
+    statAccuracy: $("stat-accuracy"),
+    statStreak: $("stat-streak"),
+    statMastered: $("stat-mastered"),
+    dirGroup: $("dir-group"),
+    drillCard: $("drill-card"),
+    promptCounter: $("prompt-counter"),
+    promptBox: $("prompt-box"),
+    promptDir: $("prompt-dir"),
+    promptText: $("prompt-text"),
+    promptContext: $("prompt-context"),
+    answerForm: $("answer-form"),
+    answerInput: $("answer-input"),
+    submitBtn: $("submit-btn"),
+    feedback: $("feedback"),
+    summaryCard: $("summary-card"),
+    sumCorrect: $("sum-correct"),
+    sumTotal: $("sum-total"),
+    sumAccuracy: $("sum-accuracy"),
+    sumMistakes: $("sum-mistakes"),
+    againBtn: $("again-btn"),
+    changeDirBtn: $("change-dir-btn"),
+    exportBtn: $("export-btn"),
+    importBtn: $("import-btn"),
+    importFile: $("import-file"),
+    resetBtn: $("reset-btn")
+  };
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return freshState();
+      const parsed = JSON.parse(raw);
+      if (!parsed || !parsed.meta || !parsed.byItemId) return freshState();
+      return parsed;
+    } catch (_) { return freshState(); }
+  }
+  function freshState() {
+    return { byItemId: {}, meta: { createdAt: new Date().toISOString(), lastSessionDate: "", totalCorrect: 0, totalAttempts: 0, currentStreak: 0, longestStreak: 0 } };
+  }
+  function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { console.error(e); } }
+  function ensureItemRecord(id) {
+    if (!state.byItemId[id]) state.byItemId[id] = { box: 1, correct: 0, wrong: 0, lastSeen: null, mastered: false };
+    return state.byItemId[id];
+  }
+  function itemIdFor(item, dir) { return `v::${item.da}::${dir}`; }
+
+  function buildSession() {
+    const pool = window.PLATA_DATA.vocab;
+    const enriched = pool.map((it) => ({ item: it, rec: ensureItemRecord(itemIdFor(it, direction)) }));
+    const weak = enriched.filter((e) => !e.rec.mastered && (e.rec.box <= 2 || e.rec.wrong > e.rec.correct));
+    const mid = enriched.filter((e) => !e.rec.mastered && e.rec.box > 2);
+    const mastered = enriched.filter((e) => e.rec.mastered);
+    const take = Math.min(SESSION_SIZE, enriched.length);
+    const w = Math.min(weak.length, Math.ceil(take * 0.6));
+    const m = Math.min(mid.length, Math.ceil(take * 0.3));
+    const r = Math.min(mastered.length, take - w - m);
+    const sample = (arr, n) => { const out = []; const a = arr.slice(); while (out.length < n && a.length) out.push(a.splice(Math.floor(Math.random() * a.length), 1)[0]); return out; };
+    let picked = sample(weak, w).concat(sample(mid, m)).concat(sample(mastered, r));
+    const remaining = enriched.filter((e) => !picked.includes(e));
+    picked = picked.concat(sample(remaining, take - picked.length));
+    return picked.map((p) => p.item);
+  }
+
+  function buildPrompt(item) {
+    let actualDir = direction;
+    if (direction === "blandet") actualDir = Math.random() < 0.5 ? "da2ru" : "ru2da";
+    if (actualDir === "da2ru") {
+      return {
+        item, dir: actualDir,
+        prompt: item.da,
+        hint: item.note || `→ ${item.en}`,
+        expected: item.ru,
+        aliases: [item.ru, item.en],
+        itemId: itemIdFor(item, actualDir)
+      };
+    } else {
+      return {
+        item, dir: actualDir,
+        prompt: item.ru,
+        hint: `→ ${item.en}`,
+        expected: item.da,
+        aliases: [item.da, item.da.replace(/^at /, "")],  // accept "være" or "at være" for verb infinitives
+        itemId: itemIdFor(item, actualDir)
+      };
+    }
+  }
+
+  function normalize(s) { return s.trim().toLowerCase().replace(/[.!?]/g, "").replace(/\s+/g, " "); }
+  function isCorrect(given, expected, aliases) {
+    const g = normalize(given);
+    if (!g) return false;
+    const all = [expected, ...(aliases || [])].map(normalize);
+    return all.includes(g);
+  }
+
+  function renderStats() {
+    const total = state.meta.totalAttempts;
+    const correct = state.meta.totalCorrect;
+    const acc = total > 0 ? Math.round((correct / total) * 100) + "%" : "—";
+    const mastered = Object.values(state.byItemId).filter((r) => r.mastered).length;
+    els.statToday.textContent = sessionResults.length;
+    els.statCorrect.textContent = sessionResults.filter((r) => r.correct).length;
+    els.statAccuracy.textContent = acc;
+    els.statStreak.textContent = state.meta.currentStreak;
+    els.statMastered.textContent = mastered;
+  }
+
+  function renderPrompt() {
+    if (sessionPos >= session.length) { renderSummary(); return; }
+    const p = session[sessionPos];
+    const rec = state.byItemId[p.itemId] || { box: 1 };
+    els.promptCounter.textContent = `${sessionPos + 1} / ${session.length}`;
+    els.promptBox.textContent = `box ${rec.box}${rec.mastered ? " · mastered" : ""}`;
+    els.promptDir.textContent = p.dir === "da2ru" ? "DA → RU" : "RU → DA";
+    els.promptText.textContent = p.prompt;
+    els.promptContext.textContent = p.hint;
+    els.answerInput.value = "";
+    els.answerInput.classList.remove("correct", "wrong");
+    els.answerInput.disabled = false;
+    els.answerInput.readOnly = false;
+    els.answerInput.focus();
+    els.feedback.classList.add("hidden");
+    els.feedback.textContent = "";
+    els.feedback.className = "feedback hidden";
+    els.submitBtn.disabled = false;
+    els.submitBtn.textContent = "Check";
+    awaitingInput = true;
+  }
+
+  function handleSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!awaitingInput) { sessionPos += 1; renderPrompt(); return; }
+    const p = session[sessionPos];
+    const given = els.answerInput.value;
+    const correct = isCorrect(given, p.expected, p.aliases);
+    const rec = ensureItemRecord(p.itemId);
+    rec.lastSeen = new Date().toISOString();
+    if (correct) {
+      rec.correct += 1; rec.box = Math.min(5, rec.box + 1);
+      if (rec.box >= 5) rec.mastered = true;
+      state.meta.totalCorrect += 1; state.meta.currentStreak += 1;
+      if (state.meta.currentStreak > state.meta.longestStreak) state.meta.longestStreak = state.meta.currentStreak;
+      els.answerInput.classList.add("correct");
+      showFeedback(true, p.expected, p.item.example, null);
+    } else {
+      rec.wrong += 1; rec.box = 1; rec.mastered = false;
+      state.meta.currentStreak = 0;
+      els.answerInput.classList.add("wrong");
+      showFeedback(false, p.expected, p.item.example, given);
+      const insertAt = Math.min(session.length, sessionPos + 3 + Math.floor(Math.random() * 3));
+      session.splice(insertAt, 0, p);
+    }
+    state.meta.totalAttempts += 1;
+    sessionResults.push({ itemId: p.itemId, prompt: p.prompt, expected: p.expected, given, correct });
+    awaitingInput = false;
+    els.answerInput.readOnly = true;
+    els.submitBtn.disabled = false;
+    els.submitBtn.textContent = "Næste →";
+    els.answerInput.focus();
+    saveState(); renderStats();
+  }
+
+  function showFeedback(ok, expected, example, given) {
+    els.feedback.classList.remove("hidden", "good", "bad");
+    els.feedback.classList.add(ok ? "good" : "bad");
+    let html = ok
+      ? `✓ korrekt — <span class="correct-answer">${escapeHtml(expected)}</span>`
+      : `✗ ikke helt — <span class="correct-answer">${escapeHtml(expected)}</span>${given ? ` (du skrev <span class="correct-answer">${escapeHtml(given)}</span>)` : ""}`;
+    if (example) html += `<div class="alt">eksempel: <em>${escapeHtml(example)}</em></div>`;
+    html += `<div class="next-hint">tryk Enter eller klik "Næste →"</div>`;
+    els.feedback.innerHTML = html;
+  }
+
+  function renderSummary() {
+    els.drillCard.classList.add("hidden");
+    els.summaryCard.classList.remove("hidden");
+    const total = sessionResults.length;
+    const correct = sessionResults.filter((r) => r.correct).length;
+    const acc = total > 0 ? Math.round((correct / total) * 100) + "%" : "—";
+    els.sumCorrect.textContent = correct; els.sumTotal.textContent = total; els.sumAccuracy.textContent = acc;
+    const mistakes = sessionResults.filter((r) => !r.correct);
+    els.sumMistakes.innerHTML = "";
+    if (mistakes.length === 0) {
+      const li = document.createElement("li"); li.className = "empty"; li.textContent = "ingen fejl — flot";
+      els.sumMistakes.appendChild(li);
+    } else {
+      for (const m of mistakes) {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${escapeHtml(m.prompt)}</strong> → <span class="given">${escapeHtml(m.given || "(tom)")}</span><span class="right">${escapeHtml(m.expected)}</span>`;
+        els.sumMistakes.appendChild(li);
+      }
+    }
+    renderStats();
+  }
+
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+
+  function setDirection(newDir) {
+    direction = newDir;
+    [...els.dirGroup.querySelectorAll(".chip")].forEach((c) => c.setAttribute("aria-selected", c.dataset.dir === direction ? "true" : "false"));
+    startNewSession();
+  }
+
+  function startNewSession() {
+    session = buildSession().map(buildPrompt);
+    sessionPos = 0; sessionResults = [];
+    els.summaryCard.classList.add("hidden");
+    els.drillCard.classList.remove("hidden");
+    state.meta.lastSessionDate = new Date().toISOString().slice(0, 10);
+    saveState();
+    renderPrompt();
+    renderStats();
+  }
+
+  function doExport() {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url;
+    a.download = `plata-vocab-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 0);
+  }
+  function doImport(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(String(reader.result || ""));
+        if (!parsed || !parsed.meta || !parsed.byItemId) throw new Error("invalid file");
+        if (!confirm("Importér — overskriv aktuel progress?")) return;
+        state = parsed; saveState(); renderStats(); startNewSession();
+      } catch (e) { alert("Kunne ikke læse filen: " + e.message); }
+    };
+    reader.readAsText(file);
+  }
+  function doReset() {
+    if (!confirm("Nulstil al progress?")) return;
+    state = freshState(); saveState(); renderStats(); startNewSession();
+  }
+
+  function init() {
+    els.dirGroup.addEventListener("click", (e) => {
+      const c = e.target.closest(".chip");
+      if (c) setDirection(c.dataset.dir);
+    });
+    els.answerForm.addEventListener("submit", handleSubmit);
+    els.againBtn.addEventListener("click", startNewSession);
+    els.changeDirBtn.addEventListener("click", () => { els.summaryCard.classList.add("hidden"); });
+    els.exportBtn.addEventListener("click", doExport);
+    els.importBtn.addEventListener("click", () => els.importFile.click());
+    els.importFile.addEventListener("change", (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (f) doImport(f);
+      e.target.value = "";
+    });
+    els.resetBtn.addEventListener("click", doReset);
+
+    for (const it of window.PLATA_DATA.vocab) {
+      ensureItemRecord(itemIdFor(it, "da2ru"));
+      ensureItemRecord(itemIdFor(it, "ru2da"));
+    }
+    saveState();
+    renderStats();
+    startNewSession();
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
