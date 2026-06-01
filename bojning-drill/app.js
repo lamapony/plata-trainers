@@ -222,11 +222,13 @@
     els.answerInput.value = "";
     els.answerInput.classList.remove("correct", "wrong");
     els.answerInput.disabled = false;
+    els.answerInput.readOnly = false;
     els.answerInput.focus();
     els.feedback.classList.add("hidden");
     els.feedback.textContent = "";
     els.feedback.className = "feedback hidden";
     els.submitBtn.disabled = false;
+    els.submitBtn.textContent = "Check";
     awaitingInput = true;
   }
 
@@ -305,8 +307,11 @@
     state.meta.totalAttempts += 1;
     sessionResults.push({ itemId: p.itemId, expected: p.expected, given, correct });
     awaitingInput = false;
-    els.submitBtn.disabled = true;
-    els.answerInput.disabled = true;
+    // keep input enabled (so Enter from input advances) but mark readOnly to prevent edits
+    els.answerInput.readOnly = true;
+    els.submitBtn.disabled = false;
+    els.submitBtn.textContent = "Næste →";
+    els.answerInput.focus();  // keep focus on input so Enter keeps working
     saveState();
     renderStats();
   }
@@ -315,9 +320,9 @@
     els.feedback.classList.remove("hidden", "good", "bad");
     els.feedback.classList.add(ok ? "good" : "bad");
     if (ok) {
-      els.feedback.innerHTML = `✓ korrekt — <span class="correct-answer">${escapeHtml(expected)}</span><div class="next-hint">tryk Enter eller "Check" for næste</div>`;
+      els.feedback.innerHTML = `✓ korrekt — <span class="correct-answer">${escapeHtml(expected)}</span><div class="next-hint">tryk Enter eller klik "Næste →"</div>`;
     } else {
-      els.feedback.innerHTML = `✗ ikke helt — <span class="correct-answer">${escapeHtml(expected)}</span>${given ? ` (du skrev <span class="correct-answer">${escapeHtml(given)}</span>)` : ""}<div class="next-hint">korrekt svar gemt, gentages senere i denne session</div>`;
+      els.feedback.innerHTML = `✗ ikke helt — <span class="correct-answer">${escapeHtml(expected)}</span>${given ? ` (du skrev <span class="correct-answer">${escapeHtml(given)}</span>)` : ""}<div class="next-hint">korrekt svar gemt, gentages senere — tryk Enter eller klik "Næste →"</div>`;
     }
   }
 
