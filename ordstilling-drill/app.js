@@ -102,7 +102,42 @@
     const remaining = enriched.filter((e) => !picked.includes(e));
     picked = picked.concat(sample(remaining, take - picked.length));
 
-    return picked.map((p) => p.item);
+    // Deterministic per-item shuffle so correct answer isn't always at index 0.
+    // Same item → same order across re-encounters within this session; but
+    // across items the correct answer is distributed across A/B/C/D.
+    return picked.map((p) => shuffleItem(p.item));
+  }
+
+  function shuffleItem(item) {
+    // FNV-1a hash of the item's stable content, then mulberry32 PRNG for
+    // a well-distributed shuffle. Same item → same order; different items
+    // get well-spread positions for the correct answer. Options are part
+    // of the seed because multiple items in the data share prompt text
+    // (e.g. "Vælg den sætning hvor subjektet står først (V2):") but have
+    // different option sets.
+    const seed = item.cat + "::" + item.prompt + "::" + item.options.join("|");
+    let h = 0x811c9dc5;
+    for (let i = 0; i < seed.length; i++) {
+      h ^= seed.charCodeAt(i);
+      h = Math.imul(h, 0x01000193);
+    }
+    h = h >>> 0;
+    // mulberry32 PRNG seeded with the hash
+    let s = h;
+    function rand() {
+      s = (s + 0x6D2B79F5) | 0;
+      let t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    const indices = [0, 1, 2, 3];
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    const newOptions = indices.map((i) => item.options[i]);
+    const newCorrect = indices.indexOf(item.correct);
+    return Object.assign({}, item, { options: newOptions, correct: newCorrect });
   }
 
   // ---------- render ----------

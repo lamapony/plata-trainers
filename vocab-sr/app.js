@@ -88,12 +88,16 @@
     let actualDir = direction;
     if (direction === "blandet") actualDir = Math.random() < 0.5 ? "da2ru" : "ru2da";
     if (actualDir === "da2ru") {
+      // Build aliases from comma-separated Russian translations: each part
+      // is a valid answer. "жить, проживать" → ["жить, проживать", "жить", "проживать"].
+      const ruParts = item.ru.split(/,\s*/).map((s) => s.trim()).filter(Boolean);
+      const aliases = [item.ru, ...ruParts, item.en].filter(Boolean);
       return {
         item, dir: actualDir,
         prompt: item.da,
         hint: item.note || `→ ${item.en}`,
         expected: item.ru,
-        aliases: [item.ru, item.en],
+        aliases,
         itemId: itemIdFor(item, actualDir)
       };
     } else {
@@ -102,7 +106,7 @@
         prompt: item.ru,
         hint: `→ ${item.en}`,
         expected: item.da,
-        aliases: [item.da, item.da.replace(/^at /, "")],  // accept "være" or "at være" for verb infinitives
+        aliases: [item.da, item.da.replace(/^at /, "")],
         itemId: itemIdFor(item, actualDir)
       };
     }
