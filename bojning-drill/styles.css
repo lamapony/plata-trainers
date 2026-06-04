@@ -111,6 +111,13 @@ body {
   text-transform: uppercase;
 }
 
+.kernel-note {
+  margin: 8px 0 18px;
+  font-family: var(--mono-stack);
+  font-size: 12px;
+  color: var(--muted);
+}
+
 /* ---------- pickers ---------- */
 .pickers {
   display: flex;

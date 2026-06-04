@@ -12,15 +12,19 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "plata-bojning-v0";
+  const TRAINER_ID = "bojning";
+  const LEGACY_STORAGE_KEY = "plata-bojning-v0";
   const SESSION_SIZE = 10;
+  const kernel = window.PlataKernel;
+  const dashboard = window.PlataDashboard;
 
   // ---------- state ----------
   /** @type {{
    *   byItemId: Record<string, {box:number, correct:number, wrong:number, lastSeen:string|null, mastered:boolean}>,
    *   meta: { createdAt: string, lastSessionDate: string, totalCorrect: number, totalAttempts: number, currentStreak: number, longestStreak: number }
    * }} */
-  let state = loadState();
+  let stateHandle = kernel.createTrainerState({ trainerId: TRAINER_ID, oldKeys: [LEGACY_STORAGE_KEY] });
+  let state = stateHandle.state;
 
   let mode = "verber";        // "verber" | "substantiver"
   let type = "nutid";         // for verber: nutid|datid|førnutid|blandet ; for substantiver: bestemtEntal|flertalUbestemt|bestemtFlertal|blandet
@@ -64,44 +68,17 @@
     importFile: $("import-file"),
     resetBtn: $("reset-btn")
   };
+  els.m0Gate = $("m0-gate");
 
   // ---------- persistence ----------
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return freshState();
-      const parsed = JSON.parse(raw);
-      if (!parsed || !parsed.meta || !parsed.byItemId) return freshState();
-      return parsed;
-    } catch (_) {
-      return freshState();
-    }
-  }
   function freshState() {
-    return {
-      byItemId: {},
-      meta: {
-        createdAt: new Date().toISOString(),
-        lastSessionDate: "",
-        totalCorrect: 0,
-        totalAttempts: 0,
-        currentStreak: 0,
-        longestStreak: 0
-      }
-    };
+    return kernel.freshState(TRAINER_ID);
   }
   function saveState() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-      console.error("LocalStorage save failed", e);
-    }
+    kernel.saveState(state);
   }
-  function ensureItemRecord(itemId) {
-    if (!state.byItemId[itemId]) {
-      state.byItemId[itemId] = { box: 1, correct: 0, wrong: 0, lastSeen: null, mastered: false };
-    }
-    return state.byItemId[itemId];
+  function ensureItemRecord(itemId, tags) {
+    return kernel.ensureItemRecord(state, itemId, tags);
   }
   function itemIdFor(item, mode) {
     if (mode === "verber") return "v::" + item.infinitive;
@@ -113,37 +90,9 @@
     const pool = window.PLATA_DATA[mode];
     const candidates = pool.map((item) => ({
       item,
-      rec: ensureItemRecord(itemIdFor(item, mode))
+      rec: ensureItemRecord(itemIdFor(item, mode), [mode])
     }));
-
-    // Weight: lower box = higher priority; new items (rec.box === 1 && rec.attempts === 0) included first
-    const weak = candidates.filter((c) => !c.rec.mastered && (c.rec.box <= 2 || c.rec.wrong > c.rec.correct));
-    const mid = candidates.filter((c) => !c.rec.mastered && c.rec.box > 2);
-    const mastered = candidates.filter((c) => c.rec.mastered);
-
-    const sample = (arr, n) => {
-      const out = [];
-      const a = arr.slice();
-      while (out.length < n && a.length) {
-        const i = Math.floor(Math.random() * a.length);
-        out.push(a.splice(i, 1)[0]);
-      }
-      return out;
-    };
-
-    // Build mixed session: ~60% weak, ~30% mid, ~10% mastered (touch-up)
-    const take = Math.min(SESSION_SIZE, candidates.length);
-    const w = Math.min(weak.length, Math.ceil(take * 0.6));
-    const m = Math.min(mid.length, Math.ceil(take * 0.3));
-    const r = Math.min(mastered.length, take - w - m);
-
-    let picked = [];
-    picked = picked.concat(sample(weak, w));
-    picked = picked.concat(sample(mid, m));
-    picked = picked.concat(sample(mastered, r));
-    // fill remaining with any random
-    const remaining = candidates.filter((c) => !picked.includes(c));
-    picked = picked.concat(sample(remaining, take - picked.length));
+    const picked = kernel.pickSessionItems(candidates, { size: SESSION_SIZE });
 
     return picked.map((p) => buildPrompt(p.item, mode, type));
   }
@@ -153,8 +102,8 @@
       const actualType = type === "blandet"
         ? ["nutid", "datid", "førnutid"][Math.floor(Math.random() * 3)]
         : type;
-      const expected = item[actualType];
-      const aliases = window.PLATA_DATA.aliases[expected] || [expected];
+    const expected = item[actualType];
+    const aliases = window.PLATA_DATA.aliases[expected] || [expected];
       const prompt = `Bøj verbum:\n${item.infinitive}`;
       const hint = `${actualType} form`;
       return { item, mode, type: actualType, prompt, hint, expected, aliases, itemId: "v::" + item.infinitive };
@@ -168,7 +117,7 @@
       flertalUbestemt: "flertal ubestemt",
       bestemtFlertal: "bestemt flertal (—ene)"
     };
-    const expected = item[actualType];
+      const expected = item[actualType];
     return {
       item, mode, type: actualType,
       prompt: `Bøj substantiv:\n${item.ubestemtEntal}`,
@@ -193,19 +142,14 @@
 
   // ---------- render ----------
   function renderStats() {
-    const today = new Date().toISOString().slice(0, 10);
-    const todayAttempts = sessionResults.length;
-    const todayCorrect = sessionResults.filter((r) => r.correct).length;
-    const total = state.meta.totalAttempts;
-    const correct = state.meta.totalCorrect;
-    const acc = total > 0 ? Math.round((correct / total) * 100) + "%" : "—";
-    const mastered = Object.values(state.byItemId).filter((r) => r.mastered).length;
-
-    els.statToday.textContent = todayAttempts;
-    els.statCorrect.textContent = todayCorrect;
-    els.statAccuracy.textContent = acc;
-    els.statStreak.textContent = state.meta.currentStreak;
-    els.statMastered.textContent = mastered;
+    const view = dashboard.statsView(state);
+    els.statToday.textContent = view.today;
+    els.statCorrect.textContent = view.totalCorrect;
+    els.statAccuracy.textContent = view.accuracy;
+    els.statStreak.textContent = view.streak;
+    els.statMastered.textContent = view.mastered;
+    const gate = kernel.computeGate(state, { name: "M0 gate", tags: ["verber"], mode: "verber", minAttempts: 100, minAccuracy: 0.8 });
+    els.m0Gate.textContent = dashboard.gateText(gate);
   }
 
   function renderPrompt() {
@@ -279,24 +223,12 @@
     const p = session[sessionPos];
     const given = els.answerInput.value;
     const correct = isCorrect(given, p.expected, p.aliases);
-    const rec = ensureItemRecord(p.itemId);
-    rec.lastSeen = new Date().toISOString();
+    const tags = [p.mode, p.type];
+    kernel.recordAttempt(state, { itemId: p.itemId, correct, tags, mode: p.mode, expected: p.expected, given });
     if (correct) {
-      rec.correct += 1;
-      rec.box = Math.min(5, rec.box + 1);
-      if (rec.box >= 5) rec.mastered = true;
-      state.meta.totalCorrect += 1;
-      state.meta.currentStreak += 1;
-      if (state.meta.currentStreak > state.meta.longestStreak) {
-        state.meta.longestStreak = state.meta.currentStreak;
-      }
       els.answerInput.classList.add("correct");
       showFeedback(true, p.expected, null);
     } else {
-      rec.wrong += 1;
-      rec.box = 1;
-      rec.mastered = false;
-      state.meta.currentStreak = 0;
       els.answerInput.classList.add("wrong");
       showFeedback(false, p.expected, given);
       // re-queue later in this session
@@ -304,7 +236,6 @@
       const insertAt = Math.min(session.length, sessionPos + 3 + Math.floor(Math.random() * 3));
       session.splice(insertAt, 0, requeued);
     }
-    state.meta.totalAttempts += 1;
     sessionResults.push({ itemId: p.itemId, expected: p.expected, given, correct });
     awaitingInput = false;
     // keep input enabled (so Enter from input advances) but mark readOnly to prevent edits
@@ -372,7 +303,7 @@
 
   // ---------- export / import / reset ----------
   function doExport() {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const blob = new Blob([kernel.exportState(state)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -385,8 +316,7 @@
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const parsed = JSON.parse(String(reader.result || ""));
-        if (!parsed || !parsed.meta || !parsed.byItemId) throw new Error("invalid file");
+        const parsed = kernel.importState(String(reader.result || ""), TRAINER_ID);
         if (!confirm("Importér — overskriv aktuel progress?")) return;
         state = parsed;
         saveState();
@@ -438,8 +368,8 @@
     els.resetBtn.addEventListener("click", doReset);
 
     // ensure every item has a record (so box stats are correct)
-    for (const item of window.PLATA_DATA.verber) ensureItemRecord(itemIdFor(item, "verber"));
-    for (const item of window.PLATA_DATA.substantiver) ensureItemRecord(itemIdFor(item, "substantiver"));
+    for (const item of window.PLATA_DATA.verber) ensureItemRecord(itemIdFor(item, "verber"), ["verber"]);
+    for (const item of window.PLATA_DATA.substantiver) ensureItemRecord(itemIdFor(item, "substantiver"), ["substantiver"]);
     saveState();
 
     renderStats();

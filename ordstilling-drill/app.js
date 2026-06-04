@@ -8,11 +8,15 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "plata-ordstilling-v0";
+  const TRAINER_ID = "ordstilling";
+  const LEGACY_STORAGE_KEY = "plata-ordstilling-v0";
   const SESSION_SIZE = 10;
+  const kernel = window.PlataKernel;
+  const dashboard = window.PlataDashboard;
 
   /** @type {{ byItemId: Record<string, {box:number, correct:number, wrong:number, lastSeen:string|null, mastered:boolean}>, meta: any }} */
-  let state = loadState();
+  let stateHandle = kernel.createTrainerState({ trainerId: TRAINER_ID, oldKeys: [LEGACY_STORAGE_KEY] });
+  let state = stateHandle.state;
 
   let category = "v2";
   let session = [];
@@ -52,27 +56,14 @@
   };
 
   // ---------- persistence ----------
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return freshState();
-      const parsed = JSON.parse(raw);
-      if (!parsed || !parsed.meta || !parsed.byItemId) return freshState();
-      return parsed;
-    } catch (_) { return freshState(); }
-  }
   function freshState() {
-    return {
-      byItemId: {},
-      meta: { createdAt: new Date().toISOString(), lastSessionDate: "", totalCorrect: 0, totalAttempts: 0, currentStreak: 0, longestStreak: 0 }
-    };
+    return kernel.freshState(TRAINER_ID);
   }
   function saveState() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { console.error(e); }
+    kernel.saveState(state);
   }
-  function ensureItemRecord(itemId) {
-    if (!state.byItemId[itemId]) state.byItemId[itemId] = { box: 1, correct: 0, wrong: 0, lastSeen: null, mastered: false };
-    return state.byItemId[itemId];
+  function ensureItemRecord(itemId, tags) {
+    return kernel.ensureItemRecord(state, itemId, tags);
   }
   function itemIdFor(item) { return "o::" + (item.cat + "::" + item.prompt); }
 
@@ -82,25 +73,8 @@
     let items = category === "blandet" ? pool.slice() : pool.filter((it) => it.cat === category);
     if (items.length === 0) items = pool.slice();
 
-    const enriched = items.map((it) => ({ item: it, rec: ensureItemRecord(itemIdFor(it)) }));
-    const weak = enriched.filter((e) => !e.rec.mastered && (e.rec.box <= 2 || e.rec.wrong > e.rec.correct));
-    const mid = enriched.filter((e) => !e.rec.mastered && e.rec.box > 2);
-    const mastered = enriched.filter((e) => e.rec.mastered);
-
-    const take = Math.min(SESSION_SIZE, enriched.length);
-    const w = Math.min(weak.length, Math.ceil(take * 0.6));
-    const m = Math.min(mid.length, Math.ceil(take * 0.3));
-    const r = Math.min(mastered.length, take - w - m);
-
-    const sample = (arr, n) => {
-      const out = []; const a = arr.slice();
-      while (out.length < n && a.length) out.push(a.splice(Math.floor(Math.random() * a.length), 1)[0]);
-      return out;
-    };
-
-    let picked = sample(weak, w).concat(sample(mid, m)).concat(sample(mastered, r));
-    const remaining = enriched.filter((e) => !picked.includes(e));
-    picked = picked.concat(sample(remaining, take - picked.length));
+    const enriched = items.map((it) => ({ item: it, rec: ensureItemRecord(itemIdFor(it), ["ordstilling", it.cat]) }));
+    const picked = kernel.pickSessionItems(enriched, { size: SESSION_SIZE });
 
     // Deterministic per-item shuffle so correct answer isn't always at index 0.
     // Same item → same order across re-encounters within this session; but
@@ -142,15 +116,12 @@
 
   // ---------- render ----------
   function renderStats() {
-    const total = state.meta.totalAttempts;
-    const correct = state.meta.totalCorrect;
-    const acc = total > 0 ? Math.round((correct / total) * 100) + "%" : "—";
-    const mastered = Object.values(state.byItemId).filter((r) => r.mastered).length;
-    els.statToday.textContent = sessionResults.length;
-    els.statCorrect.textContent = sessionResults.filter((r) => r.correct).length;
-    els.statAccuracy.textContent = acc;
-    els.statStreak.textContent = state.meta.currentStreak;
-    els.statMastered.textContent = mastered;
+    const view = dashboard.statsView(state);
+    els.statToday.textContent = view.today;
+    els.statCorrect.textContent = view.totalCorrect;
+    els.statAccuracy.textContent = view.accuracy;
+    els.statStreak.textContent = view.streak;
+    els.statMastered.textContent = view.mastered;
   }
 
   function renderPrompt() {
@@ -205,25 +176,19 @@
   function checkAnswer() {
     const p = session[sessionPos];
     const correct = selectedIndex === p.correct;
-    const rec = ensureItemRecord(itemIdFor(p));
-    rec.lastSeen = new Date().toISOString();
-    if (correct) {
-      rec.correct += 1;
-      rec.box = Math.min(5, rec.box + 1);
-      if (rec.box >= 5) rec.mastered = true;
-      state.meta.totalCorrect += 1;
-      state.meta.currentStreak += 1;
-      if (state.meta.currentStreak > state.meta.longestStreak) state.meta.longestStreak = state.meta.currentStreak;
-    } else {
-      rec.wrong += 1;
-      rec.box = 1;
-      rec.mastered = false;
-      state.meta.currentStreak = 0;
+    kernel.recordAttempt(state, {
+      itemId: itemIdFor(p),
+      correct,
+      tags: ["ordstilling", p.cat],
+      mode: p.cat,
+      expected: p.options[p.correct],
+      given: p.options[selectedIndex]
+    });
+    if (!correct) {
       // re-queue later in same session
       const insertAt = Math.min(session.length, sessionPos + 3 + Math.floor(Math.random() * 3));
       session.splice(insertAt, 0, p);
     }
-    state.meta.totalAttempts += 1;
     sessionResults.push({ itemId: itemIdFor(p), prompt: p.prompt, given: p.options[selectedIndex], expected: p.options[p.correct], why: p.why, correct });
 
     // mark options visually
@@ -298,7 +263,7 @@
 
   // ---------- export / import / reset ----------
   function doExport() {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const blob = new Blob([kernel.exportState(state)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -310,8 +275,7 @@
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        const parsed = JSON.parse(String(reader.result || ""));
-        if (!parsed || !parsed.meta || !parsed.byItemId) throw new Error("invalid file");
+        const parsed = kernel.importState(String(reader.result || ""), TRAINER_ID);
         if (!confirm("Importér — overskriv aktuel progress?")) return;
         state = parsed; saveState(); renderStats(); startNewSession();
       } catch (e) { alert("Kunne ikke læse filen: " + e.message); }
@@ -350,7 +314,7 @@
     });
     els.resetBtn.addEventListener("click", doReset);
 
-    for (const it of window.PLATA_DATA.ordstilling) ensureItemRecord(itemIdFor(it));
+    for (const it of window.PLATA_DATA.ordstilling) ensureItemRecord(itemIdFor(it), ["ordstilling", it.cat]);
     saveState();
     renderStats();
     startNewSession();
