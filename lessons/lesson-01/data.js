@@ -1,91 +1,137 @@
 window.PLATA_LESSON_01 = {
   id: "lesson-01-arrival",
   title: "The First Morning in Copenhagen",
-  subtitle: "A tiny interactive Danish episode for your first 40 minutes in the city.",
-  estimatedMinutes: 8,
+  subtitle: "A compact interactive Danish episode for your first 40 minutes in the city.",
+  estimatedMinutes: 10,
+  pattern: {
+    name: "scene-pressure-language-payoff",
+    description: "Each scene has a real-world pressure, one useful Danish pattern, a tiny action, and a payoff that changes the situation.",
+    beats: ["pressure", "notice", "act", "feedback", "carry-forward"]
+  },
   scenes: [
     {
       id: "arrival-udgang",
       type: "choice",
       eyebrow: "Scene 1 · Arrival",
-      title: "Your phone is at 7%. Copenhagen is already speaking Danish.",
-      narrative: "The doors open. A warm sign says: Velkommen til København. Lene points at two signs and waits. You need the way out into the city.",
-      prompt: "Which sign gets you out?",
-      danish: "Velkommen til København",
-      options: [
-        { id: "indgang", label: "Indgang", detail: "entrance", correct: false, feedback: "Close, but ind means in. You just walked toward the entrance." },
-        { id: "udgang", label: "Udgang", detail: "exit", correct: true, feedback: "Yes. Ud means out. Udgang is the exit." }
+      title: "The city starts with two almost identical doors.",
+      pressure: "You are tired, the phone battery is red, and the crowd is moving faster than you can read.",
+      narrative: "The automatic doors open. Above you: Velkommen til København. Lene does not translate everything. She points at two signs and says: Find udgangen — we need the way out.",
+      dialogue: [
+        { speaker: "Lene", line: "Velkommen til København. Vi skal ud." },
+        { speaker: "You", line: "Ud...?" }
       ],
-      tags: ["signage", "udgang", "survival"]
+      notice: "Ind is like in. Ud is out. Danish signage often hides the clue in the first syllable.",
+      prompt: "Choose the sign that gets you out into the city.",
+      danish: "Velkommen til København · Find udgangen",
+      options: [
+        { id: "indgang", label: "Indgang", detail: "entrance · in", correct: false, feedback: "You step toward the entrance stream and immediately feel the flow pushing against you. Ind = in. Useful, but not now." },
+        { id: "udgang", label: "Udgang", detail: "exit · out", correct: true, feedback: "Correct. Ud = out. You are outside the terminal before the phone drops another percent." }
+      ],
+      carry: "Carry-forward word: udgang. It will come back as a real place, not a flashcard.",
+      tags: ["signage", "udgang", "survival", "morphology-clue"]
     },
     {
       id: "meet-lene",
       type: "input",
       eyebrow: "Scene 2 · Lene",
-      title: "A local rescues you from terminal confusion.",
-      narrative: "She smiles, slow enough for you to catch it: Jeg hedder Lene. Hvad hedder du?",
+      title: "A sentence short enough to use before courage evaporates.",
+      pressure: "Lene has helped you. Now she waits. Silence would be socially stranger than a rough Danish sentence.",
+      narrative: "She slows down, but not into textbook voice. Jeg hedder Lene. Hvad hedder du? You recognise the shape: she gives her name, then asks for yours.",
+      dialogue: [
+        { speaker: "Lene", line: "Jeg hedder Lene. Hvad hedder du?" },
+        { speaker: "You", line: "..." }
+      ],
+      notice: "Do not build a grammar table. For now, one chunk is enough: jeg hedder + name.",
       prompt: "Answer with one full Danish sentence.",
       danish: "Jeg hedder Lene. Hvad hedder du?",
       placeholder: "Jeg hedder ...",
       acceptPrefix: "jeg hedder ",
-      success: "Good. No grammar lecture needed: jeg hedder + name is enough.",
-      failure: "Start with: Jeg hedder — then your name.",
-      tags: ["greeting", "identity", "jeg-hedder"]
+      success: "That works. A real person now has your name in Danish. The chunk is yours: jeg hedder + name.",
+      failure: "Start with the whole chunk: Jeg hedder — then your name. No extra mig needed.",
+      carry: "Carry-forward pattern: Jeg hedder ___. You will reuse it at the hostel when there is no Lene to rescue you.",
+      tags: ["greeting", "identity", "jeg-hedder", "formulaic-language"]
     },
     {
       id: "doors-match",
       type: "match",
-      eyebrow: "Scene 3 · Two doors",
-      title: "The city keeps testing you with very polite signs.",
-      narrative: "Before you leave, Lene makes you prove you can read the two words that matter most in a building.",
-      prompt: "Match each Danish sign to the meaning.",
+      eyebrow: "Scene 3 · Door logic",
+      title: "The first win was luck. The second one should be memory.",
+      pressure: "A café door near the station has both signs. If you choose wrong, you walk into people again.",
+      narrative: "Lene stops you before the door. Same root, opposite direction. You are not memorising two words; you are learning the small Danish compass: ind / ud.",
+      dialogue: [
+        { speaker: "Lene", line: "Indgang. Udgang. Hvad er hvad?" }
+      ],
+      notice: "Look at the front: ind → into; ud → out of. The ending -gang is the going/passage part.",
+      prompt: "Pair the sign with its job.",
       pairs: [
         { id: "indgang", left: "Indgang", right: "Entrance" },
         { id: "udgang", left: "Udgang", right: "Exit" }
       ],
-      tags: ["signage", "indgang", "udgang"]
+      carry: "Carry-forward contrast: ind / ud. A tiny contrast is stronger than two isolated translations.",
+      tags: ["signage", "indgang", "udgang", "contrast-pair"]
     },
     {
       id: "tak-chain",
       type: "choice",
-      eyebrow: "Scene 4 · Courtesy chain",
-      title: "Lene writes your hostel stop on a paper ticket.",
-      narrative: "She hands it over. There is one tiny Danish word that makes the whole interaction human.",
+      eyebrow: "Scene 4 · The paper ticket",
+      title: "The useful word is not impressive. It is social glue.",
+      pressure: "Lene writes your hostel stop on the back of a receipt. She has done more than a stranger had to do.",
+      narrative: "She hands it over: Her er adressen. The Danish you need now is not clever. It is the word that keeps the exchange warm.",
+      dialogue: [
+        { speaker: "Lene", line: "Her er adressen." },
+        { speaker: "You", line: "..." }
+      ],
+      notice: "Tak is high-frequency because Denmark runs on small polite acknowledgements, not dramatic gratitude speeches.",
       prompt: "What do you say?",
       danish: "Her er adressen.",
       options: [
-        { id: "tak", label: "Tak", detail: "thanks", correct: true, feedback: "Exactly. Tak is small, but it opens doors." },
-        { id: "hej", label: "Hej", detail: "hi / bye", correct: false, feedback: "Hej works for greeting or goodbye. Here you need thanks." },
-        { id: "nej", label: "Nej", detail: "no", correct: false, feedback: "That would sound like you refuse the help. Try gratitude." }
+        { id: "tak", label: "Tak", detail: "thanks", correct: true, feedback: "Exactly. One syllable, correct temperature. The interaction stays human." },
+        { id: "hej", label: "Hej", detail: "hi / bye", correct: false, feedback: "Hej can close a meeting, but here it sounds like you are escaping with the receipt." },
+        { id: "nej", label: "Nej", detail: "no", correct: false, feedback: "That would reject the help. The scene needs acknowledgement, not refusal." }
       ],
-      tags: ["courtesy", "tak"]
+      carry: "Carry-forward word: tak. You will hear it back immediately, because politeness is a loop.",
+      tags: ["courtesy", "tak", "social-language"]
     },
     {
       id: "selv-tak",
       type: "choice",
-      eyebrow: "Scene 5 · Social reflex",
-      title: "Now Lene thanks you for trying Danish instead of hiding in English.",
-      narrative: "Lene says: Tak. You need the small Danish response that means: you are welcome / thanks back.",
-      prompt: "Choose the natural answer.",
-      danish: "Tak.",
-      options: [
-        { id: "selv-tak", label: "Selv tak", detail: "you’re welcome", correct: true, feedback: "Yes. Selv tak is the social ping-pong return." },
-        { id: "udgang", label: "Udgang", detail: "exit", correct: false, feedback: "Useful word, wrong moment. This is a courtesy exchange." },
-        { id: "reservation", label: "Reservation", detail: "reservation", correct: false, feedback: "You will need that later. Right now Lene said tak." }
+      eyebrow: "Scene 5 · The return serve",
+      title: "Danish politeness has a ping-pong rhythm.",
+      pressure: "You thank Lene. She smiles and says Tak — for trying Danish instead of switching to English. Now the ball is back on your side.",
+      narrative: "The trap: repeating tak works sometimes, but the natural response here is a compact return phrase. Selv tak. Literally strange, socially normal.",
+      dialogue: [
+        { speaker: "Lene", line: "Tak fordi du prøver på dansk." },
+        { speaker: "You", line: "..." }
       ],
-      tags: ["courtesy", "selv-tak"]
+      notice: "Selv tak is not built word-by-word in your head. Store it as one social reflex.",
+      prompt: "Choose the answer that keeps the exchange natural.",
+      danish: "Tak fordi du prøver på dansk.",
+      options: [
+        { id: "selv-tak", label: "Selv tak", detail: "you’re welcome / thanks back", correct: true, feedback: "Yes. You returned the serve. The phrase is odd if translated, but perfect in the scene." },
+        { id: "udgang", label: "Udgang", detail: "exit", correct: false, feedback: "A heroic exit word, but this is not a door anymore. This is a social loop." },
+        { id: "reservation", label: "Reservation", detail: "reservation", correct: false, feedback: "Useful at the hostel. Too early in the script." }
+      ],
+      carry: "Carry-forward phrase: selv tak. Learn it as a whole move, not a translation puzzle.",
+      tags: ["courtesy", "selv-tak", "chunk"]
     },
     {
       id: "roommate-payoff",
       type: "completion",
       eyebrow: "Final · Room 204",
-      title: "The first Danish sentence is now yours.",
-      narrative: "At the hostel, Anders looks up from the bunk bed: Hej! Jeg hedder Anders. Hvad hedder du?",
+      title: "The same sentence returns without the safety net.",
+      pressure: "At the hostel, Lene is gone. A roommate looks up from the lower bunk. This is the first moment where Danish has to come from you.",
+      narrative: "Anders says exactly what you heard earlier, but now there is no explanation attached: Hej! Jeg hedder Anders. Hvad hedder du?",
+      dialogue: [
+        { speaker: "Anders", line: "Hej! Jeg hedder Anders. Hvad hedder du?" },
+        { speaker: "You", line: "Hej, jeg hedder ..." }
+      ],
+      notice: "This is the lesson pattern closing: the phrase appeared as input, then as memory, now as social action.",
       prompt: "Complete the sentence you can now actually use.",
       prefix: "Hej, jeg hedder",
       placeholder: "your name",
-      success: "You survived the first morning. Next time: coffee, tickets, and word order with consequences.",
-      tags: ["greeting", "identity", "payoff"]
+      success: "You did not learn a list. You carried a sentence through the city and used it when it mattered.",
+      carry: "Unlocked: greetings, identity, ind/ud signage, tak/selv tak. Next lesson can spend this trust on ordering coffee.",
+      tags: ["greeting", "identity", "payoff", "retrieval"]
     }
   ]
 };

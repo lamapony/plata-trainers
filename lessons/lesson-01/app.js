@@ -44,9 +44,13 @@
     var html = "";
     html += "<p class='eyebrow'>" + escapeHtml(scene.eyebrow) + "</p>";
     html += "<h2>" + escapeHtml(scene.title) + "</h2>";
+    if (scene.pressure) html += "<p class='pressure'>" + escapeHtml(scene.pressure) + "</p>";
     html += "<p class='narrative'>" + escapeHtml(scene.narrative) + "</p>";
+    if (scene.dialogue) html += renderDialogue(scene.dialogue);
     if (scene.danish) html += "<div class='danish-line' lang='da'>" + escapeHtml(scene.danish) + "</div>";
+    if (scene.notice) html += "<aside class='notice'><strong>Notice</strong><span>" + escapeHtml(scene.notice) + "</span></aside>";
     html += "<div class='exercise'><h3>" + escapeHtml(scene.prompt) + "</h3><div id='exercise-body'></div><div id='feedback' class='feedback' aria-live='polite'></div></div>";
+    if (scene.carry) html += "<p class='carry-forward'>" + escapeHtml(scene.carry) + "</p>";
     html += "<div class='lesson-actions'><button class='ghost' id='prev' type='button'>Back</button><button class='primary' id='next' type='button'>" + (state.index === lesson.scenes.length - 1 ? "Finish" : "Continue") + "</button></div>";
     sceneEl.innerHTML = html;
     renderExercise(scene);
@@ -58,6 +62,15 @@
     if (scene.type === "input") return renderInput(scene);
     if (scene.type === "match") return renderMatch(scene);
     if (scene.type === "completion") return renderCompletion(scene);
+  }
+
+  function renderDialogue(lines) {
+    var html = "<div class='dialogue' aria-label='Scene dialogue'>";
+    lines.forEach(function (line) {
+      html += "<div class='dialogue-line'><span>" + escapeHtml(line.speaker) + "</span><p lang='da'>" + escapeHtml(line.line) + "</p></div>";
+    });
+    html += "</div>";
+    return html;
   }
 
   function renderChoice(scene) {

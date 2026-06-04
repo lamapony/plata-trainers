@@ -16,6 +16,8 @@ Static HTML/JS lesson composed of reusable scene blocks:
 
 Each block records attempts through the shared Platå kernel with trainer id `lesson-01-arrival`.
 
+Each scene follows the Platå pattern documented in [`lesson-pattern.md`](./lesson-pattern.md): pressure → notice → action → feedback → carry-forward.
+
 ## Scene outline
 
 ### 1. Arrival sign

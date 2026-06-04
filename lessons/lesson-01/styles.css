@@ -49,8 +49,17 @@ h3 { margin: 0 0 14px; font-size: 1rem; }
 .map-card, .scene-card { background: rgba(251, 252, 248, 0.82); border: 1px solid rgba(29,33,31,0.13); border-radius: 32px; box-shadow: var(--shadow); backdrop-filter: blur(14px); }
 .map-card { padding: 22px; position: sticky; top: 18px; }
 .scene-card { padding: clamp(24px, 4vw, 46px); min-height: 650px; }
+.pressure { margin: 18px 0 0; max-width: 66ch; color: var(--forest); font-size: 1.08rem; line-height: 1.58; font-weight: 650; }
 .narrative { color: var(--muted); line-height: 1.72; font-size: 1.06rem; max-width: 68ch; }
+.dialogue { display: grid; gap: 10px; margin: 18px 0 10px; max-width: 720px; }
+.dialogue-line { display: grid; grid-template-columns: 90px 1fr; gap: 12px; align-items: start; }
+.dialogue-line span { padding-top: 10px; font-family: "JetBrains Mono", monospace; font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.dialogue-line p { margin: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.44); line-height: 1.5; }
 .danish-line { display: inline-block; margin: 14px 0 24px; padding: 14px 16px; border-radius: 18px; background: var(--forest); color: var(--cream); font-family: "JetBrains Mono", monospace; box-shadow: var(--soft-shadow); }
+.notice { display: grid; grid-template-columns: 82px 1fr; gap: 14px; margin: 2px 0 20px; padding: 14px 16px; border-left: 3px solid var(--sage); background: rgba(126,155,143,.13); border-radius: 16px; }
+.notice strong { font-family: "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .08em; font-size: .72rem; color: var(--ember-deep); }
+.notice span { color: var(--forest); line-height: 1.55; }
+.carry-forward { margin: 16px 0 0; color: var(--muted); font-size: .96rem; line-height: 1.55; }
 
 .map-illustration { position: relative; height: 190px; margin: 10px 0 22px; color: rgba(32,42,36,0.42); border-radius: 24px; overflow: hidden; background: linear-gradient(145deg, #f7faf7, #d8e2df); border: 1px solid var(--line); }
 .map-illustration svg { width: 100%; height: 100%; }
@@ -108,5 +117,6 @@ button:disabled { opacity: .4; cursor: not-allowed; }
   .nav-meta { gap: 8px; }
   .scene-card, .map-card { border-radius: 24px; }
   .match-board { grid-template-columns: 1fr; }
+  .dialogue-line, .notice { grid-template-columns: 1fr; gap: 6px; }
   .lesson-actions { position: sticky; bottom: 8px; background: rgba(238,242,240,.86); padding: 10px; border-radius: 20px; backdrop-filter: blur(10px); }
 }
