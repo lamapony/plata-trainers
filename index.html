@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Platå Trainers · Open Danish practice tools</title>
+  <meta name="description" content="Open-source Danish trainers for verbs, noun forms, word order, and vocabulary. Static, private, offline-friendly practice for A2-B1 learners." />
+  <meta name="author" content="Dmitrii Babinov" />
+  <link rel="canonical" href="https://lamapony.github.io/plata-trainers/" />
+  <meta property="og:title" content="Platå Trainers · Open Danish practice tools" />
+  <meta property="og:description" content="Static Danish learning drills with local progress, JSON export, and no accounts. Built for the A2 → B2 climb." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lamapony.github.io/plata-trainers/" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="manifest" href="./site.webmanifest" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23202a24'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-size='20'%3E%E2%9B%AF%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Platå Trainers",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any browser",
+    "description": "Open-source static Danish learning trainers for A2-B1 learners.",
+    "license": "https://opensource.org/licenses/MIT",
+    "author": { "@type": "Person", "name": "Dmitrii Babinov" },
+    "url": "https://lamapony.github.io/plata-trainers/"
+  }
+  </script>
+</head>
+<body>
+  <main class="site-shell">
+    <header class="hero">
+      <nav class="topnav" aria-label="Main navigation">
+        <a class="brand" href="./" aria-label="Platå Trainers home"><span>⛰</span> platå trainers</a>
+        <div class="navlinks">
+          <a href="#trainers">Trainers</a>
+          <a href="#how">How it works</a>
+          <a href="https://github.com/lamapony/plata-trainers">GitHub</a>
+        </div>
+      </nav>
+
+      <section class="hero-grid">
+        <div>
+          <p class="eyebrow">Open Danish practice · static · no account</p>
+          <h1>Small drills for the long A2 → B2 climb.</h1>
+          <p class="lead">Platå is a set of browser trainers for Danish forms that do not become automatic by reading alone: verb tenses, noun inflection, word order, and high-frequency vocabulary.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="./bojning-drill/">Start with bøjning</a>
+            <a class="btn" href="#trainers">See all trainers</a>
+          </div>
+        </div>
+        <aside class="status-card" aria-label="Project status">
+          <h2>MVP status</h2>
+          <ul>
+            <li><strong>3</strong> trainers live</li>
+            <li><strong>LocalStorage</strong> progress</li>
+            <li><strong>JSON</strong> export/import</li>
+            <li><strong>No backend</strong>, no tracking</li>
+          </ul>
+          <p>Useful today for A2-B1 learners who want repeatable micro-practice. Not a full course yet.</p>
+        </aside>
+      </section>
+    </header>
+
+    <section class="section" id="trainers" aria-labelledby="trainers-title">
+      <div class="section-head">
+        <p class="eyebrow">Use now</p>
+        <h2 id="trainers-title">Trainers</h2>
+      </div>
+      <div class="trainer-grid">
+        <article class="trainer-card">
+          <span class="tag">A2 fundamentals</span>
+          <h3>Bøjning drill</h3>
+          <p>Type verb forms and noun inflections. Includes nutid, datid, førnutid, bestemt/ubestemt, ental/flertal.</p>
+          <a class="card-link" href="./bojning-drill/">Open bøjning-drill →</a>
+        </article>
+        <article class="trainer-card">
+          <span class="tag">Word order</span>
+          <h3>Ordstilling drill</h3>
+          <p>Multiple-choice practice for V2, inversion, and ledsætninger with short explanations after each answer.</p>
+          <a class="card-link" href="./ordstilling-drill/">Open ordstilling-drill →</a>
+        </article>
+        <article class="trainer-card">
+          <span class="tag">Vocabulary</span>
+          <h3>Vocab SR</h3>
+          <p>Spaced-repetition vocabulary in Danish ↔ Russian, with aliases for common translation variants.</p>
+          <a class="card-link" href="./vocab-sr/">Open vocab-SR →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section split" id="how" aria-labelledby="how-title">
+      <div>
+        <p class="eyebrow">How it works</p>
+        <h2 id="how-title">Private progress, portable data.</h2>
+        <p>Every trainer runs as plain HTML/JS. Your progress stays in this browser. Use the export button to download a JSON backup; use import to move progress to another browser.</p>
+      </div>
+      <div class="steps">
+        <div><strong>1</strong><span>Pick a trainer and do a 10-item session.</span></div>
+        <div><strong>2</strong><span>Wrong answers drop back to box 1 and reappear later.</span></div>
+        <div><strong>3</strong><span>Correct answers climb toward mastered status.</span></div>
+        <div><strong>4</strong><span>Export JSON when you want a backup.</span></div>
+      </div>
+    </section>
+
+    <section class="section split" aria-labelledby="contribute-title">
+      <div>
+        <p class="eyebrow">For other learners and contributors</p>
+        <h2 id="contribute-title">MVP, but open.</h2>
+      </div>
+      <div class="copy-block">
+        <p>Good contributions are small: add more Danish items, fix an explanation, improve accessibility, or adapt the data format to another language pair.</p>
+        <p>The shared kernel lives in <code>shared/plata-kernel.js</code>. It handles progress state, attempt recording, gates, weak tags, and import/export.</p>
+        <a class="btn" href="https://github.com/lamapony/plata-trainers">Fork on GitHub</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>MIT code · built by <a href="https://dmitrii.dk">Dmitrii Babinov</a> · part of the Platå Danish-learning project.</p>
+    </footer>
+  </main>
+</body>
+</html>

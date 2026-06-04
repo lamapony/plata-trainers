@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lamapony.github.io/plata-trainers/sitemap.xml

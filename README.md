@@ -1,9 +1,11 @@
 # Platå Trainers
 
 Open-source Danish language trainers. Static HTML/JS, no build step, no backend.
-Live at [plata.dk/trainers/](https://plata.dk/trainers/) (when deployed) and via GitHub Pages on this repo.
+Live via GitHub Pages at [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/) and later at `plata.dk/trainers/`.
 
-Each trainer is a self-contained single-page app. Progress is stored in browser LocalStorage. Export/import available as JSON so you can back up or move between devices.
+The MVP is useful for A2-B1 learners who need short, repeatable practice on the forms that block fluent writing: verb tenses, noun inflection, word order, and high-frequency vocabulary.
+
+Each trainer is a self-contained single-page app. Progress is private by default: it is stored in browser LocalStorage, never sent to a server. Export/import is JSON so you can back up or move between devices.
 
 The current trainers share a small static learning kernel in [`shared/`](./shared/). It provides the common progress schema, LocalStorage migration, attempt recording, stats, gates, and JSON export/import. Old v0 trainer progress is migrated into stable v1 keys such as `plata:trainer:bojning:state:v1`; exported v1 JSON is validated against the trainer ID before import.
 
@@ -24,16 +26,19 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 
 ```bash
 git clone https://github.com/lamapony/plata-trainers.git
-cd plata-trainers/bojning-drill
-open index.html   # or python3 -m http.server 8000
+cd plata-trainers
+python3 -m http.server 8000
+# open http://127.0.0.1:8000/
 ```
 
-No build, no dependencies, no server required. Just open in browser.
+No build, no dependencies, no server required. You can also open any trainer's `index.html` directly in a browser.
 
-Kernel smoke test:
+## Checks
 
 ```bash
 node scripts/smoke-kernel.js
+node scripts/static-qa.js
+for f in shared/*.js scripts/*.js */app.js; do node --check "$f"; done
 ```
 
 ## Design
