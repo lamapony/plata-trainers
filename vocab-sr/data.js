@@ -1,7 +1,7 @@
 /* platå · vocab-SR · data v0.1
  *
  * Spaced-repetition vocabulary drill. Danish ↔ Russian.
- * 36 high-frequency A2-B1 words covering family, food, time, common verbs, adjectives.
+ * 48 high-frequency A2-B1 words covering family, food, time, common verbs, adjectives.
  *
  * Russian is Dima's native language; EN is provided as a reference bridge.
  */

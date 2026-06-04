@@ -1,7 +1,7 @@
 /* platå · ordstilling-drill · data v0.1
  *
  * Word order drill for Danish. V2 rule, inversion, ledsætninger.
- * 35 multiple-choice items, 4 options each, 1 correct.
+ * 34 multiple-choice items, 4 options each, 1 correct.
  *
  * Format: each item has a category, a prompt, 4 options, correct index, and a Danish explanation.
  * Categories: v2 (subject first), inversion (adverbial first), ledsaetning (subordinate clause).

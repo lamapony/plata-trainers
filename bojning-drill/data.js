@@ -1,6 +1,6 @@
 /* platå · bøjning-drill · data v0.1
  *
- * 25 verber (regular, strong, irregular) + 12 substantiver (en/et, regular/irregular plural)
+ * 31 verber (regular, strong, irregular) + 16 substantiver (en/et, regular/irregular plural)
  * Sources: standard A2-B1 Danish grammatik
  */
 

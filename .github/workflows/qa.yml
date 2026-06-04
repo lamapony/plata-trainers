@@ -1,0 +1,37 @@
+name: QA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  no-deps-qa:
+    name: No-dependency static QA
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run full QA suite
+        run: npm run check
+
+      - name: Verify public pages map to files
+        run: |
+          test -f index.html
+          test -f 404.html
+          test -f robots.txt
+          test -f sitemap.xml
+          test -f site.webmanifest
+          test -f bojning-drill/index.html
+          test -f ordstilling-drill/index.html
+          test -f vocab-sr/index.html

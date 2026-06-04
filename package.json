@@ -1,0 +1,15 @@
+{
+  "name": "plata-trainers",
+  "version": "0.3.0",
+  "private": false,
+  "description": "Open-source static Danish practice trainers for A2-B1 learners.",
+  "license": "MIT",
+  "scripts": {
+    "check": "npm run check:syntax && npm run check:kernel && npm run check:data && npm run check:static",
+    "check:syntax": "node scripts/check-syntax.js",
+    "check:kernel": "node scripts/smoke-kernel.js",
+    "check:data": "node scripts/validate-data.js",
+    "check:static": "node scripts/static-qa.js"
+  },
+  "devDependencies": {}
+}

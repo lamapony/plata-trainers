@@ -15,7 +15,7 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 |---------|--------|-------------|
 | [bøjning-drill](./bojning-drill/) | v0.2 | Verb tenses (nutid/datid/førnutid) + noun bøjning (bestemt/ubestemt, ental/flertal). Type the answer. |
 | [ordstilling-drill](./ordstilling-drill/) | v0.1 | V2 rule, inversion, ledsætninger. Multiple choice with explanations. |
-| [vocab-sr](./vocab-sr/) | v0.1 | Spaced-repetition vocabulary, DA ↔ RU. 36 high-frequency A2 words. |
+| [vocab-sr](./vocab-sr/) | v0.1 | Spaced-repetition vocabulary, DA ↔ RU. 48 high-frequency A2-B1 words. |
 | skriveøvelser | planned | Production exercises with self-grade rubric |
 | lytteøvelser | planned | DR P1 klip with comprehension questions |
 | læseøvelser | planned | Timed reading + comprehension Q |
@@ -36,10 +36,19 @@ No build, no dependencies, no server required. You can also open any trainer's `
 ## Checks
 
 ```bash
-node scripts/smoke-kernel.js
-node scripts/static-qa.js
-for f in shared/*.js scripts/*.js */app.js; do node --check "$f"; done
+npm run check
 ```
+
+Individual checks:
+
+```bash
+node scripts/smoke-kernel.js
+node scripts/validate-data.js
+node scripts/static-qa.js
+node scripts/check-syntax.js
+```
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. See [ROADMAP.md](./ROADMAP.md) for planned trainer expansion.
 
 ## Design
 
