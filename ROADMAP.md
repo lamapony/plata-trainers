@@ -6,6 +6,7 @@ This is a public MVP roadmap, not a promise. The goal is to make the trainers us
 
 - [x] Public landing page.
 - [x] Three trainers: bøjning, ordstilling, vocab-SR.
+- [x] First narrative A0/A1 lesson prototype.
 - [x] Shared progress kernel.
 - [x] Local progress + JSON export/import.
 - [x] Static QA and data validation.
@@ -19,6 +20,8 @@ This is a public MVP roadmap, not a promise. The goal is to make the trainers us
 - [ ] Show weak tags in each trainer UI, not only in kernel helpers.
 - [ ] Add a combined progress dashboard across all trainers.
 - [ ] Add a “practice due now” entry point on the landing page.
+- [ ] Extract narrative lesson engine docs for contributors.
+- [ ] Expand Lesson 01 with optional native audio / pronunciation blocks.
 
 ## Later: more skill types
 
