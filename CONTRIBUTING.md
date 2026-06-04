@@ -35,6 +35,7 @@ That runs:
 - `scripts/smoke-kernel.js` — shared kernel behavior and M0 gate logic.
 - `scripts/validate-data.js` — trainer data shape, uniqueness, explanations.
 - `scripts/static-qa.js` — HTML metadata, local links, public static assets.
+- `scripts/validate-lesson.js` — narrative lesson pattern enforcement.
 
 For browser interaction smoke tests, serve locally:
 
@@ -45,9 +46,12 @@ python3 -m http.server 8000
 Then open:
 
 - <http://127.0.0.1:8000/>
+- <http://127.0.0.1:8000/dashboard.html>
 - <http://127.0.0.1:8000/bojning-drill/>
 - <http://127.0.0.1:8000/ordstilling-drill/>
 - <http://127.0.0.1:8000/vocab-sr/>
+- <http://127.0.0.1:8000/lessons/lesson-01/>
+- <http://127.0.0.1:8000/lessons/lesson-b2-radiator/>
 
 ## Data conventions
 
@@ -77,6 +81,80 @@ Then open:
 - `en`: English bridge translation.
 - `example`: Danish example sentence.
 - optional `note`.
+
+### Narrative lessons (shared engine)
+
+All narrative lessons use the **shared lesson engine** (`shared/plata-lesson-engine.js`). Create a folder under `lessons/` with:
+
+```
+lessons/your-lesson-id/
+├── index.html      # loads kernel, engine, data, app
+├── styles.css      # usually shared with lesson-01; customise if needed
+├── data.js         # exports window.PLATA_LESSON_YOUR_ID
+└── app.js          # one line: PlataLessonEngine.run(window.PLATA_LESSON_YOUR_ID)
+```
+
+**Lesson data schema** (`data.js`):
+
+```js
+window.PLATA_LESSON_YOUR_ID = {
+  id: "lesson-your-id",           // unique, matches folder
+  title: "Human-readable title",
+  subtitle: "One sentence hook",
+  estimatedMinutes: 10,
+  completeTitle: "Completion headline",
+  completeText: "What the learner now owns",
+  pattern: {
+    name: "scene-pressure-language-payoff",
+    beats: ["pressure", "notice", "act", "feedback", "carry-forward"]
+  },
+  scenes: [ /* 4–6 scenes */ ],
+  // Optional B2-style consequence system:
+  variables: { varName: 0, ... },     //ocial state tracked across scenes
+  endingLogic: { ... },               // rules to pick ending
+  endings: [ { id, title, narrative, danish, carry }, ... ]
+};
+```
+
+**Scene contract** (every scene must pass `npm run check:lessons`):
+
+| Field | Required | Type | Purpose |
+|-------|----------|------|---------|
+| `id` | yes | string | stable key for progress |
+| `type` | yes | `choice` \| `input` \| `match` \| `completion` | exercise type |
+| `eyebrow` | yes | string | "Scene N · Label" |
+| `title` | yes | string | narrative beat, not exercise title |
+| `pressure` | yes | string | what's at stake right now |
+| `narrative` | yes | string | what's happening in the world |
+| `dialogue` | yes | array | `[{speaker, line}]` — lived language |
+| `notice` | yes | string | one compact linguistic observation |
+| `prompt` | yes | string | the action the learner must take |
+| `carry` | yes | string | what this scene stores for later reuse |
+| `tags` | yes | string[] | skill tags for kernel weak-tag extraction |
+
+**Per-type extra fields:**
+
+- `choice`: `options[]` with `{id, label, detail, correct, feedback, effects?}`
+- `input`: `acceptPrefix`, `placeholder`, `success`, `failure`
+- `match`: `pairs[]` with `{id, left, right}`
+- `completion`: `prefix`, `placeholder`, `success`, `failure`, `acceptKeywords?`, `effects?`
+
+**Quality bar (enforced by `check:lessons`):**
+
+- Every scene has `pressure`, `notice`, `carry`, `dialogue`
+- Exactly one `correct: true` in `choice` options
+- Danish density: words appearing once without `carry-forward` mention are warned
+- Variables require `endingLogic` + `endings`
+
+**To add a lesson:**
+
+1. Copy `lessons/lesson-01/` → `lessons/your-topic/`
+2. Edit `data.js` with your scenes (follow the schema above)
+3. Update `index.html` title/description
+4. Run `npm run check` — must pass
+5. Open locally: `python3 -m http.server 8000` → `http://127.0.0.1:8000/lessons/your-topic/`
+
+**Linguistic sources:** Use real Danish corpora (DR, KorpusDK, Dansk Sprognævn) — not invented sentences. Cite source in scene `note` or PR description.
 
 ## Pull request shape
 

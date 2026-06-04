@@ -6,6 +6,8 @@ Scene → pressure → language → action → payoff
 ## Why
 A Platå lesson should not be a decorated quiz. Each exercise must be an action inside a situation. The learner should feel why the phrase matters before they are asked to use it.
 
+Platå is not a beginner course. Its job is to help learners overcome the plateau: they already have fragments of Danish, but they hesitate when context, tone, speed, or social pressure enters the scene.
+
 ## Scene contract
 Each scene should include:
 

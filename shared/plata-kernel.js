@@ -45,7 +45,8 @@
         currentStreak: 0,
         longestStreak: 0,
         lastSessionDate: "",
-        dailyAttempts: {}
+        dailyAttempts: {},
+        socialSnapshots: []
       }
     };
   }
@@ -123,6 +124,7 @@
       correct: !!attempt.correct,
       tags: normaliseTags(attempt.tags),
       mode: attempt.mode ? String(attempt.mode) : "",
+      register: attempt.register ? String(attempt.register) : "",
       expected: attempt.expected === undefined ? "" : String(attempt.expected).slice(0, 200),
       given: attempt.given === undefined ? "" : String(attempt.given).slice(0, 200)
     };
@@ -241,6 +243,7 @@
       correct: ok,
       tags: mergeTags(normaliseTags(attempt.tags), attempt.mode ? [attempt.mode] : []),
       mode: attempt.mode,
+      register: attempt.register,
       expected: attempt.expected,
       given: attempt.given
     }));
@@ -373,6 +376,33 @@
     }).slice(0, limit);
   }
 
+  function recordSocialSnapshot(state, variables) {
+    if (!state || !state.meta) return;
+    var snapshots = state.meta.socialSnapshots || [];
+    snapshots.push({
+      at: nowIso(),
+      variables: variables || {}
+    });
+    if (snapshots.length > 50) snapshots = snapshots.slice(-50);
+    state.meta.socialSnapshots = snapshots;
+    touch(state);
+    return snapshots;
+  }
+
+  function getRegisterProfile(state) {
+    var attempts = state.attempts || [];
+    var profile = { formal: 0, informal: 0, neutral: 0, total: 0 };
+    attempts.forEach(function (a) {
+      var r = a.register;
+      if (!r) { profile.neutral += 1; profile.total += 1; return; }
+      if (r.indexOf("formal") !== -1) profile.formal += 1;
+      else if (r.indexOf("informal") !== -1) profile.informal += 1;
+      else profile.neutral += 1;
+      profile.total += 1;
+    });
+    return profile;
+  }
+
   root.PlataKernel = {
     schemaVersion: SCHEMA_VERSION,
     stateKey: stateKey,
@@ -387,6 +417,8 @@
     importState: importState,
     computeGate: computeGate,
     getWeakTags: getWeakTags,
+    recordSocialSnapshot: recordSocialSnapshot,
+    getRegisterProfile: getRegisterProfile,
     saveState: saveState
   };
 })(typeof window !== "undefined" ? window : globalThis);

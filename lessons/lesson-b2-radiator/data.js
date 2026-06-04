@@ -90,10 +90,13 @@ window.PLATA_LESSON_B2_RADIATOR = {
         { speaker: "Mette", line: "Hvordan går det med lejligheden? Har du fået varme?" }
       ],
       notice: "Danish understatement can be socially intelligent, but passivity can hide inside it.",
-      prompt: "Complete a balanced B2 answer.",
+      prompt: "Complete a balanced B2 answer. Include at least one key action word.",
       prefix: "Det går fint nok. Der har været lidt bøvl med varmen, men",
       placeholder: "jeg har bedt udlejeren om en konkret dato",
+      acceptKeywords: ["udlejer", "dato", "bedt", "varme", "skrevet", "ringet", "kontaktet"],
       success: "Good. Fint nok and lidt bøvl soften the social surface, while jeg har bedt keeps agency.",
+      failure: "Try including at least one action word: udlejer, dato, bedt, varme, skrevet, ringet, or kontaktet.",
+      effects: { workplaceTrust: 1 },
       carry: "Carry-forward: tone is not honesty versus lying. It is choosing the useful amount of truth for the room.",
       tags: ["B2", "understatement", "workplace-register", "agency"]
     },
@@ -113,6 +116,34 @@ window.PLATA_LESSON_B2_RADIATOR = {
       ],
       carry: "Unlocked B2 theme: Danish as social operating system — not only grammar, but consequence.",
       tags: ["B2", "reflection", "argumentation", "social-consequence"]
+    }
+  ],
+  endingLogic: {
+    diplomatic: { maxLandlordTension: 0, minWorkplaceTrust: 1 },
+    aggressive: { minLandlordTension: 2 },
+    passive: {}
+  },
+  endings: [
+    {
+      id: "diplomatic",
+      title: "Diplomatic resolution",
+      narrative: "The radiator was fixed by Thursday. The landlord sent a short apology — not warm, but correct. Sofia still trusts your judgement, and at work Mette sees someone who handles problems without creating drama. You kept the heat on without burning any bridges.",
+      danish: "Du fik varme uden at brænde broer.",
+      carry: "B2 unlocked: being clear and being liked are not opposites — tone is the bridge."
+    },
+    {
+      id: "aggressive",
+      title: "Escalated resolution",
+      narrative: "The radiator was fixed by Wednesday. But the landlord's reply was cold and formal, and Sofia has been quieter in the group chat since your sharp reply. You won the argument — the question is whether you won the relationships.",
+      danish: "Du fik varme, men mistede varmen hos andre.",
+      carry: "B2 unlocked: the sharpest sentence sometimes wins the case and loses the room."
+    },
+    {
+      id: "passive",
+      title: "Delayed resolution",
+      narrative: "The radiator was fixed — eventually. You waited an extra week because your replies were too soft. At work, Mette assumed you were handling it, but privately you felt you had apologised for needing heat. Being polite is not a mistake — but being too polite can cost real time.",
+      danish: "Du fik varme til sidst, men du betalte med tålmodighed.",
+      carry: "B2 unlocked: politeness without clarity is a form of invisible waiting."
     }
   ]
 };

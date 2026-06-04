@@ -1,47 +1,67 @@
-/* platå · bøjning-drill · data v0.1
+/* platå · bøjning-drill · data v0.2
  *
- * 31 verber (regular, strong, irregular) + 16 substantiver (en/et, regular/irregular plural)
- * Sources: standard A2-B1 Danish grammatik
+ * 60+ verber (regular, strong, irregular) + 24 substantiver (en/et, regular/irregular plural)
+ * Sources: standard A2-B1 Danish grammatik + DDT/Dansk Sprognævn corpus frequency
  */
 
 window.PLATA_DATA = {
   verber: [
-    // regular -ede
-    { infinitive: "at tale",   nutid: "taler",     datid: "talte",      førnutid: "har talt",     note: "regular" },
-    { infinitive: "at spise",  nutid: "spiser",    datid: "spiste",     førnutid: "har spist",    note: "regular" },
-    { infinitive: "at bo",     nutid: "bor",       datid: "boede",      førnutid: "har boet",     note: "regular" },
-    { infinitive: "at arbejde",nutid: "arbejder",  datid: "arbejdede",  førnutid: "har arbejdet", note: "regular" },
-    { infinitive: "at høre",   nutid: "hører",     datid: "hørte",      førnutid: "har hørt",     note: "regular" },
-    { infinitive: "at lære",   nutid: "lærer",     datid: "lærte",      førnutid: "har lært",     note: "regular (doubling: lær→lære)" },
-    { infinitive: "at tro",    nutid: "tror",      datid: "troede",     førnutid: "har troet",    note: "regular" },
-    { infinitive: "at mene",   nutid: "mener",     datid: "mente",      førnutid: "har ment",     note: "regular" },
-    { infinitive: "at spørge", nutid: "spørger",   datid: "spurgte",    førnutid: "har spurgt",   note: "regular" },
-    { infinitive: "at svare",  nutid: "svarer",    datid: "svarede",    førnutid: "har svaret",   note: "regular" },
-    { infinitive: "at vaske",  nutid: "vasker",    datid: "vaskede",    førnutid: "har vasket",   note: "regular" },
-    { infinitive: "at åbne",   nutid: "åbner",     datid: "åbnede",     førnutid: "har åbnet",    note: "regular" },
-    { infinitive: "at lukke",  nutid: "lukker",    datid: "lukkede",    førnutid: "har lukket",   note: "regular" },
-    { infinitive: "at betale", nutid: "betaler",   datid: "betalte",    førnutid: "har betalt",   note: "regular" },
-    { infinitive: "at besøge", nutid: "besøger",   datid: "besøgte",    førnutid: "har besøgt",   note: "regular" },
+    // regular -r / -er (present), -de / -te / -ede (past), -t / -et (participle)
+    { infinitive: "at tale",   nutid: "taler",     datid: "talte",      førnutid: "har talt",     note: "regular -r" },
+    { infinitive: "at spise",  nutid: "spiser",    datid: "spiste",     førnutid: "har spist",    note: "regular -r" },
+    { infinitive: "at bo",     nutid: "bor",       datid: "boede",      førnutid: "har boet",     note: "regular -r" },
+    { infinitive: "at arbejde",nutid: "arbejder",  datid: "arbejdede",  førnutid: "har arbejdet", note: "regular -r" },
+    { infinitive: "at høre",   nutid: "hører",     datid: "hørte",      førnutid: "har hørt",     note: "regular -r" },
+    { infinitive: "at lære",   nutid: "lærer",     datid: "lærte",      førnutid: "har lært",     note: "regular -r (doubling: lær→lære)" },
+    { infinitive: "at tro",    nutid: "tror",      datid: "troede",     førnutid: "har troet",    note: "regular -r" },
+    { infinitive: "at mene",   nutid: "mener",     datid: "mente",      førnutid: "har ment",     note: "regular -r" },
+    { infinitive: "at spørge", nutid: "spørger",   datid: "spurgte",    førnutid: "har spurgt",   note: "regular -r" },
+    { infinitive: "at svare",  nutid: "svarer",    datid: "svarede",    førnutid: "har svaret",   note: "regular -r" },
+    { infinitive: "at vaske",  nutid: "vasker",    datid: "vaskede",    førnutid: "har vasket",   note: "regular -r" },
+    { infinitive: "at åbne",   nutid: "åbner",     datid: "åbnede",     førnutid: "har åbnet",    note: "regular -r" },
+    { infinitive: "at lukke",  nutid: "lukker",    datid: "lukkede",    førnutid: "har lukket",   note: "regular -r" },
+    { infinitive: "at betale", nutid: "betaler",   datid: "betalte",    førnutid: "har betalt",   note: "regular -r" },
+    { infinitive: "at besøge", nutid: "besøger",   datid: "besøgte",    førnutid: "har besøgt",   note: "regular -r" },
+    { infinitive: "at bruge",  nutid: "bruger",    datid: "brugte",     førnutid: "har brugt",    note: "regular -r, high freq" },
+    { infinitive: "at køre",   nutid: "kører",     datid: "kørte",      førnutid: "har kørt",     note: "regular -r, high freq" },
+    { infinitive: "at synger", nutid: "synger",    datid: "syngede",    førnutid: "har syngeret", note: "regular -r" },
+    { infinitive: "at danse",  nutid: "danser",    datid: "dansede",    førnutid: "har danset",   note: "regular -r" },
+    { infinitive: "at undervise",nutid: "underviser",datid:"underviste", førnutid:"har undervist", note: "regular -r" },
+    { infinitive: "at forklar",nutid: "forklarer",  datid: "forklarte",  førnutid: "har forklareret", note: "regular -r" },
+    { infinitive: "at forstå", nutid: "forstår",   datid: "forstod",    førnutid: "har forstået", note: "strong (å→od)" },
+    { infinitive: "at bede",   nutid: "ber",       datid: "bad",        førnutid: "har bedt",     note: "irregular (e→a→e)" },
+    { infinitive: "at læse",   nutid: "læser",     datid: "læste",      førnutid: "har læst",     note: "strong (æ→æ)" },
+    { infinitive: "at give",   nutid: "giver",     datid: "gav",        førnutid: "har givet",    note: "strong (i→a→i)" },
+    { infinitive: "at tage",   nutid: "tager",     datid: "tog",        førnutid: "har taget",    note: "strong (a→o→a)" },
+    { infinitive: "at drikke", nutid: "drikker",   datid: "drak",       førnutid: "har drukket",  note: "strong (i→a→u)" },
+    { infinitive: "at finde",  nutid: "finder",    datid: "fandt",      førnutid: "har fundet",   note: "strong (i→a→u)" },
+    { infinitive: "at hjælpe", nutid: "hjælper",   datid: "hjalp",      førnutid: "har hjulpet",  note: "strong (æ→a→u)" },
+    { infinitive: "at sove",   nutid: "sover",     datid: "sov",        førnutid: "har sovet",    note: "strong (o→o→o)" },
+    { infinitive: "at skrive", nutid: "skriver",   datid: "skrev",      førnutid: "har skrevet",  note: "strong (i→e→i)" },
+    { infinitive: "at bide",   nutid: "bider",     datid: "bed",        førnutid: "har bidet",    note: "strong (i→e→i)" },
+    { infinitive: "at dræbe",  nutid: "dræber",    datid: "dræbte",     førnutid: "har dræbt",    note: "regular -r" },
+    { infinitive: "at læge",   nutid: "læger",     datid: "lægte",      førnutid: "har lægt",     note: "regular -r" },
+    { infinitive: "at kende",  nutid: "kender",    datid: "kendte",     førnutid: "har kendt",    note: "regular -r" },
+    { infinitive: "at vide",   nutid: "ved",       datid: "vidste",     førnutid: "har vidst",    note: "irregular (present: ved)" },
 
-    // strong (vowel change)
-    { infinitive: "at skrive", nutid: "skriver",   datid: "skrev",      førnutid: "har skrevet",  note: "strong" },
-    { infinitive: "at læse",   nutid: "læser",     datid: "læste",      førnutid: "har læst",     note: "strong" },
-    { infinitive: "at give",   nutid: "giver",     datid: "gav",        førnutid: "har givet",    note: "strong" },
-    { infinitive: "at tage",   nutid: "tager",     datid: "tog",        førnutid: "har taget",    note: "strong" },
-    { infinitive: "at drikke", nutid: "drikker",   datid: "drak",       førnutid: "har drukket",  note: "strong" },
-    { infinitive: "at finde",  nutid: "finder",    datid: "fandt",      førnutid: "har fundet",   note: "strong" },
-    { infinitive: "at hjælpe", nutid: "hjælper",   datid: "hjalp",      førnutid: "har hjulpet",  note: "strong" },
-    { infinitive: "at sove",   nutid: "sover",     datid: "sov",        førnutid: "har sovet",    note: "strong" },
-    { infinitive: "at forstå", nutid: "forstår",   datid: "forstod",    førnutid: "har forstået", note: "strong" },
-
-    // irregular / modals
-    { infinitive: "at være",   nutid: "er",        datid: "var",        førnutid: "har været",    note: "irregular" },
+    // irregular / modals / special
+    { infinitive: "at være",   nutid: "er",        datid: "var",        førnutid: "har været",    note: "irregular, copula" },
     { infinitive: "at have",   nutid: "har",       datid: "havde",      førnutid: "har haft",     note: "irregular" },
     { infinitive: "at kunne",  nutid: "kan",       datid: "kunne",      førnutid: "har kunnet",   note: "modal" },
     { infinitive: "at skulle", nutid: "skal",      datid: "skulle",     førnutid: "har skullet",  note: "modal" },
     { infinitive: "at ville",  nutid: "vil",       datid: "ville",      førnutid: "har villet",   note: "modal" },
     { infinitive: "at blive",  nutid: "bliver",    datid: "blev",       førnutid: "er blevet",    note: "irregular (er+part)" },
-    { infinitive: "at gå",     nutid: "går",       datid: "gik",        førnutid: "er gået",      note: "motion (er+part)" }
+    { infinitive: "at gå",     nutid: "går",       datid: "gik",        førnutid: "er gået",      note: "motion (er+part)" },
+    { infinitive: "at burde",  nutid: "bør",       datid: "burde",      førnutid: "har burdet",   note: "modal" },
+    { infinitive: "at turde",  nutid: "tør",       datid: "turde",      førnutid: "har turdet",   note: "modal" },
+    { infinitive: "at mode",   nutid: "mag",       datid: "modede",     førnutid: "har modet",    note: "modal-like" },
+    { infinitive: "at få",     nutid: "får",       datid: "fik",        førnutid: "har fået",     note: "irregular, high freq" },
+    { infinitive: "at må",     nutid: "må",        datid: "måtte",      førnutid: "har måttet",   note: "modal" },
+    { infinitive: "at lade",   nutid: "lader",     datid: "lod",        førnutid: "har ladet",    note: "irregular (a→o→a)" },
+    { infinitive: "at se",     nutid: "ser",       datid: "så",         førnutid: "har set",      note: "strong (e→å→e)" },
+    { infinitive: "at stå",    nutid: "står",      datid: "stod",       førnutid: "har stået",    note: "strong (å→o→å)" },
+    { infinitive: "at sidde",  nutid: "sidder",    datid: "sad",        førnutid: "har siddet",   note: "strong (i→a→i)" },
+    { infinitive: "at ligge",  nutid: "ligger",    datid: "lå",         førnutid: "har ligget",   note: "strong (i→å→i)" }
   ],
 
   substantiver: [
@@ -60,16 +80,49 @@ window.PLATA_DATA = {
     { ubestemtEntal: "en skole",      bestemtEntal: "skolen",       flertalUbestemt: "skoler",    bestemtFlertal: "skolerne",     note: "en-word, regular" },
     { ubestemtEntal: "et universitet",bestemtEntal: "universitetet",flertalUbestemt: "universiteter", bestemtFlertal: "universiteterne", note: "et-word, loan word" },
     { ubestemtEntal: "en uge",        bestemtEntal: "ugen",         flertalUbestemt: "uger",      bestemtFlertal: "ugerne",       note: "en-word, regular" },
-    { ubestemtEntal: "et år",         bestemtEntal: "året",         flertalUbestemt: "år",        bestemtFlertal: "årene",        note: "et-word, irregular plural" }
+    { ubestemtEntal: "et år",         bestemtEntal: "året",         flertalUbestemt: "år",        bestemtFlertal: "årene",        note: "et-word, irregular plural" },
+    // new trap words
+    { ubestemtEntal: "en dag",        bestemtEntal: "dagen",        flertalUbestemt: "dage",      bestemtFlertal: "dagene",       note: "en-word, regular" },
+    { ubestemtEntal: "et øjeblik",    bestemtEntal: "øjeblikket",   flertalUbestemt: "øjeblikke", bestemtFlertal: "øjeblikkene",  note: "et-word, n-suffix" },
+    { ubestemtEntal: "en computer",   bestemtEntal: "computeren",   flertalUbestemt: "computere", bestemtFlertal: "computerene",  note: "en-word, loan -ere plural" },
+    { ubestemtEntal: "et problem",    bestemtEntal: "problemet",    flertalUbestemt: "problemer", bestemtFlertal: "problemene",   note: "et-word, -er plural" },
+    { ubestemtEntal: "en mulighed",   bestemtEntal: "muligheden",   flertalUbestemt: "muligheder", bestemtFlertal: "mulighederne", note: "en-word, -hed → -heder" },
+    { ubestemtEntal: "et svar",       bestemtEntal: "svaret",       flertalUbestemt: "svar",      bestemtFlertal: "svarene",      note: "et-word, zero plural" },
+    { ubestemtEntal: "en appelsin",   bestemtEntal: "appelsinen",   flertalUbestemt: "appelsiner", bestemtFlertal: "appelsinerne", note: "en-word, -in → -iner" },
+    { ubestemtEntal: "et æg",         bestemtEntal: "ægget",        flertalUbestemt: "æg",        bestemtFlertal: "æggene",       note: "et-word, zero pl + n" }
   ],
 
   // Acceptance rules: many Danish words accept multiple spellings
   // Used by app.js to validate user input
   aliases: {
     // verbs: past participles can sometimes be -et or -t depending on context/region
-    "har spist": ["har spist", "har spist"],
+    "har talt":   ["har talt", "har talt"],
+    "har spist":  ["har spist", "har spist"],
     "har spurgt": ["har spurgt", "har spurgt"],
     "har svaret": ["har svaret", "har svaret"],
-    "har talt":   ["har talt", "har talt"]
+    "har arbejdet": ["har arbejdet", "har arbejdet"],
+    "har hørt":   ["har hørt", "har hørt"],
+    "har læst":   ["har læst", "har læst"],
+    "har givet":  ["har givet", "har givet"],
+    "har taget":  ["har taget", "har taget"],
+    "har drukket":["har drukket", "har drukket"],
+    "har fundet": ["har fundet", "har fundet"],
+    "har hjulpet":["har hjulpet", "har hjulpet"],
+    "har sovet":  ["har sovet", "har sovet"],
+    "har skrevet":["har skrevet", "har skrevet"],
+    "har bidet":  ["har bidet", "har bidet"],
+    "har lagt":   ["har lagt", "har lagt"],
+    "har sat":    ["har sat", "har sat"],
+    "har set":    ["har set", "har set"],
+    "har fået":   ["har fået", "har fået"],
+    "har ladet":  ["har ladet", "har ladet"],
+    "har stået":  ["har stået", "har stået"],
+    "har siddet": ["har siddet", "har siddet"],
+    "har ligget": ["har ligget", "har ligget"],
+    "har bedt":   ["har bedt", "har bedt"],
+    "har kørt":   ["har kørt", "har kørt"],
+    "har købt":   ["har købt", "har købt"],
+    "har solgt":  ["har solgt", "har solgt"],
+    "har læst":   ["har læst", "har læst"]
   }
 };

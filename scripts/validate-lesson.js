@@ -1,0 +1,215 @@
+#!/usr/bin/env node
+"use strict";
+
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+
+const root = path.resolve(__dirname, "..");
+const issues = [];
+const warnings = [];
+
+function issue(message) { issues.push(message); }
+function warn(message) { warnings.push(message); }
+
+function loadLesson(relPath) {
+  const source = fs.readFileSync(path.join(root, relPath), "utf8");
+  const context = { window: {} };
+  context.globalThis = context.window;
+  vm.createContext(context);
+  vm.runInContext(source, context, { filename: relPath });
+  // Find the lesson object (PLATA_LESSON_*)
+  const keys = Object.keys(context.window).filter(k => k.startsWith("PLATA_LESSON_"));
+  if (keys.length === 0) return null;
+  return context.window[keys[0]];
+}
+
+function nonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function findLessons() {
+  const lessonsDir = path.join(root, "lessons");
+  const dirs = fs.readdirSync(lessonsDir).filter(d => fs.statSync(path.join(lessonsDir, d)).isDirectory());
+  const lessons = [];
+  for (const dir of dirs) {
+    const dataPath = path.join("lessons", dir, "data.js");
+    const fullPath = path.join(root, dataPath);
+    if (fs.existsSync(fullPath)) {
+      lessons.push({ id: dir, dataPath });
+    }
+  }
+  return lessons;
+}
+
+const REQUIRED_SCENE_FIELDS = ["id", "type", "eyebrow", "title", "pressure", "narrative", "prompt", "carry", "tags"];
+const VALID_TYPES = ["choice", "input", "match", "completion"];
+
+function validateLesson(lessonMeta, lesson) {
+  if (!lesson) {
+    issue(`${lessonMeta.id}: no lesson object found in ${lessonMeta.dataPath}`);
+    return;
+  }
+
+  if (!nonEmptyString(lesson.id)) issue(`${lessonMeta.id}: missing id`);
+  if (!nonEmptyString(lesson.title)) issue(`${lessonMeta.id}: missing title`);
+
+  if (!Array.isArray(lesson.scenes) || lesson.scenes.length === 0) {
+    issue(`${lessonMeta.id}: scenes must be a non-empty array`);
+    return;
+  }
+
+  // Track word appearances across scenes for "empty word" detection
+  const wordAppearances = new Map(); // word -> { count: number, scenes: Set<string>, carryMentions: Set<string> }
+
+  lesson.scenes.forEach((scene, si) => {
+    const prefix = `${lessonMeta.id}::scene[${si}]`;
+
+    // Required fields
+    REQUIRED_SCENE_FIELDS.forEach(field => {
+      if (field === "dialogue") {
+        if (!scene.dialogue || !Array.isArray(scene.dialogue) || scene.dialogue.length === 0) {
+          issue(`${prefix}.dialogue: required non-empty array`);
+        } else {
+          scene.dialogue.forEach((line, li) => {
+            if (!nonEmptyString(line.speaker)) issue(`${prefix}.dialogue[${li}].speaker: empty`);
+            if (!nonEmptyString(line.line)) issue(`${prefix}.dialogue[${li}].line: empty`);
+          });
+        }
+      } else if (field === "tags") {
+        if (!Array.isArray(scene.tags) || scene.tags.length === 0) {
+          warn(`${prefix}.tags: empty array (add skill tags for kernel tracking)`);
+        }
+      } else if (!nonEmptyString(scene[field])) {
+        issue(`${prefix}.${field}: required non-empty string`);
+      }
+    });
+
+    // Type validation
+    if (!VALID_TYPES.includes(scene.type)) {
+      issue(`${prefix}.type: must be one of ${VALID_TYPES.join(", ")}, got "${scene.type}"`);
+    }
+
+    // Per-type validation
+    if (scene.type === "choice") {
+      if (!Array.isArray(scene.options) || scene.options.length < 2) {
+        issue(`${prefix}: choice requires options array (min 2)`);
+      } else {
+        const correctCount = scene.options.filter(o => o.correct === true).length;
+        if (correctCount !== 1) issue(`${prefix}: exactly one option must have correct: true (found ${correctCount})`);
+        scene.options.forEach((opt, oi) => {
+          if (!nonEmptyString(opt.id)) issue(`${prefix}.options[${oi}].id: empty`);
+          if (!nonEmptyString(opt.label)) issue(`${prefix}.options[${oi}].label: empty`);
+          if (!nonEmptyString(opt.detail)) issue(`${prefix}.options[${oi}].detail: empty`);
+          if (!nonEmptyString(opt.feedback)) issue(`${prefix}.options[${oi}].feedback: empty`);
+        });
+      }
+    }
+
+    if (scene.type === "input") {
+      if (!nonEmptyString(scene.acceptPrefix)) issue(`${prefix}: input requires acceptPrefix`);
+      if (!nonEmptyString(scene.placeholder)) issue(`${prefix}: input requires placeholder`);
+      if (!nonEmptyString(scene.success)) issue(`${prefix}: input requires success message`);
+      if (!nonEmptyString(scene.failure)) issue(`${prefix}: input requires failure message`);
+    }
+
+    if (scene.type === "match") {
+      if (!Array.isArray(scene.pairs) || scene.pairs.length < 2) {
+        issue(`${prefix}: match requires pairs array (min 2)`);
+      } else {
+        scene.pairs.forEach((pair, pi) => {
+          if (!nonEmptyString(pair.id)) issue(`${prefix}.pairs[${pi}].id: empty`);
+          if (!nonEmptyString(pair.left)) issue(`${prefix}.pairs[${pi}].left: empty`);
+          if (!nonEmptyString(pair.right)) issue(`${prefix}.pairs[${pi}].right: empty`);
+        });
+      }
+    }
+
+    if (scene.type === "completion") {
+      if (!nonEmptyString(scene.prefix)) issue(`${prefix}: completion requires prefix`);
+      if (!nonEmptyString(scene.placeholder)) issue(`${prefix}: completion requires placeholder`);
+      if (!nonEmptyString(scene.success)) issue(`${prefix}: completion requires success message`);
+      if (!nonEmptyString(scene.failure)) issue(`${prefix}: completion requires failure message`);
+    }
+
+    // Extract Danish words from Danish-language content only for density check
+    // Exclude: distractor option labels (correct: false), acceptKeywords (accepted answers, not taught vocab)
+    const danishSources = [
+      ...(scene.dialogue || []).map(d => d.line),
+      scene.danish || "",
+      ...(scene.options || []).filter(o => o.correct !== false).map(o => o.label),
+      ...(scene.pairs || []).map(p => p.left),
+      scene.prefix || "",
+      scene.acceptPrefix || ""
+      // acceptKeywords intentionally excluded: they are accepted answers, not vocabulary targets
+    ];
+    const danishText = danishSources.join(" ").toLowerCase();
+
+    // Simple Danish word extraction (letters + æøå, ignore short words)
+    const words = danishText.match(/[a-zæøå]{3,}/g) || [];
+    words.forEach(w => {
+      if (!wordAppearances.has(w)) wordAppearances.set(w, { count: 0, scenes: new Set(), carryMentions: new Set() });
+      const entry = wordAppearances.get(w);
+      entry.count += 1;
+      entry.scenes.add(`scene[${si}]`);
+      // Check if word appears in carry-forward
+      if (scene.carry && scene.carry.toLowerCase().includes(w)) {
+        entry.carryMentions.add(`scene[${si}]`);
+      }
+    });
+  });
+
+  // Density check: words appearing only once and not in any carry-forward
+  const singletons = [];
+  wordAppearances.forEach((entry, word) => {
+    if (entry.count === 1 && entry.carryMentions.size === 0) {
+      singletons.push({ word, scene: [...entry.scenes][0] });
+    }
+  });
+
+  if (singletons.length > 0) {
+    // Only warn, don't fail - some flavour words are OK
+    warn(`${lessonMeta.id}: ${singletons.length} word(s) appear only once without carry-forward:`);
+    singletons.slice(0, 10).forEach(s => warn(`  - "${s.word}" in ${s.scene}`));
+  }
+
+  // Ending system validation (for B2-style lessons)
+  if (lesson.variables && Object.keys(lesson.variables).length > 0) {
+    if (!lesson.endingLogic) warn(`${lessonMeta.id}: has variables but no endingLogic`);
+    if (!lesson.endings || !Array.isArray(lesson.endings) || lesson.endings.length === 0) {
+      warn(`${lessonMeta.id}: has variables but no endings array`);
+    }
+  }
+
+  // Check that carry-forward text is substantial (not just a word)
+  lesson.scenes.forEach((scene, si) => {
+    if (nonEmptyString(scene.carry) && scene.carry.trim().split(/\s+/).length < 5) {
+      warn(`${lessonMeta.id}::scene[${si}].carry: very short (${scene.carry.trim().split(/\s+/).length} words) - consider more substance`);
+    }
+  });
+}
+
+// Main
+const lessons = findLessons();
+if (lessons.length === 0) {
+  console.error("No lessons found in lessons/*/data.js");
+  process.exit(1);
+}
+
+lessons.forEach(meta => {
+  const lesson = loadLesson(meta.dataPath);
+  validateLesson(meta, lesson);
+});
+
+if (warnings.length) {
+  console.warn(`Lesson validation warnings: ${warnings.length}`);
+  warnings.forEach(w => console.warn("⚠ " + w));
+}
+
+if (issues.length) {
+  console.error(`Lesson validation failed: ${issues.length} issue(s)`);
+  issues.forEach(i => console.error("✗ " + i));
+  process.exit(1);
+}
+
+console.log(`Lesson validation passed: ${lessons.length} lesson(s) validated`);

@@ -1,6 +1,6 @@
 # Platå Trainers Roadmap
 
-This is a public MVP roadmap, not a promise. The goal is to make the trainers useful to other Danish learners while keeping the codebase boring and static.
+This is a public MVP roadmap, not a promise. Platå is not a from-zero Danish course; it is a plateau-breaker for learners who already know the basics but still freeze in real situations. The goal is to make the trainers useful to other Danish learners while keeping the codebase boring and static.
 
 ## Now: MVP foundation
 
@@ -14,6 +14,8 @@ This is a public MVP roadmap, not a promise. The goal is to make the trainers us
 
 ## Next: make the existing trainers stronger
 
+- [ ] Reframe landing/docs around “overcome the plateau”, not “learn Danish from scratch”.
+- [ ] Make B2 narrative lessons about register, particles, conflict, and social consequences.
 - [ ] Add more A2-B1 verbs with source notes.
 - [ ] Expand nouns with gender/plural traps.
 - [ ] Add more `ledsaetning` word-order items.

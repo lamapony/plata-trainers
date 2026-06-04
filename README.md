@@ -1,9 +1,11 @@
 # Platå Trainers
 
-Open-source Danish language trainers. Static HTML/JS, no build step, no backend.
+Open-source Danish plateau-breaker for Danish learners who are no longer starting from zero but still feel stuck. Static HTML/JS, no build step, no backend.
 Live via GitHub Pages at [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/) and later at `plata.dk/trainers/`.
 
-The MVP is useful for A2-B1 learners who need short, repeatable practice on the forms that block fluent writing: verb tenses, noun inflection, word order, and high-frequency vocabulary.
+Platå does not try to teach Danish from the beginning. It helps learners overcome the plateau: the point where they know enough Danish to recognize the language, but not enough to act fluently under social pressure.
+
+The MVP is useful for A2-B2 learners who need short, repeatable practice on the forms and situations that block real-life fluency: verb tenses, noun inflection, word order, register, particles, and high-frequency vocabulary.
 
 Each trainer is a self-contained single-page app. Progress is private by default: it is stored in browser LocalStorage, never sent to a server. Export/import is JSON so you can back up or move between devices.
 
@@ -14,6 +16,7 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 | Trainer | Status | Description |
 |---------|--------|-------------|
 | [Lesson 01: The First Morning](./lessons/lesson-01/) | v0.1 | Narrative A0/A1 onboarding: arrive in Copenhagen, meet Lene, read signs, use `tak`, and say `Jeg hedder ...`. |
+| [B2: Det afhænger af, hvordan du siger det](./lessons/lesson-b2-radiator/) | v1.0 | B2 narrative: register, modal particles, complaint tone, and social consequences. Your wording changes the outcome. |
 | [bøjning-drill](./bojning-drill/) | v0.2 | Verb tenses (nutid/datid/førnutid) + noun bøjning (bestemt/ubestemt, ental/flertal). Type the answer. |
 | [ordstilling-drill](./ordstilling-drill/) | v0.1 | V2 rule, inversion, ledsætninger. Multiple choice with explanations. |
 | [vocab-sr](./vocab-sr/) | v0.1 | Spaced-repetition vocabulary, DA ↔ RU. 48 high-frequency A2-B1 words. |

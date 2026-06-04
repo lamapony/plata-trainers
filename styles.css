@@ -157,3 +157,25 @@ h3 { font-size: 30px; }
   .section { padding: 32px 0; }
   .trainer-card { min-height: auto; }
 }
+
+/* Dashboard-specific */
+.stats-mini { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 16px 0; font-size: 14px; color: var(--muted); }
+.stats-mini strong { color: var(--text); font-size: 18px; display: block; }
+.stats-mini .last-session { grid-column: span 2; font-size: 12px; }
+.stats-mini.empty { grid-column: span 2; text-align: center; padding: 20px; color: var(--muted); }
+
+.due-card { border-color: var(--ember); box-shadow: 0 0 0 1px var(--ember), var(--shadow); }
+.due-card .tag.due { color: var(--text); background: var(--ember-soft); border-color: var(--ember); }
+.due-reasons { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+.due-reason { font-size: 13px; color: var(--muted); padding: 8px 10px; background: oklch(1 0 0 / 0.04); border-radius: 10px; border: 1px solid var(--line); }
+.weak-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.weak-tag { padding: 4px 8px; border-radius: 8px; background: var(--ember-soft); color: var(--ember); font-family: "JetBrains Mono", monospace; font-size: 11px; border: 1px solid var(--ember); }
+
+.weak-list { display: flex; flex-direction: column; gap: 12px; }
+.weak-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+.weak-main { display: flex; flex-direction: column; gap: 6px; }
+.weak-tag-large { font-family: "JetBrains Mono", monospace; font-size: 16px; color: var(--text); }
+.weak-trainers { font-size: 12px; color: var(--muted); }
+.weak-stats { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+.weak-stats .wrong { font-family: "JetBrains Mono", monospace; font-size: 14px; color: var(--ember); }
+.weak-stats .score { font-size: 12px; color: var(--muted); }

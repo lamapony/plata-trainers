@@ -3,6 +3,8 @@ window.PLATA_LESSON_01 = {
   title: "The First Morning in Copenhagen",
   subtitle: "A compact interactive Danish episode for your first 40 minutes in the city.",
   estimatedMinutes: 10,
+  completeTitle: "You survived the first morning.",
+  completeText: "You can greet someone, introduce yourself, thank them, and escape through the right Copenhagen door. The next lesson can now make word order matter.",
   pattern: {
     name: "scene-pressure-language-payoff",
     description: "Each scene has a real-world pressure, one useful Danish pattern, a tiny action, and a payoff that changes the situation.",
@@ -27,8 +29,8 @@ window.PLATA_LESSON_01 = {
         { id: "indgang", label: "Indgang", detail: "entrance · in", correct: false, feedback: "You step toward the entrance stream and immediately feel the flow pushing against you. Ind = in. Useful, but not now." },
         { id: "udgang", label: "Udgang", detail: "exit · out", correct: true, feedback: "Correct. Ud = out. You are outside the terminal before the phone drops another percent." }
       ],
-      carry: "Carry-forward word: udgang. It will come back as a real place, not a flashcard.",
-      tags: ["signage", "udgang", "survival", "morphology-clue"]
+      carry: "Carry-forward words: velkommen, København, skal, find, udgangen, indgang, udgang. The ind/ud compass and the verb skal (must/need) appear again at the hostel and on every Copenhagen sign.",
+      tags: ["signage", "udgang", "survival", "morphology-clue", "velkommen", "København", "skal", "find", "indgang"]
     },
     {
       id: "meet-lene",
@@ -48,8 +50,8 @@ window.PLATA_LESSON_01 = {
       acceptPrefix: "jeg hedder ",
       success: "That works. A real person now has your name in Danish. The chunk is yours: jeg hedder + name.",
       failure: "Start with the whole chunk: Jeg hedder — then your name. No extra mig needed.",
-      carry: "Carry-forward pattern: Jeg hedder ___. You will reuse it at the hostel when there is no Lene to rescue you.",
-      tags: ["greeting", "identity", "jeg-hedder", "formulaic-language"]
+      carry: "Carry-forward pattern: jeg hedder + name. The question hvad hedder du? returns in Scene 6. The words jeg, hedder, hvad, du are your new social toolkit.",
+      tags: ["greeting", "identity", "jeg-hedder", "formulaic-language", "hvad", "du"]
     },
     {
       id: "doors-match",
@@ -67,8 +69,8 @@ window.PLATA_LESSON_01 = {
         { id: "indgang", left: "Indgang", right: "Entrance" },
         { id: "udgang", left: "Udgang", right: "Exit" }
       ],
-      carry: "Carry-forward contrast: ind / ud. A tiny contrast is stronger than two isolated translations.",
-      tags: ["signage", "indgang", "udgang", "contrast-pair"]
+      carry: "Carry-forward contrast: indgang / udgang and ind / ud. The root gang (passage) + direction prefix is a pattern you will see everywhere: indgang, udgang, opgang, nedgang.",
+      tags: ["signage", "indgang", "udgang", "contrast-pair", "ind", "ud", "gang"]
     },
     {
       id: "tak-chain",
@@ -89,8 +91,8 @@ window.PLATA_LESSON_01 = {
         { id: "hej", label: "Hej", detail: "hi / bye", correct: false, feedback: "Hej can close a meeting, but here it sounds like you are escaping with the receipt." },
         { id: "nej", label: "Nej", detail: "no", correct: false, feedback: "That would reject the help. The scene needs acknowledgement, not refusal." }
       ],
-      carry: "Carry-forward word: tak. You will hear it back immediately, because politeness is a loop.",
-      tags: ["courtesy", "tak", "social-language"]
+      carry: "Carry-forward word: tak. Also her, er, adressen — the framework for 'here is [thing]' returns when you check in. Tak loops back immediately as Selv tak in the next scene.",
+      tags: ["courtesy", "tak", "social-language", "her", "er", "adressen"]
     },
     {
       id: "selv-tak",
@@ -107,12 +109,12 @@ window.PLATA_LESSON_01 = {
       prompt: "Choose the answer that keeps the exchange natural.",
       danish: "Tak fordi du prøver på dansk.",
       options: [
-        { id: "selv-tak", label: "Selv tak", detail: "you’re welcome / thanks back", correct: true, feedback: "Yes. You returned the serve. The phrase is odd if translated, but perfect in the scene." },
+        { id: "selv-tak", label: "Selv tak", detail: "you're welcome / thanks back", correct: true, feedback: "Yes. You returned the serve. The phrase is odd if translated, but perfect in the scene." },
         { id: "udgang", label: "Udgang", detail: "exit", correct: false, feedback: "A heroic exit word, but this is not a door anymore. This is a social loop." },
         { id: "reservation", label: "Reservation", detail: "reservation", correct: false, feedback: "Useful at the hostel. Too early in the script." }
       ],
-      carry: "Carry-forward phrase: selv tak. Learn it as a whole move, not a translation puzzle.",
-      tags: ["courtesy", "selv-tak", "chunk"]
+      carry: "Carry-forward phrase: selv tak. The words fordi, prøver, på, dansk appear in Lene's line — they are the anatomy of praise you will hear again. Udgang and reservation are distractors (not learning targets).",
+      tags: ["courtesy", "selv-tak", "chunk", "fordi", "prøver", "dansk", "på"]
     },
     {
       id: "roommate-payoff",
@@ -129,9 +131,11 @@ window.PLATA_LESSON_01 = {
       prompt: "Complete the sentence you can now actually use.",
       prefix: "Hej, jeg hedder",
       placeholder: "your name",
+      acceptKeywords: ["anders", "lena", "lego", "mia", "noah", "oliver", "oskar", "sofia", "alberte", "emil"],
       success: "You did not learn a list. You carried a sentence through the city and used it when it mattered.",
-      carry: "Unlocked: greetings, identity, ind/ud signage, tak/selv tak. Next lesson can spend this trust on ordering coffee.",
-      tags: ["greeting", "identity", "payoff", "retrieval"]
+      failure: "Give Anders a name to answer with. Any name works.",
+      carry: "Unlocked: greetings (hej), identity (jeg hedder + name), signage compass (indgang/udgang), politeness loop (tak/selv tak), question frame (hvad hedder du?). The words jeg, hedder, hvad, du, Anders, hej are now yours in the wild.",
+      tags: ["greeting", "identity", "payoff", "retrieval", "hej", "jeg", "hedder", "hvad", "du", "Anders"]
     }
   ]
 };
