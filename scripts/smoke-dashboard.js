@@ -304,6 +304,8 @@ function runStartedPlanSmoke() {
 
   assert(/plan-step repair active/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders started repair as active");
   assert(/In progress/.test(env.elements["#practice-plan"].innerHTML), "dashboard labels started plan step in progress");
+  assert(/plan-step-ledger/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders started plan ledger");
+  assert(/Started/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains when a plan step started");
 }
 
 function runClosedMasterySmoke() {
@@ -359,6 +361,11 @@ function runPortableProfileSmoke() {
     correct: true
   };
   planner.savePracticePlan(plan);
+  invokeDashboardFunction(exportEnv, "renderDashboard");
+  assert(/plan-progress/.test(exportEnv.elements["#practice-plan"].innerHTML), "dashboard renders practice plan progress");
+  assert(/plan-step-ledger/.test(exportEnv.elements["#practice-plan"].innerHTML), "dashboard renders practice plan execution ledger");
+  assert(/Completed/.test(exportEnv.elements["#practice-plan"].innerHTML), "dashboard explains when a plan step completed");
+  assert(/Successful completion recorded/.test(exportEnv.elements["#practice-plan"].innerHTML), "dashboard explains plan completion evidence");
 
   invokeDashboardFunction(exportEnv, "exportAll");
   const payload = parseLastExport(exportEnv);
@@ -398,6 +405,7 @@ async function run() {
   console.log("ok - dashboard renders compiled practice plans");
   console.log("ok - dashboard persists active practice-plan tracking");
   console.log("ok - dashboard renders active practice-plan execution state");
+  console.log("ok - dashboard explains practice-plan execution evidence");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");
   console.log("ok - dashboard loads lesson data from catalog");

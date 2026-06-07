@@ -159,6 +159,49 @@ function getStreakLabel(streak) {
   return `${streak} days`;
 }
 
+function formatPlanDateTime(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+}
+
+function planEvidenceText(step) {
+  const evidence = step && step.completionEvidence || {};
+  if (!evidence || typeof evidence !== "object") return step.completionReason || "";
+
+  if (evidence.reason === "repair-correct") return "Correct repair answer recorded";
+  if (evidence.reason === "repair-complete") return "Repair path completed";
+  if (evidence.reason === "lesson-complete") return "Lesson completion recorded";
+
+  if (evidence.reason === "drill-session-complete") {
+    const total = Number(evidence.total || 0);
+    const correct = Number(evidence.correct || 0);
+    const accuracy = Number(evidence.accuracy);
+    const count = total ? `${correct}/${total}` : "";
+    const score = Number.isFinite(accuracy) ? `${accuracy}%` : "";
+    const mode = evidence.mode ? ` · ${evidence.mode}` : "";
+    return `Drill session completed${count ? `: ${count}` : ""}${score ? ` (${score})` : ""}${mode}`;
+  }
+
+  if (evidence.correct) return "Successful completion recorded";
+  if (evidence.reason) return "Completion recorded";
+  return step.completionReason || "";
+}
+
+function planStepLedgerHtml(step) {
+  const rows = [];
+  const started = formatPlanDateTime(step.startedAt);
+  const completed = formatPlanDateTime(step.completedAt);
+  const evidence = planEvidenceText(step);
+
+  if (started) rows.push(`<span><strong>Started</strong>${escapeHtml(started)}</span>`);
+  if (completed) rows.push(`<span><strong>Completed</strong>${escapeHtml(completed)}</span>`);
+  if (evidence) rows.push(`<span><strong>Evidence</strong>${escapeHtml(evidence)}</span>`);
+
+  return rows.length ? `<div class="plan-step-ledger">${rows.join("")}</div>` : "";
+}
+
 function renderTrainerCards() {
   const container = $("#trainer-cards");
   if (!container) return;
@@ -232,6 +275,7 @@ function renderPracticePlan(candidates) {
 
   const canCompileNext = plan.completed && compiled && compiled.steps && compiled.steps.length
     && (!planner.planFingerprint || planner.planFingerprint(compiled) !== plan.fingerprint);
+  const planProgress = plan.steps.length ? Math.round(((plan.completedCount || 0) / plan.steps.length) * 100) : 0;
 
   container.innerHTML = `
     <article class="practice-plan-card ${escapeHtml(plan.kind || "continue")}">
@@ -243,6 +287,9 @@ function renderPracticePlan(candidates) {
           ${canCompileNext ? '<button class="btn" id="compile-next-plan" type="button">Compile next plan</button>' : ""}
         </div>
         <span>${escapeHtml(plan.meta || "")}</span>
+      </div>
+      <div class="plan-progress" aria-label="${planProgress}% complete">
+        <span style="width: ${planProgress}%"></span>
       </div>
       <div class="plan-steps">
         ${plan.steps.map(step => `
@@ -257,6 +304,7 @@ function renderPracticePlan(candidates) {
               <h4>${escapeHtml(step.title)}</h4>
               <p>${escapeHtml(step.copy)}</p>
               ${step.competency ? `<span class="competency-chip">${escapeHtml(step.competency.label)}</span>` : ""}
+              ${planStepLedgerHtml(step)}
               <a href="${escapeHtml(planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref)}">${escapeHtml(step.primaryLabel)} →</a>
             </div>
           </div>
