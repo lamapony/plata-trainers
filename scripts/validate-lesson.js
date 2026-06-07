@@ -120,6 +120,48 @@ function validateSourceNotes(lessonMeta, lesson) {
   });
 }
 
+function validateGoldMasteryMap(lessonMeta, lesson) {
+  if (!isGoldLesson(lesson)) return new Set();
+  const map = lesson.masteryMap;
+  const knownSources = new Set((lesson.sourceNotes || []).map(note => note.title));
+  if (!map || typeof map !== "object" || Array.isArray(map)) {
+    issue(`${lessonMeta.id}.masteryMap: gold lessons require a masteryMap object`);
+    return new Set();
+  }
+
+  const keys = Object.keys(map);
+  if (keys.length === 0) issue(`${lessonMeta.id}.masteryMap: must define at least one mastery tag`);
+
+  keys.forEach((key) => {
+    const prefix = `${lessonMeta.id}.masteryMap["${key}"]`;
+    const spec = map[key];
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(key)) issue(`${prefix}: key must be kebab-case`);
+    if (!spec || typeof spec !== "object" || Array.isArray(spec)) {
+      issue(`${prefix}: required object`);
+      return;
+    }
+    if (!nonEmptyString(spec.label)) issue(`${prefix}.label: required non-empty string`);
+    if (!nonEmptyString(spec.evidence)) issue(`${prefix}.evidence: required non-empty string`);
+    if (!Array.isArray(spec.sourceRefs) || spec.sourceRefs.length === 0) {
+      issue(`${prefix}.sourceRefs: required non-empty array`);
+    } else {
+      spec.sourceRefs.forEach((ref, ri) => {
+        if (!nonEmptyString(ref)) {
+          issue(`${prefix}.sourceRefs[${ri}]: required non-empty string`);
+        } else if (!knownSources.has(ref)) {
+          issue(`${prefix}.sourceRefs[${ri}]: unknown source reference "${ref}"`);
+        }
+      });
+    }
+  });
+
+  if (lesson.variables && lesson.endings && (!lesson.simulation || !nonEmptyString(lesson.simulation.expectedEndingId))) {
+    issue(`${lessonMeta.id}.simulation.expectedEndingId: gold lessons with endings require expected simulator ending`);
+  }
+
+  return new Set(keys);
+}
+
 function validateGoldSceneContract(lessonMeta, lesson, scene, si) {
   if (!isGoldLesson(lesson)) return;
   const prefix = `${lessonMeta.id}::scene[${si}]`;
@@ -135,6 +177,27 @@ function validateGoldSceneContract(lessonMeta, lesson, scene, si) {
       issue(`${prefix}.sourceRefs[${ri}]: required non-empty string`);
     } else if (!knownSources.has(ref)) {
       issue(`${prefix}.sourceRefs[${ri}]: unknown source reference "${ref}"`);
+    }
+  });
+}
+
+function validateSceneMasteryTags(lessonMeta, lesson, scene, si, knownMasteryTags) {
+  if (!isGoldLesson(lesson)) return;
+  const prefix = `${lessonMeta.id}::scene[${si}]`;
+  if (!Array.isArray(scene.masteryTags) || scene.masteryTags.length === 0) {
+    issue(`${prefix}.masteryTags: gold scenes require at least one mastery tag`);
+    return;
+  }
+  const seen = new Set();
+  scene.masteryTags.forEach((tag, ti) => {
+    if (!nonEmptyString(tag)) {
+      issue(`${prefix}.masteryTags[${ti}]: required non-empty string`);
+    } else if (!knownMasteryTags.has(tag)) {
+      issue(`${prefix}.masteryTags[${ti}]: unknown mastery tag "${tag}"`);
+    } else if (seen.has(tag)) {
+      issue(`${prefix}.masteryTags[${ti}]: duplicate mastery tag "${tag}"`);
+    } else {
+      seen.add(tag);
     }
   });
 }
@@ -180,6 +243,7 @@ function validateLesson(lessonMeta, lesson) {
   }
 
   validateSourceNotes(lessonMeta, lesson);
+  const knownMasteryTags = validateGoldMasteryMap(lessonMeta, lesson);
 
   // Track word appearances across scenes for "empty word" detection
   const wordAppearances = new Map(); // word -> { count: number, scenes: Set<string>, supportMentions: Set<string> }
@@ -187,6 +251,7 @@ function validateLesson(lessonMeta, lesson) {
   lesson.scenes.forEach((scene, si) => {
     const prefix = `${lessonMeta.id}::scene[${si}]`;
     validateGoldSceneContract(lessonMeta, lesson, scene, si);
+    validateSceneMasteryTags(lessonMeta, lesson, scene, si, knownMasteryTags);
     validateTargetPhrases(lessonMeta, lesson, scene, si);
 
     // Required fields

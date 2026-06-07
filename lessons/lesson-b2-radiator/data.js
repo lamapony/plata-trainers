@@ -6,6 +6,42 @@ window.PLATA_LESSON_B2_RADIATOR = {
   estimatedMinutes: 14,
   qualityTier: "gold",
   editorialFocus: "Read official Danish precisely, choose register under pressure, and preserve agency without escalating tone.",
+  masteryMap: {
+    "passive-agency": {
+      label: "Read passive agency",
+      evidence: "The learner distinguishes registration/process language from an actual repair commitment.",
+      sourceRefs: ["Lex: passiv", "sproget.dk: grammatiske betegnelser"]
+    },
+    "modal-particle-stance": {
+      label: "Read particle stance",
+      evidence: "The learner identifies how jo, da, sgu, nok, and bare position the speaker socially.",
+      sourceRefs: ["Dansk Sproghistorie: dialogiske partikler"]
+    },
+    "formal-register-control": {
+      label: "Control formal register",
+      evidence: "The learner makes a concrete formal request without importing private-chat force.",
+      sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Dansk Sproghistorie: dialogiske partikler"]
+    },
+    "understatement-with-agency": {
+      label: "Use understatement with agency",
+      evidence: "The learner softens a workplace answer while preserving an action and concrete next step.",
+      sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"]
+    },
+    "consequence-aware-tone": {
+      label: "Choose consequence-aware tone",
+      evidence: "The learner names the B2 principle that clarity and relationship control can coexist.",
+      sourceRefs: ["Lex: passiv", "Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"]
+    }
+  },
+  simulation: {
+    expectedEndingId: "diplomatic",
+    completionAnswers: {
+      "workplace-understatement": {
+        reject: ["varme", "jeg har bedt"],
+        accept: "jeg har bedt udlejeren om en konkret dato"
+      }
+    }
+  },
   variables: {
     landlordTension: 0,
     sofiaTrust: 0,
@@ -50,6 +86,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
       title: "The landlord answers politely without promising anything.",
       learningGoal: "Distinguish a registered case from an actual repair commitment in formal passive Danish.",
       sourceRefs: ["Lex: passiv", "sproget.dk: grammatiske betegnelser"],
+      masteryTags: ["passive-agency"],
       pressure: "It is January, the radiator has been broken for five days, and the official reply looks calm enough to make you doubt your own irritation.",
       narrative: "The email is perfect Danish: formal, smooth, and evasive. The question is not what the words mean, but what the sender avoids taking responsibility for.",
       dialogue: [
@@ -74,6 +111,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
       title: "Your friends reveal their stance before they make an argument.",
       learningGoal: "Identify social stance from Danish particles before reacting to advice.",
       sourceRefs: ["Dansk Sproghistorie: dialogiske partikler"],
+      masteryTags: ["modal-particle-stance"],
       pressure: "Sofia wants to calm you down. Emil wants you to escalate. Their particles do half the work.",
       narrative: "You paste the landlord email into the group chat. Four replies arrive. None of them are neutral, even when they pretend to be.",
       dialogue: [
@@ -99,6 +137,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
       title: "The same frustration needs two different Danish versions.",
       learningGoal: "Make a formal request concrete without importing private-chat aggression.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Dansk Sproghistorie: dialogiske partikler"],
+      masteryTags: ["formal-register-control", "modal-particle-stance"],
       pressure: "You must answer the landlord and also text Emil. If you use one register for both, somebody will misunderstand you.",
       narrative: "Formal Danish should move the case forward without sounding like a threat. Chat Danish can carry emotion, but not destroy your judgement.",
       notice: "Register shift is not decoration. It changes which doors stay open.",
@@ -119,6 +158,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
       title: "Honesty is not the same sentence in every room.",
       learningGoal: "Use understatement without losing agency when discussing a private problem at work.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
+      masteryTags: ["understatement-with-agency"],
       pressure: "Your supervisor Mette is friendly, but not your close friend. She asks about the apartment while making coffee.",
       narrative: "You can be honest, but you also need to sound like someone who can handle a problem without turning every room into a courtroom.",
       dialogue: [
@@ -146,6 +186,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
       title: "The radiator is fixed. The relationships remember the wording.",
       learningGoal: "Name the B2 principle: clarity and relationship control can coexist.",
       sourceRefs: ["Lex: passiv", "Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
+      masteryTags: ["consequence-aware-tone"],
       pressure: "A week later, the case is closed. But language did not only repair a radiator. It changed how people read you.",
       narrative: "The best outcome is not always the one where you were maximally right. B2 means seeing the price of tone.",
       notice: "A complaint has two goals: solve the problem and preserve enough relationship to live with the solution.",

@@ -7,8 +7,10 @@
 - source-backed B2 lesson metadata;
 - scene-level `learningGoal` and `sourceRefs`;
 - explicit `targetPhrases`;
+- recorded `masteryTags`;
 - diagnostic feedback for every choice and B2 match pair;
-- grouped completion validation for answers that need more than one signal.
+- grouped completion validation for answers that need more than one signal;
+- deterministic gold-lesson simulation.
 
 ## Why This Is B2
 
@@ -53,7 +55,22 @@ In this lesson, every scene also has:
 
 - `learningGoal`: one precise B2 skill;
 - `sourceRefs`: links back to the top-level source notes;
-- `targetPhrases`: the Danish phrases actively trained in the scene.
+- `targetPhrases`: the Danish phrases actively trained in the scene;
+- `masteryTags`: durable skill signals recorded with learner attempts.
+
+## Mastery Map
+
+The top-level `masteryMap` defines what the lesson can diagnose later:
+
+| Tag | What It Proves |
+|---|---|
+| `passive-agency` | The learner can distinguish passive process language from an actual commitment. |
+| `modal-particle-stance` | The learner can read social stance from particles such as `jo`, `da`, `sgu`, `nok`, and `bare`. |
+| `formal-register-control` | The learner can make a concrete formal request without private-chat aggression. |
+| `understatement-with-agency` | The learner can soften a workplace answer while preserving agency and a next step. |
+| `consequence-aware-tone` | The learner can name the B2 principle that clarity and relationship control can coexist. |
+
+The shared lesson engine records these tags through the same attempt path as ordinary skill tags, so weak-tag analysis can surface conceptual gaps rather than only scene failures.
 
 ## Scene Notes
 
@@ -145,10 +162,18 @@ Gold lessons must have:
 - source-backed top-level notes;
 - scene-level `learningGoal`;
 - valid `sourceRefs`;
+- valid scene `masteryTags`;
 - B2 `targetPhrases`;
 - unique `diagnostic` keys on choice options;
 - diagnostic feedback on B2 match pairs;
 - grouped keyword validation for completion scenes.
+
+The gold simulator also checks that:
+
+- scene attempts include mastery tags;
+- weak completion answers such as `varme` are rejected;
+- the full answer `jeg har bedt udlejeren om en konkret dato` is accepted;
+- the correct path reaches the `diplomatic` ending.
 
 Run:
 

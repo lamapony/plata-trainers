@@ -18,6 +18,7 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Plateau-first:** built for learners who know basic Danish but freeze when forms, word order, tone, and social pressure meet.
 - **Private by default:** browser LocalStorage only; no accounts, backend, analytics, or tracking.
 - **Contributor-friendly data:** exercises are plain JavaScript data files with validation scripts and narrative lesson schemas.
+- **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals and deterministic simulation.
 - **Static and forkable:** every trainer can run from `index.html` or GitHub Pages without a build step.
 
 ## Available trainers
@@ -62,9 +63,10 @@ node scripts/validate-data.js
 node scripts/static-qa.js
 node scripts/check-syntax.js
 node scripts/validate-lesson.js
+node scripts/simulate-gold-lessons.js
 ```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. See [ROADMAP.md](./ROADMAP.md) for planned trainer expansion.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. See [GOLD_LESSON_QUALITY_ENGINE.md](./docs/GOLD_LESSON_QUALITY_ENGINE.md) for the gold lesson quality contract. See [ROADMAP.md](./ROADMAP.md) for planned trainer expansion.
 
 ## Good first contributions
 

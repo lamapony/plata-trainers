@@ -29,6 +29,23 @@
     for (var i = 0; i < options.length; i++) if (options[i].correct) return options[i].label;
     return "";
   }
+  function normaliseTags(tags) {
+    if (!tags) return [];
+    if (!Array.isArray(tags)) tags = [tags];
+    var seen = {};
+    var out = [];
+    tags.forEach(function (tag) {
+      if (tag === undefined || tag === null) return;
+      var s = String(tag).trim();
+      if (!s || seen[s]) return;
+      seen[s] = true;
+      out.push(s);
+    });
+    return out;
+  }
+  function sceneAttemptTags(scene) {
+    return normaliseTags((scene.tags || []).concat(scene.masteryTags || []));
+  }
 
   /* ---- renderers registry ---- */
   var renderers = {};
@@ -80,7 +97,7 @@
     tracker.kernel.recordAttempt(tracker.state, {
       itemId: scene.id,
       correct: !!correct,
-      tags: scene.tags || [],
+      tags: sceneAttemptTags(scene),
       mode: "lesson",
       expected: expected || "",
       given: given || ""
@@ -400,7 +417,8 @@
 
   root.PlataLessonEngine = {
     run: run,
-    registerRenderer: registerRenderer
+    registerRenderer: registerRenderer,
+    getSceneAttemptTags: sceneAttemptTags
   };
 
 })(typeof window !== "undefined" ? window : globalThis);

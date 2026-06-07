@@ -26,6 +26,26 @@ window.PLATA_LESSON_XX = {
   qualityTier: "gold",              // optional; enables stricter validator rules
   editorialFocus: "What this lesson must teach especially well",
 
+  // --- REQUIRED FOR GOLD: durable learner skill signals ---
+  masteryMap: {
+    "passive-agency": {
+      label: "Read passive agency",
+      evidence: "What a correct attempt proves",
+      sourceRefs: ["Source title from sourceNotes"]
+    }
+  },
+
+  // --- REQUIRED FOR GOLD LESSONS WITH ENDINGS: deterministic QA path ---
+  simulation: {
+    expectedEndingId: "diplomatic",
+    completionAnswers: {
+      "scene-id": {
+        reject: ["partial answer that should fail"],
+        accept: "full answer that should pass"
+      }
+    }
+  },
+
   // --- REQUIRED FOR B2: source support ---
   sourceNotes: [
     {
@@ -82,6 +102,9 @@ Every scene follows the `pressure → notice → action → feedback → carry-f
   learningGoal: "One precise skill this scene teaches", // required for gold lessons
   sourceRefs: [
     "Source title from top-level sourceNotes"             // required for gold lessons
+  ],
+  masteryTags: [
+    "passive-agency"                                      // required for gold lessons
   ],
   pressure: "What is at stake right now?",
   narrative: "What is happening in the world?",
@@ -204,6 +227,20 @@ Variable labels map (hardcoded in engine for now):
 
 Custom labels: specify `variableLabels` on the lesson object.
 
+## Mastery system (gold)
+
+Gold lessons define a `masteryMap` at the top level and attach `masteryTags` to every scene.
+
+These are not decorative labels. They are durable skill signals recorded with attempts by `PlataLessonEngine`. A dashboard can later say "weak in passive agency" instead of merely "wrong in lesson-b2-radiator-register".
+
+Good mastery tags:
+- are kebab-case (`formal-register-control`)
+- describe a transferable skill, not a scene (`passive-agency`, not `scene-one`)
+- have source-backed evidence in `masteryMap`
+- appear on at least one scene and at least one simulated attempt
+
+Gold lessons with endings should also define `simulation.expectedEndingId`. Completion scenes with grouped checks should define deterministic `simulation.completionAnswers` so QA can test both weak rejects and full accepts.
+
 ## Design tokens
 
 All lessons inherit the headpage-v2 design system:
@@ -236,7 +273,8 @@ All lessons inherit the headpage-v2 design system:
 - B2 scenes must name their `targetPhrases`; these are the Danish phrases the scene actively trains, not decorative vocabulary
 - B2 lessons must include `sourceNotes` with URLs and a short `supports` list
 - B2 match pairs must include diagnostic `feedback`
-- Gold lessons (`qualityTier: "gold"`) must include scene `learningGoal`, valid `sourceRefs`, unique choice `diagnostic` keys, and grouped completion checks
+- Gold lessons (`qualityTier: "gold"`) must include `masteryMap`, scene `learningGoal`, valid `sourceRefs`, scene `masteryTags`, unique choice `diagnostic` keys, and grouped completion checks
+- Gold lessons should pass the simulator via `npm run check:gold-lessons`
 - A new word appears in ≥2 modes (dialogue/sign/action/feedback)
 - If a word appears only once, it's flavour — not a learning target
 - Grammar terms only when the scene needs them
