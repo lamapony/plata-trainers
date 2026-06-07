@@ -76,6 +76,8 @@ Dashboard smoke tests cover the remediation surface: a weak mastery signal from 
 
 The gold simulator also checks that every `masteryMap` remediation entry can be resolved by the lesson engine's repair-context parser.
 
+The lesson-engine smoke test goes one layer closer to production: it replays the declared gold simulation paths through the real `PlataLessonEngine` renderers and event handlers using a no-dependency fake DOM, then checks the LocalStorage attempts that the learner would actually produce.
+
 ## Current Scope
 
 The first implementation focuses on `lesson-b2-radiator-register`.

@@ -181,6 +181,8 @@ Dashboard smoke tests also verify that a missed `passive-agency` signal renders 
 
 The lesson engine reads that URL as a repair session: it renders the repair focus in the scene and records attempts with `mode: "repair"`.
 
+`scripts/smoke-lesson-engine.js` also replays the declared simulation paths through the real `PlataLessonEngine` renderers, so the runtime attempt stream is checked separately from the abstract gold simulator.
+
 Run:
 
 ```bash
