@@ -94,7 +94,17 @@ The report is built from lesson data during `npm run build:pages`, not edited by
 
 The report fails the build if a gold scene is not covered by a simulation path, or if a remediation target does not train the mastery signal it claims to repair.
 
-`npm run check:quality-report` builds the JSON report and fails if the report detects contract issues. `npm run check:quality-mutations` creates temporary broken gold lessons and proves the report catches missing sources, missing simulation coverage, broken remediation, bad completion answer specs, and duplicate diagnostics. `npm run check:quality-page` runs the public page renderer against the generated report object.
+`npm run check:quality-report` builds the JSON report and fails if the report detects contract issues. `npm run check:quality-mutations` creates temporary broken gold lessons and proves the report catches missing sources, missing simulation coverage, broken remediation, bad completion answer specs, and duplicate diagnostics. `npm run check:quality-diff` proves the review diff catches regressions such as new issues, failed guarantees, and removed evidence rows. `npm run check:quality-page` runs the public page renderer against the generated report object.
+
+For review, compare two generated reports:
+
+```bash
+npm run diff:quality -- --base before.json --head after.json --fail-on-regression
+```
+
+The diff ignores volatile timestamps and reports only contract changes: status shifts, lesson additions/removals, issue deltas, guarantee pass/fail changes, mastery/simulation deltas, and scene evidence row changes.
+
+The QA workflow runs this diff automatically on pull requests by building one report from the base commit and one from the head commit, then failing on regressions with `--fail-on-regression`.
 
 ## Authoring Pipeline
 

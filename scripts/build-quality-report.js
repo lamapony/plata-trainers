@@ -17,6 +17,13 @@ function rel(file, root = repoRoot) {
   return path.relative(root, file).replaceAll(path.sep, "/");
 }
 
+function displayRel(file, root = repoRoot) {
+  const absolute = path.resolve(file);
+  const workspaceRel = path.relative(repoRoot, absolute);
+  if (!workspaceRel.startsWith("..") && !path.isAbsolute(workspaceRel)) return workspaceRel.replaceAll(path.sep, "/");
+  return rel(absolute, root);
+}
+
 function reportRoot(options) {
   if (typeof options === "string") return path.resolve(options);
   return path.resolve(options && options.root || repoRoot);
@@ -427,13 +434,14 @@ function writeQualityReport(outPath, options = {}) {
     });
     process.exit(1);
   }
-  console.log(`quality report built: ${rel(outPath, root)} (${report.totals.goldLessons} gold lesson(s), ${report.totals.simulationPaths} path(s))`);
+  console.log(`quality report built: ${displayRel(outPath, root)} (${report.totals.goldLessons} gold lesson(s), ${report.totals.simulationPaths} path(s))`);
   return report;
 }
 
 function main() {
   const out = argValue("--out") || path.join(repoRoot, ".dist", "pages", "reports", "quality.json");
-  writeQualityReport(path.resolve(repoRoot, out));
+  const root = argValue("--root") || repoRoot;
+  writeQualityReport(path.resolve(repoRoot, out), { root });
 }
 
 if (require.main === module) main();

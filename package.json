@@ -7,8 +7,9 @@
   "scripts": {
     "build:pages": "node scripts/build-pages-artifact.js",
     "build:quality": "node scripts/build-quality-report.js",
+    "diff:quality": "node scripts/diff-quality-report.js",
     "scaffold:gold": "node scripts/scaffold-gold-lesson.js",
-    "check": "npm run check:syntax && npm run check:kernel && npm run check:catalog && npm run check:lesson-engine && npm run check:dashboard && npm run check:data && npm run check:static && npm run check:lessons && npm run check:gold-lessons && npm run check:gold-scaffold && npm run check:quality-report && npm run check:quality-mutations && npm run check:quality-page && npm run check:pages",
+    "check": "npm run check:syntax && npm run check:kernel && npm run check:catalog && npm run check:lesson-engine && npm run check:dashboard && npm run check:data && npm run check:static && npm run check:lessons && npm run check:gold-lessons && npm run check:gold-scaffold && npm run check:quality-report && npm run check:quality-mutations && npm run check:quality-diff && npm run check:quality-page && npm run check:pages",
     "check:syntax": "node scripts/check-syntax.js",
     "check:kernel": "node scripts/smoke-kernel.js",
     "check:catalog": "node scripts/validate-catalog.js",
@@ -21,6 +22,7 @@
     "check:gold-scaffold": "node scripts/smoke-gold-scaffold.js",
     "check:quality-report": "node scripts/build-quality-report.js --out .dist/quality-report.json",
     "check:quality-mutations": "node scripts/mutation-quality-report.js",
+    "check:quality-diff": "node scripts/smoke-quality-diff.js",
     "check:quality-page": "node scripts/smoke-quality-report.js",
     "check:pages": "npm run build:pages && PUBLIC_ROOT=.dist/pages node scripts/static-qa.js"
   },

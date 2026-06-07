@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -27,6 +29,18 @@ jobs:
 
       - name: Run full QA suite
         run: npm run check
+
+      - name: Compare quality report with base
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          mkdir -p .dist
+          base_dir="$(mktemp -d)"
+          git archive "$BASE_SHA" | tar -x -C "$base_dir"
+          node scripts/build-quality-report.js --root "$base_dir" --out .dist/quality-report-base.json
+          node scripts/build-quality-report.js --out .dist/quality-report-head.json
+          node scripts/diff-quality-report.js --base .dist/quality-report-base.json --head .dist/quality-report-head.json --fail-on-regression
 
       - name: Verify public pages map to files
         run: |

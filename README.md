@@ -63,6 +63,7 @@ Production Pages artifact:
 npm run build:pages
 npm run check:pages
 npm run check:quality-report
+npm run diff:quality -- --base .dist/quality-report.json --head current
 ```
 
 Gold lesson scaffold:
@@ -86,6 +87,7 @@ node scripts/validate-lesson.js
 node scripts/simulate-gold-lessons.js
 node scripts/smoke-gold-scaffold.js
 node scripts/mutation-quality-report.js
+node scripts/smoke-quality-diff.js
 node scripts/smoke-quality-report.js
 npm run check:pages
 ```
