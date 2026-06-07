@@ -100,6 +100,10 @@
       id = root.location.hash.slice(1);
     }
     if (!id) return 0;
+    return sceneIndexById(lesson, id);
+  }
+
+  function sceneIndexById(lesson, id) {
     for (var i = 0; i < lesson.scenes.length; i++) {
       if (lesson.scenes[i].id === id) return i;
     }
@@ -109,17 +113,67 @@
   function syncSceneHash(lesson, state) {
     if (!root.location || !root.history || !lesson.scenes[state.index]) return;
     var next = "#" + encodeURIComponent(lesson.scenes[state.index].id);
-    if (root.location.hash !== next) root.history.replaceState(null, "", next);
+    var url = (root.location.pathname || "") + (root.location.search || "") + next;
+    if (root.location.hash !== next) root.history.replaceState(null, "", url);
+  }
+
+  function queryParam(name) {
+    if (!root.location || !root.location.search) return "";
+    var query = root.location.search.replace(/^\?/, "").split("&");
+    for (var i = 0; i < query.length; i++) {
+      var parts = query[i].split("=");
+      var key = "";
+      try {
+        key = decodeURIComponent(parts[0] || "");
+      } catch (_) {
+        key = parts[0] || "";
+      }
+      if (key === name) {
+        try {
+          return decodeURIComponent((parts[1] || "").replace(/\+/g, " "));
+        } catch (_) {
+          return (parts[1] || "").replace(/\+/g, " ");
+        }
+      }
+    }
+    return "";
+  }
+
+  function repairContextFromLocation(lesson) {
+    var mode = queryParam("mode");
+    var signal = queryParam("signal");
+    if (mode !== "repair" || !signal || !lesson.masteryMap || !lesson.masteryMap[signal]) return null;
+    var spec = lesson.masteryMap[signal];
+    var remediation = spec.remediation || {};
+    var sceneId = remediation.sceneId || "";
+    var scene = null;
+    for (var i = 0; i < lesson.scenes.length; i++) {
+      if (lesson.scenes[i].id === sceneId) {
+        scene = lesson.scenes[i];
+        break;
+      }
+    }
+    if (!scene) return null;
+    return {
+      active: true,
+      tag: signal,
+      label: spec.label || signal,
+      action: remediation.action || "",
+      cta: remediation.cta || "Review scene",
+      sceneId: sceneId
+    };
   }
 
   /* ---- kernel integration ---- */
-  function record(tracker, scene, correct, given, expected) {
-    if (!tracker || !tracker.kernel || !tracker.kernel.recordAttempt) return;
-    tracker.kernel.recordAttempt(tracker.state, {
+  function record(ctx, scene, correct, given, expected) {
+    var tracker = ctx.tracker;
+    if (!tracker || !ctx.kernel || !ctx.kernel.recordAttempt) return;
+    var mode = ctx.state.repair && ctx.state.repair.active ? "repair" : "lesson";
+    ctx.kernel.recordAttempt(tracker.state, {
       itemId: scene.id,
       correct: !!correct,
       tags: sceneAttemptTags(scene),
-      mode: "lesson",
+      mode: mode,
       expected: expected || "",
       given: given || ""
     });
@@ -177,7 +231,7 @@
         $("#feedback").className = "feedback show " + (opt.correct ? "ok" : "warn");
         $("#feedback").textContent = opt.feedback;
         if (!already) {
-          record(ctx.tracker, scene, opt.correct, opt.label, correctLabel(scene.options));
+          record(ctx, scene, opt.correct, opt.label, correctLabel(scene.options));
           applyEffects(ctx.state, opt.effects);
           ctx.state.attempts[scene.id + opt.id] = true;
         }
@@ -198,7 +252,7 @@
       if (ok) ctx.state.learnerText = value.slice(scene.acceptPrefix.length).trim();
       $("#feedback").className = "feedback show " + (ok ? "ok" : "warn");
       $("#feedback").textContent = ok ? scene.success : scene.failure;
-      record(ctx.tracker, scene, ok, value, scene.placeholder);
+      record(ctx, scene, ok, value, scene.placeholder);
       if (ok) ctx.state.completed[scene.id] = true;
       ctx.renderSidebar();
     });
@@ -233,7 +287,7 @@
         $("#feedback").className = "feedback show " + (ok ? "ok" : "warn");
         $("#feedback").textContent = ok ? (pair.feedback || ("Correct. " + pair.left.split(".")[0] + " — the match is right.")) : "Not this match. Try the other pairing.";
         if (!ctx.state.attempts[scene.id + pair.id]) {
-          record(ctx.tracker, scene, ok, (ctx.state.selectedLeft ? ctx.state.selectedLeft.left : "") + " → " + pair.right, pair.left + " → " + pair.right);
+          record(ctx, scene, ok, (ctx.state.selectedLeft ? ctx.state.selectedLeft.left : "") + " → " + pair.right, pair.left + " → " + pair.right);
           ctx.state.attempts[scene.id + pair.id] = true;
         }
         if (ok) {
@@ -281,7 +335,7 @@
       $("#feedback").className = "feedback show " + (ok ? "ok" : "warn");
       $("#feedback").textContent = ok ? scene.success : scene.failure + (checked.missing.length ? " Missing: " + checked.missing.join(", ") + "." : "");
       if (!ctx.state.attempts[scene.id]) {
-        record(ctx.tracker, scene, ok, scene.prefix + " " + value, scene.prefix + " + action");
+        record(ctx, scene, ok, scene.prefix + " " + value, scene.prefix + " + action");
         ctx.state.attempts[scene.id] = true;
       }
       if (ok) ctx.state.completed[scene.id] = true;
@@ -352,6 +406,9 @@
     html += "<h2>" + escapeHtml(scene.title) + "</h2>";
     if (scene.pressure) html += "<p class='pressure'>" + escapeHtml(scene.pressure) + "</p>";
     html += "<p class='narrative'>" + escapeHtml(scene.narrative) + "</p>";
+    if (ctx.state.repair && ctx.state.repair.active) {
+      html += "<aside class='repair-focus'><strong>" + escapeHtml(ctx.state.repair.cta) + "</strong><span><b>" + escapeHtml(ctx.state.repair.label) + "</b>" + (ctx.state.repair.action ? " — " + escapeHtml(ctx.state.repair.action) : "") + "</span></aside>";
+    }
     if (scene.dialogue) html += renderDialogue(scene.dialogue);
     if (scene.danish) html += "<div class='danish-line' lang='da'>" + escapeHtml(scene.danish) + "</div>";
     if (scene.notice) html += "<aside class='notice'><strong>Notice</strong><span>" + escapeHtml(scene.notice) + "</span></aside>";
@@ -418,10 +475,15 @@
       },
       reset: function () {
         ctx.state = freshState(lesson);
+        ctx.state.index = sceneIndexFromHash(lesson);
+        ctx.state.repair = repairContextFromLocation(lesson);
+        if (ctx.state.repair) ctx.state.index = sceneIndexById(lesson, ctx.state.repair.sceneId);
         renderScene(ctx);
       }
     };
     ctx.state.index = sceneIndexFromHash(lesson);
+    ctx.state.repair = repairContextFromLocation(lesson);
+    if (ctx.state.repair) ctx.state.index = sceneIndexById(lesson, ctx.state.repair.sceneId);
 
     // Reset button
     var resetBtn = $("#reset-lesson");
@@ -441,7 +503,8 @@
   root.PlataLessonEngine = {
     run: run,
     registerRenderer: registerRenderer,
-    getSceneAttemptTags: sceneAttemptTags
+    getSceneAttemptTags: sceneAttemptTags,
+    getRepairContext: repairContextFromLocation
   };
 
 })(typeof window !== "undefined" ? window : globalThis);

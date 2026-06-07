@@ -52,7 +52,7 @@ const TRAINERS = [
   }
 ];
 
-const NON_DIAGNOSTIC_TAGS = new Set(["A0", "A1", "A2", "B1", "B2", "lesson"]);
+const NON_DIAGNOSTIC_TAGS = new Set(["A0", "A1", "A2", "B1", "B2", "lesson", "repair"]);
 let masteryCatalogCache = null;
 
 function $(sel) { return document.querySelector(sel); }
@@ -61,8 +61,11 @@ function escapeHtml(str) {
   return String(str || "").replace(/[&<>'"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': '&quot;' }[c]));
 }
 
-function sceneHref(path, sceneId) {
-  return sceneId ? `${path}#${encodeURIComponent(sceneId)}` : path;
+function sceneHref(path, sceneId, signalTag) {
+  if (!sceneId) return path;
+  if (!signalTag) return `${path}#${encodeURIComponent(sceneId)}`;
+  const separator = path.indexOf("?") === -1 ? "?" : "&";
+  return `${path}${separator}mode=repair&signal=${encodeURIComponent(signalTag)}#${encodeURIComponent(sceneId)}`;
 }
 
 function buildMasteryCatalog() {
@@ -105,7 +108,7 @@ function remediationFor(spec, trainer) {
     cta: ref.remediation.cta || "Review scene",
     action: ref.remediation.action || "",
     sceneId: ref.remediation.sceneId || "",
-    href: sceneHref(ref.trainerPath, ref.remediation.sceneId),
+    href: sceneHref(ref.trainerPath, ref.remediation.sceneId, spec.tag),
     trainerName: ref.trainerName,
     trainerIcon: ref.trainerIcon
   };

@@ -58,6 +58,7 @@ Individual checks:
 
 ```bash
 node scripts/smoke-kernel.js
+node scripts/smoke-lesson-engine.js
 node scripts/smoke-dashboard.js
 node scripts/validate-data.js
 node scripts/static-qa.js

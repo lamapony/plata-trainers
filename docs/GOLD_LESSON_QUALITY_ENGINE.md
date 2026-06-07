@@ -39,6 +39,7 @@ A gold lesson has five layers:
    - Every `masteryMap` entry declares a `remediation` action.
    - The action points to the source scene that can repair the weak signal.
    - Dashboard recommendations can therefore say what to do next, not only what went wrong.
+   - Repair links open `?mode=repair&signal=<tag>#<scene-id>`, so the lesson engine can render the repair focus and record repair attempts.
 
 ## Why This Matters
 
@@ -53,6 +54,7 @@ A gold lesson should be able to prove:
 - the correct and incorrect answers produce diagnostic feedback;
 - the recorded attempt includes the `passive-agency` mastery signal;
 - the weak signal points back to a concrete repair scene;
+- the repair scene opens in repair mode and records attempts with the repair mode;
 - future weak-tag analysis can show that this learner struggles with passive agency rather than B2 Danish in general.
 
 That is the difference between content and an inspectable learning system.
@@ -70,7 +72,9 @@ The gold lesson simulator is intentionally narrow. It does not replace browser t
 
 This gives maintainers a fast, no-dependency check that can run in GitHub Actions.
 
-Dashboard smoke tests cover the remediation surface: a weak mastery signal from a gold lesson must render a learner-facing repair action and a scene-level link such as `./lessons/lesson-b2-radiator/#official-reply-passive`.
+Dashboard smoke tests cover the remediation surface: a weak mastery signal from a gold lesson must render a learner-facing repair action and a repair-mode link such as `./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive`.
+
+The gold simulator also checks that every `masteryMap` remediation entry can be resolved by the lesson engine's repair-context parser.
 
 ## Current Scope
 

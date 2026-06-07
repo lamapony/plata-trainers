@@ -262,10 +262,12 @@ Good mastery tags:
 Gold `masteryMap` entries must include:
 - `label`: learner-facing signal name
 - `evidence`: what the lesson can prove about the learner
-- `remediation.sceneId`: scene to reopen from dashboard recommendations
+- `remediation.sceneId`: scene to reopen from dashboard recommendations; the scene must include the same `masteryTags` key
 - `remediation.cta`: compact dashboard call to action
 - `remediation.action`: specific repair instruction
 - `sourceRefs`: source notes behind the signal
+
+Dashboard remediation links use `?mode=repair&signal=<mastery-tag>#<scene-id>`. The lesson engine reads that URL as a repair session and records attempts with `mode: "repair"` while preserving the scene's mastery tags.
 
 Gold lessons with endings should define `simulation.paths`. Each path must include exactly one action per scene, an expected ending, and any expected social variables that make the consequence system meaningful. Completion scenes with grouped checks should define deterministic `simulation.completionAnswers` so QA can test both weak rejects and full accepts.
 

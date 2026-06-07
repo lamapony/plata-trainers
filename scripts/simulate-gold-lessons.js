@@ -248,12 +248,29 @@ function validateCompletionAnswerSpecs(lesson) {
   });
 }
 
+function validateRepairContexts(context, lesson) {
+  Object.entries(lesson.masteryMap).forEach(([tag, spec]) => {
+    const remediation = spec.remediation || {};
+    assert(remediation.sceneId, `${lesson.id}.masteryMap[${tag}]: missing remediation scene`);
+    context.location = {
+      pathname: `/lessons/${lesson.id}/`,
+      search: `?mode=repair&signal=${encodeURIComponent(tag)}`,
+      hash: `#${encodeURIComponent(remediation.sceneId)}`
+    };
+    const repair = context.PlataLessonEngine.getRepairContext(lesson);
+    assert(repair && repair.active, `${lesson.id}.masteryMap[${tag}]: repair context did not resolve`);
+    assert(repair.tag === tag, `${lesson.id}.masteryMap[${tag}]: expected repair tag ${tag}, got ${repair && repair.tag}`);
+    assert(repair.sceneId === remediation.sceneId, `${lesson.id}.masteryMap[${tag}]: expected repair scene ${remediation.sceneId}, got ${repair && repair.sceneId}`);
+  });
+}
+
 function simulateGoldLesson(context, lesson) {
   assert(lesson.qualityTier === "gold", `${lesson.id}: simulator only accepts gold lessons`);
   assert(lesson.masteryMap && typeof lesson.masteryMap === "object", `${lesson.id}: missing masteryMap`);
   assert(lesson.simulation && Array.isArray(lesson.simulation.paths) && lesson.simulation.paths.length > 0, `${lesson.id}: missing simulation.paths`);
 
   validateCompletionAnswerSpecs(lesson);
+  validateRepairContexts(context, lesson);
 
   const pathResults = lesson.simulation.paths.map(pathSpec => simulatePath(context, lesson, pathSpec));
   const exercisedSignals = new Set();

@@ -124,7 +124,7 @@ function validateGoldMasteryMap(lessonMeta, lesson) {
   if (!isGoldLesson(lesson)) return new Set();
   const map = lesson.masteryMap;
   const knownSources = new Set((lesson.sourceNotes || []).map(note => note.title));
-  const knownScenes = new Set((lesson.scenes || []).map(scene => scene.id));
+  const scenesById = new Map((lesson.scenes || []).map(scene => [scene.id, scene]));
   if (!map || typeof map !== "object" || Array.isArray(map)) {
     issue(`${lessonMeta.id}.masteryMap: gold lessons require a masteryMap object`);
     return new Set();
@@ -148,8 +148,10 @@ function validateGoldMasteryMap(lessonMeta, lesson) {
     } else {
       if (!nonEmptyString(spec.remediation.sceneId)) {
         issue(`${prefix}.remediation.sceneId: required non-empty string`);
-      } else if (!knownScenes.has(spec.remediation.sceneId)) {
+      } else if (!scenesById.has(spec.remediation.sceneId)) {
         issue(`${prefix}.remediation.sceneId: unknown scene "${spec.remediation.sceneId}"`);
+      } else if (!((scenesById.get(spec.remediation.sceneId).masteryTags || []).includes(key))) {
+        issue(`${prefix}.remediation.sceneId: scene "${spec.remediation.sceneId}" does not train mastery tag "${key}"`);
       }
       if (!nonEmptyString(spec.remediation.cta)) issue(`${prefix}.remediation.cta: required non-empty string`);
       if (!nonEmptyString(spec.remediation.action)) issue(`${prefix}.remediation.action: required non-empty string`);

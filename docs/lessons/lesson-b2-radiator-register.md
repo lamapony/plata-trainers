@@ -163,7 +163,7 @@ Gold lessons must have:
 - scene-level `learningGoal`;
 - valid `sourceRefs`;
 - valid scene `masteryTags`;
-- `masteryMap` remediation actions that point weak signals back to repair scenes;
+- `masteryMap` remediation actions that point weak signals back to repair scenes with the same `masteryTags`;
 - B2 `targetPhrases`;
 - unique `diagnostic` keys on choice options;
 - diagnostic feedback on B2 match pairs;
@@ -177,7 +177,9 @@ The gold simulator also checks that:
 - the `diplomatic`, `aggressive`, and `passive` paths reach their expected endings;
 - expected social variables match each path.
 
-Dashboard smoke tests also verify that a missed `passive-agency` signal renders a learner-facing repair action and links back to `#official-reply-passive`.
+Dashboard smoke tests also verify that a missed `passive-agency` signal renders a learner-facing repair action and links back to `?mode=repair&signal=passive-agency#official-reply-passive`.
+
+The lesson engine reads that URL as a repair session: it renders the repair focus in the scene and records attempts with `mode: "repair"`.
 
 Run:
 
