@@ -74,6 +74,163 @@ function unique(values) {
   return [...new Set(values.filter(Boolean))].sort();
 }
 
+function simulationPathsForScene(sceneId, simulationPaths) {
+  return simulationPaths
+    .filter(pathSpec => asArray(pathSpec.actions).some(action => action.sceneId === sceneId))
+    .map(pathSpec => pathSpec.id);
+}
+
+function diagnosticSummary(lesson, scene) {
+  if (scene.type === "choice") {
+    const options = asArray(scene.options);
+    return {
+      kind: "choice",
+      optionCount: options.length,
+      correctOptions: options.filter(option => option.correct).length,
+      incorrectOptions: options.filter(option => !option.correct).length,
+      diagnostics: unique(options.map(option => option.diagnostic)),
+      effectKeys: unique(options.flatMap(option => Object.keys(option.effects || {})))
+    };
+  }
+  if (scene.type === "match") {
+    const pairs = asArray(scene.pairs);
+    return {
+      kind: "match",
+      pairCount: pairs.length,
+      feedbackCount: pairs.filter(pair => pair.feedback).length,
+      pairIds: pairs.map(pair => pair.id).filter(Boolean)
+    };
+  }
+  if (scene.type === "completion") {
+    const answerSpec = lesson.simulation && lesson.simulation.completionAnswers && lesson.simulation.completionAnswers[scene.id];
+    return {
+      kind: "completion",
+      keywordGroups: asArray(scene.acceptKeywordGroups).map(group => ({
+        name: group.name || "required signal",
+        keywordCount: asArray(group.keywords).length
+      })),
+      simulationAccept: answerSpec && answerSpec.accept || "",
+      simulationRejects: answerSpec ? asArray(answerSpec.reject).length : 0
+    };
+  }
+  return { kind: scene.type || "unknown" };
+}
+
+function sceneChecks(lesson, scene, sourceTitles, masteryMap, simulationPaths) {
+  const sourceRefs = asArray(scene.sourceRefs);
+  const masteryTags = asArray(scene.masteryTags);
+  const simulatedBy = simulationPathsForScene(scene.id, simulationPaths);
+  const checks = [
+    {
+      key: "learning-goal",
+      label: "Goal",
+      pass: Boolean(scene.learningGoal)
+    },
+    {
+      key: "source-linked",
+      label: "Sources",
+      pass: sourceRefs.length > 0 && sourceRefs.every(ref => sourceTitles.has(ref))
+    },
+    {
+      key: "mastery-linked",
+      label: "Mastery",
+      pass: masteryTags.length > 0 && masteryTags.every(tag => masteryMap[tag])
+    },
+    {
+      key: "simulation-covered",
+      label: "Simulated",
+      pass: simulatedBy.length > 0
+    }
+  ];
+
+  if (scene.type === "choice") {
+    const diagnostics = asArray(scene.options).map(option => option.diagnostic).filter(Boolean);
+    checks.push({
+      key: "diagnostics",
+      label: "Diagnostics",
+      pass: diagnostics.length === asArray(scene.options).length && diagnostics.length === new Set(diagnostics).size
+    });
+  }
+  if (scene.type === "match") {
+    checks.push({
+      key: "pair-feedback",
+      label: "Feedback",
+      pass: asArray(scene.pairs).length > 0 && asArray(scene.pairs).every(pair => pair.feedback)
+    });
+  }
+  if (scene.type === "completion") {
+    const answerSpec = lesson.simulation && lesson.simulation.completionAnswers && lesson.simulation.completionAnswers[scene.id];
+    checks.push({
+      key: "completion-contract",
+      label: "Answer Spec",
+      pass: asArray(scene.acceptKeywordGroups).length >= 2 && Boolean(answerSpec && answerSpec.accept)
+    });
+  }
+
+  return checks;
+}
+
+function buildEvidenceMatrix(lesson, scenes, masteryMap, sourceTitles, simulationPaths, endings) {
+  const masteryEntries = Object.entries(masteryMap);
+  const sourceRows = asArray(lesson.sourceNotes).map(note => ({
+    title: note.title,
+    url: note.url,
+    supports: asArray(note.supports),
+    sceneRefs: scenes
+      .filter(scene => asArray(scene.sourceRefs).includes(note.title))
+      .map(scene => scene.id),
+    masteryRefs: masteryEntries
+      .filter(([, spec]) => asArray(spec.sourceRefs).includes(note.title))
+      .map(([key]) => key)
+  }));
+  const sceneRows = scenes.map(scene => {
+    const remediationFor = masteryEntries
+      .filter(([, spec]) => spec.remediation && spec.remediation.sceneId === scene.id)
+      .map(([key, spec]) => ({ key, label: spec.label || key }));
+    return {
+      id: scene.id,
+      type: scene.type || "unknown",
+      title: scene.title || scene.id,
+      learningGoal: scene.learningGoal || "",
+      sourceRefs: asArray(scene.sourceRefs),
+      masteryTags: asArray(scene.masteryTags),
+      remediationFor,
+      simulatedBy: simulationPathsForScene(scene.id, simulationPaths),
+      diagnostics: diagnosticSummary(lesson, scene),
+      checks: sceneChecks(lesson, scene, sourceTitles, masteryMap, simulationPaths)
+    };
+  });
+  const coveredEndings = new Set(simulationPaths.map(pathSpec => pathSpec.expectedEndingId).filter(Boolean));
+  const guarantees = [
+    {
+      key: "source-goal-mastery",
+      label: "Every scene links goal, source, and mastery",
+      pass: sceneRows.every(row => row.checks.filter(check => ["learning-goal", "source-linked", "mastery-linked"].includes(check.key)).every(check => check.pass))
+    },
+    {
+      key: "simulation-scene-coverage",
+      label: "Every scene is replayed by simulation",
+      pass: sceneRows.every(row => row.simulatedBy.length > 0)
+    },
+    {
+      key: "remediation-targets-trained-signal",
+      label: "Every remediation target trains its signal",
+      pass: masteryEntries.every(([key, spec]) => {
+        const remediation = spec.remediation || {};
+        const target = scenes.find(scene => scene.id === remediation.sceneId);
+        return target && asArray(target.masteryTags).includes(key);
+      })
+    },
+    {
+      key: "ending-coverage",
+      label: "Every declared ending is covered",
+      pass: endings.every(ending => coveredEndings.has(ending.id))
+    }
+  ];
+
+  return { guarantees, sceneRows, sourceRows };
+}
+
 function summarizeLesson(entry, catalogById) {
   const { lesson, globalName, dataPath } = entry;
   const scenes = asArray(lesson.scenes);
@@ -96,6 +253,13 @@ function summarizeLesson(entry, catalogById) {
       const spec = masteryMap[key] || {};
       const remediation = spec.remediation || {};
       if (!remediation.sceneId || !sceneById.has(remediation.sceneId)) issues.push(`mastery ${key} has invalid remediation scene`);
+      const remediationScene = sceneById.get(remediation.sceneId);
+      if (remediationScene && !asArray(remediationScene.masteryTags).includes(key)) {
+        issues.push(`mastery ${key} remediation scene does not train the signal`);
+      }
+      if (!scenes.some(scene => asArray(scene.masteryTags).includes(key))) {
+        issues.push(`mastery ${key} is not attached to any scene`);
+      }
       asArray(spec.sourceRefs).forEach(ref => {
         if (!sourceTitles.has(ref)) issues.push(`mastery ${key} references unknown source ${ref}`);
       });
@@ -114,6 +278,9 @@ function summarizeLesson(entry, catalogById) {
       }
       if (scene.type === "completion" && asArray(scene.acceptKeywordGroups).length < 2) {
         issues.push(`${scene.id} completion has fewer than two keyword groups`);
+      }
+      if (!simulationPathsForScene(scene.id, simulationPaths).length) {
+        issues.push(`${scene.id} is not covered by any simulation path`);
       }
     });
 
@@ -144,6 +311,9 @@ function summarizeLesson(entry, catalogById) {
     ...scenes.flatMap(scene => asArray(scene.sourceRefs)),
     ...masteryKeys.flatMap(key => asArray(masteryMap[key].sourceRefs))
   ]);
+  const evidenceMatrix = lesson.qualityTier === "gold"
+    ? buildEvidenceMatrix(lesson, scenes, masteryMap, sourceTitles, simulationPaths, endings)
+    : { guarantees: [], sceneRows: [], sourceRows: [] };
 
   return {
     id: lesson.id,
@@ -183,6 +353,7 @@ function summarizeLesson(entry, catalogById) {
       url: note.url,
       supports: asArray(note.supports)
     })),
+    evidenceMatrix,
     simulation: {
       paths: simulationPaths.map(pathSpec => ({
         id: pathSpec.id,
@@ -214,6 +385,7 @@ function buildQualityReport() {
     acc.simulationPaths += lesson.counts.simulationPaths;
     acc.simulatedAttempts += lesson.counts.simulatedAttempts;
     acc.endings += lesson.counts.endings;
+    acc.evidenceRows += lesson.evidenceMatrix.sceneRows.length;
     acc.issues += lesson.issues.length;
     return acc;
   }, {
@@ -224,6 +396,7 @@ function buildQualityReport() {
     simulationPaths: 0,
     simulatedAttempts: 0,
     endings: 0,
+    evidenceRows: 0,
     issues: 0
   });
 

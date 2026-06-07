@@ -67,7 +67,7 @@ cd .dist/pages
 python3 -m http.server 8000
 ```
 
-The Pages artifact includes `quality.html` and `reports/quality.json`. The JSON report is generated from lesson data during the build; do not edit it by hand.
+The Pages artifact includes `quality.html` and `reports/quality.json`. The JSON report is generated from lesson data during the build; do not edit it by hand. For gold lessons, the report also publishes a scene audit matrix showing the goal, source references, mastery tags, remediation targets, diagnostics, and simulation paths behind each pass.
 
 ## Data conventions
 

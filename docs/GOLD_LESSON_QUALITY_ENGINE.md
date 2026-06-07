@@ -88,8 +88,11 @@ The report is built from lesson data during `npm run build:pages`, not edited by
 - gold lesson count;
 - scene, source, mastery, ending, and simulation path counts;
 - per-lesson mastery signals and remediation targets;
+- a scene audit matrix linking each gold scene to its learning goal, source references, mastery tags, diagnostics, remediation targets, and simulation paths;
 - simulation path coverage;
 - report issues, which are build-blocking.
+
+The report fails the build if a gold scene is not covered by a simulation path, or if a remediation target does not train the mastery signal it claims to repair.
 
 `npm run check:quality-report` builds the JSON report and fails if the report detects contract issues. `npm run check:quality-page` runs the public page renderer against the generated report object.
 

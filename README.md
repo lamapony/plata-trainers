@@ -21,7 +21,7 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Private by default:** browser LocalStorage only; no accounts, backend, analytics, or tracking.
 - **Contributor-friendly data:** exercises are plain JavaScript data files with validation scripts and narrative lesson schemas.
 - **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals and deterministic simulation.
-- **Public quality report:** Pages publishes a generated report of gold lessons, mastery signals, simulations, endings, and source coverage.
+- **Public quality report:** Pages publishes a generated report of gold lessons, mastery signals, simulations, endings, source coverage, and scene-level evidence rows.
 - **Static and forkable:** every trainer can run from `index.html`; GitHub Pages deploys a checked static artifact.
 
 ## Available trainers

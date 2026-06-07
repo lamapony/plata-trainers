@@ -37,6 +37,7 @@ async function run() {
     "#quality-summary",
     "#quality-generated",
     "#quality-metrics",
+    "#quality-evidence",
     "#quality-lessons",
     "#quality-json-link"
   ].forEach(selector => {
@@ -72,6 +73,10 @@ async function run() {
   assert(elements["#quality-status"].textContent === "Passing", "quality page did not render passing status");
   assert(elements["#quality-summary"].innerHTML.includes("Gold lessons"), "quality page did not render summary");
   assert(elements["#quality-metrics"].innerHTML.includes("Simulation Paths"), "quality page did not render metrics");
+  assert(elements["#quality-metrics"].innerHTML.includes("Evidence Rows"), "quality page did not render evidence metric");
+  assert(elements["#quality-evidence"].innerHTML.includes("official-reply-passive"), "quality page did not render scene evidence rows");
+  assert(elements["#quality-evidence"].innerHTML.includes("Every scene is replayed by simulation"), "quality page did not render evidence guarantees");
+  assert(elements["#quality-evidence"].innerHTML.includes("ok Sources"), "quality page did not render scene check labels");
   assert(elements["#quality-lessons"].innerHTML.includes("lesson-b2-radiator-register"), "quality page did not render radiator lesson");
   assert(elements["#quality-lessons"].innerHTML.includes("lesson-b2-job-followup"), "quality page did not render job lesson");
   assert(elements["#quality-json-link"].href === "./reports/quality.json", "quality JSON link was not enabled");

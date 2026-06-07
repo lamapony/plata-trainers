@@ -20,6 +20,21 @@
     "</article>";
   }
 
+  function chip(value, extraClass) {
+    return "<span class=\"quality-chip " + escapeHtml(extraClass || "") + "\">" + escapeHtml(value) + "</span>";
+  }
+
+  function chipList(values, fallback, extraClass) {
+    if (!values || !values.length) return chip(fallback, extraClass);
+    return values.map(function (value) { return chip(value, extraClass); }).join("");
+  }
+
+  function checkChip(check) {
+    return "<span class=\"quality-check " + (check.pass ? "pass" : "fail") + "\">" +
+      escapeHtml(check.pass ? "ok " : "fail ") + escapeHtml(check.label) +
+    "</span>";
+  }
+
   function renderSummary(report) {
     var jsonLink = $("#quality-json-link");
     if (jsonLink) {
@@ -48,8 +63,72 @@
       metric("Simulation Paths", report.totals.simulationPaths, "Deterministic paths that cover outcomes and social variables."),
       metric("Simulated Attempts", report.totals.simulatedAttempts, "Attempt events replayed by gold lesson simulations."),
       metric("Endings", report.totals.endings, "Declared consequence outcomes covered by simulation paths."),
+      metric("Evidence Rows", report.totals.evidenceRows, "Scene-level audit rows linking goals, sources, mastery, diagnostics, remediation, and simulations."),
       metric("Report Issues", report.totals.issues, "Quality report issues are build-blocking.")
     ].join("");
+  }
+
+  function diagnosticText(row) {
+    var diagnostics = row.diagnostics || {};
+    if (diagnostics.kind === "choice") {
+      return diagnostics.optionCount + " options · " + diagnostics.correctOptions + " correct · " + diagnostics.diagnostics.length + " diagnostics";
+    }
+    if (diagnostics.kind === "match") {
+      return diagnostics.pairCount + " pairs · " + diagnostics.feedbackCount + " feedback notes";
+    }
+    if (diagnostics.kind === "completion") {
+      return diagnostics.keywordGroups.length + " keyword groups · " + diagnostics.simulationRejects + " reject probes";
+    }
+    return diagnostics.kind || row.type;
+  }
+
+  function renderEvidenceRow(row) {
+    var remediation = (row.remediationFor || []).map(function (signal) { return signal.key; });
+    return "<div class=\"quality-evidence-row\">" +
+      "<div class=\"quality-evidence-main\">" +
+        "<div class=\"quality-card-head\">" +
+          "<span class=\"quality-key\">" + escapeHtml(row.type) + "</span>" +
+          "<span class=\"quality-state\">" + escapeHtml(diagnosticText(row)) + "</span>" +
+        "</div>" +
+        "<h4>" + escapeHtml(row.title || row.id) + "</h4>" +
+        "<p class=\"quality-path\">" + escapeHtml(row.id) + "</p>" +
+        "<p>" + escapeHtml(row.learningGoal || "Missing learning goal") + "</p>" +
+      "</div>" +
+      "<div class=\"quality-evidence-meta\">" +
+        "<div><strong>Sources</strong><span>" + chipList(row.sourceRefs || [], "missing", "") + "</span></div>" +
+        "<div><strong>Mastery</strong><span>" + chipList(row.masteryTags || [], "missing", "mastery") + "</span></div>" +
+        "<div><strong>Simulation</strong><span>" + chipList(row.simulatedBy || [], "not covered", "") + "</span></div>" +
+        "<div><strong>Remediation</strong><span>" + chipList(remediation, "not a repair target", "mastery") + "</span></div>" +
+        "<div class=\"quality-evidence-checks\"><strong>Checks</strong><span>" + (row.checks || []).map(checkChip).join("") + "</span></div>" +
+      "</div>" +
+    "</div>";
+  }
+
+  function renderEvidenceLesson(lesson) {
+    var matrix = lesson.evidenceMatrix || { guarantees: [], sceneRows: [] };
+    if (!matrix.sceneRows.length) return "";
+    return "<article class=\"quality-evidence-lesson\">" +
+      "<div class=\"quality-card-head\">" +
+        "<div>" +
+          "<span class=\"quality-key\">" + escapeHtml(lesson.id) + "</span>" +
+          "<h3>" + escapeHtml(lesson.title || lesson.id) + "</h3>" +
+        "</div>" +
+        "<span class=\"quality-state\">" + escapeHtml(matrix.sceneRows.length) + " rows</span>" +
+      "</div>" +
+      "<div class=\"quality-guarantees\">" +
+        matrix.guarantees.map(function (guarantee) {
+          return "<span class=\"quality-check " + (guarantee.pass ? "pass" : "fail") + "\">" + escapeHtml(guarantee.label) + "</span>";
+        }).join("") +
+      "</div>" +
+      "<div class=\"quality-evidence-rows\">" + matrix.sceneRows.map(renderEvidenceRow).join("") + "</div>" +
+    "</article>";
+  }
+
+  function renderEvidence(report) {
+    $("#quality-evidence").innerHTML = report.lessons
+      .filter(function (lesson) { return lesson.qualityTier === "gold"; })
+      .map(renderEvidenceLesson)
+      .join("");
   }
 
   function renderLesson(lesson) {
@@ -94,6 +173,7 @@
     $("#quality-summary").innerHTML = "<li><span>Report</span><strong>failed</strong></li>";
     $("#quality-generated").textContent = error.message || "Could not load reports/quality.json";
     $("#quality-metrics").innerHTML = metric("Report", "missing", "Run npm run build:pages to generate reports/quality.json.");
+    $("#quality-evidence").innerHTML = "";
   }
 
   fetch("./reports/quality.json", { cache: "no-store" })
@@ -104,6 +184,7 @@
     .then(function (report) {
       renderSummary(report);
       renderMetrics(report);
+      renderEvidence(report);
       renderLessons(report);
     })
     .catch(renderError);
