@@ -7,6 +7,7 @@ const vm = require("vm");
 
 const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
+const nextStepSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-next-step.js"), "utf8");
 const engineSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-lesson-engine.js"), "utf8");
 
 function assert(condition, message) {
@@ -246,6 +247,7 @@ function loadRuntime(lesson, locationOverrides) {
     hash: ""
   }, locationOverrides || {}));
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
+  vm.runInContext(nextStepSource, env.context, { filename: "shared/plata-next-step.js" });
   vm.runInContext(engineSource, env.context, { filename: "shared/plata-lesson-engine.js" });
   env.lesson = lesson;
   env.context.PlataLessonEngine.run(env.lesson);
@@ -355,6 +357,10 @@ function assertRuntimePath(lesson, pathSpec) {
   const expectedWeak = (pathSpec.expectedWeakMastery || []).slice().sort();
   const actualWeak = weakMastery(env, state);
   assert(actualWeak.join(",") === expectedWeak.join(","), `${pathSpec.id}: expected weak mastery [${expectedWeak.join(", ")}], got [${actualWeak.join(", ")}]`);
+  assert(/next-step-card/.test(env.elements["#scene"].innerHTML), `${pathSpec.id}: completion should render a next-step recommendation`);
+  if (expectedWeak.length) {
+    assert(/\?mode=repair&amp;signal=/.test(env.elements["#scene"].innerHTML), `${pathSpec.id}: weak mastery should recommend repair mode`);
+  }
 }
 
 function runRepairAttemptSmoke(lesson) {

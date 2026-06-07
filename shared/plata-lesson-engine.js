@@ -460,12 +460,27 @@
       html += "<p class='narrative'>" + escapeHtml(lesson.completeText || "The lesson is finished. Each scene taught one real-world pattern.") + "</p>";
     }
 
+    if (root.PlataNextStep && root.PlataNextStep.lesson && root.PlataNextStep.render) {
+      html += root.PlataNextStep.render(root.PlataNextStep.lesson({
+        lesson: lesson,
+        state: ctx.tracker && ctx.tracker.state,
+        rootPrefix: "../../"
+      }));
+    }
+
     html += "<div class='lesson-actions'><a class='primary link-button' href='../../'>Back to trainers</a><button class='ghost' id='again' type='button'>Run again</button></div>";
     ctx.sceneEl.innerHTML = html;
 
     $("#again").addEventListener("click", function () {
       ctx.reset();
     });
+    var nextAgain = ctx.sceneEl.querySelector && ctx.sceneEl.querySelector(".next-step-card a[href='#again']");
+    if (nextAgain) {
+      nextAgain.addEventListener("click", function (event) {
+        event.preventDefault();
+        ctx.reset();
+      });
+    }
   }
 
   /* ---- main render ---- */

@@ -44,6 +44,7 @@
     sumTotal: $("sum-total"),
     sumAccuracy: $("sum-accuracy"),
     sumMistakes: $("sum-mistakes"),
+    nextStep: $("next-step"),
     againBtn: $("again-btn"),
     changeDirBtn: $("change-dir-btn"),
     exportBtn: $("export-btn"),
@@ -191,7 +192,25 @@
         els.sumMistakes.appendChild(li);
       }
     }
+    renderNextStep();
     renderStats();
+  }
+
+  function renderNextStep() {
+    if (!els.nextStep || !window.PlataNextStep) return;
+    els.nextStep.innerHTML = window.PlataNextStep.render(window.PlataNextStep.drill({
+      trainerId: TRAINER_ID,
+      state,
+      sessionResults,
+      rootPrefix: "../"
+    }));
+    const againLink = els.nextStep.querySelector("a[href='#again-btn']");
+    if (againLink) {
+      againLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        startNewSession();
+      });
+    }
   }
 
   function escapeHtml(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
@@ -205,6 +224,7 @@
   function startNewSession() {
     session = buildSession().map(buildPrompt);
     sessionPos = 0; sessionResults = [];
+    if (els.nextStep) els.nextStep.innerHTML = "";
     els.summaryCard.classList.add("hidden");
     els.drillCard.classList.remove("hidden");
     state.meta.lastSessionDate = new Date().toISOString().slice(0, 10);

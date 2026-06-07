@@ -528,6 +528,7 @@ function renderIndex(options) {
   </main>
 
   <script src="../../shared/plata-kernel.js"></script>
+  <script src="../../shared/plata-next-step.js"></script>
   <script src="../../shared/plata-lesson-engine.js"></script>
   <script src="./data.js"></script>
   <script src="./app.js"></script>

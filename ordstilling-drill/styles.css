@@ -166,6 +166,46 @@ body {
 .summary-mistakes li .given { color: var(--bad); text-decoration: line-through; }
 .summary-mistakes li .right { color: var(--good); margin-left: 8px; }
 .summary-mistakes li.empty { color: var(--muted); font-style: italic; font-family: var(--body-stack); }
+.next-step-slot { display: block; }
+.next-step-card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elev);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.next-step-card.repeat { border-left-color: var(--bad); }
+.next-step-card.enough { border-left-color: var(--good); }
+.next-step-card .eyebrow {
+  margin: 0;
+  font-family: var(--mono-stack);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.next-step-card h3 {
+  margin: 0;
+  font-family: var(--display-stack);
+  font-size: 22px;
+  line-height: 1.14;
+  color: var(--fg);
+}
+.next-step-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.next-step-card .next-step-meta {
+  font-family: var(--mono-stack);
+  font-size: 12px;
+  color: var(--accent);
+}
+.next-step-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+.next-step-card .link-button { text-decoration: none; }
 .summary-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .ftr {

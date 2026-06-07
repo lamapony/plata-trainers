@@ -47,6 +47,7 @@
     sumTotal: $("sum-total"),
     sumAccuracy: $("sum-accuracy"),
     sumMistakes: $("sum-mistakes"),
+    nextStep: $("next-step"),
     againBtn: $("again-btn"),
     changeCatBtn: $("change-cat-btn"),
     exportBtn: $("export-btn"),
@@ -235,7 +236,25 @@
         els.sumMistakes.appendChild(li);
       }
     }
+    renderNextStep();
     renderStats();
+  }
+
+  function renderNextStep() {
+    if (!els.nextStep || !window.PlataNextStep) return;
+    els.nextStep.innerHTML = window.PlataNextStep.render(window.PlataNextStep.drill({
+      trainerId: TRAINER_ID,
+      state,
+      sessionResults,
+      rootPrefix: "../"
+    }));
+    const againLink = els.nextStep.querySelector("a[href='#again-btn']");
+    if (againLink) {
+      againLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        startNewSession();
+      });
+    }
   }
 
   function escapeHtml(s) {
@@ -253,6 +272,7 @@
     session = buildSession();
     sessionPos = 0;
     sessionResults = [];
+    if (els.nextStep) els.nextStep.innerHTML = "";
     els.summaryCard.classList.add("hidden");
     els.drillCard.classList.remove("hidden");
     state.meta.lastSessionDate = new Date().toISOString().slice(0, 10);
