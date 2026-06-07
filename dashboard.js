@@ -1,57 +1,5 @@
 /* Platå Dashboard — unified progress view */
 
-const TRAINERS = [
-  {
-    id: "bojning",
-    name: "Bøjning drill",
-    type: "drill",
-    path: "./bojning-drill/",
-    description: "Verb tenses + noun inflection",
-    icon: "📝"
-  },
-  {
-    id: "ordstilling",
-    name: "Ordstilling drill",
-    type: "drill",
-    path: "./ordstilling-drill/",
-    description: "V2, inversion, ledsætninger",
-    icon: "🔀"
-  },
-  {
-    id: "vocab",
-    name: "Vocab SR",
-    type: "drill",
-    path: "./vocab-sr/",
-    description: "DA ↔ RU spaced repetition",
-    icon: "🗂️"
-  },
-  {
-    id: "lesson-01-arrival",
-    name: "Lesson 01: First Morning",
-    type: "lesson",
-    path: "./lessons/lesson-01/",
-    description: "Narrative A0/A1 onboarding",
-    icon: "🌅"
-  },
-  {
-    id: "lesson-b2-radiator-register",
-    name: "B2: Register & Particles",
-    type: "lesson",
-    path: "./lessons/lesson-b2-radiator/",
-    lessonGlobal: "PLATA_LESSON_B2_RADIATOR",
-    description: "Complaints, tone, modal particles",
-    icon: "⚖️"
-  },
-  {
-    id: "lesson-b2-job-followup",
-    name: "B2: Job Follow-up",
-    type: "lesson",
-    path: "./lessons/lesson-b2-job-followup/",
-    description: "Post-interview email, LinkedIn, professional tone",
-    icon: "💼"
-  }
-];
-
 const NON_DIAGNOSTIC_TAGS = new Set(["A0", "A1", "A2", "B1", "B2", "lesson", "repair"]);
 let masteryCatalogCache = null;
 
@@ -59,6 +7,27 @@ function $(sel) { return document.querySelector(sel); }
 function $$(sel) { return document.querySelectorAll(sel); }
 function escapeHtml(str) {
   return String(str || "").replace(/[&<>'"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': '&quot;' }[c]));
+}
+
+function trainers() {
+  return window.PlataCatalog && Array.isArray(window.PlataCatalog.trainers) ? window.PlataCatalog.trainers : [];
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error(`Failed to load ${src}`));
+    document.head.appendChild(script);
+  });
+}
+
+function loadLessonData() {
+  const pending = trainers()
+    .filter(trainer => trainer.lessonGlobal && trainer.lessonDataPath && !window[trainer.lessonGlobal])
+    .map(trainer => loadScript(trainer.lessonDataPath));
+  return pending.length ? Promise.all(pending) : null;
 }
 
 function sceneHref(path, sceneId, signalTag) {
@@ -71,7 +40,7 @@ function sceneHref(path, sceneId, signalTag) {
 function buildMasteryCatalog() {
   if (masteryCatalogCache) return masteryCatalogCache;
   const catalog = {};
-  TRAINERS.forEach(trainer => {
+  trainers().forEach(trainer => {
     const lesson = trainer.lessonGlobal ? window[trainer.lessonGlobal] : null;
     if (!lesson || !lesson.masteryMap) return;
     Object.entries(lesson.masteryMap).forEach(([tag, spec]) => {
@@ -184,7 +153,7 @@ function renderTrainerCards() {
   if (!container) return;
   container.innerHTML = "";
 
-  TRAINERS.forEach(trainer => {
+  trainers().forEach(trainer => {
     const state = loadTrainerState(trainer.id);
     const stats = computeStats(state, trainer);
     const hasData = stats && stats.total > 0;
@@ -218,7 +187,7 @@ function renderDueCards() {
   container.innerHTML = "";
 
   // Find trainers with most weak tags or longest gap since last session
-  const due = TRAINERS.map(trainer => {
+  const due = trainers().map(trainer => {
     const state = loadTrainerState(trainer.id);
     const stats = computeStats(state, trainer);
     if (!stats) return null;
@@ -296,7 +265,7 @@ function renderMasteryList() {
   if (!container) return;
 
   const signalMap = new Map();
-  TRAINERS.forEach(trainer => {
+  trainers().forEach(trainer => {
     const state = loadTrainerState(trainer.id);
     const stats = computeStats(state, trainer);
     if (!stats) return;
@@ -365,7 +334,7 @@ function renderWeakList() {
 
   // Aggregate weak tags across all trainers
   const tagMap = new Map();
-  TRAINERS.forEach(trainer => {
+  trainers().forEach(trainer => {
     const state = loadTrainerState(trainer.id);
     const stats = computeStats(state, trainer);
     if (!stats) return;
@@ -403,7 +372,7 @@ function renderWeakList() {
 // Data tools
 function exportAll() {
   const all = {};
-  TRAINERS.forEach(trainer => {
+  trainers().forEach(trainer => {
     const state = loadTrainerState(trainer.id);
     if (state) all[trainer.id] = state;
   });
@@ -463,13 +432,25 @@ function importAll() {
   };
 }
 
-// Init
-function init() {
+function renderDashboard() {
+  masteryCatalogCache = null;
   renderTrainerCards();
   renderDueCards();
   renderMasteryList();
   renderWeakList();
+}
 
+// Init
+function init() {
+  const ready = loadLessonData();
+  if (ready) {
+    ready.then(renderDashboard).catch(err => {
+      console.warn("Lesson data catalog load failed", err);
+      renderDashboard();
+    });
+  } else {
+    renderDashboard();
+  }
   $("#export-all")?.addEventListener("click", exportAll);
   $("#import-trigger")?.addEventListener("click", importAll);
 }

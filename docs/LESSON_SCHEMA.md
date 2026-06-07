@@ -298,7 +298,7 @@ All lessons inherit the headpage-v2 design system:
    - `eyebrow` level tag (A2/B1/B2)
    - Script includes (should already be correct)
 4. Copy `styles.css` from `lesson-01/` (or `lesson-b2-radiator/` for variable support)
-5. Add lesson card to `trainers-repo/index.html`
+5. Add the lesson entry to `shared/plata-catalog.js`
 6. Add row to `trainers-repo/README.md` table
 7. Run `npm run check`
 

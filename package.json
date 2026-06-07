@@ -5,9 +5,10 @@
   "description": "Open-source static Danish practice trainers for A2-B2 learners who want to overcome the plateau.",
   "license": "MIT",
   "scripts": {
-    "check": "npm run check:syntax && npm run check:kernel && npm run check:lesson-engine && npm run check:dashboard && npm run check:data && npm run check:static && npm run check:lessons && npm run check:gold-lessons",
+    "check": "npm run check:syntax && npm run check:kernel && npm run check:catalog && npm run check:lesson-engine && npm run check:dashboard && npm run check:data && npm run check:static && npm run check:lessons && npm run check:gold-lessons",
     "check:syntax": "node scripts/check-syntax.js",
     "check:kernel": "node scripts/smoke-kernel.js",
+    "check:catalog": "node scripts/validate-catalog.js",
     "check:lesson-engine": "node scripts/smoke-lesson-engine.js",
     "check:dashboard": "node scripts/smoke-dashboard.js",
     "check:data": "node scripts/validate-data.js",

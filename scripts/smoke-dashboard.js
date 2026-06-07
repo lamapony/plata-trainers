@@ -7,6 +7,7 @@ const vm = require("vm");
 
 const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
+const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catalog.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
 
@@ -31,8 +32,9 @@ function makeElement(tagName) {
   };
 }
 
-function makeContext(initialStorage) {
+function makeContext(initialStorage, options) {
   const storage = Object.assign({}, initialStorage || {});
+  options = options || {};
   const elements = {
     "#trainer-cards": makeElement("div"),
     "#due-cards": makeElement("div"),
@@ -62,6 +64,7 @@ function makeContext(initialStorage) {
     FileReader: function FileReader() {},
     document: {
       readyState: "complete",
+      head: null,
       querySelector(selector) {
         return elements[selector] || null;
       },
@@ -95,6 +98,17 @@ function makeContext(initialStorage) {
       return 1;
     }
   };
+  context.document.head = makeElement("head");
+  context.document.head.appendChild = function appendChild(child) {
+    this.children.push(child);
+    if (options.dynamicLessonScripts && child.src === "./lessons/lesson-b2-radiator/data.js") {
+      vm.runInContext(radiatorLessonSource, context, { filename: "lessons/lesson-b2-radiator/data.js" });
+      if (typeof child.onload === "function") child.onload();
+      return child;
+    }
+    if (typeof child.onerror === "function") child.onerror();
+    return child;
+  };
 
   context.window = context;
   context.globalThis = context;
@@ -104,6 +118,7 @@ function makeContext(initialStorage) {
 
 function loadKernelAndDashboard(env) {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
+  vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
@@ -144,9 +159,11 @@ function runSeededMasterySmoke() {
   const env = makeContext();
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   seedWeakMasteryState(env);
+  vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
+  assert(env.context.PlataCatalog.trainers.length === 6, "dashboard reads trainer catalog");
   assert(/Read passive agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders weak mastery label");
   assert(/passive-agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders mastery tag key");
   assert(/registration\/process language/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders lesson-owned mastery evidence");
@@ -158,13 +175,31 @@ function runSeededMasterySmoke() {
   assert(/Open repair scene/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation opens the repair scene");
 }
 
-function run() {
+async function runDynamicCatalogSmoke() {
+  const env = makeContext(null, { dynamicLessonScripts: true });
+  vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
+  seedWeakMasteryState(env);
+  vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
+  await Promise.resolve();
+  await Promise.resolve();
+
+  assert(env.context.PLATA_LESSON_B2_RADIATOR, "dashboard loads gold lesson data from catalog");
+  assert(/Read passive agency/.test(env.elements["#mastery-list"].innerHTML), "dynamic catalog load renders mastery diagnostics");
+}
+
+async function run() {
   runEmptyDashboardSmoke();
   runSeededMasterySmoke();
+  await runDynamicCatalogSmoke();
 
   console.log("ok - dashboard renders without runtime errors");
   console.log("ok - dashboard renders mastery signal diagnostics");
   console.log("ok - dashboard renders mastery repair paths");
+  console.log("ok - dashboard loads lesson data from catalog");
 }
 
-run();
+run().catch(err => {
+  console.error(err && err.stack ? err.stack : err);
+  process.exit(1);
+});
