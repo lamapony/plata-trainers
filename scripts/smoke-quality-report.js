@@ -81,7 +81,8 @@ async function run() {
   assert(elements["#quality-evidence"].innerHTML.includes("ok Sources"), "quality page did not render scene check labels");
   assert(elements["#quality-lessons"].innerHTML.includes("lesson-b2-radiator-register"), "quality page did not render radiator lesson");
   assert(elements["#quality-lessons"].innerHTML.includes("lesson-b2-job-followup"), "quality page did not render job lesson");
-  assert(elements["#quality-lessons"].innerHTML.includes("official-reply-passive (prompt)"), "quality page did not render comic panel prompt status");
+  assert(elements["#quality-lessons"].innerHTML.includes("official-reply-passive"), "quality page did not render generated comic panel status");
+  assert(elements["#quality-lessons"].innerHTML.includes("group-chat-particles (prompt)"), "quality page did not render comic panel prompt status");
   assert(elements["#quality-json-link"].href === "./reports/quality.json", "quality JSON link was not enabled");
   assert(!Object.prototype.hasOwnProperty.call(elements["#quality-json-link"].attributes, "aria-disabled"), "quality JSON link remains disabled");
 

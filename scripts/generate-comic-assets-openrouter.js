@@ -85,6 +85,7 @@ function collectJobs(report, options = {}) {
       panelId: panel.id,
       sceneId: panel.sceneId,
       model: options.model,
+      maxTokens: options.maxTokens,
       aspectRatio: lesson.comicStoryboard.aspectRatio || "16:9",
       imageSize: lesson.comicStoryboard.imageSize || "1K",
       assetPath: normalizeAssetPath(workspaceAssetPath(lesson, panel)),
@@ -124,6 +125,7 @@ async function generateJob(job, apiKey) {
       model: job.model,
       messages: [{ role: "user", content: job.prompt }],
       modalities: ["image", "text"],
+      max_tokens: job.maxTokens,
       image_config: {
         aspect_ratio: job.aspectRatio,
         image_size: job.imageSize
@@ -148,13 +150,19 @@ async function generateJob(job, apiKey) {
 async function main() {
   const dryRun = hasFlag("--dry-run");
   const model = argValue("--model") || "google/gemini-2.5-flash-image";
+  const maxTokens = Number.parseInt(argValue("--max-tokens") || "256", 10);
+  if (!Number.isInteger(maxTokens) || maxTokens < 1) {
+    console.error("--max-tokens must be a positive integer");
+    process.exit(1);
+  }
   const out = path.resolve(repoRoot, argValue("--out") || defaultOut);
   const file = argValue("--file");
   const report = file ? { lessons: [loadLessonFile(file)] } : buildQualityReport();
   const jobs = collectJobs(report, {
     lesson: argValue("--lesson"),
     panel: argValue("--panel"),
-    model
+    model,
+    maxTokens
   });
   if (!jobs.length) {
     console.error("no comic storyboard jobs matched the request");
