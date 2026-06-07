@@ -39,6 +39,7 @@ That runs:
 - `scripts/simulate-gold-lessons.js` — deterministic gold lesson simulation paths.
 - `scripts/smoke-lesson-engine.js` — runtime replay through the real shared lesson engine.
 - `scripts/smoke-gold-scaffold.js` — proves the gold lesson scaffold still generates a valid lesson.
+- `scripts/build-quality-report.js` and `scripts/smoke-quality-report.js` — public gold quality report generation and rendering.
 - `scripts/build-pages-artifact.js` via `npm run check:pages` — production Pages artifact whitelist and link check.
 
 For browser interaction smoke tests, serve locally:
@@ -65,6 +66,8 @@ npm run check:pages
 cd .dist/pages
 python3 -m http.server 8000
 ```
+
+The Pages artifact includes `quality.html` and `reports/quality.json`. The JSON report is generated from lesson data during the build; do not edit it by hand.
 
 ## Data conventions
 

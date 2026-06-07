@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Quality Report · Platå</title>
+  <meta name="description" content="Public quality report for Platå Trainers gold lessons, simulation paths, mastery signals, endings, and source coverage." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="site-shell">
+    <header class="hero">
+      <nav class="topnav" aria-label="Main navigation">
+        <a class="brand" href="./"><span>⛰</span> platå</a>
+        <div class="navlinks">
+          <a href="./">Trainers</a>
+          <a href="./dashboard.html">Dashboard</a>
+          <a href="#" aria-current="page">Quality</a>
+          <a href="https://github.com/lamapony/plata-trainers">GitHub</a>
+        </div>
+      </nav>
+
+      <section class="hero-grid">
+        <div>
+          <p class="eyebrow">Inspectable learning system</p>
+          <h1>Quality report</h1>
+          <p class="lead">Gold lessons are treated as testable learning artifacts. This report is generated during the Pages build from lesson data, catalog wiring, mastery maps, and deterministic simulations.</p>
+          <div class="hero-actions">
+            <a id="quality-json-link" class="btn primary" href="#" aria-disabled="true">Open JSON report</a>
+            <a class="btn" href="https://github.com/lamapony/plata-trainers/actions/workflows/pages.yml">Pages workflow</a>
+          </div>
+        </div>
+        <aside class="status-card" aria-label="Report status">
+          <h2 id="quality-status">Loading</h2>
+          <ul id="quality-summary"></ul>
+          <p id="quality-generated">Reading generated report...</p>
+        </aside>
+      </section>
+    </header>
+
+    <section class="section" aria-labelledby="metrics-title">
+      <div class="section-head">
+        <p class="eyebrow">Coverage</p>
+        <h2 id="metrics-title">Gold contract metrics</h2>
+      </div>
+      <div id="quality-metrics" class="quality-metrics"></div>
+    </section>
+
+    <section class="section" aria-labelledby="lessons-title">
+      <div class="section-head">
+        <p class="eyebrow">Lessons</p>
+        <h2 id="lessons-title">Lesson reports</h2>
+      </div>
+      <div id="quality-lessons" class="quality-lessons"></div>
+    </section>
+
+    <footer class="footer">
+      <p>MIT code · built by <a href="https://dmitrii.dk">Dmitrii Babinov</a> · part of the Platå Danish-learning project.</p>
+    </footer>
+  </main>
+
+  <script src="./quality.js"></script>
+</body>
+</html>

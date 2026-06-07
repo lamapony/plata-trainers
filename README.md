@@ -5,6 +5,7 @@
 
 Open-source Danish plateau-breaker for Danish learners who are no longer starting from zero but still feel stuck. Static HTML/JS, no app build step, no backend.
 Live demo: [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/).
+Public quality report: [lamapony.github.io/plata-trainers/quality.html](https://lamapony.github.io/plata-trainers/quality.html).
 
 Platå does not try to teach Danish from the beginning. It helps learners overcome the plateau: the point where they know enough Danish to recognize the language, but not enough to act fluently under social pressure.
 
@@ -20,6 +21,7 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Private by default:** browser LocalStorage only; no accounts, backend, analytics, or tracking.
 - **Contributor-friendly data:** exercises are plain JavaScript data files with validation scripts and narrative lesson schemas.
 - **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals and deterministic simulation.
+- **Public quality report:** Pages publishes a generated report of gold lessons, mastery signals, simulations, endings, and source coverage.
 - **Static and forkable:** every trainer can run from `index.html`; GitHub Pages deploys a checked static artifact.
 
 ## Available trainers
@@ -60,6 +62,7 @@ Production Pages artifact:
 ```bash
 npm run build:pages
 npm run check:pages
+npm run check:quality-report
 ```
 
 Gold lesson scaffold:
@@ -82,6 +85,7 @@ node scripts/check-syntax.js
 node scripts/validate-lesson.js
 node scripts/simulate-gold-lessons.js
 node scripts/smoke-gold-scaffold.js
+node scripts/smoke-quality-report.js
 npm run check:pages
 ```
 

@@ -78,6 +78,21 @@ The gold simulator also checks that every `masteryMap` remediation entry can be 
 
 The lesson-engine smoke test goes one layer closer to production: it replays the declared gold simulation paths through the real `PlataLessonEngine` renderers and event handlers using a no-dependency fake DOM, then checks the LocalStorage attempts that the learner would actually produce.
 
+## Public Report
+
+Pages publishes a generated report at `quality.html`, backed by `reports/quality.json`.
+
+The report is built from lesson data during `npm run build:pages`, not edited by hand. It exposes:
+
+- all narrative lessons discovered at build time;
+- gold lesson count;
+- scene, source, mastery, ending, and simulation path counts;
+- per-lesson mastery signals and remediation targets;
+- simulation path coverage;
+- report issues, which are build-blocking.
+
+`npm run check:quality-report` builds the JSON report and fails if the report detects contract issues. `npm run check:quality-page` runs the public page renderer against the generated report object.
+
 ## Authoring Pipeline
 
 Gold lesson authoring starts from a checked scaffold:

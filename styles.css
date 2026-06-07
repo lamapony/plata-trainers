@@ -229,6 +229,66 @@ h3 { font-size: 30px; }
 .weak-stats .wrong { font-family: "JetBrains Mono", monospace; font-size: 14px; color: var(--ember); }
 .weak-stats .score { font-size: 12px; color: var(--muted); }
 
+/* Public quality report */
+.quality-pass { color: var(--green); }
+.quality-fail { color: var(--ember); }
+.quality-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.quality-metric, .quality-lesson {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+.quality-metric span, .quality-key, .quality-state {
+  color: var(--ember);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.quality-metric strong {
+  display: block;
+  margin: 10px 0 8px;
+  color: var(--text);
+  font-family: Fraunces, Georgia, serif;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 0.95;
+}
+.quality-metric p, .quality-path { color: var(--muted); line-height: 1.5; margin: 0; }
+.quality-lessons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.quality-lesson { display: flex; flex-direction: column; gap: 14px; }
+.quality-lesson.fail { border-color: var(--ember); box-shadow: 0 0 0 1px var(--ember), var(--shadow); }
+.quality-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.quality-state { color: var(--green); }
+.quality-lesson.fail .quality-state { color: var(--ember); }
+.quality-counts, .quality-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.quality-counts span, .quality-chip {
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+}
+.quality-chip.mastery {
+  color: var(--green);
+  border-color: oklch(0.74 0.12 145 / 0.44);
+  background: oklch(0.74 0.12 145 / 0.12);
+}
+.quality-issues { display: grid; gap: 8px; }
+.quality-issues p {
+  margin: 0;
+  padding: 9px 11px;
+  border: 1px solid var(--ember);
+  border-radius: 10px;
+  background: var(--ember-soft);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 @media (max-width: 820px) {
   .mastery-list { grid-template-columns: 1fr; }
+  .quality-metrics, .quality-lessons { grid-template-columns: 1fr; }
 }
