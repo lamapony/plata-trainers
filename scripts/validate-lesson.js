@@ -75,6 +75,10 @@ function isB2Lesson(lesson) {
   return lesson.level === "B2" || (lesson.variables && Object.keys(lesson.variables).length > 0);
 }
 
+function isGoldLesson(lesson) {
+  return lesson.qualityTier === "gold";
+}
+
 function sceneQualityText(scene) {
   return [
     scene.pressure || "",
@@ -112,6 +116,25 @@ function validateSourceNotes(lessonMeta, lesson) {
       note.supports.forEach((support, si) => {
         if (!nonEmptyString(support)) issue(`${prefix}.supports[${si}]: required non-empty string`);
       });
+    }
+  });
+}
+
+function validateGoldSceneContract(lessonMeta, lesson, scene, si) {
+  if (!isGoldLesson(lesson)) return;
+  const prefix = `${lessonMeta.id}::scene[${si}]`;
+  if (!nonEmptyString(scene.learningGoal)) issue(`${prefix}.learningGoal: gold lessons require a scene learning goal`);
+
+  const knownSources = new Set((lesson.sourceNotes || []).map(note => note.title));
+  if (!Array.isArray(scene.sourceRefs) || scene.sourceRefs.length === 0) {
+    issue(`${prefix}.sourceRefs: gold lessons require at least one source reference`);
+    return;
+  }
+  scene.sourceRefs.forEach((ref, ri) => {
+    if (!nonEmptyString(ref)) {
+      issue(`${prefix}.sourceRefs[${ri}]: required non-empty string`);
+    } else if (!knownSources.has(ref)) {
+      issue(`${prefix}.sourceRefs[${ri}]: unknown source reference "${ref}"`);
     }
   });
 }
@@ -163,6 +186,7 @@ function validateLesson(lessonMeta, lesson) {
 
   lesson.scenes.forEach((scene, si) => {
     const prefix = `${lessonMeta.id}::scene[${si}]`;
+    validateGoldSceneContract(lessonMeta, lesson, scene, si);
     validateTargetPhrases(lessonMeta, lesson, scene, si);
 
     // Required fields
@@ -197,11 +221,21 @@ function validateLesson(lessonMeta, lesson) {
       } else {
         const correctCount = scene.options.filter(o => o.correct === true).length;
         if (correctCount !== 1) issue(`${prefix}: exactly one option must have correct: true (found ${correctCount})`);
+        const diagnostics = new Set();
         scene.options.forEach((opt, oi) => {
           if (!nonEmptyString(opt.id)) issue(`${prefix}.options[${oi}].id: empty`);
           if (!nonEmptyString(opt.label)) issue(`${prefix}.options[${oi}].label: empty`);
           if (!nonEmptyString(opt.detail)) issue(`${prefix}.options[${oi}].detail: empty`);
           if (!nonEmptyString(opt.feedback)) issue(`${prefix}.options[${oi}].feedback: empty`);
+          if (isGoldLesson(lesson)) {
+            if (!nonEmptyString(opt.diagnostic)) {
+              issue(`${prefix}.options[${oi}].diagnostic: gold choice options require a diagnostic key`);
+            } else if (diagnostics.has(opt.diagnostic)) {
+              issue(`${prefix}.options[${oi}].diagnostic: duplicate diagnostic "${opt.diagnostic}"`);
+            } else {
+              diagnostics.add(opt.diagnostic);
+            }
+          }
         });
       }
     }
@@ -246,6 +280,9 @@ function validateLesson(lessonMeta, lesson) {
             }
           });
         }
+      }
+      if (isGoldLesson(lesson) && (!Array.isArray(scene.acceptKeywordGroups) || scene.acceptKeywordGroups.length < 2)) {
+        issue(`${prefix}.acceptKeywordGroups: gold completion scenes require at least two keyword groups`);
       }
     }
 

@@ -1,247 +1,159 @@
-# B2 Lesson Candidate — Radiator, Register, Consequence
+# B2 Gold Lesson — Radiator, Register, Consequence
 
-## Working title
-Det afhænger af, hvordan du siger det
+## Status
 
-## Why this is B2
-B2 is not “more words”. It is control under social pressure:
-- expressing a nuanced opinion;
+`lesson-b2-radiator-register` is the gold-standard B2 narrative lesson for Platå. It is the reference implementation for:
+
+- source-backed B2 lesson metadata;
+- scene-level `learningGoal` and `sourceRefs`;
+- explicit `targetPhrases`;
+- diagnostic feedback for every choice and B2 match pair;
+- grouped completion validation for answers that need more than one signal.
+
+## Why This Is B2
+
+B2 is not more vocabulary. It is control under social pressure:
+
+- reading formal Danish without over-trusting it;
 - shifting register between official email, group chat, and workplace small talk;
-- reading subtext in particles like `jo`, `da`, `vel`, `nok`, `sgu`;
-- using passives and indirect wording to see who takes responsibility;
-- arguing without sounding either passive or aggressive.
+- noticing how particles such as `jo`, `da`, `nok`, `sgu`, and `bare` position the speaker;
+- seeing how passive wording can hide responsibility;
+- complaining clearly without becoming either passive or aggressive.
 
-This is directly relevant to adult life in Denmark: housing, work, e-Boks, kommune, complaints, meetings, and disagreements where tone matters.
+## Editorial Focus
 
-## Core pedagogical target
-The learner should experience that Danish B2 competence is not only correctness. It is choosing the sentence that preserves the relationship while still moving the case forward.
+Read official Danish precisely, choose register under pressure, and preserve agency without escalating tone.
 
-## Language phenomena
-
-### Register
-- Formal: `Jeg vil gerne gøre opmærksom på ...`
-- Neutral: `Kan vi finde en konkret dato?`
-- Informal: `Det er sgu ret irriterende.`
-- Too aggressive: `Jeg kræver, at ...`
-
-### Modal particles / tone markers
-- `jo` — expects shared understanding; can sound accusatory.
-- `da` — softens or distances; context-sensitive.
-- `vel` — uncertainty / appeal for agreement.
-- `nok` — probability, understatement, resigned optimism.
-- `sgu` — emphasis; intimate/informal, risky in formal contexts.
-- `bare` — simplification, dismissal, or emotional fatigue.
-
-### Grammar as consequence
-- Passive hides responsibility:
-  - `Der er blevet noteret en reklamation.`
-  - `En håndværker vil blive sendt.`
-- Active creates accountability:
-  - `Vi sender en håndværker på fredag.`
-
-## Narrative premise
-It is January. Asger’s radiator has been broken for five days. The landlord answers politely but vaguely. Asger must decide how to respond, how to describe the situation to friends, and how to talk about it at work without damaging relationships.
-
-The learner plays Asger.
-
-## Lesson pattern
-This lesson uses the Platå pattern:
-
-```text
-pressure → notice → action → feedback → carry-forward
-```
-
-But at B2, the carry-forward is not just vocabulary. It is social state:
-
-```js
-variables: {
-  landlordTension: 0,
-  sofiaTrust: 0,
-  emilEscalation: 0,
-  workplaceTrust: 0
-}
-```
-
-## Scene outline
-
-### Scene 1 — The official reply
-**Type:** choice  
-**Pressure:** The reply is polite and useless. You need to understand what is not being promised.
-
-Landlord writes:
-
-```da
-Der er blevet noteret en reklamation vedrørende radiatoren.
-En håndværker vil blive sendt, når det passer ind i planlægningen.
-```
-
-**Notice:** Passive voice removes the actor. Nobody says “I will send someone Friday.”
-
-**Action:** Choose what the letter really means.
-
-Options:
-1. `De lover, at radiatoren bliver fikset hurtigt.` — wrong / too trusting.
-2. `De har registreret sagen, men de lover ikke en dato.` — correct.
-3. `De nægter at reparere radiatoren.` — wrong / too aggressive.
-
-**Carry:** Passive wording can be polite and evasive at the same time.
-
----
-
-### Scene 2 — Group chat tone
-**Type:** match  
-**Pressure:** Sofia wants to de-escalate. Emil wants a fight. Their particles reveal their stance before their argument does.
-
-Match line to stance:
-
-```da
-Ej, det er da helt fint. Han svarer jo.
-```
-→ de-escalating, expects you to agree.
-
-```da
-Det er sgu ikke godt nok. Skriv igen.
-```
-→ supportive but escalatory.
-
-```da
-Det løser sig nok, men jeg ville bede om en dato.
-```
-→ cautious, practical.
-
-```da
-Han prøver bare at trække tiden.
-```
-→ suspicious, dismissive.
-
-**Notice:** `jo`, `da`, `sgu`, `nok`, `bare` are not filler. They are social positioning.
-
-**Carry:** Tone particles become variables, not vocabulary.
-
----
-
-### Scene 3 — Two replies, two registers
-**Type:** completion / choice  
-**Pressure:** You must write both to the landlord and to Emil. The same frustration needs two different Danish versions.
-
-Formal email:
-
-```da
-Kære udlejer. Tak for Deres svar. Jeg vil gerne bede om en mere præcis dato, da temperaturen i lejligheden er faldet til under 12 grader.
-```
-
-Bad formal alternatives:
-
-```da
-Jeg kræver, at I fikser det nu.
-Det er sgu alt for koldt.
-```
-
-Informal chat:
-
-```da
-Jeg orker det simpelthen ikke, men jeg skriver og beder om en konkret dato.
-```
-
-**Notice:** Register shift is not decoration. It changes what doors stay open.
-
-**Carry:** The app stores whether the learner chose diplomatic, aggressive, or passive wording.
-
----
-
-### Scene 4 — Workplace small talk
-**Type:** input with classified feedback  
-**Pressure:** Mette, your supervisor, asks about the apartment. She is friendly, but not your close friend.
-
-Prompt:
-
-```da
-Hvordan går det med lejligheden? Har du fået varme?
-```
-
-Good B2 answer:
-
-```da
-Det går fint nok. Der har været lidt bøvl med varmen, men jeg har bedt udlejeren om en konkret dato.
-```
-
-Why it works:
-- `fint nok` = controlled understatement;
-- `lidt bøvl` = honest but not dramatic;
-- active agency: `jeg har bedt ...`.
-
-Too informal:
-
-```da
-Det er pissekoldt, og udlejeren er en nar.
-```
-
-Too passive:
-
-```da
-Det ved jeg ikke. Det løser sig nok.
-```
-
-**Notice:** Danish understatement can be socially intelligent, but passivity can hide inside it.
-
-**Carry:** Workplace trust changes depending on tone.
-
----
-
-### Scene 5 — Epilogue with consequences
-**Type:** choice / reflection  
-**Pressure:** The radiator is fixed. But your wording had consequences.
-
-Possible endings:
-
-- Diplomatic: radiator fixed, Sofia still trusts you, landlord sends a normal apology.
-- Aggressive: radiator fixed, landlord replies coldly, Sofia distances herself.
-- Passive: radiator fixed late, everyone is polite, but you lost a week.
-
-Final reflection prompt:
-
-```da
-Skriv én sætning om, hvad du har lært om tone på dansk.
-```
-
-Example strong answer:
+The learner should finish with this usable principle:
 
 ```da
 Man kan godt være tydelig uden at lyde aggressiv.
 ```
 
-## Schema additions needed
-This can remain static, but B2 benefits from simple state variables.
+## Source Support
 
-```js
-variables: {
-  landlordTension: 0,
-  sofiaTrust: 0,
-  emilEscalation: 0,
-  workplaceTrust: 0
-}
+The lesson uses source notes in `data.js` rather than inline citations in the UI.
+
+| Source | Supports |
+|---|---|
+| Lex: passiv | Passive forms can downplay or exclude the agent; Danish has both s-passive and blive-passive. |
+| Dansk Sproghistorie: dialogiske partikler | Dialogic particles such as `jo`, `da`, `sgu`, `nok`, and `vel` can mark stance toward the listener. |
+| sproget.dk: grammatiske betegnelser | Terminology for `blive-passiv` / `omskreven passiv`. |
+| borger.dk/lifeindenmark.dk skrivevejledning | Official Danish should be concrete and precise; paper-word style should be avoided where possible. |
+
+## Scene Contract
+
+Every scene follows:
+
+```text
+pressure -> notice -> action -> diagnostic feedback -> carry-forward
 ```
 
-Choice options can optionally include effects:
+In this lesson, every scene also has:
 
-```js
-{
-  id: "formal-clear",
-  label: "Jeg vil gerne bede om en mere præcis dato...",
-  correct: true,
-  effects: { landlordTension: -1, workplaceTrust: 1 },
-  register: "formal-neutral",
-  nuance: ["clear-request", "non-aggressive"]
-}
+- `learningGoal`: one precise B2 skill;
+- `sourceRefs`: links back to the top-level source notes;
+- `targetPhrases`: the Danish phrases actively trained in the scene.
+
+## Scene Notes
+
+### Scene 1 — Brevet
+
+**Learning goal:** Distinguish a registered case from an actual repair commitment in formal passive Danish.
+
+The key contrast is between registration and commitment:
+
+```da
+Der er blevet noteret en reklamation vedrørende radiatoren.
+Der vil blive sendt en håndværker, når det passer ind i planlægningen.
 ```
 
-## Why this is a good B2 prototype
-It tests the exact thing B2 learners struggle with after grammar basics:
+The correct answer is not “they will fix it quickly” and not “they refuse to fix it”. It is:
 
-- “I know the words, but do I sound too direct?”
-- “Is this formal enough?”
-- “What does `jo` actually do here?”
-- “Why does the passive sentence feel slippery?”
-- “How do I complain without burning the relationship?”
+```da
+De har registreret sagen, men de lover ikke en dato.
+```
 
-This is much more interesting than a generic B2 vocabulary lesson. It makes Danish feel like a social operating system.
+The diagnostic feedback separates three reading behaviors:
+
+- over-trusting passive process language;
+- accurate commitment reading;
+- adding refusal that is not present in the text.
+
+### Scene 2 — Gruppechatten
+
+**Learning goal:** Identify social stance from Danish particles before reacting to advice.
+
+The match pairs are deliberately not generic vocabulary pairs. Each feedback names what the small word does:
+
+- `da` lowers the temperature;
+- `jo` treats the reply as something the learner should already accept;
+- `sgu` adds emotional force;
+- `nok` softens prediction;
+- `bare` reduces the landlord's explanation to a tactic.
+
+### Scene 3 — To Svar
+
+**Learning goal:** Make a formal request concrete without importing private-chat aggression.
+
+The strong formal sentence keeps three things visible:
+
+```da
+Jeg vil gerne bede om en mere præcis dato,
+da temperaturen er faldet til under 12 grader.
+```
+
+It has:
+
+- civil request form: `jeg vil gerne bede om`;
+- concrete next step: `en mere præcis dato`;
+- factual pressure: `under 12 grader`.
+
+The two wrong options are not random. One imports private-chat force into formal writing; the other removes pressure through over-softening.
+
+### Scene 4 — Arbejdspladsen
+
+**Learning goal:** Use understatement without losing agency when discussing a private problem at work.
+
+This scene uses grouped completion validation. A passing answer needs both:
+
+- an agency word: `bedt`, `skrevet`, `ringet`, `kontaktet`, or `aftalt`;
+- a concrete next step: `dato`, `tid`, `håndværker`, `udlejer`, or `varme`.
+
+This prevents weak answers such as only `varme` from passing as B2.
+
+### Scene 5 — Konsekvens
+
+**Learning goal:** Name the B2 principle: clarity and relationship control can coexist.
+
+The final choice confirms the transfer principle rather than introducing new language. The correct answer is:
+
+```da
+Man kan godt være tydelig uden at lyde aggressiv.
+```
+
+## Validator Protection
+
+The validator applies extra rules because this lesson is marked:
+
+```js
+qualityTier: "gold"
+```
+
+Gold lessons must have:
+
+- source-backed top-level notes;
+- scene-level `learningGoal`;
+- valid `sourceRefs`;
+- B2 `targetPhrases`;
+- unique `diagnostic` keys on choice options;
+- diagnostic feedback on B2 match pairs;
+- grouped keyword validation for completion scenes.
+
+Run:
+
+```bash
+npm run check
+```
+
+The lesson should pass with no lesson-validation warnings.

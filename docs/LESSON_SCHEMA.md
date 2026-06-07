@@ -23,6 +23,8 @@ window.PLATA_LESSON_XX = {
   title: "Lesson title",
   subtitle: "One-line description",
   estimatedMinutes: 10,             // shown in UI, approximate
+  qualityTier: "gold",              // optional; enables stricter validator rules
+  editorialFocus: "What this lesson must teach especially well",
 
   // --- REQUIRED FOR B2: source support ---
   sourceNotes: [
@@ -77,6 +79,10 @@ Every scene follows the `pressure → notice → action → feedback → carry-f
   type: "choice" | "input" | "match" | "completion",
   eyebrow: "Scene N · Short label",
   title: "A narrative beat, not an exercise title",
+  learningGoal: "One precise skill this scene teaches", // required for gold lessons
+  sourceRefs: [
+    "Source title from top-level sourceNotes"             // required for gold lessons
+  ],
   pressure: "What is at stake right now?",
   narrative: "What is happening in the world?",
   dialogue: [                        // optional
@@ -107,6 +113,7 @@ Multiple-choice. One correct option, others with distinct feedback.
       id: "unique-option-id",
       label: "Danish text the learner picks",
       detail: "short English hint",
+      diagnostic: "learner-error-or-success-key", // required and unique for gold lessons
       correct: true,              // boolean
       effects: {                  // OPTIONAL: modify social variables
         landlordTension: -1,
@@ -229,6 +236,7 @@ All lessons inherit the headpage-v2 design system:
 - B2 scenes must name their `targetPhrases`; these are the Danish phrases the scene actively trains, not decorative vocabulary
 - B2 lessons must include `sourceNotes` with URLs and a short `supports` list
 - B2 match pairs must include diagnostic `feedback`
+- Gold lessons (`qualityTier: "gold"`) must include scene `learningGoal`, valid `sourceRefs`, unique choice `diagnostic` keys, and grouped completion checks
 - A new word appears in ≥2 modes (dialogue/sign/action/feedback)
 - If a word appears only once, it's flavour — not a learning target
 - Grammar terms only when the scene needs them
