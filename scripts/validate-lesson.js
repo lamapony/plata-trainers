@@ -298,6 +298,98 @@ function validateGoldSimulationContract(lessonMeta, lesson) {
   });
 }
 
+function validateGoldComicStoryboard(lessonMeta, lesson, knownMasteryTags) {
+  if (!isGoldLesson(lesson)) return;
+  const storyboard = lesson.comicStoryboard;
+  const sceneById = new Map((lesson.scenes || []).map(scene => [scene.id, scene]));
+  const knownSources = new Set((lesson.sourceNotes || []).map(note => note.title));
+  if (!storyboard || typeof storyboard !== "object" || Array.isArray(storyboard)) {
+    issue(`${lessonMeta.id}.comicStoryboard: gold lessons require a comicStoryboard object`);
+    return;
+  }
+  if (!nonEmptyString(storyboard.style)) issue(`${lessonMeta.id}.comicStoryboard.style: required non-empty string`);
+  if (!["1:1", "4:3", "16:9", "3:2"].includes(storyboard.aspectRatio)) {
+    issue(`${lessonMeta.id}.comicStoryboard.aspectRatio: must be one of 1:1, 4:3, 16:9, 3:2`);
+  }
+  if (!["0.5K", "1K", "2K", "4K"].includes(storyboard.imageSize)) {
+    issue(`${lessonMeta.id}.comicStoryboard.imageSize: must be one of 0.5K, 1K, 2K, 4K`);
+  }
+  if (!Array.isArray(storyboard.panels) || storyboard.panels.length !== sceneById.size) {
+    issue(`${lessonMeta.id}.comicStoryboard.panels: must include exactly one panel for each scene`);
+    return;
+  }
+
+  const panelSceneIds = new Set();
+  const panelIds = new Set();
+  storyboard.panels.forEach((panel, pi) => {
+    const prefix = `${lessonMeta.id}.comicStoryboard.panels[${pi}]`;
+    if (!panel || typeof panel !== "object" || Array.isArray(panel)) {
+      issue(`${prefix}: required object`);
+      return;
+    }
+    if (!nonEmptyString(panel.id) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(panel.id)) {
+      issue(`${prefix}.id: required kebab-case string`);
+    } else if (panelIds.has(panel.id)) {
+      issue(`${prefix}.id: duplicate panel id "${panel.id}"`);
+    } else {
+      panelIds.add(panel.id);
+    }
+    if (!nonEmptyString(panel.sceneId)) {
+      issue(`${prefix}.sceneId: required non-empty string`);
+      return;
+    }
+    if (panelSceneIds.has(panel.sceneId)) issue(`${prefix}.sceneId: duplicate scene "${panel.sceneId}"`);
+    panelSceneIds.add(panel.sceneId);
+    const scene = sceneById.get(panel.sceneId);
+    if (!scene) {
+      issue(`${prefix}.sceneId: unknown scene "${panel.sceneId}"`);
+      return;
+    }
+    if (!nonEmptyString(panel.assetPath) || !/^\.\/assets\/comic\/[a-z0-9-]+\.(png|webp|jpg|jpeg)$/i.test(panel.assetPath)) {
+      issue(`${prefix}.assetPath: must point to ./assets/comic/<panel>.png|webp|jpg|jpeg`);
+    }
+    if (!nonEmptyString(panel.alt) || panel.alt.trim().split(/\s+/).length < 8) {
+      issue(`${prefix}.alt: required descriptive alt text with at least eight words`);
+    }
+    if (!nonEmptyString(panel.prompt) || panel.prompt.trim().split(/\s+/).length < 30) {
+      issue(`${prefix}.prompt: required image prompt with at least 30 words`);
+    }
+    if (!Array.isArray(panel.mustInclude) || panel.mustInclude.length < 2) issue(`${prefix}.mustInclude: required array with at least two items`);
+    if (!Array.isArray(panel.avoid) || panel.avoid.length < 2) issue(`${prefix}.avoid: required array with at least two items`);
+
+    if (!Array.isArray(panel.sourceRefs) || panel.sourceRefs.length === 0) {
+      issue(`${prefix}.sourceRefs: required non-empty array`);
+    } else {
+      panel.sourceRefs.forEach((ref, ri) => {
+        if (!nonEmptyString(ref)) {
+          issue(`${prefix}.sourceRefs[${ri}]: required non-empty string`);
+        } else if (!knownSources.has(ref)) {
+          issue(`${prefix}.sourceRefs[${ri}]: unknown source reference "${ref}"`);
+        } else if (!(scene.sourceRefs || []).includes(ref)) {
+          issue(`${prefix}.sourceRefs[${ri}]: source "${ref}" is not attached to scene "${panel.sceneId}"`);
+        }
+      });
+    }
+    if (!Array.isArray(panel.masteryTags) || panel.masteryTags.length === 0) {
+      issue(`${prefix}.masteryTags: required non-empty array`);
+    } else {
+      panel.masteryTags.forEach((tag, ti) => {
+        if (!nonEmptyString(tag)) {
+          issue(`${prefix}.masteryTags[${ti}]: required non-empty string`);
+        } else if (!knownMasteryTags.has(tag)) {
+          issue(`${prefix}.masteryTags[${ti}]: unknown mastery tag "${tag}"`);
+        } else if (!(scene.masteryTags || []).includes(tag)) {
+          issue(`${prefix}.masteryTags[${ti}]: tag "${tag}" is not attached to scene "${panel.sceneId}"`);
+        }
+      });
+    }
+  });
+
+  sceneById.forEach((scene, sceneId) => {
+    if (!panelSceneIds.has(sceneId)) issue(`${lessonMeta.id}.comicStoryboard.panels: missing panel for scene "${sceneId}"`);
+  });
+}
+
 function validateGoldSceneContract(lessonMeta, lesson, scene, si) {
   if (!isGoldLesson(lesson)) return;
   const prefix = `${lessonMeta.id}::scene[${si}]`;
@@ -381,6 +473,7 @@ function validateLesson(lessonMeta, lesson) {
   validateSourceNotes(lessonMeta, lesson);
   const knownMasteryTags = validateGoldMasteryMap(lessonMeta, lesson);
   validateGoldSimulationContract(lessonMeta, lesson);
+  validateGoldComicStoryboard(lessonMeta, lesson, knownMasteryTags);
 
   // Track word appearances across scenes for "empty word" detection
   const wordAppearances = new Map(); // word -> { count: number, scenes: Set<string>, supportMentions: Set<string> }

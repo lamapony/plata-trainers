@@ -46,6 +46,7 @@
     $("#quality-summary").innerHTML = [
       ["Gold lessons", report.totals.goldLessons],
       ["Simulation paths", report.totals.simulationPaths],
+      ["Comic panels", report.totals.comicPanels],
       ["Mastery signals", report.totals.masterySignals],
       ["Issues", report.totals.issues]
     ].map(function (item) {
@@ -60,6 +61,8 @@
       metric("Gold Lessons", report.totals.goldLessons, "Lessons with the strict source -> goal -> diagnostic -> mastery -> repair contract."),
       metric("Scenes", report.totals.scenes, "Interactive scenes across all narrative lessons."),
       metric("Mastery Signals", report.totals.masterySignals, "Durable learner-facing concepts that can appear in dashboard repair recommendations."),
+      metric("Comic Panels", report.totals.comicPanels, "Scene-bound visual prompts that turn gold lessons into auditable comic storyboards."),
+      metric("Comic Assets", report.totals.comicAssets, "Generated storyboard images currently present in lesson asset folders."),
       metric("Simulation Paths", report.totals.simulationPaths, "Deterministic paths that cover outcomes and social variables."),
       metric("Simulated Attempts", report.totals.simulatedAttempts, "Attempt events replayed by gold lesson simulations."),
       metric("Endings", report.totals.endings, "Declared consequence outcomes covered by simulation paths."),
@@ -136,6 +139,11 @@
     var paths = lesson.simulation.paths.map(function (path) {
       return "<span class=\"quality-chip\">" + escapeHtml(path.id) + " -> " + escapeHtml(path.expectedEndingId) + "</span>";
     }).join("");
+    var comicPanels = lesson.comicStoryboard && lesson.comicStoryboard.panels
+      ? lesson.comicStoryboard.panels.map(function (panel) {
+        return "<span class=\"quality-chip " + (panel.assetExists ? "mastery" : "") + "\">" + escapeHtml(panel.id) + (panel.assetExists ? "" : " (prompt)") + "</span>";
+      }).join("")
+      : "";
     var mastery = lesson.masterySignals.map(function (signal) {
       return "<span class=\"quality-chip mastery\">" + escapeHtml(signal.key) + "</span>";
     }).join("");
@@ -154,9 +162,11 @@
         "<span>" + escapeHtml(lesson.counts.scenes) + " scenes</span>" +
         "<span>" + escapeHtml(lesson.counts.sourceNotes) + " sources</span>" +
         "<span>" + escapeHtml(lesson.counts.masterySignals) + " mastery</span>" +
+        "<span>" + escapeHtml(lesson.counts.comicPanels) + " comic panels</span>" +
         "<span>" + escapeHtml(lesson.counts.simulationPaths) + " paths</span>" +
       "</div>" +
       (mastery ? "<div class=\"quality-chip-row\">" + mastery + "</div>" : "") +
+      (comicPanels ? "<div class=\"quality-chip-row\">" + comicPanels + "</div>" : "") +
       (paths ? "<div class=\"quality-chip-row\">" + paths + "</div>" : "") +
       issues +
       (lesson.catalog ? "<a class=\"card-link\" href=\"" + escapeHtml(lesson.catalog.path) + "\">Open lesson -></a>" : "") +

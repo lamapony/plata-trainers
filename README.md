@@ -20,8 +20,8 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Plateau-first:** built for learners who know basic Danish but freeze when forms, word order, tone, and social pressure meet.
 - **Private by default:** browser LocalStorage only; no accounts, backend, analytics, or tracking.
 - **Contributor-friendly data:** exercises are plain JavaScript data files with validation scripts and narrative lesson schemas.
-- **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals and deterministic simulation.
-- **Public quality report:** Pages publishes a generated report of gold lessons, mastery signals, simulations, endings, source coverage, and scene-level evidence rows.
+- **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals, deterministic simulation, remediation, and comic storyboard prompts.
+- **Public quality report:** Pages publishes a generated report of gold lessons, mastery signals, simulations, endings, source coverage, comic coverage, and scene-level evidence rows.
 - **Static and forkable:** every trainer can run from `index.html`; GitHub Pages deploys a checked static artifact.
 
 ## Available trainers
@@ -63,6 +63,7 @@ Production Pages artifact:
 npm run build:pages
 npm run check:pages
 npm run check:quality-report
+npm run check:comic-prompts
 npm run diff:quality -- --base .dist/quality-report.json --head current
 ```
 
@@ -86,11 +87,20 @@ node scripts/check-syntax.js
 node scripts/validate-lesson.js
 node scripts/simulate-gold-lessons.js
 node scripts/smoke-gold-scaffold.js
+node scripts/generate-comic-assets-openrouter.js --dry-run --out .dist/comic-prompts.json
 node scripts/mutation-quality-report.js
 node scripts/smoke-quality-diff.js
 node scripts/smoke-quality-report.js
 npm run check:pages
 ```
+
+Comic assets are generated explicitly after prompt review. Set `OPENROUTER_API_KEY` in your shell, then run a targeted job such as:
+
+```bash
+npm run generate:comics -- --lesson lesson-b2-radiator-register --panel official-reply-passive
+```
+
+Do not commit API keys. The dry-run prompt manifest is part of `npm run check`; generated images should be visually reviewed before commit.
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. See [GOLD_LESSON_QUALITY_ENGINE.md](./docs/GOLD_LESSON_QUALITY_ENGINE.md) for the gold lesson quality contract. See [ROADMAP.md](./ROADMAP.md) for planned trainer expansion.
 
@@ -100,6 +110,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. S
 - Fix a wrong form, translation, or word-order explanation.
 - Add B2 register examples where the same meaning changes tone.
 - Scaffold a gold lesson with `npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic"` and replace the generated scenario with sourced Danish.
+- Improve a gold lesson comic storyboard prompt or review a generated panel against its scene evidence.
 - Improve accessibility while keeping the app static and dependency-free.
 - Add a focused QA check that prevents bad data from landing.
 

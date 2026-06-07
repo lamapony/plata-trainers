@@ -131,6 +131,68 @@ function buildLesson(options) {
   estimatedMinutes: ${options.minutes},
   qualityTier: "gold",
   editorialFocus: "Replace the scaffold topic with a real pressure situation while preserving the gold chain: source -> goal -> phrase -> diagnostic -> mastery -> repair.",
+  comicStoryboard: {
+    style: "Quiet editorial comic, warm ink linework, muted modern Danish interiors, natural light, expressive body language, no readable text, no speech bubbles, no UI screenshots.",
+    aspectRatio: "16:9",
+    imageSize: "1K",
+    panels: [
+      {
+        id: "read-context",
+        sceneId: "read-context",
+        assetPath: "./assets/comic/read-context.png",
+        alt: "A learner pauses before answering a professional message in a calm Danish office setting.",
+        prompt: "Create a quiet editorial comic panel set in a modern Danish office. A learner sits at a desk, pausing before answering a professional message, with calm posture and visible reflection. The image should show situation reading before wording, with no readable screen text or speech bubbles.",
+        sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
+        masteryTags: ["context-reading"],
+        mustInclude: ["learner pausing before writing", "calm professional setting"],
+        avoid: ["readable text on screens", "dramatic conflict or anger"]
+      },
+      {
+        id: "register-signals",
+        sceneId: "register-signals",
+        assetPath: "./assets/comic/register-signals.png",
+        alt: "A desk scene uses visual tokens to separate acknowledgement, action, and next step signals.",
+        prompt: "Create a quiet editorial comic panel where three visual tokens on a desk represent acknowledgement, owned action, and next step. A learner compares the tokens while a colleague waits neutrally nearby. The composition should make small phrase signals feel meaningful without using readable text, logos, or interface elements.",
+        sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Dansk Sproghistorie: dialogiske partikler"],
+        masteryTags: ["register-signal-control"],
+        mustInclude: ["three distinct visual tokens", "learner comparing social signals"],
+        avoid: ["word labels inside the image", "cartoonish exaggeration"]
+      },
+      {
+        id: "professional-response",
+        sceneId: "professional-response",
+        assetPath: "./assets/comic/professional-response.png",
+        alt: "A learner writes with agency while keeping the conversation open and low pressure.",
+        prompt: "Create a quiet editorial comic panel showing a learner drafting a professional response with steady posture and open body language. The scene should contrast agency without pressure: one hand points to a next step, while the conversation space remains open and calm. No readable text, no speech bubbles, no brand logos.",
+        sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
+        masteryTags: ["agency-without-pressure"],
+        mustInclude: ["visible next-step gesture", "low-pressure professional mood"],
+        avoid: ["aggressive pointing or confrontation", "overly formal ceremony"]
+      },
+      {
+        id: "next-step",
+        sceneId: "next-step",
+        assetPath: "./assets/comic/next-step.png",
+        alt: "A calendar and simple process cue make the next professional action visible.",
+        prompt: "Create a quiet editorial comic panel where a learner turns a polite answer into a concrete next step. Show a simple calendar shape, a small process marker, and a calm desk arrangement, but keep all text unreadable or abstract. The image should communicate action plus timing without becoming a UI screenshot.",
+        sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
+        masteryTags: ["concrete-next-step"],
+        mustInclude: ["abstract calendar cue", "clear action-to-next-step composition"],
+        avoid: ["readable dates or words", "busy dashboard interface"]
+      },
+      {
+        id: "principle",
+        sceneId: "principle",
+        assetPath: "./assets/comic/principle.png",
+        alt: "A calm professional exchange shows that wording affects both outcome and relationship.",
+        prompt: "Create a quiet editorial comic panel showing the final principle: professional wording moves the task and the relationship at the same time. Two people leave a conversation with neutral trust and a visible next step between them. Use modern Danish workplace cues, natural light, and no readable text or speech bubbles.",
+        sourceRefs: ["Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
+        masteryTags: ["consequence-aware-register"],
+        mustInclude: ["two people with workable trust", "visual next-step cue between them"],
+        avoid: ["celebration pose", "literal written lesson slogan"]
+      }
+    ]
+  },
   masteryMap: {
     "context-reading": {
       label: "Read the situation",

@@ -14,7 +14,7 @@ Most language-learning projects stop at authored content. Platå should go deepe
 
 ## Contract
 
-A gold lesson has five layers:
+A gold lesson has six layers:
 
 1. **Evidence layer**
    - `sourceNotes` cite the language claims the lesson depends on.
@@ -41,6 +41,12 @@ A gold lesson has five layers:
    - Dashboard recommendations can therefore say what to do next, not only what went wrong.
    - Repair links open `?mode=repair&signal=<tag>#<scene-id>`, so the lesson engine can render the repair focus and record repair attempts.
 
+6. **Comic storyboard layer**
+   - `comicStoryboard` defines one generated panel prompt per scene.
+   - Each panel must cite the same source notes and mastery tags as the scene it illustrates.
+   - The public report shows whether the prompt contract exists and whether the final asset has been generated.
+   - Image generation is optional in CI, but the storyboard contract is build-blocking for gold lessons.
+
 ## Why This Matters
 
 A normal lesson can say:
@@ -55,6 +61,7 @@ A gold lesson should be able to prove:
 - the recorded attempt includes the `passive-agency` mastery signal;
 - the weak signal points back to a concrete repair scene;
 - the repair scene opens in repair mode and records attempts with the repair mode;
+- the scene has a comic panel prompt tied to the same evidence and mastery signal;
 - future weak-tag analysis can show that this learner struggles with passive agency rather than B2 Danish in general.
 
 That is the difference between content and an inspectable learning system.
@@ -86,15 +93,15 @@ The report is built from lesson data during `npm run build:pages`, not edited by
 
 - all narrative lessons discovered at build time;
 - gold lesson count;
-- scene, source, mastery, ending, and simulation path counts;
+- scene, source, mastery, ending, comic panel, comic asset, and simulation path counts;
 - per-lesson mastery signals and remediation targets;
-- a scene audit matrix linking each gold scene to its learning goal, source references, mastery tags, diagnostics, remediation targets, and simulation paths;
+- a scene audit matrix linking each gold scene to its learning goal, source references, mastery tags, diagnostics, remediation targets, simulation paths, and comic panel coverage;
 - simulation path coverage;
 - report issues, which are build-blocking.
 
-The report fails the build if a gold scene is not covered by a simulation path, or if a remediation target does not train the mastery signal it claims to repair.
+The report fails the build if a gold scene is not covered by a simulation path or comic panel, or if a remediation target does not train the mastery signal it claims to repair.
 
-`npm run check:quality-report` builds the JSON report and fails if the report detects contract issues. `npm run check:quality-mutations` creates temporary broken gold lessons and proves the report catches missing sources, missing simulation coverage, broken remediation, bad completion answer specs, and duplicate diagnostics. `npm run check:quality-diff` proves the review diff catches regressions such as new issues, failed guarantees, and removed evidence rows. `npm run check:quality-page` runs the public page renderer against the generated report object.
+`npm run check:quality-report` builds the JSON report and fails if the report detects contract issues. `npm run check:comic-prompts` builds a dry-run manifest of all image-generation prompts without calling OpenRouter. `npm run check:quality-mutations` creates temporary broken gold lessons and proves the report catches missing sources, missing simulation coverage, missing comic coverage, broken remediation, bad completion answer specs, and duplicate diagnostics. `npm run check:quality-diff` proves the review diff catches regressions such as new issues, failed guarantees, removed evidence rows, and removed comic panels. `npm run check:quality-page` runs the public page renderer against the generated report object.
 
 For review, compare two generated reports:
 
@@ -119,6 +126,7 @@ The scaffold creates the lesson folder, `app.js`, `index.html`, `styles.css`, a 
 - five scenes across choice, match, completion, and final principle;
 - `sourceNotes`, scene `sourceRefs`, `learningGoal`, `targetPhrases`, and `masteryTags`;
 - `masteryMap` remediation links;
+- one `comicStoryboard` panel prompt per scene;
 - grouped completion checks;
 - `endingLogic` and three endings;
 - `simulation.paths` covering strong, neutral, and strained outcomes.
@@ -132,6 +140,20 @@ node scripts/smoke-lesson-engine.js --file <generated-data.js>
 ```
 
 That means the scaffold itself must stay compatible with the lesson schema, the simulator, and the real shared lesson engine.
+
+Comic prompts can be generated as a manifest without network access:
+
+```bash
+npm run check:comic-prompts
+```
+
+Actual asset generation is explicit and local. Set `OPENROUTER_API_KEY` in the shell, choose a reviewed model, then generate only the requested lesson or panel:
+
+```bash
+npm run generate:comics -- --lesson lesson-b2-radiator-register --panel official-reply-passive
+```
+
+Generated comic assets are publishable lesson files, so they should be reviewed visually before commit. API keys must never be committed or placed in lesson data.
 
 ## Current Scope
 
@@ -170,7 +192,7 @@ That means the QA suite now checks the consequence system, not only the ideal an
 If a lesson is marked `qualityTier: "gold"`, changes should preserve the full chain:
 
 ```text
-source-backed claim -> scene goal -> trained phrase -> diagnostic interaction -> recorded mastery signal -> repair action
+source-backed claim -> scene goal -> trained phrase -> diagnostic interaction -> recorded mastery signal -> repair action -> scene-bound comic panel
 ```
 
 If any part of that chain is missing, the lesson should be downgraded or the validator should fail.

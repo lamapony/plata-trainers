@@ -126,6 +126,14 @@ function runMutation(spec) {
       scene.options[1].diagnostic = scene.options[0].diagnostic;
     },
     expectedIssues: ["official-reply-passive has duplicate choice diagnostics"]
+  },
+  {
+    name: "comic panel references unknown scene",
+    mutate(lesson) {
+      lesson.comicStoryboard.panels[0].sceneId = "missing-scene";
+    },
+    expectedIssues: ["comic panel official-reply-passive has invalid sceneId"],
+    expectedFailedGuarantees: ["comic-scene-coverage"]
   }
 ].forEach(runMutation);
 

@@ -150,6 +150,7 @@ function compareLesson(diff, before, after) {
   compareIssues(diff, scope, before.issues, after.issues);
   compareIdSet(diff, scope, "Mastery signal", before.masterySignals, after.masterySignals, "regression", "info");
   compareIdSet(diff, scope, "Simulation path", before.simulation && before.simulation.paths, after.simulation && after.simulation.paths, "regression", "info");
+  compareIdSet(diff, scope, "Comic panel", before.comicStoryboard && before.comicStoryboard.panels, after.comicStoryboard && after.comicStoryboard.panels, "regression", "info");
   compareGuarantees(diff, scope, before.evidenceMatrix && before.evidenceMatrix.guarantees, after.evidenceMatrix && after.evidenceMatrix.guarantees);
   compareEvidenceRows(diff, scope, before.evidenceMatrix && before.evidenceMatrix.sceneRows, after.evidenceMatrix && after.evidenceMatrix.sceneRows);
 }

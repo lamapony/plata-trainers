@@ -86,6 +86,11 @@ function unique(values) {
   return [...new Set(values.filter(Boolean))].sort();
 }
 
+function assetPathForPanel(root, dataPath, assetPath) {
+  if (!assetPath || !dataPath) return "";
+  return path.join(root, path.dirname(dataPath), assetPath);
+}
+
 function simulationPathsForScene(sceneId, simulationPaths) {
   return simulationPaths
     .filter(pathSpec => asArray(pathSpec.actions).some(action => action.sceneId === sceneId))
@@ -184,6 +189,8 @@ function sceneChecks(lesson, scene, sourceTitles, masteryMap, simulationPaths) {
 
 function buildEvidenceMatrix(lesson, scenes, masteryMap, sourceTitles, simulationPaths, endings) {
   const masteryEntries = Object.entries(masteryMap);
+  const comicPanels = asArray(lesson.comicStoryboard && lesson.comicStoryboard.panels);
+  const comicPanelSceneIds = new Set(comicPanels.map(panel => panel.sceneId).filter(Boolean));
   const sourceRows = asArray(lesson.sourceNotes).map(note => ({
     title: note.title,
     url: note.url,
@@ -237,19 +244,26 @@ function buildEvidenceMatrix(lesson, scenes, masteryMap, sourceTitles, simulatio
       key: "ending-coverage",
       label: "Every declared ending is covered",
       pass: endings.every(ending => coveredEndings.has(ending.id))
+    },
+    {
+      key: "comic-scene-coverage",
+      label: "Every scene has a comic panel",
+      pass: scenes.every(scene => comicPanelSceneIds.has(scene.id))
     }
   ];
 
   return { guarantees, sceneRows, sourceRows };
 }
 
-function summarizeLesson(entry, catalogById) {
+function summarizeLesson(entry, catalogById, root) {
   const { lesson, globalName, dataPath } = entry;
   const scenes = asArray(lesson.scenes);
   const masteryMap = lesson.masteryMap || {};
   const masteryKeys = Object.keys(masteryMap);
   const endings = asArray(lesson.endings);
   const simulationPaths = asArray(lesson.simulation && lesson.simulation.paths);
+  const comicStoryboard = lesson.comicStoryboard || null;
+  const comicPanels = asArray(comicStoryboard && comicStoryboard.panels);
   const sceneById = new Map(scenes.map(scene => [scene.id, scene]));
   const sourceTitles = new Set(asArray(lesson.sourceNotes).map(note => note.title));
   const issues = [];
@@ -260,6 +274,29 @@ function summarizeLesson(entry, catalogById) {
     if (!masteryKeys.length) issues.push("gold lesson missing masteryMap");
     if (!simulationPaths.length) issues.push("gold lesson missing simulation.paths");
     if (endings.length && !simulationPaths.length) issues.push("gold lesson endings are not simulated");
+    if (!comicStoryboard || typeof comicStoryboard !== "object" || Array.isArray(comicStoryboard)) {
+      issues.push("gold lesson missing comicStoryboard");
+    } else {
+      const panelSceneIds = new Set();
+      if (!comicStoryboard.style) issues.push("comicStoryboard missing style");
+      if (!comicPanels.length) issues.push("comicStoryboard missing panels");
+      comicPanels.forEach(panel => {
+        if (!panel.sceneId || !sceneById.has(panel.sceneId)) issues.push(`comic panel ${panel.id || "unknown"} has invalid sceneId`);
+        if (panel.sceneId && panelSceneIds.has(panel.sceneId)) issues.push(`comic panel duplicate sceneId ${panel.sceneId}`);
+        if (panel.sceneId) panelSceneIds.add(panel.sceneId);
+        if (!panel.prompt) issues.push(`comic panel ${panel.id || panel.sceneId || "unknown"} missing prompt`);
+        if (!panel.alt) issues.push(`comic panel ${panel.id || panel.sceneId || "unknown"} missing alt`);
+        asArray(panel.sourceRefs).forEach(ref => {
+          if (!sourceTitles.has(ref)) issues.push(`comic panel ${panel.id || panel.sceneId || "unknown"} references unknown source ${ref}`);
+        });
+        asArray(panel.masteryTags).forEach(tag => {
+          if (!masteryMap[tag]) issues.push(`comic panel ${panel.id || panel.sceneId || "unknown"} references unknown mastery ${tag}`);
+        });
+      });
+      scenes.forEach(scene => {
+        if (!panelSceneIds.has(scene.id)) issues.push(`${scene.id} missing comic panel`);
+      });
+    }
 
     masteryKeys.forEach(key => {
       const spec = masteryMap[key] || {};
@@ -350,6 +387,8 @@ function summarizeLesson(entry, catalogById) {
       sourceNotes: asArray(lesson.sourceNotes).length,
       sourceRefs: sourceRefs.length,
       masterySignals: masteryKeys.length,
+      comicPanels: comicPanels.length,
+      comicAssets: comicPanels.filter(panel => fs.existsSync(assetPathForPanel(root, dataPath, panel.assetPath))).length,
       endings: endings.length,
       simulationPaths: simulationPaths.length,
       simulatedAttempts: simulationPaths.reduce((sum, pathSpec) => sum + attemptCountForPath(lesson, pathSpec), 0)
@@ -365,6 +404,23 @@ function summarizeLesson(entry, catalogById) {
       url: note.url,
       supports: asArray(note.supports)
     })),
+    comicStoryboard: comicStoryboard ? {
+      style: comicStoryboard.style || "",
+      aspectRatio: comicStoryboard.aspectRatio || "",
+      imageSize: comicStoryboard.imageSize || "",
+      panels: comicPanels.map(panel => ({
+        id: panel.id,
+        sceneId: panel.sceneId,
+        assetPath: panel.assetPath || "",
+        assetExists: fs.existsSync(assetPathForPanel(root, dataPath, panel.assetPath)),
+        alt: panel.alt || "",
+        prompt: panel.prompt || "",
+        sourceRefs: asArray(panel.sourceRefs),
+        masteryTags: asArray(panel.masteryTags),
+        mustInclude: asArray(panel.mustInclude),
+        avoid: asArray(panel.avoid)
+      }))
+    } : null,
     evidenceMatrix,
     simulation: {
       paths: simulationPaths.map(pathSpec => ({
@@ -387,7 +443,7 @@ function buildQualityReport(options = {}) {
   const lessons = findLessonDataFiles(root)
     .map(relPath => loadLesson(root, relPath))
     .filter(Boolean)
-    .map(entry => summarizeLesson(entry, catalogById))
+    .map(entry => summarizeLesson(entry, catalogById, root))
     .sort((a, b) => a.id.localeCompare(b.id));
 
   const totals = lessons.reduce((acc, lesson) => {
@@ -395,6 +451,8 @@ function buildQualityReport(options = {}) {
     if (lesson.qualityTier === "gold") acc.goldLessons += 1;
     acc.scenes += lesson.counts.scenes;
     acc.masterySignals += lesson.counts.masterySignals;
+    acc.comicPanels += lesson.counts.comicPanels;
+    acc.comicAssets += lesson.counts.comicAssets;
     acc.simulationPaths += lesson.counts.simulationPaths;
     acc.simulatedAttempts += lesson.counts.simulatedAttempts;
     acc.endings += lesson.counts.endings;
@@ -406,6 +464,8 @@ function buildQualityReport(options = {}) {
     goldLessons: 0,
     scenes: 0,
     masterySignals: 0,
+    comicPanels: 0,
+    comicAssets: 0,
     simulationPaths: 0,
     simulatedAttempts: 0,
     endings: 0,

@@ -6,6 +6,68 @@ window.PLATA_LESSON_B2_RADIATOR = {
   estimatedMinutes: 14,
   qualityTier: "gold",
   editorialFocus: "Read official Danish precisely, choose register under pressure, and preserve agency without escalating tone.",
+  comicStoryboard: {
+    style: "Nordic editorial comic, restrained linework, muted sage and ember accents, realistic Copenhagen interiors, adult learner perspective, no readable text inside the image, no logos, no watermarks.",
+    aspectRatio: "16:9",
+    imageSize: "1K",
+    panels: [
+      {
+        id: "official-reply-passive",
+        sceneId: "official-reply-passive",
+        assetPath: "./assets/comic/official-reply-passive.png",
+        alt: "A tenant studies a formal landlord email while a cold radiator sits in the background.",
+        prompt: "A single comic panel in a quiet Copenhagen apartment. An adult tenant sits at a small table reading a formal landlord email on a laptop, while a cold radiator and winter window are visible behind them. The mood is polite but evasive: the email feels official, yet nobody is taking visible responsibility. No readable text, no labels, no speech bubbles.",
+        sourceRefs: ["Lex: passiv", "sproget.dk: grammatiske betegnelser"],
+        masteryTags: ["passive-agency"],
+        mustInclude: ["cold radiator", "formal email", "unclear responsibility"],
+        avoid: ["cartoon exaggeration", "angry shouting", "readable text"]
+      },
+      {
+        id: "group-chat-particles",
+        sceneId: "group-chat-particles",
+        assetPath: "./assets/comic/group-chat-particles.png",
+        alt: "Friends in a group chat pull the tenant toward calm and escalation at the same time.",
+        prompt: "A single comic panel showing a phone group chat as visual tension, not readable text. The tenant holds a phone; two imagined friends appear as small side portraits, one calm and reassuring, one forceful and escalating. Show social stance through expression and posture, not written words. Nordic editorial comic style, muted colors, no readable text or logos.",
+        sourceRefs: ["Dansk Sproghistorie: dialogiske partikler"],
+        masteryTags: ["modal-particle-stance"],
+        mustInclude: ["phone chat", "calming friend", "escalating friend"],
+        avoid: ["readable chat messages", "emoji-only composition", "aggressive caricature"]
+      },
+      {
+        id: "two-registers",
+        sceneId: "two-registers",
+        assetPath: "./assets/comic/two-registers.png",
+        alt: "The tenant drafts a formal landlord reply while keeping private-chat frustration separate.",
+        prompt: "A single comic panel split by composition, not by hard border: on one side the tenant drafts a calm formal email at a laptop; on the other side a phone shows private chat energy as abstract shapes. The learner is choosing a precise formal request without importing private frustration. No readable text, no speech bubbles, no logos.",
+        sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Dansk Sproghistorie: dialogiske partikler"],
+        masteryTags: ["formal-register-control", "modal-particle-stance"],
+        mustInclude: ["laptop email draft", "phone chat", "controlled tone"],
+        avoid: ["visible Danish sentences", "office cliché", "comic violence"]
+      },
+      {
+        id: "workplace-understatement",
+        sceneId: "workplace-understatement",
+        assetPath: "./assets/comic/workplace-understatement.png",
+        alt: "A workplace coffee conversation shows honesty balanced with calm agency.",
+        prompt: "A single comic panel in a Danish workplace kitchen. A supervisor casually asks about the apartment while making coffee; the learner answers calmly, neither oversharing nor hiding the problem. Show balanced social intelligence and practical agency through body language. No readable text, no speech bubbles, no brand marks.",
+        sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
+        masteryTags: ["understatement-with-agency"],
+        mustInclude: ["workplace coffee", "calm answer", "private problem kept proportional"],
+        avoid: ["melodrama", "readable labels", "romantic office scene"]
+      },
+      {
+        id: "epilogue-consequence",
+        sceneId: "epilogue-consequence",
+        assetPath: "./assets/comic/epilogue-consequence.png",
+        alt: "The radiator is fixed and the relationships around the tenant remain intact.",
+        prompt: "A single comic panel after the conflict is resolved. The radiator is warm, the room feels livable again, and the tenant looks relieved while messages from landlord, friend, and workplace are represented as calm abstract notification cards without readable text. The visual idea is clarity without aggression preserving relationships. Nordic editorial comic style, no text.",
+        sourceRefs: ["Lex: passiv", "Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
+        masteryTags: ["consequence-aware-tone"],
+        mustInclude: ["warm radiator", "relieved tenant", "preserved relationships"],
+        avoid: ["victory pose", "readable text", "corporate stock art"]
+      }
+    ]
+  },
   masteryMap: {
     "passive-agency": {
       label: "Read passive agency",

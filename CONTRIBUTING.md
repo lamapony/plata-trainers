@@ -11,6 +11,7 @@ Good MVP contributions are concrete and verifiable:
 - Improve accessibility without adding dependencies.
 - Improve the shared kernel if all existing trainers keep working.
 - Add tests/checks that prevent bad data from landing.
+- Improve gold lesson comic storyboards or generated panels when the scene evidence stays intact.
 
 ## Project constraints
 
@@ -39,6 +40,7 @@ That runs:
 - `scripts/simulate-gold-lessons.js` — deterministic gold lesson simulation paths.
 - `scripts/smoke-lesson-engine.js` — runtime replay through the real shared lesson engine.
 - `scripts/smoke-gold-scaffold.js` — proves the gold lesson scaffold still generates a valid lesson.
+- `scripts/generate-comic-assets-openrouter.js --dry-run` — builds a comic prompt manifest without calling an image API.
 - `scripts/build-quality-report.js`, `scripts/diff-quality-report.js`, `scripts/mutation-quality-report.js`, and `scripts/smoke-quality-report.js` — public gold quality report generation, review diffs, negative contract checks, and rendering.
 - `scripts/build-pages-artifact.js` via `npm run check:pages` — production Pages artifact whitelist and link check.
 
@@ -67,9 +69,9 @@ cd .dist/pages
 python3 -m http.server 8000
 ```
 
-The Pages artifact includes `quality.html` and `reports/quality.json`. The JSON report is generated from lesson data during the build; do not edit it by hand. For gold lessons, the report also publishes a scene audit matrix showing the goal, source references, mastery tags, remediation targets, diagnostics, and simulation paths behind each pass.
+The Pages artifact includes `quality.html` and `reports/quality.json`. The JSON report is generated from lesson data during the build; do not edit it by hand. For gold lessons, the report also publishes a scene audit matrix showing the goal, source references, mastery tags, remediation targets, diagnostics, simulation paths, and comic panel coverage behind each pass.
 
-On pull requests, QA also compares the generated quality report against the base commit and fails on quality regressions such as new report issues, failed guarantees, removed gold lessons, removed mastery signals, removed simulation paths, or removed scene evidence rows.
+On pull requests, QA also compares the generated quality report against the base commit and fails on quality regressions such as new report issues, failed guarantees, removed gold lessons, removed mastery signals, removed simulation paths, removed comic panels, or removed scene evidence rows.
 
 ## Data conventions
 
@@ -122,7 +124,7 @@ npm run check
 The scaffold creates:
 
 - `index.html`, `app.js`, `data.js`, and `styles.css`
-- a `qualityTier: "gold"` lesson with `masteryMap`, `sourceNotes`, `simulation.paths`, grouped completion checks, `endingLogic`, and three endings
+- a `qualityTier: "gold"` lesson with `masteryMap`, `sourceNotes`, `comicStoryboard`, `simulation.paths`, grouped completion checks, `endingLogic`, and three endings
 - a matching `shared/plata-catalog.js` entry unless you pass `--no-catalog`
 
 You can validate a draft `data.js` before adding it to the real catalog:
@@ -131,6 +133,7 @@ You can validate a draft `data.js` before adding it to the real catalog:
 node scripts/validate-lesson.js --file lessons/lesson-b2-your-topic/data.js
 node scripts/simulate-gold-lessons.js --file lessons/lesson-b2-your-topic/data.js
 node scripts/smoke-lesson-engine.js --file lessons/lesson-b2-your-topic/data.js
+node scripts/generate-comic-assets-openrouter.js --dry-run --file lessons/lesson-b2-your-topic/data.js --out .dist/comic-prompts.json
 ```
 
 **Lesson data schema** (`data.js`):
@@ -195,6 +198,8 @@ window.PLATA_LESSON_YOUR_ID = {
 
 **Linguistic sources:** Use real Danish corpora (DR, KorpusDK, Dansk Sprognævn) — not invented sentences. Cite source in scene `note` or PR description.
 
+**Gold comic storyboards:** `comicStoryboard.panels[]` is part of the gold contract. Each panel must point to one scene, cite source refs already attached to that scene, use mastery tags already attached to that scene, include descriptive alt text, and reserve an asset path under `./assets/comic/`. Generate catalog prompt manifests with `npm run check:comic-prompts`, or check an uncataloged draft with `node scripts/generate-comic-assets-openrouter.js --dry-run --file lessons/<slug>/data.js --out .dist/comic-prompts.json`. To create actual assets, set `OPENROUTER_API_KEY` in your shell and run `npm run generate:comics -- --lesson <lesson-id-or-slug> --panel <panel-id>`. Do not commit API keys; generated images need visual review before commit.
+
 ## Pull request shape
 
 A good PR includes:
@@ -202,6 +207,6 @@ A good PR includes:
 - What changed.
 - Why it helps learners.
 - `npm run check` output.
-- If UI changed: a screenshot or short screen recording.
+- If UI or generated comic assets changed: a screenshot or short screen recording.
 
 MIT license for code. Add only content you have the right to publish.

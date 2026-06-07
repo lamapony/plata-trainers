@@ -72,13 +72,16 @@ async function run() {
 
   assert(elements["#quality-status"].textContent === "Passing", "quality page did not render passing status");
   assert(elements["#quality-summary"].innerHTML.includes("Gold lessons"), "quality page did not render summary");
+  assert(elements["#quality-summary"].innerHTML.includes("Comic panels"), "quality page did not render comic summary");
   assert(elements["#quality-metrics"].innerHTML.includes("Simulation Paths"), "quality page did not render metrics");
+  assert(elements["#quality-metrics"].innerHTML.includes("Comic Panels"), "quality page did not render comic metrics");
   assert(elements["#quality-metrics"].innerHTML.includes("Evidence Rows"), "quality page did not render evidence metric");
   assert(elements["#quality-evidence"].innerHTML.includes("official-reply-passive"), "quality page did not render scene evidence rows");
   assert(elements["#quality-evidence"].innerHTML.includes("Every scene is replayed by simulation"), "quality page did not render evidence guarantees");
   assert(elements["#quality-evidence"].innerHTML.includes("ok Sources"), "quality page did not render scene check labels");
   assert(elements["#quality-lessons"].innerHTML.includes("lesson-b2-radiator-register"), "quality page did not render radiator lesson");
   assert(elements["#quality-lessons"].innerHTML.includes("lesson-b2-job-followup"), "quality page did not render job lesson");
+  assert(elements["#quality-lessons"].innerHTML.includes("official-reply-passive (prompt)"), "quality page did not render comic panel prompt status");
   assert(elements["#quality-json-link"].href === "./reports/quality.json", "quality JSON link was not enabled");
   assert(!Object.prototype.hasOwnProperty.call(elements["#quality-json-link"].attributes, "aria-disabled"), "quality JSON link remains disabled");
 

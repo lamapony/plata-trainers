@@ -29,6 +29,8 @@ function makeRegression(report) {
   const guarantee = lesson.evidenceMatrix.guarantees.find(item => item.key === "simulation-scene-coverage");
   assert(guarantee, "simulation guarantee missing from quality report");
   guarantee.pass = false;
+  lesson.comicStoryboard.panels = lesson.comicStoryboard.panels.filter(panel => panel.id !== "workplace-understatement");
+  next.totals.comicPanels -= 1;
   lesson.evidenceMatrix.sceneRows = lesson.evidenceMatrix.sceneRows.filter(row => row.id !== "workplace-understatement");
   next.totals.evidenceRows -= 1;
   return next;
@@ -64,6 +66,7 @@ assert(regression.summary.regressions >= 4, "regression diff should include repo
 assert(formatQualityDiff(regression).includes("Quality diff: regression"), "formatted regression diff should include status");
 assert(regression.regressions.some(entry => entry.message.includes("Issue added")), "regression diff should include added issue");
 assert(regression.regressions.some(entry => entry.message.includes("Guarantee simulation-scene-coverage changed")), "regression diff should include failed guarantee");
+assert(regression.regressions.some(entry => entry.message.includes("Comic panel removed")), "regression diff should include removed comic panel");
 assert(regression.regressions.some(entry => entry.message.includes("Evidence row removed")), "regression diff should include removed evidence row");
 
 const improvement = compareQualityReports(regressionReport, base);

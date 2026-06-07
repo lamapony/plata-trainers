@@ -6,6 +6,68 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
   estimatedMinutes: 15,
   qualityTier: "gold",
   editorialFocus: "Choose professional Danish under hiring uncertainty: timed follow-up, formal warmth, platform-specific register, and agency without pressure.",
+  comicStoryboard: {
+    style: "Nordic editorial comic, restrained linework, muted green-gray office palette with ember accents, realistic Copenhagen professional context, adult applicant perspective, no readable text inside the image, no logos, no watermarks.",
+    aspectRatio: "16:9",
+    imageSize: "1K",
+    panels: [
+      {
+        id: "silence-pressure",
+        sceneId: "silence-pressure",
+        assetPath: "./assets/comic/silence-pressure.png",
+        alt: "A candidate waits after an interview while resisting the pressure to write too early.",
+        prompt: "A single comic panel in a small Copenhagen apartment after a job interview. An adult candidate sits near a laptop and phone, checking the inbox but choosing patience. Show quiet uncertainty and professional self-control, not panic. No readable text, no app logos, no speech bubbles.",
+        sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
+        masteryTags: ["process-patience"],
+        mustInclude: ["quiet inbox", "waiting candidate", "professional restraint"],
+        avoid: ["panic comedy", "visible email text", "brand logos"]
+      },
+      {
+        id: "email-register",
+        sceneId: "email-register",
+        assetPath: "./assets/comic/email-register.png",
+        alt: "The candidate drafts a warm formal follow-up email after the interview.",
+        prompt: "A single comic panel focused on a candidate drafting a formal follow-up email at a clean desk. The body language should feel warm, precise, and professionally calm. Use visual cues for formal register: tidy desk, composed posture, soft daylight. No readable email text, no logos, no speech bubbles.",
+        sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Den Danske Ordbog / ordnet.dk"],
+        masteryTags: ["professional-email-agency"],
+        mustInclude: ["formal email draft", "composed posture", "warm professionalism"],
+        avoid: ["readable Danish", "robotic corporate stock pose", "messy anxiety"]
+      },
+      {
+        id: "linkedin-choice",
+        sceneId: "linkedin-choice",
+        assetPath: "./assets/comic/linkedin-choice.png",
+        alt: "The candidate writes a short professional networking note without pressuring the hiring manager.",
+        prompt: "A single comic panel showing the candidate composing a short networking note on a phone after a technical interview. The tone should feel specific, low-pressure, and human. Represent the professional network as soft abstract profile cards without logos or readable text. Nordic editorial comic style.",
+        sourceRefs: ["Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
+        masteryTags: ["platform-register-shift"],
+        mustInclude: ["phone note", "professional network", "low-pressure tone"],
+        avoid: ["LinkedIn logo", "readable profile names", "desperate expression"]
+      },
+      {
+        id: "reply-consequence",
+        sceneId: "reply-consequence",
+        assetPath: "./assets/comic/reply-consequence.png",
+        alt: "A hiring reply reflects the professional tone the candidate used earlier.",
+        prompt: "A single comic panel where the candidate receives a hiring reply on a laptop. The room should show calm anticipation; the reply is represented by a bright message panel with no readable text. The visual idea is that the earlier tone shaped the response. No logos, no readable words.",
+        sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
+        masteryTags: ["reply-tone-reading"],
+        mustInclude: ["incoming reply", "calm anticipation", "tone reflected back"],
+        avoid: ["readable message", "celebration confetti", "rejection drama"]
+      },
+      {
+        id: "epilogue",
+        sceneId: "epilogue",
+        assetPath: "./assets/comic/epilogue.png",
+        alt: "The candidate is remembered as a future colleague because the Danish follow-up had calm agency.",
+        prompt: "A single comic panel showing the candidate as a future colleague in a calm team setting, with the earlier email and networking choices represented as subtle visual echoes around the scene. The concept is professional Danish taking agency while protecting relationships. No readable text, no company logos, no trophy imagery.",
+        sourceRefs: ["Den Danske Ordbog / ordnet.dk", "borger.dk/lifeindenmark.dk skrivevejledning"],
+        masteryTags: ["professional-agency-principle"],
+        mustInclude: ["future colleague signal", "calm agency", "professional relationship"],
+        avoid: ["job offer letter text", "brand logos", "overly heroic pose"]
+      }
+    ]
+  },
   masteryMap: {
     "process-patience": {
       label: "Respect process timing",

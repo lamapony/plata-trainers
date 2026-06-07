@@ -20,7 +20,7 @@ For B2 gold lessons, generate this structure with the checked scaffold:
 npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic"
 ```
 
-The scaffold emits a validator-clean gold lesson with `masteryMap`, grouped completion checks, `simulation.paths`, `endingLogic`, and a catalog entry. Replace the generated scenario with sourced Danish content, then run `npm run check`.
+The scaffold emits a validator-clean gold lesson with `masteryMap`, `comicStoryboard`, grouped completion checks, `simulation.paths`, `endingLogic`, and a catalog entry. Replace the generated scenario with sourced Danish content, then run `npm run check`.
 
 ## data.js — top-level fields
 
@@ -33,6 +33,26 @@ window.PLATA_LESSON_XX = {
   estimatedMinutes: 10,             // shown in UI, approximate
   qualityTier: "gold",              // optional; enables stricter validator rules
   editorialFocus: "What this lesson must teach especially well",
+
+  // --- REQUIRED FOR GOLD: scene-bound comic storyboard prompts ---
+  comicStoryboard: {
+    style: "Visual style shared by all panels; no readable text in images",
+    aspectRatio: "16:9",
+    imageSize: "1K",
+    panels: [
+      {
+        id: "scene-id",
+        sceneId: "scene-id",
+        assetPath: "./assets/comic/scene-id.png",
+        alt: "Descriptive alt text for the generated panel",
+        prompt: "Complete image-generation prompt for this scene",
+        sourceRefs: ["Source title from sourceNotes"],
+        masteryTags: ["passive-agency"],
+        mustInclude: ["visual requirement"],
+        avoid: ["visual anti-requirement"]
+      }
+    ]
+  },
 
   // --- REQUIRED FOR GOLD: durable learner skill signals ---
   masteryMap: {
@@ -284,6 +304,40 @@ Path action shapes:
 - match: `{ sceneId, matchAll: true }`
 - completion: `{ sceneId, answer, expectCorrect }`
 
+## Comic storyboard system (gold)
+
+Gold lessons define a `comicStoryboard` at the top level. This is the visual contract for generated comic panels, not a loose art note.
+
+Each panel must:
+
+- point to exactly one `sceneId`;
+- use source references already attached to that scene;
+- use mastery tags already attached to that scene;
+- include descriptive `alt` text;
+- include a concrete image-generation `prompt`;
+- declare what the image must include and avoid;
+- reserve a future asset path under `./assets/comic/`.
+
+Generate prompt manifests without calling an image API:
+
+```bash
+npm run check:comic-prompts
+```
+
+For an uncataloged draft lesson:
+
+```bash
+node scripts/generate-comic-assets-openrouter.js --dry-run --file lessons/lesson-b2-your-topic/data.js --out .dist/comic-prompts.json
+```
+
+Generate image assets through OpenRouter by setting `OPENROUTER_API_KEY` in your shell and running:
+
+```bash
+npm run generate:comics -- --lesson lesson-b2-radiator-register --panel official-reply-passive
+```
+
+Do not commit API keys. Generated assets should be reviewed visually before committing.
+
 ## Design tokens
 
 All lessons inherit the headpage-v2 design system:
@@ -317,7 +371,7 @@ All lessons inherit the headpage-v2 design system:
 - B2 scenes must name their `targetPhrases`; these are the Danish phrases the scene actively trains, not decorative vocabulary
 - B2 lessons must include `sourceNotes` with URLs and a short `supports` list
 - B2 match pairs must include diagnostic `feedback`
-- Gold lessons (`qualityTier: "gold"`) must include `masteryMap` with remediation actions, scene `learningGoal`, valid `sourceRefs`, scene `masteryTags`, unique choice `diagnostic` keys, and grouped completion checks
+- Gold lessons (`qualityTier: "gold"`) must include `masteryMap` with remediation actions, `comicStoryboard`, scene `learningGoal`, valid `sourceRefs`, scene `masteryTags`, unique choice `diagnostic` keys, and grouped completion checks
 - Gold lessons with endings must cover every ending through `simulation.paths`
 - Gold lessons should pass the simulator via `npm run check:gold-lessons`
 - Draft gold lesson files can be checked before catalog wiring:

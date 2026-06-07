@@ -64,6 +64,8 @@ const dataSource = fs.readFileSync(dataPath, "utf8");
 assert(dataSource.includes("qualityTier: \"gold\""), "generated lesson is not gold");
 assert(dataSource.includes("simulation:"), "generated lesson missing simulation contract");
 assert(dataSource.includes("masteryMap:"), "generated lesson missing mastery map");
+assert(dataSource.includes("comicStoryboard:"), "generated lesson missing comic storyboard");
+assert(dataSource.includes("./assets/comic/read-context.png"), "generated lesson missing comic asset path");
 
 console.log("ok - gold lesson scaffold generates a validator-clean lesson");
 console.log("ok - generated gold lesson passes simulator and runtime replay");
