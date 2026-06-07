@@ -43,7 +43,21 @@ window.PLATA_LESSON_XX = {
         reject: ["partial answer that should fail"],
         accept: "full answer that should pass"
       }
-    }
+    },
+    paths: [
+      {
+        id: "diplomatic",
+        expectedEndingId: "diplomatic",
+        expectedVariables: { landlordTension: -1, workplaceTrust: 3 },
+        expectedCorrect: 8,
+        expectedWeakMastery: [],
+        actions: [
+          { sceneId: "scene-id", optionId: "correct-option-id", expectCorrect: true },
+          { sceneId: "match-scene-id", matchAll: true },
+          { sceneId: "completion-scene-id", answer: "full answer", expectCorrect: true }
+        ]
+      }
+    ]
   },
 
   // --- REQUIRED FOR B2: source support ---
@@ -239,7 +253,12 @@ Good mastery tags:
 - have source-backed evidence in `masteryMap`
 - appear on at least one scene and at least one simulated attempt
 
-Gold lessons with endings should also define `simulation.expectedEndingId`. Completion scenes with grouped checks should define deterministic `simulation.completionAnswers` so QA can test both weak rejects and full accepts.
+Gold lessons with endings should define `simulation.paths`. Each path must include exactly one action per scene, an expected ending, and any expected social variables that make the consequence system meaningful. Completion scenes with grouped checks should define deterministic `simulation.completionAnswers` so QA can test both weak rejects and full accepts.
+
+Path action shapes:
+- choice: `{ sceneId, optionId, expectCorrect }`
+- match: `{ sceneId, matchAll: true }`
+- completion: `{ sceneId, answer, expectCorrect }`
 
 ## Design tokens
 
@@ -274,6 +293,7 @@ All lessons inherit the headpage-v2 design system:
 - B2 lessons must include `sourceNotes` with URLs and a short `supports` list
 - B2 match pairs must include diagnostic `feedback`
 - Gold lessons (`qualityTier: "gold"`) must include `masteryMap`, scene `learningGoal`, valid `sourceRefs`, scene `masteryTags`, unique choice `diagnostic` keys, and grouped completion checks
+- Gold lessons with endings must cover every ending through `simulation.paths`
 - Gold lessons should pass the simulator via `npm run check:gold-lessons`
 - A new word appears in ≥2 modes (dialogue/sign/action/feedback)
 - If a word appears only once, it's flavour — not a learning target

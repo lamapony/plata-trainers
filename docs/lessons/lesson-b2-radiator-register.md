@@ -173,7 +173,8 @@ The gold simulator also checks that:
 - scene attempts include mastery tags;
 - weak completion answers such as `varme` are rejected;
 - the full answer `jeg har bedt udlejeren om en konkret dato` is accepted;
-- the correct path reaches the `diplomatic` ending.
+- the `diplomatic`, `aggressive`, and `passive` paths reach their expected endings;
+- expected social variables match each path.
 
 Run:
 

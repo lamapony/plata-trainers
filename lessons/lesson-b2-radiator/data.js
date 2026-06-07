@@ -40,7 +40,51 @@ window.PLATA_LESSON_B2_RADIATOR = {
         reject: ["varme", "jeg har bedt"],
         accept: "jeg har bedt udlejeren om en konkret dato"
       }
-    }
+    },
+    paths: [
+      {
+        id: "diplomatic",
+        expectedEndingId: "diplomatic",
+        expectedVariables: { landlordTension: -1, sofiaTrust: 0, emilEscalation: 0, workplaceTrust: 3 },
+        expectedCorrect: 8,
+        expectedWeakMastery: [],
+        actions: [
+          { sceneId: "official-reply-passive", optionId: "accurate", expectCorrect: true },
+          { sceneId: "group-chat-particles", matchAll: true },
+          { sceneId: "two-registers", optionId: "formal-clear", expectCorrect: true },
+          { sceneId: "workplace-understatement", answer: "jeg har bedt udlejeren om en konkret dato", expectCorrect: true },
+          { sceneId: "epilogue-consequence", optionId: "balanced", expectCorrect: true }
+        ]
+      },
+      {
+        id: "aggressive",
+        expectedEndingId: "aggressive",
+        expectedVariables: { landlordTension: 3, sofiaTrust: -1, emilEscalation: 0, workplaceTrust: 1 },
+        expectedCorrect: 5,
+        expectedWeakMastery: ["passive-agency", "formal-register-control", "modal-particle-stance", "consequence-aware-tone"],
+        actions: [
+          { sceneId: "official-reply-passive", optionId: "too-aggressive", expectCorrect: false },
+          { sceneId: "group-chat-particles", matchAll: true },
+          { sceneId: "two-registers", optionId: "formal-aggressive", expectCorrect: false },
+          { sceneId: "workplace-understatement", answer: "jeg har bedt udlejeren om en konkret dato", expectCorrect: true },
+          { sceneId: "epilogue-consequence", optionId: "always-hard", expectCorrect: false }
+        ]
+      },
+      {
+        id: "passive",
+        expectedEndingId: "passive",
+        expectedVariables: { landlordTension: 0, sofiaTrust: 0, emilEscalation: 0, workplaceTrust: -1 },
+        expectedCorrect: 4,
+        expectedWeakMastery: ["passive-agency", "formal-register-control", "modal-particle-stance", "understatement-with-agency", "consequence-aware-tone"],
+        actions: [
+          { sceneId: "official-reply-passive", optionId: "too-trusting", expectCorrect: false },
+          { sceneId: "group-chat-particles", matchAll: true },
+          { sceneId: "two-registers", optionId: "formal-passive", expectCorrect: false },
+          { sceneId: "workplace-understatement", answer: "varme", expectCorrect: false },
+          { sceneId: "epilogue-consequence", optionId: "always-soft", expectCorrect: false }
+        ]
+      }
+    ]
   },
   variables: {
     landlordTension: 0,

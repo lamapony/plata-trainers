@@ -56,9 +56,10 @@ That is the difference between content and an inspectable learning system.
 The gold lesson simulator is intentionally narrow. It does not replace browser tests or full interaction QA. It verifies the educational behavior that is easy to break during editing:
 
 - every gold scene emits mastery tags through the lesson engine tag helper;
-- the correct path produces expected attempts and effects;
+- every declared simulation path produces expected attempts and effects;
 - grouped completion rejects weak partial answers and accepts a full B2 answer;
-- the correct path resolves to the expected ending;
+- each path resolves to the expected ending;
+- every ending is covered by at least one path;
 - all declared mastery tags are exercised by at least one simulated attempt.
 
 This gives maintainers a fast, no-dependency check that can run in GitHub Actions.
@@ -75,7 +76,13 @@ It introduces these mastery signals:
 - `understatement-with-agency`
 - `consequence-aware-tone`
 
-The next natural layer is dashboard surfacing: grouping weak tags into learner-facing skill diagnostics instead of showing only raw tag names.
+The current simulator covers three radiator paths:
+
+- `diplomatic`
+- `aggressive`
+- `passive`
+
+That means the QA suite now checks the consequence system, not only the ideal answer path.
 
 ## Non-Goals
 

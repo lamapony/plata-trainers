@@ -113,52 +113,101 @@ function recordSceneAttempt(context, state, lesson, scene, correct, given, expec
   });
 }
 
-function simulateGoldLesson(context, lesson) {
-  assert(lesson.qualityTier === "gold", `${lesson.id}: simulator only accepts gold lessons`);
-  assert(lesson.masteryMap && typeof lesson.masteryMap === "object", `${lesson.id}: missing masteryMap`);
-  assert(lesson.simulation && lesson.simulation.expectedEndingId, `${lesson.id}: missing simulation.expectedEndingId`);
+function getActionMap(lesson, pathSpec) {
+  assert(Array.isArray(pathSpec.actions), `${lesson.id}::path[${pathSpec.id}]: missing actions array`);
+  const actionMap = new Map();
+  pathSpec.actions.forEach((action, index) => {
+    assert(action && action.sceneId, `${lesson.id}::path[${pathSpec.id}].actions[${index}]: missing sceneId`);
+    assert(!actionMap.has(action.sceneId), `${lesson.id}::path[${pathSpec.id}]: duplicate action for ${action.sceneId}`);
+    actionMap.set(action.sceneId, action);
+  });
+  lesson.scenes.forEach(scene => {
+    assert(actionMap.has(scene.id), `${lesson.id}::path[${pathSpec.id}]: missing action for ${scene.id}`);
+  });
+  return actionMap;
+}
+
+function assertExpectedVariables(lesson, pathSpec, variables) {
+  const expected = pathSpec.expectedVariables || {};
+  Object.keys(expected).forEach(key => {
+    assert(variables[key] === expected[key], `${lesson.id}::path[${pathSpec.id}]: expected ${key}=${expected[key]}, got ${variables[key]}`);
+  });
+}
+
+function getWeakMasteryTags(context, state, lesson) {
+  const masteryKeys = Object.keys(lesson.masteryMap);
+  return context.PlataKernel.getWeakTags(state, 50)
+    .filter(weak => masteryKeys.includes(weak.tag))
+    .map(weak => weak.tag)
+    .sort();
+}
+
+function assertExpectedWeakMastery(context, state, lesson, pathSpec) {
+  const expected = (pathSpec.expectedWeakMastery || []).slice().sort();
+  const actual = getWeakMasteryTags(context, state, lesson);
+  assert(actual.join(",") === expected.join(","), `${lesson.id}::path[${pathSpec.id}]: expected weak mastery [${expected.join(", ")}], got [${actual.join(", ")}]`);
+}
+
+function simulateChoiceAction(context, state, lesson, variables, scene, action) {
+  assert(action.optionId, `${lesson.id}::${scene.id}: choice action requires optionId`);
+  const option = scene.options.find(candidate => candidate.id === action.optionId);
+  assert(option, `${lesson.id}::${scene.id}: unknown optionId ${action.optionId}`);
+  if (typeof action.expectCorrect === "boolean") {
+    assert(option.correct === action.expectCorrect, `${lesson.id}::${scene.id}.${option.id}: expected correctness ${action.expectCorrect}, got ${option.correct}`);
+  }
+  applyEffects(variables, option.effects);
+  recordSceneAttempt(context, state, lesson, scene, !!option.correct, option.label, correctLabel(scene.options));
+  return 1;
+}
+
+function simulateMatchAction(context, state, lesson, scene, action) {
+  assert(action.matchAll === true, `${lesson.id}::${scene.id}: match action currently requires matchAll: true`);
+  scene.pairs.forEach(pair => {
+    assert(pair.feedback && pair.feedback.length > 0, `${lesson.id}::${scene.id}.${pair.id}: missing pair feedback`);
+    recordSceneAttempt(context, state, lesson, scene, true, `${pair.left} -> ${pair.right}`, `${pair.left} -> ${pair.right}`);
+  });
+  return scene.pairs.length;
+}
+
+function simulateCompletionAction(context, state, lesson, variables, scene, action) {
+  assert(typeof action.answer === "string", `${lesson.id}::${scene.id}: completion action requires answer`);
+  assert(typeof action.expectCorrect === "boolean", `${lesson.id}::${scene.id}: completion action requires expectCorrect`);
+  const checked = checkCompletion(scene, action.answer);
+  assert(checked.ok === action.expectCorrect, `${lesson.id}::${scene.id}: answer "${action.answer}" expected ${action.expectCorrect ? "pass" : "fail"}`);
+  if (checked.ok) applyEffects(variables, scene.effects);
+  recordSceneAttempt(context, state, lesson, scene, checked.ok, `${scene.prefix} ${action.answer}`, `${scene.prefix} + action`);
+  return 1;
+}
+
+function simulatePath(context, lesson, pathSpec) {
+  assert(pathSpec && pathSpec.id, `${lesson.id}: simulation path missing id`);
+  assert(pathSpec.expectedEndingId, `${lesson.id}::path[${pathSpec.id}]: missing expectedEndingId`);
 
   const kernel = context.PlataKernel;
-  const state = kernel.freshState(lesson.id);
+  const state = kernel.freshState(`${lesson.id}::${pathSpec.id}`);
   const variables = Object.assign({}, lesson.variables || {});
+  const actionMap = getActionMap(lesson, pathSpec);
   let expectedAttempts = 0;
 
   lesson.scenes.forEach(scene => {
     assert(Array.isArray(scene.masteryTags) && scene.masteryTags.length > 0, `${lesson.id}::${scene.id}: missing masteryTags`);
+    const action = actionMap.get(scene.id);
 
     if (scene.type === "choice") {
       scene.options.forEach(option => {
         assert(/^Diagnostic:/.test(option.feedback), `${lesson.id}::${scene.id}.${option.id}: choice feedback should be diagnostic`);
       });
-      const correct = scene.options.find(option => option.correct === true);
-      assert(correct, `${lesson.id}::${scene.id}: no correct option`);
-      applyEffects(variables, correct.effects);
-      recordSceneAttempt(context, state, lesson, scene, true, correct.label, correctLabel(scene.options));
-      expectedAttempts += 1;
+      expectedAttempts += simulateChoiceAction(context, state, lesson, variables, scene, action);
       return;
     }
 
     if (scene.type === "match") {
-      scene.pairs.forEach(pair => {
-        assert(pair.feedback && pair.feedback.length > 0, `${lesson.id}::${scene.id}.${pair.id}: missing pair feedback`);
-        recordSceneAttempt(context, state, lesson, scene, true, `${pair.left} -> ${pair.right}`, `${pair.left} -> ${pair.right}`);
-        expectedAttempts += 1;
-      });
+      expectedAttempts += simulateMatchAction(context, state, lesson, scene, action);
       return;
     }
 
     if (scene.type === "completion") {
-      const answerSpec = lesson.simulation.completionAnswers && lesson.simulation.completionAnswers[scene.id];
-      assert(answerSpec, `${lesson.id}::${scene.id}: missing simulation.completionAnswers entry`);
-      (answerSpec.reject || []).forEach(answer => {
-        const checked = checkCompletion(scene, answer);
-        assert(!checked.ok, `${lesson.id}::${scene.id}: weak answer should fail: ${answer}`);
-      });
-      const accepted = checkCompletion(scene, answerSpec.accept);
-      assert(accepted.ok, `${lesson.id}::${scene.id}: full answer should pass`);
-      applyEffects(variables, scene.effects);
-      recordSceneAttempt(context, state, lesson, scene, true, `${scene.prefix} ${answerSpec.accept}`, `${scene.prefix} + action`);
-      expectedAttempts += 1;
+      expectedAttempts += simulateCompletionAction(context, state, lesson, variables, scene, action);
       return;
     }
 
@@ -166,29 +215,68 @@ function simulateGoldLesson(context, lesson) {
   });
 
   const endingId = resolveEnding(lesson, variables);
-  assert(endingId === lesson.simulation.expectedEndingId, `${lesson.id}: expected ending ${lesson.simulation.expectedEndingId}, got ${endingId}`);
+  assert(endingId === pathSpec.expectedEndingId, `${lesson.id}::path[${pathSpec.id}]: expected ending ${pathSpec.expectedEndingId}, got ${endingId}`);
+  assertExpectedVariables(lesson, pathSpec, variables);
   kernel.recordSocialSnapshot(state, variables);
 
-  const masteredSignals = new Set();
-  const masteryKeys = Object.keys(lesson.masteryMap);
-  state.attempts.forEach(attempt => {
-    attempt.tags.forEach(tag => {
-      if (masteryKeys.includes(tag)) masteredSignals.add(tag);
+  assert(state.meta.totalAttempts === expectedAttempts, `${lesson.id}::path[${pathSpec.id}]: expected ${expectedAttempts} attempts, got ${state.meta.totalAttempts}`);
+  if (typeof pathSpec.expectedCorrect === "number") {
+    assert(state.meta.totalCorrect === pathSpec.expectedCorrect, `${lesson.id}::path[${pathSpec.id}]: expected ${pathSpec.expectedCorrect} correct attempts, got ${state.meta.totalCorrect}`);
+  }
+  assert((state.meta.socialSnapshots || []).length === 1, `${lesson.id}::path[${pathSpec.id}]: expected one social snapshot`);
+  assertExpectedWeakMastery(context, state, lesson, pathSpec);
+
+  return {
+    pathId: pathSpec.id,
+    attempts: expectedAttempts,
+    correct: state.meta.totalCorrect,
+    endingId,
+    weakMastery: getWeakMasteryTags(context, state, lesson)
+  };
+}
+
+function validateCompletionAnswerSpecs(lesson) {
+  lesson.scenes.filter(scene => scene.type === "completion").forEach(scene => {
+    const answerSpec = lesson.simulation.completionAnswers && lesson.simulation.completionAnswers[scene.id];
+    assert(answerSpec, `${lesson.id}::${scene.id}: missing simulation.completionAnswers entry`);
+    (answerSpec.reject || []).forEach(answer => {
+      const checked = checkCompletion(scene, answer);
+      assert(!checked.ok, `${lesson.id}::${scene.id}: weak answer should fail: ${answer}`);
     });
+    const accepted = checkCompletion(scene, answerSpec.accept);
+    assert(accepted.ok, `${lesson.id}::${scene.id}: full answer should pass`);
+  });
+}
+
+function simulateGoldLesson(context, lesson) {
+  assert(lesson.qualityTier === "gold", `${lesson.id}: simulator only accepts gold lessons`);
+  assert(lesson.masteryMap && typeof lesson.masteryMap === "object", `${lesson.id}: missing masteryMap`);
+  assert(lesson.simulation && Array.isArray(lesson.simulation.paths) && lesson.simulation.paths.length > 0, `${lesson.id}: missing simulation.paths`);
+
+  validateCompletionAnswerSpecs(lesson);
+
+  const pathResults = lesson.simulation.paths.map(pathSpec => simulatePath(context, lesson, pathSpec));
+  const exercisedSignals = new Set();
+  const masteryKeys = Object.keys(lesson.masteryMap);
+  pathResults.forEach(pathResult => {
+    pathResult.weakMastery.forEach(tag => exercisedSignals.add(tag));
   });
   masteryKeys.forEach(tag => {
-    assert(masteredSignals.has(tag), `${lesson.id}: mastery tag not exercised by simulation: ${tag}`);
+    const inAnyScene = lesson.scenes.some(scene => (scene.masteryTags || []).includes(tag));
+    assert(inAnyScene, `${lesson.id}: mastery tag not attached to any scene: ${tag}`);
   });
 
-  assert(state.meta.totalAttempts === expectedAttempts, `${lesson.id}: expected ${expectedAttempts} attempts, got ${state.meta.totalAttempts}`);
-  assert(state.meta.totalCorrect === expectedAttempts, `${lesson.id}: correct path should have all attempts correct`);
-  assert((state.meta.socialSnapshots || []).length === 1, `${lesson.id}: expected one social snapshot`);
+  const endings = new Set(pathResults.map(result => result.endingId));
+  (lesson.endings || []).forEach(ending => {
+    assert(endings.has(ending.id), `${lesson.id}: ending not covered by simulation paths: ${ending.id}`);
+  });
 
   return {
     lessonId: lesson.id,
-    attempts: expectedAttempts,
-    masterySignals: masteredSignals.size,
-    endingId
+    paths: pathResults.length,
+    attempts: pathResults.reduce((sum, result) => sum + result.attempts, 0),
+    weakMasterySignals: exercisedSignals.size,
+    endings: endings.size
   };
 }
 
@@ -205,8 +293,9 @@ function run() {
   assert(lessons.length > 0, "no gold lessons found");
   const results = lessons.map(lesson => simulateGoldLesson(context, lesson));
   const attempts = results.reduce((sum, result) => sum + result.attempts, 0);
-  const signals = results.reduce((sum, result) => sum + result.masterySignals, 0);
-  console.log(`Gold lesson simulation passed: ${results.length} lesson(s), ${attempts} attempt(s), ${signals} mastery signal(s)`);
+  const paths = results.reduce((sum, result) => sum + result.paths, 0);
+  const endings = results.reduce((sum, result) => sum + result.endings, 0);
+  console.log(`Gold lesson simulation passed: ${results.length} lesson(s), ${paths} path(s), ${attempts} attempt(s), ${endings} ending(s) covered`);
 }
 
 run();

@@ -155,11 +155,107 @@ function validateGoldMasteryMap(lessonMeta, lesson) {
     }
   });
 
-  if (lesson.variables && lesson.endings && (!lesson.simulation || !nonEmptyString(lesson.simulation.expectedEndingId))) {
-    issue(`${lessonMeta.id}.simulation.expectedEndingId: gold lessons with endings require expected simulator ending`);
+  return new Set(keys);
+}
+
+function validateGoldSimulationContract(lessonMeta, lesson) {
+  if (!isGoldLesson(lesson)) return;
+  if (!lesson.variables || !lesson.endings) return;
+
+  const sim = lesson.simulation;
+  if (!sim || typeof sim !== "object" || Array.isArray(sim)) {
+    issue(`${lessonMeta.id}.simulation: gold lessons with endings require a simulation object`);
+    return;
   }
 
-  return new Set(keys);
+  const completionScenes = (lesson.scenes || []).filter(scene => scene.type === "completion");
+  completionScenes.forEach(scene => {
+    const answerSpec = sim.completionAnswers && sim.completionAnswers[scene.id];
+    const prefix = `${lessonMeta.id}.simulation.completionAnswers["${scene.id}"]`;
+    if (!answerSpec || typeof answerSpec !== "object" || Array.isArray(answerSpec)) {
+      issue(`${prefix}: required object`);
+      return;
+    }
+    if (!Array.isArray(answerSpec.reject) || answerSpec.reject.length === 0) issue(`${prefix}.reject: required non-empty array`);
+    if (!nonEmptyString(answerSpec.accept)) issue(`${prefix}.accept: required non-empty string`);
+  });
+
+  if (!Array.isArray(sim.paths) || sim.paths.length === 0) {
+    issue(`${lessonMeta.id}.simulation.paths: required non-empty array`);
+    return;
+  }
+
+  const sceneById = new Map((lesson.scenes || []).map(scene => [scene.id, scene]));
+  const endingIds = new Set((lesson.endings || []).map(ending => ending.id));
+  const pathIds = new Set();
+  sim.paths.forEach((pathSpec, pi) => {
+    const prefix = `${lessonMeta.id}.simulation.paths[${pi}]`;
+    if (!pathSpec || typeof pathSpec !== "object" || Array.isArray(pathSpec)) {
+      issue(`${prefix}: required object`);
+      return;
+    }
+    if (!nonEmptyString(pathSpec.id)) {
+      issue(`${prefix}.id: required non-empty string`);
+    } else if (pathIds.has(pathSpec.id)) {
+      issue(`${prefix}.id: duplicate path id "${pathSpec.id}"`);
+    } else {
+      pathIds.add(pathSpec.id);
+    }
+    if (!nonEmptyString(pathSpec.expectedEndingId)) {
+      issue(`${prefix}.expectedEndingId: required non-empty string`);
+    } else if (!endingIds.has(pathSpec.expectedEndingId)) {
+      issue(`${prefix}.expectedEndingId: unknown ending "${pathSpec.expectedEndingId}"`);
+    }
+    if (pathSpec.expectedVariables !== undefined && (!pathSpec.expectedVariables || typeof pathSpec.expectedVariables !== "object" || Array.isArray(pathSpec.expectedVariables))) {
+      issue(`${prefix}.expectedVariables: must be an object when present`);
+    }
+    if (pathSpec.expectedCorrect !== undefined && (!Number.isInteger(pathSpec.expectedCorrect) || pathSpec.expectedCorrect < 0)) {
+      issue(`${prefix}.expectedCorrect: must be a non-negative integer when present`);
+    }
+    if (pathSpec.expectedWeakMastery !== undefined && !Array.isArray(pathSpec.expectedWeakMastery)) {
+      issue(`${prefix}.expectedWeakMastery: must be an array when present`);
+    }
+    if (!Array.isArray(pathSpec.actions) || pathSpec.actions.length !== sceneById.size) {
+      issue(`${prefix}.actions: must include exactly one action for each scene`);
+      return;
+    }
+
+    const actionSceneIds = new Set();
+    pathSpec.actions.forEach((action, ai) => {
+      const actionPrefix = `${prefix}.actions[${ai}]`;
+      if (!action || typeof action !== "object" || Array.isArray(action)) {
+        issue(`${actionPrefix}: required object`);
+        return;
+      }
+      if (!nonEmptyString(action.sceneId)) {
+        issue(`${actionPrefix}.sceneId: required non-empty string`);
+        return;
+      }
+      if (actionSceneIds.has(action.sceneId)) issue(`${actionPrefix}.sceneId: duplicate scene "${action.sceneId}"`);
+      actionSceneIds.add(action.sceneId);
+      const scene = sceneById.get(action.sceneId);
+      if (!scene) {
+        issue(`${actionPrefix}.sceneId: unknown scene "${action.sceneId}"`);
+        return;
+      }
+      if (scene.type === "choice") {
+        if (!nonEmptyString(action.optionId)) issue(`${actionPrefix}.optionId: choice action requires optionId`);
+        if (typeof action.expectCorrect !== "boolean") issue(`${actionPrefix}.expectCorrect: choice action requires boolean`);
+      }
+      if (scene.type === "match" && action.matchAll !== true) {
+        issue(`${actionPrefix}.matchAll: match action requires true`);
+      }
+      if (scene.type === "completion") {
+        if (!nonEmptyString(action.answer)) issue(`${actionPrefix}.answer: completion action requires answer`);
+        if (typeof action.expectCorrect !== "boolean") issue(`${actionPrefix}.expectCorrect: completion action requires boolean`);
+      }
+    });
+  });
+
+  const coveredEndings = new Set(sim.paths.map(pathSpec => pathSpec && pathSpec.expectedEndingId).filter(Boolean));
+  endingIds.forEach(endingId => {
+    if (!coveredEndings.has(endingId)) issue(`${lessonMeta.id}.simulation.paths: ending "${endingId}" is not covered by any path`);
+  });
 }
 
 function validateGoldSceneContract(lessonMeta, lesson, scene, si) {
@@ -244,6 +340,7 @@ function validateLesson(lessonMeta, lesson) {
 
   validateSourceNotes(lessonMeta, lesson);
   const knownMasteryTags = validateGoldMasteryMap(lessonMeta, lesson);
+  validateGoldSimulationContract(lessonMeta, lesson);
 
   // Track word appearances across scenes for "empty word" detection
   const wordAppearances = new Map(); // word -> { count: number, scenes: Set<string>, supportMentions: Set<string> }
