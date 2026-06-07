@@ -46,7 +46,8 @@
         longestStreak: 0,
         lastSessionDate: "",
         dailyAttempts: {},
-        socialSnapshots: []
+        socialSnapshots: [],
+        repairClosures: {}
       }
     };
   }
@@ -105,6 +106,8 @@
     state.meta.longestStreak = Math.max(state.meta.currentStreak, numberOr(meta.longestStreak, state.meta.currentStreak));
     state.meta.lastSessionDate = meta.lastSessionDate || "";
     state.meta.dailyAttempts = meta.dailyAttempts && typeof meta.dailyAttempts === "object" ? meta.dailyAttempts : {};
+    state.meta.socialSnapshots = Array.isArray(meta.socialSnapshots) ? meta.socialSnapshots.slice(-50) : [];
+    state.meta.repairClosures = normaliseRepairClosures(meta.repairClosures);
 
     var byItemId = input.byItemId || input.items || {};
     Object.keys(byItemId).forEach(function (itemId) {
@@ -132,6 +135,37 @@
 
   function countCorrect(attempts) {
     return attempts.filter(function (a) { return a.correct; }).length;
+  }
+
+  function normaliseRepairClosures(input) {
+    var out = {};
+    if (!input || typeof input !== "object") return out;
+    Object.keys(input).forEach(function (key) {
+      var source = input[key];
+      if (!source || typeof source !== "object") return;
+      var signal = String(source.signal || key || "").trim();
+      if (!signal) return;
+      out[signal] = {
+        signal: signal,
+        itemId: source.itemId ? String(source.itemId) : "",
+        sceneId: source.sceneId ? String(source.sceneId) : "",
+        lessonId: source.lessonId ? String(source.lessonId) : "",
+        label: source.label ? String(source.label) : "",
+        action: source.action ? String(source.action) : "",
+        resolvedAt: source.resolvedAt || source.at || nowIso(),
+        sourceMode: source.sourceMode ? String(source.sourceMode) : "repair",
+        correct: source.correct !== false,
+        attempts: Math.max(1, numberOr(source.attempts, 1)),
+        attemptCount: source.attemptCount === undefined || source.attemptCount === null ? null : Math.max(0, numberOr(source.attemptCount, 0))
+      };
+    });
+    return out;
+  }
+
+  function repairClosureStore(state) {
+    if (!state.meta) state.meta = {};
+    if (!state.meta.repairClosures || typeof state.meta.repairClosures !== "object") state.meta.repairClosures = {};
+    return state.meta.repairClosures;
   }
 
   function saveState(state) {
@@ -252,6 +286,63 @@
     return rec;
   }
 
+  function recordRepairClosure(state, closure) {
+    if (!state) throw new Error("invalid state");
+    closure = closure || {};
+    if (closure.correct === false) return null;
+    var signal = String(closure.signal || closure.tag || "").trim();
+    if (!signal) return null;
+    var store = repairClosureStore(state);
+    var previous = store[signal] || {};
+    store[signal] = {
+      signal: signal,
+      itemId: closure.itemId ? String(closure.itemId) : previous.itemId || "",
+      sceneId: closure.sceneId ? String(closure.sceneId) : previous.sceneId || "",
+      lessonId: closure.lessonId ? String(closure.lessonId) : previous.lessonId || "",
+      label: closure.label ? String(closure.label) : previous.label || "",
+      action: closure.action ? String(closure.action) : previous.action || "",
+      resolvedAt: closure.resolvedAt || nowIso(),
+      sourceMode: closure.sourceMode ? String(closure.sourceMode) : "repair",
+      correct: true,
+      attempts: numberOr(previous.attempts, 0) + 1,
+      attemptCount: (state.attempts || []).length
+    };
+    touch(state);
+    return store[signal];
+  }
+
+  function getRepairClosure(state, signal) {
+    if (!state || !state.meta || !signal) return null;
+    var store = state.meta.repairClosures;
+    if (!store || typeof store !== "object") return null;
+    return store[String(signal).trim()] || null;
+  }
+
+  function isSignalResolved(state, signal) {
+    signal = String(signal || "").trim();
+    if (!signal) return false;
+    var closure = getRepairClosure(state, signal);
+    if (!closure || closure.correct === false) return false;
+    var attempts = state.attempts || [];
+    var hasAttemptCount = closure.attemptCount !== undefined && closure.attemptCount !== null;
+    var closureAttemptCount = Number(closure.attemptCount);
+    hasAttemptCount = hasAttemptCount && Number.isFinite(closureAttemptCount);
+    var resolvedTime = new Date(closure.resolvedAt || "").getTime();
+    var hasResolvedTime = Number.isFinite(resolvedTime);
+
+    for (var i = 0; i < attempts.length; i++) {
+      var attempt = attempts[i];
+      if (!attempt || attempt.correct || normaliseTags(attempt.tags).indexOf(signal) === -1) continue;
+      if (hasAttemptCount) {
+        if (i >= closureAttemptCount) return false;
+        continue;
+      }
+      var attemptTime = new Date(attempt.at || "").getTime();
+      if (!hasResolvedTime || !Number.isFinite(attemptTime) || attemptTime > resolvedTime) return false;
+    }
+    return true;
+  }
+
   function touch(state) {
     state.updatedAt = nowIso();
     state.items = state.byItemId || {};
@@ -354,10 +445,11 @@
     };
   }
 
-  function getWeakTags(state, limit) {
+  function getWeakTags(state, limit, options) {
     limit = numberOr(limit, 5);
+    options = options || {};
     var buckets = {};
-    (state.attempts || []).forEach(function (attempt) {
+    ((state && state.attempts) || []).forEach(function (attempt) {
       normaliseTags(attempt.tags).forEach(function (tag) {
         if (!buckets[tag]) buckets[tag] = { tag: tag, total: 0, correct: 0, wrong: 0, score: 0 };
         buckets[tag].total += 1;
@@ -370,7 +462,7 @@
       b.score = b.wrong / Math.max(1, b.correct + b.wrong);
       return b;
     }).filter(function (b) {
-      return b.total > 0 && b.wrong > 0;
+      return b.total > 0 && b.wrong > 0 && (options.includeResolved || !isSignalResolved(state, b.tag));
     }).sort(function (a, b) {
       return b.score - a.score || b.wrong - a.wrong || b.total - a.total;
     }).slice(0, limit);
@@ -411,6 +503,9 @@
     createTrainerState: createTrainerState,
     ensureItemRecord: ensureItemRecord,
     recordAttempt: recordAttempt,
+    recordRepairClosure: recordRepairClosure,
+    getRepairClosure: getRepairClosure,
+    isSignalResolved: isSignalResolved,
     getStats: getStats,
     pickSessionItems: pickSessionItems,
     exportState: exportState,

@@ -86,12 +86,35 @@ function run() {
   assert(weak.length > 0, "weak tags returned");
   assert(weak.some((tag) => tag.tag === "substantiver"), "weak tags include low-performing tag");
 
+  const closureState = kernel.freshState("closure");
+  kernel.recordAttempt(closureState, { itemId: "tone::1", correct: false, tags: ["tone", "passive-agency"], mode: "lesson" });
+  assert(kernel.getWeakTags(closureState, 5).some((tag) => tag.tag === "passive-agency"), "open weak signal is visible");
+  kernel.recordAttempt(closureState, { itemId: "tone::1", correct: true, tags: ["tone", "passive-agency"], mode: "repair" });
+  const closure = kernel.recordRepairClosure(closureState, {
+    signal: "passive-agency",
+    itemId: "tone::1",
+    sceneId: "tone::1",
+    lessonId: "closure",
+    label: "Read passive agency",
+    action: "Name the missing actor",
+    correct: true
+  });
+  assert(closure && closure.signal === "passive-agency", "repair closure records signal");
+  assert(closure.attemptCount === closureState.attempts.length, "repair closure records attempt boundary");
+  assert(kernel.isSignalResolved(closureState, "passive-agency"), "closed signal is resolved");
+  assert(!kernel.getWeakTags(closureState, 5).some((tag) => tag.tag === "passive-agency"), "resolved weak signal is retired by default");
+  assert(kernel.getWeakTags(closureState, 5, { includeResolved: true }).some((tag) => tag.tag === "passive-agency"), "resolved weak signal stays available for diagnostics");
+  kernel.recordAttempt(closureState, { itemId: "tone::2", correct: false, tags: ["tone", "passive-agency"], mode: "lesson" });
+  assert(!kernel.isSignalResolved(closureState, "passive-agency"), "later miss reopens a repaired signal");
+  assert(kernel.getWeakTags(closureState, 5).some((tag) => tag.tag === "passive-agency"), "reopened weak signal is visible again");
+
   console.log("ok - fresh state creation");
   console.log("ok - old-state migration shape");
   console.log("ok - recordAttempt totals/streak/item box");
   console.log("ok - export/import roundtrip");
   console.log("ok - M0 gate readiness");
   console.log("ok - weak tag extraction");
+  console.log("ok - repair closure retires and reopens weak signals");
 }
 
 run();

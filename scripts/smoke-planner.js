@@ -62,6 +62,7 @@ function seedWeakLesson(context) {
 }
 
 function runLessonDecisionSmoke(context) {
+  const kernel = context.PlataKernel;
   const state = seedWeakLesson(context);
   const decision = context.PlataPlanner.lessonDecision({
     lesson: context.PLATA_LESSON_B2_RADIATOR,
@@ -74,6 +75,47 @@ function runLessonDecisionSmoke(context) {
   assert(decision.primaryHref.includes("mode=repair"), "repair decision should open repair mode");
   assert(decision.primaryHref.includes("signal=passive-agency"), "repair decision should carry signal");
   assert(decision.primaryHref.includes("#official-reply-passive"), "repair decision should carry source scene");
+
+  kernel.recordAttempt(state, {
+    itemId: "official-reply-passive",
+    correct: true,
+    tags: ["B2", "passive", "passive-agency"],
+    mode: "repair",
+    expected: "De har registreret sagen, men de lover ikke en dato.",
+    given: "De har registreret sagen, men de lover ikke en dato."
+  });
+  kernel.recordRepairClosure(state, {
+    signal: "passive-agency",
+    itemId: "official-reply-passive",
+    sceneId: "official-reply-passive",
+    lessonId: "lesson-b2-radiator-register",
+    label: "Read passive agency",
+    action: "Name the missing actor",
+    correct: true
+  });
+  const afterRepair = context.PlataPlanner.lessonDecision({
+    lesson: context.PLATA_LESSON_B2_RADIATOR,
+    state,
+    rootPrefix: "../../"
+  });
+  assert(afterRepair.kind !== "repair", "closed weak lesson should not recommend repair");
+  assert(!kernel.getWeakTags(state, 10).some(item => item.tag === "passive-agency"), "planner sees only open weak signals");
+  assert(kernel.getWeakTags(state, 10, { includeResolved: true }).some(item => item.tag === "passive-agency"), "planner diagnostics can inspect repaired weak signals");
+
+  kernel.recordAttempt(state, {
+    itemId: "official-reply-passive-later",
+    correct: false,
+    tags: ["B2", "passive", "passive-agency"],
+    mode: "lesson",
+    expected: "De har registreret sagen, men de lover ikke en dato.",
+    given: "De lover en hurtig reparation."
+  });
+  const reopened = context.PlataPlanner.lessonDecision({
+    lesson: context.PLATA_LESSON_B2_RADIATOR,
+    state,
+    rootPrefix: "../../"
+  });
+  assert(reopened.kind === "repair", "later miss should reopen lesson repair");
 }
 
 function runDrillDecisionSmoke(context) {

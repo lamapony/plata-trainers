@@ -174,6 +174,37 @@ function seedWeakMastery(env) {
   env.storage[kernel.stateKey("lesson-b2-radiator-register")] = JSON.stringify(state);
 }
 
+function seedClosedWeakMastery(env) {
+  const kernel = env.context.PlataKernel;
+  const state = kernel.freshState("lesson-b2-radiator-register");
+  kernel.recordAttempt(state, {
+    itemId: "workplace-understatement",
+    correct: false,
+    tags: ["B2", "understatement-with-agency"],
+    mode: "lesson",
+    expected: "Jeg kan sende et kort forslag inden fredag...",
+    given: "Det er nok fint."
+  });
+  kernel.recordAttempt(state, {
+    itemId: "workplace-understatement",
+    correct: true,
+    tags: ["B2", "understatement-with-agency"],
+    mode: "repair",
+    expected: "Jeg kan sende et kort forslag inden fredag...",
+    given: "Jeg kan sende et kort forslag inden fredag."
+  });
+  kernel.recordRepairClosure(state, {
+    signal: "understatement-with-agency",
+    itemId: "workplace-understatement",
+    sceneId: "workplace-understatement",
+    lessonId: "lesson-b2-radiator-register",
+    label: "Use understatement with agency",
+    action: "Add one concrete next action",
+    correct: true
+  });
+  env.storage[kernel.stateKey("lesson-b2-radiator-register")] = JSON.stringify(state);
+}
+
 async function runHome(env) {
   vm.runInContext(homeSource, env.context, { filename: "home.js" });
   await Promise.resolve();
@@ -219,14 +250,27 @@ async function runWeakMasteryHomeSmoke() {
   assert(env.ids["#home-primary-action"].textContent === "Open repair scene", "home primary CTA uses repair action");
 }
 
+async function runClosedMasteryHomeSmoke() {
+  const env = makeContext();
+  loadKernelAndCatalog(env);
+  seedClosedWeakMastery(env);
+  await runHome(env);
+
+  assert(!env.ids["#home-start-title"].textContent.startsWith("Repair "), "home does not promote closed repair");
+  assert(!/mode=repair/.test(env.ids["#home-start-link"].href), "home closed signal link does not open repair mode");
+  assert(env.ids["#home-primary-action"].textContent !== "Open repair scene", "home closed signal does not use repair CTA");
+}
+
 async function run() {
   await runEmptyHomeSmoke();
   await runProgressHomeSmoke();
   await runWeakMasteryHomeSmoke();
+  await runClosedMasteryHomeSmoke();
 
   console.log("ok - home launcher recommends a starter path");
   console.log("ok - home launcher continues existing local progress");
   console.log("ok - home launcher promotes planner repair paths");
+  console.log("ok - home launcher retires closed repair paths");
 }
 
 run().catch(err => {

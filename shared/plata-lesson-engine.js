@@ -191,15 +191,61 @@
     var tracker = ctx.tracker;
     if (!tracker || !ctx.kernel || !ctx.kernel.recordAttempt) return;
     var mode = ctx.state.repair && ctx.state.repair.active ? "repair" : "lesson";
+    var tags = sceneAttemptTags(scene);
+    if (mode === "repair" && ctx.state.repair.tag) tags = normaliseTags(tags.concat(ctx.state.repair.tag));
     ctx.kernel.recordAttempt(tracker.state, {
       itemId: scene.id,
       correct: !!correct,
-      tags: sceneAttemptTags(scene),
+      tags: tags,
       mode: mode,
       expected: expected || "",
       given: given || ""
     });
+    if (mode === "repair") {
+      ctx.state.repair.attempted = true;
+      ctx.state.repair.resolved = !!correct;
+      if (correct && ctx.kernel.recordRepairClosure) {
+        ctx.state.repair.closure = ctx.kernel.recordRepairClosure(tracker.state, {
+          signal: ctx.state.repair.tag,
+          itemId: scene.id,
+          sceneId: scene.id,
+          lessonId: ctx.lesson.id,
+          label: ctx.state.repair.label,
+          action: ctx.state.repair.action,
+          sourceMode: "repair",
+          correct: true
+        });
+      }
+    }
     tracker.save();
+  }
+
+  function repairResolved(ctx) {
+    var repair = ctx.state.repair;
+    if (!repair || !repair.active) return false;
+    if (repair.resolved) return true;
+    if (ctx.kernel && ctx.kernel.isSignalResolved && ctx.tracker) {
+      return ctx.kernel.isSignalResolved(ctx.tracker.state, repair.tag);
+    }
+    return false;
+  }
+
+  function renderRepairClosure(ctx) {
+    var repair = ctx.state.repair;
+    if (!repair || !repair.active) return "";
+    var resolved = repairResolved(ctx);
+    var label = repair.label || repair.tag;
+    var title = resolved ? "Repair closed: " + label : "Repair still open: " + label;
+    var copy = resolved
+      ? "This signal is retired from recommendations until a later miss reopens it."
+      : "Answer the source scene correctly to retire this signal from your next-step queue.";
+    var html = "<aside class='repair-closure " + (resolved ? "closed" : "open") + "'>";
+    html += "<p class='eyebrow'>Repair status</p>";
+    html += "<h3>" + escapeHtml(title) + "</h3>";
+    html += "<p>" + escapeHtml(copy) + "</p>";
+    if (repair.action) html += "<p class='repair-closure-action'>" + escapeHtml(repair.action) + "</p>";
+    html += "</aside>";
+    return html;
   }
 
   /* ---- renderers ---- */
@@ -412,9 +458,9 @@
       if (ok && scene.effects) applyEffects(ctx.state, scene.effects);
       $("#feedback").className = "feedback show " + (ok ? "ok" : "warn");
       $("#feedback").textContent = ok ? scene.success : scene.failure + (checked.missing.length ? " Missing: " + checked.missing.join(", ") + "." : "");
-      if (!ctx.state.attempts[scene.id]) {
+      if (!ctx.state.attempts[scene.id] || (ok && ctx.state.attempts[scene.id] !== "correct")) {
         record(ctx, scene, ok, scene.prefix + " " + value, scene.prefix + " + action");
-        ctx.state.attempts[scene.id] = true;
+        ctx.state.attempts[scene.id] = ok ? "correct" : "tried";
       }
       if (ok) ctx.state.completed[scene.id] = true;
       ctx.renderSidebar();
@@ -459,6 +505,8 @@
       html += "<h2>" + escapeHtml(lesson.completeTitle || "You made it through.") + "</h2>";
       html += "<p class='narrative'>" + escapeHtml(lesson.completeText || "The lesson is finished. Each scene taught one real-world pattern.") + "</p>";
     }
+
+    html += renderRepairClosure(ctx);
 
     if (root.PlataNextStep && root.PlataNextStep.lesson && root.PlataNextStep.render) {
       html += root.PlataNextStep.render(root.PlataNextStep.lesson({

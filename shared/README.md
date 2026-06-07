@@ -13,11 +13,15 @@ Public helpers include:
 - `createTrainerState({ trainerId, oldKeys })`
 - `ensureItemRecord(state, itemId, tags)`
 - `recordAttempt(state, attempt)`
+- `recordRepairClosure(state, closure)`
+- `getRepairClosure(state, signal)` and `isSignalResolved(state, signal)`
 - `getStats(state)`
 - `pickSessionItems(items, options)`
 - `exportState(state)` and `importState(json, expectedTrainerId)`
 - `computeGate(state, gateSpec)`
-- `getWeakTags(state, limit)`
+- `getWeakTags(state, limit, { includeResolved })`
+
+Repair closure records retire lesson-owned weak signals after a correct repair attempt. By default `getWeakTags` returns only open weak signals; pass `{ includeResolved: true }` to inspect historical misses that have already been repaired.
 
 `plata-dashboard.js` adds small formatting helpers for stats, gate text, and weak tag summaries. It is optional and has no dependencies.
 

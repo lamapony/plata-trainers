@@ -387,6 +387,12 @@ function runRepairAttemptSmoke(lesson) {
   assert(attempt.correct === true, "recorded attempt keeps correctness");
   assert(attempt.tags.includes("passive-agency"), "recorded attempt keeps mastery tag");
   assert(attempt.tags.includes("repair"), "recorded attempt includes repair mode tag");
+  assert(state.meta.repairClosures["passive-agency"], "correct repair records closure");
+  assert(env.context.PlataKernel.isSignalResolved(state, "passive-agency"), "correct repair resolves the signal");
+
+  for (let i = 0; i < lesson.scenes.length; i++) clickNext(env);
+  assert(/repair-closure closed/.test(env.elements["#scene"].innerHTML), "completed repair renders closed status");
+  assert(/Repair closed: Read passive agency/.test(env.elements["#scene"].innerHTML), "completed repair names the closed signal");
 }
 
 function runHashNavigationSmoke(lesson) {

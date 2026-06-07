@@ -69,6 +69,11 @@ h3 { margin: 0 0 14px; font-size: 1rem; }
 .next-step-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
 .next-step-card .link-button { text-decoration: none; }
 .next-step-card .ghost { display: inline-flex; align-items: center; justify-content: center; }
+.repair-closure { margin: 24px 0 0; padding: 18px; max-width: 720px; border: 1px solid var(--line); border-left: 4px solid var(--sage); border-radius: 24px; background: rgba(126,155,143,.13); }
+.repair-closure.open { border-left-color: var(--ember); background: rgba(185,101,69,.10); }
+.repair-closure h3 { margin: 0 0 8px; font-family: Fraunces, Georgia, serif; font-size: clamp(1.3rem, 2.3vw, 1.75rem); line-height: 1.1; letter-spacing: -0.02em; color: var(--forest); }
+.repair-closure p { margin: 0; color: var(--muted); line-height: 1.58; }
+.repair-closure-action { margin-top: 10px !important; font-family: "JetBrains Mono", monospace; font-size: .78rem; color: var(--ember-deep) !important; }
 
 .map-illustration { position: relative; height: 190px; margin: 10px 0 22px; color: rgba(32,42,36,0.42); border-radius: 24px; overflow: hidden; background: linear-gradient(145deg, #f7faf7, #d8e2df); border: 1px solid var(--line); }
 .map-illustration svg { width: 100%; height: 100%; }

@@ -153,6 +153,37 @@ function seedWeakMasteryState(env) {
   env.storage[kernel.stateKey("lesson-b2-radiator-register")] = JSON.stringify(state);
 }
 
+function seedClosedMasteryState(env) {
+  const kernel = env.context.PlataKernel;
+  const state = kernel.freshState("lesson-b2-radiator-register");
+  kernel.recordAttempt(state, {
+    itemId: "official-reply-passive",
+    correct: false,
+    tags: ["B2", "passive", "passive-agency"],
+    mode: "lesson",
+    expected: "De har registreret sagen, men de lover ikke en dato.",
+    given: "De lover, at radiatoren bliver fikset hurtigt."
+  });
+  kernel.recordAttempt(state, {
+    itemId: "official-reply-passive",
+    correct: true,
+    tags: ["B2", "passive", "passive-agency"],
+    mode: "repair",
+    expected: "De har registreret sagen, men de lover ikke en dato.",
+    given: "De har registreret sagen, men de lover ikke en dato."
+  });
+  kernel.recordRepairClosure(state, {
+    signal: "passive-agency",
+    itemId: "official-reply-passive",
+    sceneId: "official-reply-passive",
+    lessonId: "lesson-b2-radiator-register",
+    label: "Read passive agency",
+    action: "Name the missing actor",
+    correct: true
+  });
+  env.storage[kernel.stateKey("lesson-b2-radiator-register")] = JSON.stringify(state);
+}
+
 function runEmptyDashboardSmoke() {
   const env = makeContext();
   loadKernelAndDashboard(env);
@@ -185,6 +216,23 @@ function runSeededMasterySmoke() {
   assert(/Open repair scene/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation opens the repair scene");
 }
 
+function runClosedMasterySmoke() {
+  const env = makeContext();
+  vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
+  seedClosedMasteryState(env);
+  vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
+  vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
+  vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
+
+  const dueHtml = env.elements["#due-cards"].children.map(child => child.innerHTML).join("\n");
+  assert(/No weak mastery signals/.test(env.elements["#mastery-list"].innerHTML), "dashboard retires closed mastery signal");
+  assert(!/signal=passive-agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard closed mastery list has no repair link");
+  assert(!/signal=passive-agency/.test(dueHtml), "dashboard closed due cards have no repair link");
+  assert(!/Open repair scene/.test(dueHtml), "dashboard closed due cards do not use repair CTA");
+}
+
 async function runDynamicCatalogSmoke() {
   const env = makeContext(null, { dynamicLessonScripts: true });
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
@@ -203,11 +251,13 @@ async function runDynamicCatalogSmoke() {
 async function run() {
   runEmptyDashboardSmoke();
   runSeededMasterySmoke();
+  runClosedMasterySmoke();
   await runDynamicCatalogSmoke();
 
   console.log("ok - dashboard renders without runtime errors");
   console.log("ok - dashboard renders mastery signal diagnostics");
   console.log("ok - dashboard renders mastery repair paths");
+  console.log("ok - dashboard retires closed mastery repairs");
   console.log("ok - dashboard loads lesson data from catalog");
 }
 
