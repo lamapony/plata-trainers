@@ -1,6 +1,6 @@
 # Contributing to Platå Trainers
 
-Platå Trainers is intentionally small: static HTML, CSS, and JavaScript only. No backend, no account system, no build step required for the app itself.
+Platå Trainers is intentionally small: static HTML, CSS, and JavaScript only. No backend, no account system, no build step required for the app itself. GitHub Pages deployment uses a checked static artifact built from a public-file whitelist.
 
 ## What helps most
 
@@ -36,6 +36,7 @@ That runs:
 - `scripts/validate-data.js` — trainer data shape, uniqueness, explanations.
 - `scripts/static-qa.js` — HTML metadata, local links, public static assets.
 - `scripts/validate-lesson.js` — narrative lesson pattern enforcement.
+- `scripts/build-pages-artifact.js` via `npm run check:pages` — production Pages artifact whitelist and link check.
 
 For browser interaction smoke tests, serve locally:
 
@@ -52,6 +53,15 @@ Then open:
 - <http://127.0.0.1:8000/vocab-sr/>
 - <http://127.0.0.1:8000/lessons/lesson-01/>
 - <http://127.0.0.1:8000/lessons/lesson-b2-radiator/>
+- <http://127.0.0.1:8000/lessons/lesson-b2-job-followup/>
+
+To inspect the exact GitHub Pages artifact locally:
+
+```bash
+npm run check:pages
+cd .dist/pages
+python3 -m http.server 8000
+```
 
 ## Data conventions
 

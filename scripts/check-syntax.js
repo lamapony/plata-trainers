@@ -6,7 +6,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
-const ignore = new Set([".git", "node_modules"]);
+const ignore = new Set([".git", "node_modules", "dist", ".dist"]);
 const files = [];
 
 function walk(dir) {

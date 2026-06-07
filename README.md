@@ -1,8 +1,9 @@
 # Platå Trainers
 
 [![QA](https://github.com/lamapony/plata-trainers/actions/workflows/qa.yml/badge.svg)](https://github.com/lamapony/plata-trainers/actions/workflows/qa.yml)
+[![Pages](https://github.com/lamapony/plata-trainers/actions/workflows/pages.yml/badge.svg)](https://github.com/lamapony/plata-trainers/actions/workflows/pages.yml)
 
-Open-source Danish plateau-breaker for Danish learners who are no longer starting from zero but still feel stuck. Static HTML/JS, no build step, no backend.
+Open-source Danish plateau-breaker for Danish learners who are no longer starting from zero but still feel stuck. Static HTML/JS, no app build step, no backend.
 Live demo: [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/).
 
 Platå does not try to teach Danish from the beginning. It helps learners overcome the plateau: the point where they know enough Danish to recognize the language, but not enough to act fluently under social pressure.
@@ -19,7 +20,7 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Private by default:** browser LocalStorage only; no accounts, backend, analytics, or tracking.
 - **Contributor-friendly data:** exercises are plain JavaScript data files with validation scripts and narrative lesson schemas.
 - **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals and deterministic simulation.
-- **Static and forkable:** every trainer can run from `index.html` or GitHub Pages without a build step.
+- **Static and forkable:** every trainer can run from `index.html`; GitHub Pages deploys a checked static artifact.
 
 ## Available trainers
 
@@ -27,7 +28,7 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 |---------|--------|-------------|
 | [Lesson 01: The First Morning](./lessons/lesson-01/) | v0.1 | Narrative A0/A1 onboarding: arrive in Copenhagen, meet Lene, read signs, use `tak`, and say `Jeg hedder ...`. |
 | [B2: Det afhænger af, hvordan du siger det](./lessons/lesson-b2-radiator/) | v1.0 | B2 narrative: register, modal particles, complaint tone, and social consequences. Your wording changes the outcome. |
-| [B2: Efter interviews](./lessons/lesson-b2-job-followup/) | v0.1 | Professional follow-up after interviews: email tone, LinkedIn register, and patient precision. |
+| [B2: Efter interviews](./lessons/lesson-b2-job-followup/) | v1.0 gold | Professional follow-up after interviews: email tone, LinkedIn register, and patient precision. |
 | [bøjning-drill](./bojning-drill/) | v0.2 | Verb tenses (nutid/datid/førnutid) + noun bøjning (bestemt/ubestemt, ental/flertal). Type the answer. |
 | [ordstilling-drill](./ordstilling-drill/) | v0.1 | V2 rule, inversion, ledsætninger. Multiple choice with explanations. |
 | [vocab-sr](./vocab-sr/) | v0.1 | Spaced-repetition vocabulary, DA ↔ RU. 48 high-frequency A2-B1 words. |
@@ -54,6 +55,13 @@ No build, no dependencies, no server required. You can also open any trainer's `
 npm run check
 ```
 
+Production Pages artifact:
+
+```bash
+npm run build:pages
+npm run check:pages
+```
+
 Individual checks:
 
 ```bash
@@ -66,6 +74,7 @@ node scripts/static-qa.js
 node scripts/check-syntax.js
 node scripts/validate-lesson.js
 node scripts/simulate-gold-lessons.js
+npm run check:pages
 ```
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. See [GOLD_LESSON_QUALITY_ENGINE.md](./docs/GOLD_LESSON_QUALITY_ENGINE.md) for the gold lesson quality contract. See [ROADMAP.md](./ROADMAP.md) for planned trainer expansion.

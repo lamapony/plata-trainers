@@ -4,9 +4,10 @@
 const fs = require("fs");
 const path = require("path");
 
-const root = path.resolve(__dirname, "..");
+const repoRoot = path.resolve(__dirname, "..");
+const root = process.env.PUBLIC_ROOT ? path.resolve(repoRoot, process.env.PUBLIC_ROOT) : repoRoot;
 const htmlFiles = [];
-const ignore = new Set([".git", "node_modules", "dist"]);
+const ignore = new Set([".git", "node_modules", "dist", ".dist"]);
 
 function walk(dir) {
   for (const name of fs.readdirSync(dir)) {
@@ -34,6 +35,11 @@ function targetPath(file, href) {
   if (clean.endsWith("/")) t = path.join(t, "index.html");
   if (!path.extname(t)) t = path.join(t, "index.html");
   return t;
+}
+
+if (!fs.existsSync(root)) {
+  console.error(`static QA failed: PUBLIC_ROOT does not exist: ${root}`);
+  process.exit(1);
 }
 
 walk(root);
