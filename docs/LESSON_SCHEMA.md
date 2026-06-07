@@ -147,7 +147,8 @@ Pair left items to right items. Click left, then click right.
     {
       id: "pair-id",
       left: "Danish text (shown left)",
-      right: "English meaning (shown right)"
+      right: "English meaning (shown right)",
+      feedback: "Why this match is correct" // required for B2 match scenes
     }
   ]
 }
@@ -167,13 +168,17 @@ Complete a sentence with a keyword check.
   prefix: "Det går fint nok. Der har været lidt bøvl med varmen, men",
   placeholder: "jeg har bedt udlejeren om en konkret dato",
   acceptKeywords: ["udlejer", "dato", "bedt", "varme"],  // at least one must appear
+  acceptKeywordGroups: [                 // optional: every group must match once
+    { name: "agency", keywords: ["bedt", "skrevet", "ringet"] },
+    { name: "concrete next step", keywords: ["dato", "tid", "udlejer"] }
+  ],
   success: "Good. Your tone is balanced.",
   failure: "Try including an action word like: udlejer, dato, bedt.",
   effects: { workplaceTrust: 1 }   // OPTIONAL: applied on correct completion
 }
 ```
 
-If `acceptKeywords` is omitted, any non-empty input is accepted.
+If `acceptKeywordGroups` is present, every group must match at least one keyword. Otherwise `acceptKeywords` accepts any one listed keyword. If both are omitted, any non-empty input is accepted.
 
 ## Social state system (B2+)
 
@@ -223,6 +228,7 @@ All lessons inherit the headpage-v2 design system:
 - One scene = one active pattern
 - B2 scenes must name their `targetPhrases`; these are the Danish phrases the scene actively trains, not decorative vocabulary
 - B2 lessons must include `sourceNotes` with URLs and a short `supports` list
+- B2 match pairs must include diagnostic `feedback`
 - A new word appears in ≥2 modes (dialogue/sign/action/feedback)
 - If a word appears only once, it's flavour — not a learning target
 - Grammar terms only when the scene needs them

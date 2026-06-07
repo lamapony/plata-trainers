@@ -193,7 +193,7 @@
       r.addEventListener("click", function () {
         var ok = ctx.state.selectedLeft && ctx.state.selectedLeft.id === pair.id;
         $("#feedback").className = "feedback show " + (ok ? "ok" : "warn");
-        $("#feedback").textContent = ok ? "Correct. " + pair.left.split(".")[0] + " — the match is right." : "Not this match. Try the other pairing.";
+        $("#feedback").textContent = ok ? (pair.feedback || ("Correct. " + pair.left.split(".")[0] + " — the match is right.")) : "Not this match. Try the other pairing.";
         if (!ctx.state.attempts[scene.id + pair.id]) {
           record(ctx.tracker, scene, ok, (ctx.state.selectedLeft ? ctx.state.selectedLeft.left : "") + " → " + pair.right, pair.left + " → " + pair.right);
           ctx.state.attempts[scene.id + pair.id] = true;
@@ -215,21 +215,33 @@
   }
 
   /* ---- completion renderer ---- */
+  function checkCompletion(scene, value) {
+    var lower = value.toLowerCase();
+    if (scene.acceptKeywordGroups && scene.acceptKeywordGroups.length) {
+      var missing = [];
+      scene.acceptKeywordGroups.forEach(function (group) {
+        var keywords = group.keywords || [];
+        var matched = keywords.some(function (kw) { return lower.indexOf(kw) !== -1; });
+        if (!matched) missing.push(group.name || "required signal");
+      });
+      return { ok: missing.length === 0, missing: missing };
+    }
+    if (scene.acceptKeywords && scene.acceptKeywords.length) {
+      return { ok: scene.acceptKeywords.some(function (kw) { return lower.indexOf(kw) !== -1; }), missing: [] };
+    }
+    return { ok: value.length > 0, missing: [] };
+  }
+
   function renderCompletion(ctx, scene) {
     var body = $("#exercise-body");
     body.innerHTML = "<div class='sentence'><span lang='da'>" + escapeHtml(scene.prefix) + "</span><input id='name' class='inline-input b2-input' autocomplete='off' placeholder='" + escapeHtml(scene.placeholder) + "'></div><button class='primary small' id='complete' type='button'>Complete</button>";
     $("#complete").addEventListener("click", function () {
       var value = $("#name").value.trim();
-      var ok = false;
-      if (scene.acceptKeywords && scene.acceptKeywords.length) {
-        var lower = value.toLowerCase();
-        ok = scene.acceptKeywords.some(function (kw) { return lower.indexOf(kw) !== -1; });
-      } else {
-        ok = value.length > 0;
-      }
+      var checked = checkCompletion(scene, value);
+      var ok = checked.ok;
       if (ok && scene.effects) applyEffects(ctx.state, scene.effects);
       $("#feedback").className = "feedback show " + (ok ? "ok" : "warn");
-      $("#feedback").textContent = ok ? scene.success : scene.failure;
+      $("#feedback").textContent = ok ? scene.success : scene.failure + (checked.missing.length ? " Missing: " + checked.missing.join(", ") + "." : "");
       if (!ctx.state.attempts[scene.id]) {
         record(ctx.tracker, scene, ok, scene.prefix + " " + value, scene.prefix + " + action");
         ctx.state.attempts[scene.id] = true;

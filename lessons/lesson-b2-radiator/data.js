@@ -51,9 +51,9 @@ window.PLATA_LESSON_B2_RADIATOR = {
       targetPhrases: ["Der er blevet noteret", "reklamation vedrørende radiatoren", "vil blive sendt", "de lover ikke en dato"],
       prompt: "What does the reply actually promise?",
       options: [
-        { id: "too-trusting", label: "De lover, at radiatoren bliver fikset hurtigt.", detail: "too trusting", correct: false, effects: { landlordTension: 0 }, feedback: "No. The email sounds responsible, but it gives no date and no named actor." },
-        { id: "accurate", label: "De har registreret sagen, men de lover ikke en dato.", detail: "accurate reading", correct: true, effects: { landlordTension: 0, workplaceTrust: 1 }, feedback: "Yes. You separate politeness from commitment. That is B2 reading." },
-        { id: "too-aggressive", label: "De nægter at reparere radiatoren.", detail: "too aggressive", correct: false, effects: { landlordTension: 1 }, feedback: "Too far. They have not refused. B2 means noticing evasion without inventing conflict." }
+        { id: "too-trusting", label: "De lover, at radiatoren bliver fikset hurtigt.", detail: "too trusting", correct: false, effects: { landlordTension: 0 }, feedback: "Diagnostic: you treated passive planning language as a concrete appointment. There is no actor, date, or deadline." },
+        { id: "accurate", label: "De har registreret sagen, men de lover ikke en dato.", detail: "accurate reading", correct: true, effects: { landlordTension: 0, workplaceTrust: 1 }, feedback: "Diagnostic: correct. You identified the only commitment: the case is registered. Everything after that is process language, not a repair promise." },
+        { id: "too-aggressive", label: "De nægter at reparere radiatoren.", detail: "too aggressive", correct: false, effects: { landlordTension: 1 }, feedback: "Diagnostic: you converted missing commitment into refusal. B2 reading means naming evasion without adding an accusation the text does not support." }
       ],
       carry: "Carry-forward: official passive wording like 'Der er blevet noteret en reklamation vedrørende radiatoren' and 'vil blive sendt' can sound polite while avoiding hvem, hvornår, sagen, håndværker, passer ind i planlægningen, registreret, and lover.",
       tags: ["B2", "passive", "official-register", "housing"]
@@ -73,10 +73,10 @@ window.PLATA_LESSON_B2_RADIATOR = {
       targetPhrases: ["det er da helt fint", "han svarer jo", "det er sgu ikke godt nok", "det løser sig nok"],
       prompt: "Match each line to the stance it carries.",
       pairs: [
-        { id: "soften", left: "Ej, det er da helt fint. Han svarer jo.", right: "de-escalating; expects agreement" },
-        { id: "escalate", left: "Det er sgu ikke godt nok. Skriv igen.", right: "supportive but escalatory" },
-        { id: "practical", left: "Det løser sig nok, men jeg ville bede om en dato.", right: "cautious and practical" },
-        { id: "suspicious", left: "Han prøver bare at trække tiden.", right: "suspicious and dismissive" }
+        { id: "soften", left: "Ej, det er da helt fint. Han svarer jo.", right: "de-escalating; expects agreement", feedback: "Da lowers the temperature; jo treats the reply as something you should already accept." },
+        { id: "escalate", left: "Det er sgu ikke godt nok. Skriv igen.", right: "supportive but escalatory", feedback: "Sgu adds emotional force. It supports your frustration, but it also pushes you toward escalation." },
+        { id: "practical", left: "Det løser sig nok, men jeg ville bede om en dato.", right: "cautious and practical", feedback: "Nok softens the prediction; bede om en dato turns the emotion into a concrete next step." },
+        { id: "suspicious", left: "Han prøver bare at trække tiden.", right: "suspicious and dismissive", feedback: "Bare reduces the landlord's explanation to a tactic. Useful in chat, risky in formal writing." }
       ],
       carry: "Carry-forward: particles become social variables, not vocabulary trivia; 'det løser sig nok' calms, while 'han prøver at trække tiden' escalates suspicion.",
       tags: ["B2", "modal-particles", "subtext", "informal-register"]
@@ -92,9 +92,9 @@ window.PLATA_LESSON_B2_RADIATOR = {
       targetPhrases: ["jeg vil gerne bede om", "en mere præcis dato", "temperaturen er faldet", "sgu alt for koldt"],
       prompt: "Choose the best formal sentence for the landlord.",
       options: [
-        { id: "formal-clear", label: "Jeg vil gerne bede om en mere præcis dato, da temperaturen er faldet til under 12 grader.", detail: "clear formal request", correct: true, effects: { landlordTension: -1, workplaceTrust: 1 }, feedback: "Clear, specific, and firm without sounding like a threat." },
-        { id: "formal-aggressive", label: "Jeg kræver, at I fikser det nu, for det er sgu alt for koldt.", detail: "register clash", correct: false, effects: { landlordTension: 2, sofiaTrust: -1 }, feedback: "The content is understandable, but the register clash escalates the conflict." },
-        { id: "formal-passive", label: "Det løser sig nok, men det ville være fint med varme på et tidspunkt.", detail: "too weak", correct: false, effects: { landlordTension: 0, workplaceTrust: -1 }, feedback: "Too soft. You sound like you are apologising for having a radiator." }
+        { id: "formal-clear", label: "Jeg vil gerne bede om en mere præcis dato, da temperaturen er faldet til under 12 grader.", detail: "clear formal request", correct: true, effects: { landlordTension: -1, workplaceTrust: 1 }, feedback: "Diagnostic: strong formal Danish. Bede om keeps the request civil; præcis dato and 12 grader make it actionable." },
+        { id: "formal-aggressive", label: "Jeg kræver, at I fikser det nu, for det er sgu alt for koldt.", detail: "register clash", correct: false, effects: { landlordTension: 2, sofiaTrust: -1 }, feedback: "Diagnostic: the facts are usable, but kræver + nu + sgu moves the message from firm to hostile. Save sgu for private chat." },
+        { id: "formal-passive", label: "Det løser sig nok, men det ville være fint med varme på et tidspunkt.", detail: "too weak", correct: false, effects: { landlordTension: 0, workplaceTrust: -1 }, feedback: "Diagnostic: too much softening. Nok, ville være fint, and på et tidspunkt remove the date, actor, and pressure." }
       ],
       carry: "Carry-forward: being polite is not the same as being vague; a useful request asks for en mere præcis dato because temperaturen er faldet til under 12 grader.",
       tags: ["B2", "register", "complaint", "formal-writing"]
@@ -111,12 +111,15 @@ window.PLATA_LESSON_B2_RADIATOR = {
       ],
       notice: "Danish understatement can be socially intelligent, but passivity can hide inside it.",
       targetPhrases: ["det går fint nok", "lidt bøvl med varmen", "jeg har bedt udlejeren", "en konkret dato"],
-      prompt: "Complete a balanced B2 answer. Include at least one key action word.",
+      prompt: "Complete a balanced B2 answer. Include one agency word and one concrete next step.",
       prefix: "Det går fint nok. Der har været lidt bøvl med varmen, men",
       placeholder: "jeg har bedt udlejeren om en konkret dato",
-      acceptKeywords: ["udlejer", "dato", "bedt", "varme", "skrevet", "ringet", "kontaktet"],
-      success: "Good. Fint nok and lidt bøvl soften the social surface, while jeg har bedt keeps agency.",
-      failure: "Try including at least one action word: udlejer, dato, bedt, varme, skrevet, ringet, or kontaktet.",
+      acceptKeywordGroups: [
+        { name: "agency word", keywords: ["bedt", "skrevet", "ringet", "kontaktet", "aftalt"] },
+        { name: "concrete next step", keywords: ["dato", "tid", "håndværker", "udlejer", "varme"] }
+      ],
+      success: "Good. Fint nok and lidt bøvl soften the social surface, while an agency word plus a concrete next step keeps control of the situation.",
+      failure: "Your answer needs both sides of the B2 move: an agency word (bedt/skrevet/ringet/kontaktet) and a concrete next step (dato/tid/håndværker/udlejer/varme).",
       effects: { workplaceTrust: 1 },
       carry: "Carry-forward: tone is not honesty versus lying. When Mette asks 'Hvordan går det med lejligheden? Har du fået varme?', 'lidt bøvl med varmen' gives the useful amount of truth for the room.",
       tags: ["B2", "understatement", "workplace-register", "agency"]
@@ -132,9 +135,9 @@ window.PLATA_LESSON_B2_RADIATOR = {
       targetPhrases: ["være tydelig", "uden at lyde aggressiv", "undgå konflikt", "vente"],
       prompt: "Which sentence best summarises the lesson?",
       options: [
-        { id: "balanced", label: "Man kan godt være tydelig uden at lyde aggressiv.", detail: "balanced B2 takeaway", correct: true, feedback: "Exactly. This is the core adult-language move." },
-        { id: "always-hard", label: "Man skal altid skrive så hårdt som muligt.", detail: "overcorrection", correct: false, feedback: "Sometimes directness works, but always escalating makes you predictable and expensive socially." },
-        { id: "always-soft", label: "Man skal helst undgå konflikt og vente.", detail: "passive", correct: false, feedback: "Avoiding conflict is also a choice, and it can cost you heat, time, and respect." }
+        { id: "balanced", label: "Man kan godt være tydelig uden at lyde aggressiv.", detail: "balanced B2 takeaway", correct: true, feedback: "Diagnostic: yes. The lesson's pattern is clarity plus relationship control: actor, date, and tone all stay visible." },
+        { id: "always-hard", label: "Man skal altid skrive så hårdt som muligt.", detail: "overcorrection", correct: false, feedback: "Diagnostic: overcorrection. Hard language can solve one case while making every future exchange colder." },
+        { id: "always-soft", label: "Man skal helst undgå konflikt og vente.", detail: "passive", correct: false, feedback: "Diagnostic: passivity is also a cost. If you remove all pressure, you may preserve politeness while losing time, heat, and respect." }
       ],
       carry: "Unlocked B2 theme: Danish as social operating system — not only grammar, but consequence: be tydelig uden at lyde aggressiv.",
       tags: ["B2", "reflection", "argumentation", "social-consequence"]

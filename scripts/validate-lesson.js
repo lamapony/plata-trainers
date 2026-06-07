@@ -88,9 +88,10 @@ function sceneQualityText(scene) {
     scene.prefix || "",
     scene.acceptPrefix || "",
     ...(scene.acceptKeywords || []),
+    ...((scene.acceptKeywordGroups || []).flatMap(group => group.keywords || [])),
     ...(scene.dialogue || []).map(d => d.line),
     ...(scene.options || []).map(o => [o.label, o.detail, o.feedback].join(" ")),
-    ...(scene.pairs || []).map(p => [p.left, p.right].join(" "))
+    ...(scene.pairs || []).map(p => [p.left, p.right, p.feedback].join(" "))
   ].join(" ");
 }
 
@@ -220,6 +221,7 @@ function validateLesson(lessonMeta, lesson) {
           if (!nonEmptyString(pair.id)) issue(`${prefix}.pairs[${pi}].id: empty`);
           if (!nonEmptyString(pair.left)) issue(`${prefix}.pairs[${pi}].left: empty`);
           if (!nonEmptyString(pair.right)) issue(`${prefix}.pairs[${pi}].right: empty`);
+          if (isB2Lesson(lesson) && !nonEmptyString(pair.feedback)) issue(`${prefix}.pairs[${pi}].feedback: B2 match pairs require diagnostic feedback`);
         });
       }
     }
@@ -229,6 +231,22 @@ function validateLesson(lessonMeta, lesson) {
       if (!nonEmptyString(scene.placeholder)) issue(`${prefix}: completion requires placeholder`);
       if (!nonEmptyString(scene.success)) issue(`${prefix}: completion requires success message`);
       if (!nonEmptyString(scene.failure)) issue(`${prefix}: completion requires failure message`);
+      if (scene.acceptKeywordGroups) {
+        if (!Array.isArray(scene.acceptKeywordGroups) || scene.acceptKeywordGroups.length === 0) {
+          issue(`${prefix}.acceptKeywordGroups: must be a non-empty array when present`);
+        } else {
+          scene.acceptKeywordGroups.forEach((group, gi) => {
+            if (!nonEmptyString(group.name)) issue(`${prefix}.acceptKeywordGroups[${gi}].name: empty`);
+            if (!Array.isArray(group.keywords) || group.keywords.length === 0) {
+              issue(`${prefix}.acceptKeywordGroups[${gi}].keywords: required non-empty array`);
+            } else {
+              group.keywords.forEach((keyword, ki) => {
+                if (!nonEmptyString(keyword)) issue(`${prefix}.acceptKeywordGroups[${gi}].keywords[${ki}]: empty`);
+              });
+            }
+          });
+        }
+      }
     }
 
     // Extract Danish words from Danish-language content only for density check
