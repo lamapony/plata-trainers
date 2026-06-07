@@ -571,27 +571,55 @@
     return steps.map(stepTrackingKey).join("|");
   }
 
+  function paramFromHref(href, name) {
+    var query = String(href || "").split("#")[0].split("?")[1] || "";
+    if (!query) return "";
+    var pairs = query.split("&");
+    for (var i = 0; i < pairs.length; i++) {
+      var parts = pairs[i].split("=");
+      var key = "";
+      try {
+        key = decodeURIComponent(parts[0] || "");
+      } catch (err) {
+        key = parts[0] || "";
+      }
+      if (key === name) {
+        try {
+          return decodeURIComponent((parts[1] || "").replace(/\+/g, " "));
+        } catch (err2) {
+          return (parts[1] || "").replace(/\+/g, " ");
+        }
+      }
+    }
+    return "";
+  }
+
   function normalizePlanStep(step, index) {
     step = step || {};
+    var primaryHref = step.primaryHref || "#";
     var normalized = {
       number: Number(step.number || index + 1),
       kind: step.kind || "continue",
       targetKind: step.targetKind || step.kind || "continue",
       trainerId: step.trainerId || "",
-      signalTag: step.signalTag || "",
+      signalTag: step.signalTag || paramFromHref(primaryHref, "signal"),
       trainerName: step.trainerName || "",
       trainerIcon: step.trainerIcon || "",
       badge: step.badge || "Next",
       title: step.title || "Practice",
       copy: step.copy || "",
       primaryLabel: step.primaryLabel || "Open",
-      primaryHref: step.primaryHref || "#",
+      primaryHref: primaryHref,
       minutes: step.minutes || minutesForDecision(step.kind),
       score: Number(step.score || 0),
       attemptsAtStart: Number(step.attemptsAtStart || 0),
       lastSessionDateAtStart: step.lastSessionDateAtStart || "",
       competency: normalizeCompetency(step.competency),
-      reasons: Array.isArray(step.reasons) ? step.reasons.slice(0, 6) : []
+      reasons: Array.isArray(step.reasons) ? step.reasons.slice(0, 6) : [],
+      startedAt: step.startedAt || "",
+      completedAt: step.completedAt || "",
+      lastSeenAt: step.lastSeenAt || "",
+      completionEvidence: step.completionEvidence && typeof step.completionEvidence === "object" ? step.completionEvidence : null
     };
     normalized.routeId = step.routeId || stepRouteId(normalized, index);
     return normalized;
@@ -728,6 +756,50 @@
     };
   }
 
+  function updateCurrentPracticePlanStep(options, updater) {
+    options = options || {};
+    var context = currentPracticePlanStep(options);
+    if (!context || !context.plan || !context.step) return null;
+    var plan = context.plan;
+    var step = plan.steps[context.stepIndex];
+    updater(step, plan, context);
+    savePracticePlan(plan);
+    return currentPracticePlanStep(options);
+  }
+
+  function evidencePayload(value) {
+    var source = value && typeof value === "object" ? value : {};
+    var out = {};
+    ["reason", "mode", "itemId", "sceneId", "trainerId", "correct", "total", "accuracy"].forEach(function (key) {
+      if (source[key] === undefined || source[key] === null || source[key] === "") return;
+      out[key] = source[key];
+    });
+    return out;
+  }
+
+  function markPracticePlanStepStarted(options) {
+    return updateCurrentPracticePlanStep(options, function (step) {
+      var now = new Date().toISOString();
+      if (!step.startedAt) step.startedAt = now;
+      step.lastSeenAt = now;
+    });
+  }
+
+  function markPracticePlanStepCompleted(options) {
+    options = options || {};
+    return updateCurrentPracticePlanStep(options, function (step) {
+      var now = new Date().toISOString();
+      if (!step.startedAt) step.startedAt = now;
+      step.lastSeenAt = now;
+      if (!step.completedAt) {
+        step.completedAt = now;
+        step.completionEvidence = evidencePayload(options.evidence || {});
+      } else if (!step.completionEvidence) {
+        step.completionEvidence = evidencePayload(options.evidence || {});
+      }
+    });
+  }
+
   function candidateFacts(items) {
     var facts = { keys: {}, byTrainer: {} };
     (items || []).forEach(function (item) {
@@ -755,15 +827,25 @@
     var attemptsMoved = attemptsNow > attemptsAtStart;
     var stillCurrent = !!facts.keys[stepTrackingKey(step)];
 
+    if (step.completedAt) {
+      return { status: "done", statusLabel: "Done", completionReason: "Tracked plan step completed." };
+    }
+
     if (step.kind === "repair") {
       if (!stillCurrent) {
         return { status: "done", statusLabel: "Done", completionReason: "Repair no longer appears in the current weak-signal plan." };
+      }
+      if (step.startedAt) {
+        return { status: "active", statusLabel: "In progress", completionReason: "" };
       }
       return { status: "open", statusLabel: "Open", completionReason: "" };
     }
 
     if (attemptsMoved) {
       return { status: "done", statusLabel: "Done", completionReason: "Trainer attempts increased since this plan was compiled." };
+    }
+    if (step.startedAt) {
+      return { status: "active", statusLabel: "In progress", completionReason: "" };
     }
     return { status: "open", statusLabel: "Open", completionReason: "" };
   }
@@ -803,6 +885,8 @@
     planFingerprint: planFingerprint,
     planStepHref: planStepHref,
     currentPracticePlanStep: currentPracticePlanStep,
+    markPracticePlanStepStarted: markPracticePlanStepStarted,
+    markPracticePlanStepCompleted: markPracticePlanStepCompleted,
     readPracticePlan: readPracticePlan,
     savePracticePlan: savePracticePlan,
     clearPracticePlan: clearPracticePlan,

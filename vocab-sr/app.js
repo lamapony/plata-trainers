@@ -192,6 +192,7 @@
         els.sumMistakes.appendChild(li);
       }
     }
+    markPlanStepComplete(total, correct);
     renderNextStep();
     renderStats();
   }
@@ -224,6 +225,21 @@
     slot.className = "plan-context-slot";
     slot.innerHTML = html;
     document.getElementById("stats").insertAdjacentElement("afterend", slot);
+  }
+
+  function markPlanStepComplete(total, correct) {
+    if (!window.PlataPlanner || !window.PlataPlanner.markPracticePlanStepCompleted || total <= 0) return;
+    window.PlataPlanner.markPracticePlanStepCompleted({
+      trainerId: TRAINER_ID,
+      evidence: {
+        reason: "drill-session-complete",
+        mode: direction,
+        trainerId: TRAINER_ID,
+        total,
+        correct,
+        accuracy: Math.round((correct / Math.max(1, total)) * 100)
+      }
+    });
   }
 
   function escapeHtml(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }

@@ -422,6 +422,7 @@ function runHashNavigationSmoke(lesson) {
 
 function runPlanContextSmoke(lesson) {
   const env = loadRuntime(lesson, {
+    search: "?mode=repair&signal=passive-agency",
     hash: "#official-reply-passive"
   }, setupEnv => {
     const planner = setupEnv.context.PlataPlanner;
@@ -440,13 +441,19 @@ function runPlanContextSmoke(lesson) {
         minutes: "4-6 min"
       }]
     });
-    setupEnv.context.location.search = "?plan=" + encodeURIComponent(plan.planToken) + "&step=" + encodeURIComponent(plan.steps[0].routeId);
+    setupEnv.context.location.search = "?mode=repair&signal=passive-agency&plan=" + encodeURIComponent(plan.planToken) + "&step=" + encodeURIComponent(plan.steps[0].routeId);
   });
 
   assert(/plan-context-card/.test(env.elements["#scene"].innerHTML), "active plan route renders plan context");
   assert(/Active plan . Step 1 of 1/.test(env.elements["#scene"].innerHTML), "active plan context renders step count");
   assert(/Repair Read passive agency/.test(env.elements["#scene"].innerHTML), "active plan context renders step title");
   assert(/Back to plan/.test(env.elements["#scene"].innerHTML), "active plan context links back to dashboard");
+  assert(env.context.PlataPlanner.readPracticePlan().steps[0].startedAt, "active plan context marks step started");
+
+  env.elements["#exercise-body"].children[1].click();
+  const step = env.context.PlataPlanner.readPracticePlan().steps[0];
+  assert(step.completedAt, "correct repair marks active plan step completed");
+  assert(step.completionEvidence.reason === "repair-correct", "correct repair stores completion evidence");
 }
 
 function runGoldRuntimePathSmoke(lessons) {

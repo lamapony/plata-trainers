@@ -215,7 +215,9 @@ h3 { font-size: 30px; }
 .plan-step-number { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ember-soft); color: var(--ember); font-family: "JetBrains Mono", monospace; font-weight: 800; }
 .plan-step-meta { display: flex; flex-wrap: wrap; gap: 8px; color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
 .plan-step-status { border: 1px solid var(--line); border-radius: 999px; padding: 2px 7px; color: var(--muted); }
+.plan-step-status.active { border-color: oklch(0.72 0.16 55 / 0.62); background: var(--ember-soft); color: var(--ember); }
 .plan-step-status.done { border-color: oklch(0.74 0.12 145 / 0.55); background: oklch(0.74 0.12 145 / 0.12); color: var(--green); }
+.plan-step.active .plan-step-number { background: var(--ember-soft); color: var(--ember); }
 .plan-step.done { opacity: 0.78; }
 .plan-step.done .plan-step-number { background: oklch(0.74 0.12 145 / 0.14); color: var(--green); }
 .plan-step h4 { margin: 7px 0 6px; color: var(--text); font-size: 22px; line-height: 1.1; }

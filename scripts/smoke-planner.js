@@ -263,6 +263,23 @@ function runDashboardDecisionSmoke(context) {
     { trainer, stats: { total: 1, lastSessionDate: "2026-06-08" }, decision: repair, index: 1 }
   ]);
   assert(openPlan.openCount === 1 && openPlan.steps[0].status === "open", "tracked repair stays open while current repair matches");
+  const startedStep = planner.markPracticePlanStepStarted({ trainerId: trainer.id });
+  assert(startedStep.step.startedAt, "practice plan route can mark a step started");
+  const activePlan = planner.planStatus(planner.readPracticePlan(), [
+    { trainer, stats: { total: 1, lastSessionDate: "2026-06-08" }, decision: repair, index: 1 }
+  ]);
+  assert(activePlan.steps[0].status === "active", "started practice step renders as in progress");
+  const completedStep = planner.markPracticePlanStepCompleted({
+    trainerId: trainer.id,
+    evidence: { reason: "unit-test", trainerId: trainer.id, correct: true }
+  });
+  assert(completedStep.step.completedAt, "practice plan route can mark a step completed");
+  assert(completedStep.step.completionEvidence.reason === "unit-test", "practice plan completion stores evidence");
+  const completedPlan = planner.planStatus(planner.readPracticePlan(), [
+    { trainer, stats: { total: 1, lastSessionDate: "2026-06-08" }, decision: repair, index: 1 }
+  ]);
+  assert(completedPlan.completed && completedPlan.steps[0].status === "done", "completed ledger step renders done");
+  planner.savePracticePlan(savedPlan);
   const donePlan = planner.planStatus(savedPlan, [
     { trainer, stats: { total: 2, lastSessionDate: "2026-06-08" }, decision: { ...repair, kind: "continue", signalTag: "", primaryHref: trainer.path }, index: 1 }
   ]);

@@ -216,6 +216,19 @@
           correct: true
         });
       }
+      if (correct && root.PlataPlanner && root.PlataPlanner.markPracticePlanStepCompleted) {
+        root.PlataPlanner.markPracticePlanStepCompleted({
+          trainerId: ctx.lesson.id,
+          evidence: {
+            reason: "repair-correct",
+            mode: mode,
+            itemId: scene.id,
+            sceneId: scene.id,
+            trainerId: ctx.lesson.id,
+            correct: true
+          }
+        });
+      }
     }
     tracker.save();
   }
@@ -246,6 +259,19 @@
     if (repair.action) html += "<p class='repair-closure-action'>" + escapeHtml(repair.action) + "</p>";
     html += "</aside>";
     return html;
+  }
+
+  function markLessonPlanStepComplete(ctx, reason) {
+    if (!root.PlataPlanner || !root.PlataPlanner.markPracticePlanStepCompleted) return;
+    root.PlataPlanner.markPracticePlanStepCompleted({
+      trainerId: ctx.lesson.id,
+      evidence: {
+        reason: reason || "lesson-complete",
+        mode: ctx.state.repair && ctx.state.repair.active ? "repair" : "lesson",
+        trainerId: ctx.lesson.id,
+        correct: true
+      }
+    });
   }
 
   /* ---- renderers ---- */
@@ -472,6 +498,11 @@
     var lesson = ctx.lesson;
     var ending = findEnding(lesson, ctx.state.endingId);
     var html = "";
+    if (!ctx.state.repair || !ctx.state.repair.active) {
+      markLessonPlanStepComplete(ctx, "lesson-complete");
+    } else if (repairResolved(ctx)) {
+      markLessonPlanStepComplete(ctx, "repair-complete");
+    }
     if (root.PlataNextStep && root.PlataNextStep.renderPlanContext) {
       html += root.PlataNextStep.renderPlanContext({
         trainerId: lesson.id,

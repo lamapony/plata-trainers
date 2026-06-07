@@ -39,7 +39,9 @@
 
   function planContext(options) {
     var planner = root.PlataPlanner;
-    return planner && planner.currentPracticePlanStep ? planner.currentPracticePlanStep(options || {}) : null;
+    if (!planner) return null;
+    if (planner.markPracticePlanStepStarted) return planner.markPracticePlanStepStarted(options || {});
+    return planner.currentPracticePlanStep ? planner.currentPracticePlanStep(options || {}) : null;
   }
 
   function renderPlanContext(options) {

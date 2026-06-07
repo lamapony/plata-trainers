@@ -240,6 +240,41 @@ function runSeededMasterySmoke() {
   assert(/Open repair scene/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation opens the repair scene");
 }
 
+function runStartedPlanSmoke() {
+  const env = makeContext();
+  vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
+  seedWeakMasteryState(env);
+  vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
+  vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
+  vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
+
+  const planner = env.context.PlataPlanner;
+  const plan = planner.savePracticePlan({
+    kind: "repair",
+    title: "Repair plan",
+    copy: "Track an active repair step.",
+    steps: [{
+      number: 1,
+      kind: "repair",
+      trainerId: "lesson-b2-radiator-register",
+      title: "Repair Read passive agency",
+      copy: "Replay the source scene.",
+      primaryLabel: "Open repair scene",
+      primaryHref: "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive",
+      minutes: "4-6 min"
+    }]
+  });
+  plan.steps[0].startedAt = "2026-06-08T00:00:00.000Z";
+  planner.savePracticePlan(plan);
+
+  vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
+
+  assert(/plan-step repair active/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders started repair as active");
+  assert(/In progress/.test(env.elements["#practice-plan"].innerHTML), "dashboard labels started plan step in progress");
+}
+
 function runClosedMasterySmoke() {
   const env = makeContext();
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
@@ -282,6 +317,7 @@ async function runDynamicCatalogSmoke() {
 async function run() {
   runEmptyDashboardSmoke();
   runSeededMasterySmoke();
+  runStartedPlanSmoke();
   runClosedMasterySmoke();
   await runDynamicCatalogSmoke();
 
@@ -290,6 +326,7 @@ async function run() {
   console.log("ok - dashboard renders competency graph diagnostics");
   console.log("ok - dashboard renders compiled practice plans");
   console.log("ok - dashboard persists active practice-plan tracking");
+  console.log("ok - dashboard renders active practice-plan execution state");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");
   console.log("ok - dashboard loads lesson data from catalog");
