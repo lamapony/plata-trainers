@@ -216,30 +216,43 @@ function renderPracticePlan(candidates) {
   if (!container) return;
   container.innerHTML = "";
   const planner = window.PlataPlanner;
-  const plan = planner && planner.practicePlan ? planner.practicePlan(candidates, { limit: 3 }) : null;
+  const compiled = planner && planner.practicePlan ? planner.practicePlan(candidates, { limit: 3 }) : null;
+  const active = planner && planner.readPracticePlan ? planner.readPracticePlan() : null;
+  let plan = active && active.steps && active.steps.length ? active : compiled;
+  if ((!active || !active.steps || active.steps.length === 0) && planner && planner.savePracticePlan && compiled && compiled.steps && compiled.steps.length) {
+    plan = planner.savePracticePlan(compiled);
+  }
+  if (planner && planner.planStatus && plan) {
+    plan = planner.planStatus(plan, candidates);
+  }
   if (!plan || !plan.steps || plan.steps.length === 0) {
     container.innerHTML = '<p class="narrative">Start any trainer to compile a short practice plan.</p>';
     return;
   }
 
+  const canCompileNext = plan.completed && compiled && compiled.steps && compiled.steps.length
+    && (!planner.planFingerprint || planner.planFingerprint(compiled) !== plan.fingerprint);
+
   container.innerHTML = `
     <article class="practice-plan-card ${escapeHtml(plan.kind || "continue")}">
       <div class="practice-plan-head">
         <div>
-          <p class="eyebrow">Compiled plan</p>
+          <p class="eyebrow">${plan.completed ? "Completed plan" : "Active plan"}</p>
           <h3>${escapeHtml(plan.title)}</h3>
           <p>${escapeHtml(plan.copy)}</p>
+          ${canCompileNext ? '<button class="btn" id="compile-next-plan" type="button">Compile next plan</button>' : ""}
         </div>
         <span>${escapeHtml(plan.meta || "")}</span>
       </div>
       <div class="plan-steps">
         ${plan.steps.map(step => `
-          <div class="plan-step ${escapeHtml(step.kind)}">
+          <div class="plan-step ${escapeHtml(step.kind)} ${escapeHtml(step.status || "open")}">
             <span class="plan-step-number">${step.number}</span>
             <div>
               <div class="plan-step-meta">
                 <span>${escapeHtml(step.trainerIcon)} ${escapeHtml(step.trainerName)}</span>
                 <span>${escapeHtml(step.minutes)}</span>
+                <span class="plan-step-status ${escapeHtml(step.status || "open")}">${escapeHtml(step.statusLabel || "Open")}</span>
               </div>
               <h4>${escapeHtml(step.title)}</h4>
               <p>${escapeHtml(step.copy)}</p>
@@ -251,6 +264,13 @@ function renderPracticePlan(candidates) {
       </div>
     </article>
   `;
+
+  $("#compile-next-plan")?.addEventListener("click", () => {
+    if (planner && planner.savePracticePlan && compiled) {
+      planner.savePracticePlan(compiled);
+    }
+    renderDashboard();
+  });
 }
 
 function renderDueCards(candidates) {
@@ -535,8 +555,9 @@ function importAll() {
           });
         }
 
+        window.PlataPlanner?.clearPracticePlan?.();
         statusEl.textContent = `Imported ${imported} trainer state(s)${skipped ? `, skipped ${skipped}` : ""}. Refresh to see changes.`;
-        statusEl.style.color = "var(--forest)";
+        statusEl.style.color = "var(--green)";
         setTimeout(() => { statusEl.textContent = ""; }, 5000);
       } catch (err) {
         $("#import-status").textContent = "Invalid JSON: " + err.message;

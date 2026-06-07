@@ -208,11 +208,16 @@ h3 { font-size: 30px; }
 .practice-plan-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: start; margin-bottom: 18px; }
 .practice-plan-head h3 { font-size: clamp(30px, 4vw, 46px); letter-spacing: -0.025em; }
 .practice-plan-head p { margin: 10px 0 0; max-width: 760px; color: var(--muted); line-height: 1.55; }
+.practice-plan-head .btn { margin-top: 14px; min-height: 38px; padding: 0 14px; font-size: 13px; }
 .practice-plan-head > span { padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 11px; white-space: nowrap; }
 .plan-steps { display: grid; gap: 10px; }
 .plan-step { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
 .plan-step-number { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ember-soft); color: var(--ember); font-family: "JetBrains Mono", monospace; font-weight: 800; }
 .plan-step-meta { display: flex; flex-wrap: wrap; gap: 8px; color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+.plan-step-status { border: 1px solid var(--line); border-radius: 999px; padding: 2px 7px; color: var(--muted); }
+.plan-step-status.done { border-color: oklch(0.74 0.12 145 / 0.55); background: oklch(0.74 0.12 145 / 0.12); color: var(--green); }
+.plan-step.done { opacity: 0.78; }
+.plan-step.done .plan-step-number { background: oklch(0.74 0.12 145 / 0.14); color: var(--green); }
 .plan-step h4 { margin: 7px 0 6px; color: var(--text); font-size: 22px; line-height: 1.1; }
 .plan-step p { margin: 0 0 10px; color: var(--muted); line-height: 1.45; }
 .plan-step a { display: inline-flex; margin-top: 10px; color: var(--text); font-weight: 800; text-decoration-color: var(--ember); text-underline-offset: 4px; }

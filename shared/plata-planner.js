@@ -8,6 +8,8 @@
 
   var NON_DIAGNOSTIC_TAGS = { A0: true, A1: true, A2: true, B1: true, B2: true, lesson: true, repair: true };
   var DEFAULT_ENOUGH_THRESHOLD = 20;
+  var PLAN_SCHEMA_VERSION = 1;
+  var PRACTICE_PLAN_STORAGE_KEY = "plata:practice-plan:v1";
 
   function todayKey() {
     return new Date().toISOString().slice(0, 10);
@@ -443,14 +445,27 @@
     return String(decision.primaryHref || "") + "::" + String(decision.kind || "");
   }
 
+  function normalizeCompetency(competency) {
+    if (!competency) return null;
+    return {
+      id: competency.id || "",
+      label: competency.label || "",
+      copy: competency.copy || "",
+      signalCount: Number(competency.signalCount || 0)
+    };
+  }
+
   function planStep(item, number) {
     var decision = item.decision || {};
     var trainer = item.trainer || {};
+    var stats = item.stats || {};
     var competency = decision.competency || null;
     return {
       number: number,
       kind: decision.kind || "continue",
+      targetKind: decision.targetKind || decision.kind || "continue",
       trainerId: trainer.id || decision.trainerId || "",
+      signalTag: decision.signalTag || "",
       trainerName: trainer.name || "",
       trainerIcon: trainer.icon || "",
       badge: decision.badge || decision.eyebrow || "Next",
@@ -460,7 +475,9 @@
       primaryHref: decision.primaryHref || trainer.path || "#",
       minutes: minutesForDecision(decision.kind),
       score: Number(decision.score || 0),
-      competency: competency,
+      attemptsAtStart: Number(stats.total || 0),
+      lastSessionDateAtStart: stats.lastSessionDate || "",
+      competency: normalizeCompetency(competency),
       reasons: decision.reasons || []
     };
   }
@@ -512,6 +529,171 @@
     };
   }
 
+  function storage() {
+    try {
+      if (!root.localStorage) return null;
+      var probe = "plata:storage-probe";
+      root.localStorage.setItem(probe, "1");
+      root.localStorage.removeItem(probe);
+      return root.localStorage;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function stepTrackingKey(step) {
+    step = step || {};
+    return [
+      String(step.kind || ""),
+      String(step.trainerId || ""),
+      String(step.signalTag || ""),
+      String(step.primaryHref || "")
+    ].join("::");
+  }
+
+  function planFingerprint(plan) {
+    var steps = plan && Array.isArray(plan.steps) ? plan.steps : [];
+    return steps.map(stepTrackingKey).join("|");
+  }
+
+  function normalizePlanStep(step, index) {
+    step = step || {};
+    return {
+      number: Number(step.number || index + 1),
+      kind: step.kind || "continue",
+      targetKind: step.targetKind || step.kind || "continue",
+      trainerId: step.trainerId || "",
+      signalTag: step.signalTag || "",
+      trainerName: step.trainerName || "",
+      trainerIcon: step.trainerIcon || "",
+      badge: step.badge || "Next",
+      title: step.title || "Practice",
+      copy: step.copy || "",
+      primaryLabel: step.primaryLabel || "Open",
+      primaryHref: step.primaryHref || "#",
+      minutes: step.minutes || minutesForDecision(step.kind),
+      score: Number(step.score || 0),
+      attemptsAtStart: Number(step.attemptsAtStart || 0),
+      lastSessionDateAtStart: step.lastSessionDateAtStart || "",
+      competency: normalizeCompetency(step.competency),
+      reasons: Array.isArray(step.reasons) ? step.reasons.slice(0, 6) : []
+    };
+  }
+
+  function normalizePracticePlan(plan) {
+    if (!plan || !Array.isArray(plan.steps)) return null;
+    var steps = plan.steps.map(normalizePlanStep);
+    var kind = plan.kind || steps[0] && steps[0].kind || "empty";
+    var normalized = {
+      schemaVersion: PLAN_SCHEMA_VERSION,
+      trackedAt: plan.trackedAt || new Date().toISOString(),
+      kind: kind,
+      title: plan.title || planTitle(kind),
+      copy: plan.copy || planCopy(kind, steps.length),
+      steps: steps,
+      primaryStep: steps[0] || null,
+      meta: plan.meta || "",
+      fingerprint: plan.fingerprint || ""
+    };
+    normalized.fingerprint = normalized.fingerprint || planFingerprint(normalized);
+    return normalized;
+  }
+
+  function readPracticePlan() {
+    var store = storage();
+    if (!store) return null;
+    try {
+      return normalizePracticePlan(JSON.parse(store.getItem(PRACTICE_PLAN_STORAGE_KEY) || "null"));
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function savePracticePlan(plan) {
+    var normalized = normalizePracticePlan(plan);
+    if (!normalized) return null;
+    var store = storage();
+    if (store) {
+      try {
+        store.setItem(PRACTICE_PLAN_STORAGE_KEY, JSON.stringify(normalized));
+      } catch (err) {
+        // Storage can be unavailable in privacy modes; the in-memory plan still renders.
+      }
+    }
+    return normalized;
+  }
+
+  function clearPracticePlan() {
+    var store = storage();
+    if (!store) return;
+    try {
+      store.removeItem(PRACTICE_PLAN_STORAGE_KEY);
+    } catch (err) {
+      // Ignore local storage failures.
+    }
+  }
+
+  function candidateFacts(items) {
+    var facts = { keys: {}, byTrainer: {} };
+    (items || []).forEach(function (item) {
+      var decision = item && item.decision || {};
+      var trainer = item && item.trainer || {};
+      var trainerId = trainer.id || decision.trainerId || "";
+      if (decision.primaryHref) {
+        facts.keys[stepTrackingKey({
+          kind: decision.kind || "",
+          trainerId: trainerId,
+          signalTag: decision.signalTag || "",
+          primaryHref: decision.primaryHref || ""
+        })] = true;
+      }
+      if (trainerId && !facts.byTrainer[trainerId]) facts.byTrainer[trainerId] = item;
+    });
+    return facts;
+  }
+
+  function statusForStep(step, facts) {
+    var trainer = facts.byTrainer[step.trainerId] || null;
+    var stats = trainer && trainer.stats || {};
+    var attemptsNow = Number(stats.total || 0);
+    var attemptsAtStart = Number(step.attemptsAtStart || 0);
+    var attemptsMoved = attemptsNow > attemptsAtStart;
+    var stillCurrent = !!facts.keys[stepTrackingKey(step)];
+
+    if (step.kind === "repair") {
+      if (!stillCurrent) {
+        return { status: "done", statusLabel: "Done", completionReason: "Repair no longer appears in the current weak-signal plan." };
+      }
+      return { status: "open", statusLabel: "Open", completionReason: "" };
+    }
+
+    if (attemptsMoved) {
+      return { status: "done", statusLabel: "Done", completionReason: "Trainer attempts increased since this plan was compiled." };
+    }
+    return { status: "open", statusLabel: "Open", completionReason: "" };
+  }
+
+  function planStatus(plan, items) {
+    var normalized = normalizePracticePlan(plan);
+    if (!normalized) return null;
+    var facts = candidateFacts(items || []);
+    var completedCount = 0;
+    normalized.steps = normalized.steps.map(function (step) {
+      var status = statusForStep(step, facts);
+      var enriched = Object.assign({}, step, status);
+      if (enriched.status === "done") completedCount++;
+      return enriched;
+    });
+    normalized.completedCount = completedCount;
+    normalized.openCount = Math.max(0, normalized.steps.length - completedCount);
+    normalized.completed = normalized.steps.length > 0 && normalized.openCount === 0;
+    normalized.meta = normalized.completed
+      ? "All " + normalized.steps.length + " tracked step" + (normalized.steps.length === 1 ? "" : "s") + " completed."
+      : completedCount + "/" + normalized.steps.length + " tracked step" + (normalized.steps.length === 1 ? "" : "s") + " completed.";
+    normalized.primaryStep = normalized.steps[0] || null;
+    return normalized;
+  }
+
   root.PlataPlanner = {
     todayAttempts: todayAttempts,
     sceneHref: sceneHref,
@@ -523,6 +705,12 @@
     dashboardDecision: dashboardDecision,
     rankDashboardDecisions: rankDashboardDecisions,
     practicePlan: practicePlan,
+    planFingerprint: planFingerprint,
+    readPracticePlan: readPracticePlan,
+    savePracticePlan: savePracticePlan,
+    clearPracticePlan: clearPracticePlan,
+    planStatus: planStatus,
+    practicePlanStorageKey: PRACTICE_PLAN_STORAGE_KEY,
     nonDiagnosticTags: NON_DIAGNOSTIC_TAGS
   };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -239,6 +239,24 @@ function runDashboardDecisionSmoke(context) {
   assert(plan.steps.length === 1, "practice plan does not pad repair work with starter tasks");
   assert(plan.steps[0].competency.id === "agency", "practice plan keeps root competency on repair step");
   assert(plan.steps[0].primaryHref.includes("mode=repair"), "practice plan repair step links to repair mode");
+
+  const trackedPlan = planner.practicePlan([
+    { trainer, stats: { total: 1, lastSessionDate: "2026-06-08" }, decision: repair, index: 1 }
+  ], { limit: 1 });
+  assert(trackedPlan.steps[0].attemptsAtStart === 1, "practice plan snapshots trainer attempts");
+  const savedPlan = planner.savePracticePlan(trackedPlan);
+  assert(savedPlan.fingerprint === planner.planFingerprint(trackedPlan), "saved practice plan stores a stable fingerprint");
+  assert(planner.readPracticePlan().fingerprint === savedPlan.fingerprint, "practice plan can be read from storage");
+  const openPlan = planner.planStatus(savedPlan, [
+    { trainer, stats: { total: 1, lastSessionDate: "2026-06-08" }, decision: repair, index: 1 }
+  ]);
+  assert(openPlan.openCount === 1 && openPlan.steps[0].status === "open", "tracked repair stays open while current repair matches");
+  const donePlan = planner.planStatus(savedPlan, [
+    { trainer, stats: { total: 2, lastSessionDate: "2026-06-08" }, decision: { ...repair, kind: "continue", signalTag: "", primaryHref: trainer.path }, index: 1 }
+  ]);
+  assert(donePlan.completed && donePlan.steps[0].status === "done", "tracked repair closes when current weak-signal plan changes");
+  planner.clearPracticePlan();
+  assert(planner.readPracticePlan() === null, "practice plan tracker can clear active plan");
 }
 
 function run() {
@@ -249,6 +267,7 @@ function run() {
   console.log("ok - planner recommends lesson repair from weak mastery");
   console.log("ok - planner ranks drill repeat, continue, and enough decisions");
   console.log("ok - planner ranks dashboard decisions from the same contract");
+  console.log("ok - planner tracks active practice-plan completion");
 }
 
 run();

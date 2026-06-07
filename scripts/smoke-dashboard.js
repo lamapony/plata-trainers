@@ -195,7 +195,10 @@ function runEmptyDashboardSmoke() {
   assert(env.elements["#trainer-cards"].children.length === 6, "dashboard renders all trainer cards");
   assert(env.elements["#due-cards"].children.length === 3, "dashboard renders practice recommendations");
   assert(/Starter plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders starter practice plan");
+  assert(/Active plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard labels the current tracked plan");
+  assert(/plan-step-status open/.test(env.elements["#practice-plan"].innerHTML), "dashboard marks starter plan step as open");
   assert(/Start Lesson 01/.test(env.elements["#practice-plan"].innerHTML), "dashboard starter plan includes first lesson");
+  assert(env.storage[env.context.PlataPlanner.practicePlanStorageKey], "dashboard persists active practice plan");
   assert(/No weak root skills/.test(env.elements["#competency-list"].innerHTML), "dashboard renders empty competency graph state");
   assert(/No weak mastery signals/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders empty mastery state");
   assert(/No raw weak tags detected/.test(env.elements["#weak-list"].innerHTML), "dashboard renders empty raw weak-tag state");
@@ -224,8 +227,11 @@ function runSeededMasterySmoke() {
   assert(/passive-agency/.test(env.elements["#competency-list"].innerHTML), "dashboard competency graph lists source signal");
   assert(/Root skill/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation carries root competency");
   assert(/Repair plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders repair practice plan");
+  assert(/Active plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders repair plan as the active tracked plan");
+  assert(/plan-step-status open/.test(env.elements["#practice-plan"].innerHTML), "dashboard marks repair step as open before closure");
   assert(/Agency and responsibility/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan shows root competency");
   assert(/mode=repair/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links repair mode");
+  assert(env.storage[env.context.PlataPlanner.practicePlanStorageKey], "dashboard stores repair plan tracker state");
   assert(/Read passive agency/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation highlights weak mastery");
   assert(/Open repair scene/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation opens the repair scene");
 }
@@ -279,6 +285,7 @@ async function run() {
   console.log("ok - dashboard renders mastery signal diagnostics");
   console.log("ok - dashboard renders competency graph diagnostics");
   console.log("ok - dashboard renders compiled practice plans");
+  console.log("ok - dashboard persists active practice-plan tracking");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");
   console.log("ok - dashboard loads lesson data from catalog");
