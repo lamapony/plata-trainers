@@ -51,10 +51,51 @@ const TRAINERS = [
   }
 ];
 
+const MASTERY_SIGNALS = {
+  "passive-agency": {
+    label: "Read passive agency",
+    evidence: "Passive process language is not the same as a concrete commitment."
+  },
+  "modal-particle-stance": {
+    label: "Read particle stance",
+    evidence: "Small words such as jo, da, sgu, nok, and bare change the social position of a sentence."
+  },
+  "formal-register-control": {
+    label: "Control formal register",
+    evidence: "A formal request can be concrete without importing private-chat force."
+  },
+  "understatement-with-agency": {
+    label: "Use understatement with agency",
+    evidence: "A workplace answer can sound calm while still naming an action and next step."
+  },
+  "consequence-aware-tone": {
+    label: "Choose consequence-aware tone",
+    evidence: "A B2 complaint should solve the problem and preserve enough relationship to live with the result."
+  }
+};
+const NON_DIAGNOSTIC_TAGS = new Set(["A0", "A1", "A2", "B1", "B2", "lesson"]);
+
 function $(sel) { return document.querySelector(sel); }
 function $$(sel) { return document.querySelectorAll(sel); }
 function escapeHtml(str) {
   return String(str || "").replace(/[&<>'"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': '&quot;' }[c]));
+}
+
+function isMasteryTag(tag) {
+  return Object.prototype.hasOwnProperty.call(MASTERY_SIGNALS, tag);
+}
+
+function enrichMasteryTag(weakTag) {
+  const spec = MASTERY_SIGNALS[weakTag.tag] || {};
+  return {
+    ...weakTag,
+    label: spec.label || weakTag.tag,
+    evidence: spec.evidence || ""
+  };
+}
+
+function isRawDiagnosticTag(tag) {
+  return !isMasteryTag(tag) && !NON_DIAGNOSTIC_TAGS.has(tag);
 }
 
 function loadTrainerState(trainerId) {
@@ -75,6 +116,7 @@ function computeStats(state) {
   const mastered = records.filter(r => r.mastered).length;
   const totalItems = records.length;
   const weakTags = kernel.getWeakTags ? kernel.getWeakTags(state, 10) : [];
+  const weakMastery = weakTags.filter(w => isMasteryTag(w.tag)).map(enrichMasteryTag);
   const registerProfile = kernel.getRegisterProfile ? kernel.getRegisterProfile(state) : { formal: 0, informal: 0, neutral: 0, total: 0 };
   return {
     total,
@@ -86,6 +128,7 @@ function computeStats(state) {
     longestStreak: meta.longestStreak || 0,
     lastSessionDate: meta.lastSessionDate || "",
     weakTags,
+    weakMastery,
     registerProfile
   };
 }
@@ -148,7 +191,10 @@ function renderDueCards() {
     return { trainer, stats };
   }).filter(x => x !== null)
     .sort((a, b) => {
-      // Prefer: has weak tags, then low accuracy, then old last session
+      // Prefer: has weak mastery signals, then weak tags, then low accuracy, then old last session
+      const aMastery = a.stats.weakMastery.length;
+      const bMastery = b.stats.weakMastery.length;
+      if (aMastery !== bMastery) return bMastery - aMastery;
       const aWeak = a.stats.weakTags.length;
       const bWeak = b.stats.weakTags.length;
       if (aWeak !== bWeak) return bWeak - aWeak;
@@ -165,7 +211,8 @@ function renderDueCards() {
   }
 
   due.forEach(({ trainer, stats }) => {
-    const topWeak = stats.weakTags.slice(0, 3);
+    const topMastery = stats.weakMastery.slice(0, 2);
+    const topWeak = stats.weakTags.filter(w => isRawDiagnosticTag(w.tag)).slice(0, 3);
     const card = document.createElement("article");
     card.className = "trainer-card due-card";
     card.innerHTML = `
@@ -173,6 +220,12 @@ function renderDueCards() {
       <h3>${escapeHtml(trainer.name)}</h3>
       <p>${escapeHtml(trainer.description)}</p>
       <div class="due-reasons">
+        ${topMastery.length ? `
+          <div class="mastery-tags">
+            <span class="eyebrow">Mastery signal</span>
+            ${topMastery.map(w => `<span class="mastery-chip">${escapeHtml(w.label)} (${w.wrong}/${w.total})</span>`).join("")}
+          </div>
+        ` : ""}
         ${topWeak.length ? `
           <div class="weak-tags">
             <span class="eyebrow">Weak tags</span>
@@ -196,6 +249,62 @@ function renderDueCards() {
   });
 }
 
+function renderMasteryList() {
+  const container = $("#mastery-list");
+  if (!container) return;
+
+  const signalMap = new Map();
+  TRAINERS.forEach(trainer => {
+    const state = loadTrainerState(trainer.id);
+    const stats = computeStats(state);
+    if (!stats) return;
+    stats.weakMastery.forEach(signal => {
+      if (!signalMap.has(signal.tag)) {
+        signalMap.set(signal.tag, {
+          tag: signal.tag,
+          label: signal.label,
+          evidence: signal.evidence,
+          total: 0,
+          correct: 0,
+          wrong: 0,
+          score: 0,
+          trainers: []
+        });
+      }
+      const entry = signalMap.get(signal.tag);
+      entry.total += signal.total;
+      entry.correct += signal.correct;
+      entry.wrong += signal.wrong;
+      entry.score = entry.wrong / Math.max(1, entry.total);
+      entry.trainers.push({ id: trainer.id, name: trainer.name, icon: trainer.icon });
+    });
+  });
+
+  const signals = Array.from(signalMap.values())
+    .sort((a, b) => b.score - a.score || b.wrong - a.wrong || b.total - a.total)
+    .slice(0, 6);
+
+  if (signals.length === 0) {
+    container.innerHTML = '<p class="narrative">No weak mastery signals yet. Gold lesson diagnostics will appear here after a missed concept-level attempt.</p>';
+    return;
+  }
+
+  container.innerHTML = signals.map(signal => `
+    <article class="mastery-card">
+      <div class="mastery-card-head">
+        <span class="mastery-key">${escapeHtml(signal.tag)}</span>
+        <span class="mastery-score">${Math.round(signal.score * 100)}% error rate</span>
+      </div>
+      <h3>${escapeHtml(signal.label)}</h3>
+      <p>${escapeHtml(signal.evidence)}</p>
+      <div class="mastery-meta">
+        <span>${signal.wrong} wrong / ${signal.total} total</span>
+        <span>${signal.trainers.map(t => `${t.icon} ${escapeHtml(t.name)}`).join(" · ")}</span>
+      </div>
+    </article>
+  `).join("");
+}
+
 function renderWeakList() {
   const container = $("#weak-list");
   if (!container) return;
@@ -206,7 +315,7 @@ function renderWeakList() {
     const state = loadTrainerState(trainer.id);
     const stats = computeStats(state);
     if (!stats) return;
-    stats.weakTags.forEach(w => {
+    stats.weakTags.filter(w => isRawDiagnosticTag(w.tag)).forEach(w => {
       const key = `${trainer.id}::${w.tag}`;
       if (!tagMap.has(key)) tagMap.set(key, { ...w, trainers: [] });
       const entry = tagMap.get(key);
@@ -219,7 +328,7 @@ function renderWeakList() {
     .slice(0, 15);
 
   if (allWeak.length === 0) {
-    container.innerHTML = '<p class="narrative">No weak tags detected yet. Do more sessions to see diagnostics.</p>';
+    container.innerHTML = '<p class="narrative">No raw weak tags detected yet. Do more sessions to see general tag diagnostics.</p>';
     return;
   }
 
@@ -304,6 +413,7 @@ function importAll() {
 function init() {
   renderTrainerCards();
   renderDueCards();
+  renderMasteryList();
   renderWeakList();
 
   $("#export-all")?.addEventListener("click", exportAll);
