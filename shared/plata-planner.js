@@ -324,11 +324,12 @@
     }
 
     if (stats.total === 0) {
+      var startScore = trainer.id === "lesson-01-arrival" ? 48 : 35 - index;
       return {
         kind: "start",
         targetKind: "start",
         trainerId: trainer.id || "",
-        score: 35 - index,
+        score: startScore,
         badge: "Start path",
         title: "Start " + (trainer.name || "trainer"),
         copy: trainer.description || "Start with one short session so the planner has real signal.",

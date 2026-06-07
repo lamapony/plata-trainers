@@ -8,7 +8,14 @@ const vm = require("node:vm");
 const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
 const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catalog.js"), "utf8");
+const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
+const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
+const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 const homeSource = fs.readFileSync(path.join(repoRoot, "home.js"), "utf8");
+const dynamicLessonSources = {
+  "./lessons/lesson-b2-radiator/data.js": radiatorLessonSource,
+  "./lessons/lesson-b2-job-followup/data.js": jobFollowupLessonSource
+};
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -89,6 +96,7 @@ function makeContext(initialStorage) {
     Array,
     document: {
       readyState: "complete",
+      head: null,
       querySelector(selector) {
         if (ids[selector]) return ids[selector];
         const match = /^\[data-trainer-id="([^"]+)"\]$/.exec(selector);
@@ -115,6 +123,17 @@ function makeContext(initialStorage) {
       }
     }
   };
+  context.document.head = makeElement("head", "head");
+  context.document.head.appendChild = function appendChild(child) {
+    this.children.push(child);
+    if (dynamicLessonSources[child.src]) {
+      vm.runInContext(dynamicLessonSources[child.src], context, { filename: child.src.replace(/^\.\//, "") });
+      if (typeof child.onload === "function") child.onload();
+      return child;
+    }
+    if (typeof child.onerror === "function") child.onerror();
+    return child;
+  };
   context.window = context;
   context.globalThis = context;
   vm.createContext(context);
@@ -124,6 +143,7 @@ function makeContext(initialStorage) {
 function loadKernelAndCatalog(env) {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
 }
 
 function seedProgress(env, trainerId) {
@@ -140,14 +160,30 @@ function seedProgress(env, trainerId) {
   env.storage[kernel.stateKey(trainerId)] = JSON.stringify(state);
 }
 
-function runHome(env) {
-  vm.runInContext(homeSource, env.context, { filename: "home.js" });
+function seedWeakMastery(env) {
+  const kernel = env.context.PlataKernel;
+  const state = kernel.freshState("lesson-b2-radiator-register");
+  kernel.recordAttempt(state, {
+    itemId: "workplace-understatement",
+    correct: false,
+    tags: ["B2", "understatement-with-agency"],
+    mode: "lesson",
+    expected: "Jeg kan sende et kort forslag inden fredag...",
+    given: "Det er nok fint."
+  });
+  env.storage[kernel.stateKey("lesson-b2-radiator-register")] = JSON.stringify(state);
 }
 
-function runEmptyHomeSmoke() {
+async function runHome(env) {
+  vm.runInContext(homeSource, env.context, { filename: "home.js" });
+  await Promise.resolve();
+  await Promise.resolve();
+}
+
+async function runEmptyHomeSmoke() {
   const env = makeContext();
   loadKernelAndCatalog(env);
-  runHome(env);
+  await runHome(env);
 
   assert(env.ids["#home-start-title"].textContent === "New here?", "home recommends starter path for new users");
   assert(env.ids["#home-start-link"].href === "./lessons/lesson-01/", "home starter link points to Lesson 01");
@@ -156,22 +192,44 @@ function runEmptyHomeSmoke() {
   assert(/Not started/.test(lessonCard.querySelector(".friendly-progress").innerHTML), "home labels unstarted trainer cards");
 }
 
-function runProgressHomeSmoke() {
+async function runProgressHomeSmoke() {
   const env = makeContext();
   loadKernelAndCatalog(env);
   seedProgress(env, "vocab");
-  runHome(env);
+  await runHome(env);
 
-  assert(env.ids["#home-start-title"].textContent === "Continue where you left off", "home recommends continuing existing progress");
+  assert(env.ids["#home-start-title"].textContent === "Continue Vocab SR", "home recommends continuing existing progress");
   assert(env.ids["#home-start-link"].href === "./vocab-sr/", "home continue link points to latest trainer");
-  assert(env.ids["#home-primary-action"].textContent === "Continue drill", "home primary CTA continues the latest drill");
+  assert(env.ids["#home-primary-action"].textContent === "Continue", "home primary CTA continues the latest drill");
   const vocabCard = env.cards.find(card => card.trainerId === "vocab");
   assert(/Continue:<\/strong> 1 attempt/.test(vocabCard.querySelector(".friendly-progress").innerHTML), "home labels started trainer cards");
   assert(vocabCard.querySelector(".card-link").textContent === "Continue →", "home card CTA changes to continue");
 }
 
-runEmptyHomeSmoke();
-runProgressHomeSmoke();
+async function runWeakMasteryHomeSmoke() {
+  const env = makeContext();
+  loadKernelAndCatalog(env);
+  seedWeakMastery(env);
+  await runHome(env);
 
-console.log("ok - home launcher recommends a starter path");
-console.log("ok - home launcher continues existing local progress");
+  assert(env.ids["#home-start-title"].textContent === "Repair Use understatement with agency", "home promotes planner repair");
+  assert(/mode=repair/.test(env.ids["#home-start-link"].href), "home repair link opens repair mode");
+  assert(/signal=understatement-with-agency/.test(env.ids["#home-start-link"].href), "home repair link carries signal");
+  assert(/workplace-understatement/.test(env.ids["#home-start-link"].href), "home repair link targets source scene");
+  assert(env.ids["#home-primary-action"].textContent === "Open repair scene", "home primary CTA uses repair action");
+}
+
+async function run() {
+  await runEmptyHomeSmoke();
+  await runProgressHomeSmoke();
+  await runWeakMasteryHomeSmoke();
+
+  console.log("ok - home launcher recommends a starter path");
+  console.log("ok - home launcher continues existing local progress");
+  console.log("ok - home launcher promotes planner repair paths");
+}
+
+run().catch(err => {
+  console.error(err && err.stack ? err.stack : err);
+  process.exit(1);
+});

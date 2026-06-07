@@ -154,6 +154,16 @@ function runDashboardDecisionSmoke(context) {
   });
   assert(start.kind === "start", "empty trainer should produce a start decision");
 
+  const lessonStart = planner.dashboardDecision({
+    trainer: { id: "lesson-01-arrival", name: "Lesson 01: First Morning", type: "lesson", path: "./lessons/lesson-01/", description: "Story onboarding" },
+    state: kernel.freshState("lesson-01-arrival"),
+    stats: { total: 0, correct: 0, accuracy: null, today: 0, lastSessionDate: "" },
+    weakMastery: [],
+    weakTags: [],
+    index: 3
+  });
+  assert(lessonStart.score > start.score, "Lesson 01 should be the preferred empty-profile starter");
+
   const ranked = planner.rankDashboardDecisions([
     { trainer, decision: start, index: 0 },
     { trainer, decision: repair, index: 1 }
