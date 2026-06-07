@@ -71,6 +71,76 @@ function buildSupportWords(lesson, scene) {
   return new Set(wordsFromText(supportText));
 }
 
+function isB2Lesson(lesson) {
+  return lesson.level === "B2" || (lesson.variables && Object.keys(lesson.variables).length > 0);
+}
+
+function sceneQualityText(scene) {
+  return [
+    scene.pressure || "",
+    scene.narrative || "",
+    scene.notice || "",
+    scene.prompt || "",
+    scene.carry || "",
+    scene.success || "",
+    scene.failure || "",
+    scene.placeholder || "",
+    scene.prefix || "",
+    scene.acceptPrefix || "",
+    ...(scene.acceptKeywords || []),
+    ...(scene.dialogue || []).map(d => d.line),
+    ...(scene.options || []).map(o => [o.label, o.detail, o.feedback].join(" ")),
+    ...(scene.pairs || []).map(p => [p.left, p.right].join(" "))
+  ].join(" ");
+}
+
+function validateSourceNotes(lessonMeta, lesson) {
+  if (!isB2Lesson(lesson)) return;
+  const notes = lesson.sourceNotes;
+  if (!Array.isArray(notes) || notes.length < 2) {
+    issue(`${lessonMeta.id}: B2 lessons require at least two sourceNotes`);
+    return;
+  }
+  notes.forEach((note, ni) => {
+    const prefix = `${lessonMeta.id}.sourceNotes[${ni}]`;
+    if (!nonEmptyString(note.title)) issue(`${prefix}.title: required non-empty string`);
+    if (!nonEmptyString(note.url) || !/^https:\/\/[^ ]+$/i.test(note.url)) issue(`${prefix}.url: required https URL`);
+    if (!Array.isArray(note.supports) || note.supports.length === 0) {
+      issue(`${prefix}.supports: required non-empty array`);
+    } else {
+      note.supports.forEach((support, si) => {
+        if (!nonEmptyString(support)) issue(`${prefix}.supports[${si}]: required non-empty string`);
+      });
+    }
+  });
+}
+
+function validateTargetPhrases(lessonMeta, lesson, scene, si) {
+  if (!isB2Lesson(lesson)) return;
+  const prefix = `${lessonMeta.id}::scene[${si}]`;
+  if (!Array.isArray(scene.targetPhrases) || scene.targetPhrases.length < 2) {
+    issue(`${prefix}.targetPhrases: B2 scenes require at least two target phrases`);
+    return;
+  }
+
+  const sceneWords = new Set(wordsFromText(sceneQualityText(scene)));
+  scene.targetPhrases.forEach((phrase, pi) => {
+    if (!nonEmptyString(phrase)) {
+      issue(`${prefix}.targetPhrases[${pi}]: required non-empty string`);
+      return;
+    }
+    const contentWords = wordsFromText(phrase).filter(w => !DENSITY_STOPWORDS.has(w));
+    if (contentWords.length === 0) {
+      issue(`${prefix}.targetPhrases[${pi}]: phrase has no content words`);
+      return;
+    }
+    const missing = contentWords.filter(w => !sceneWords.has(w));
+    if (missing.length) {
+      issue(`${prefix}.targetPhrases[${pi}]: word(s) not found in scene content: ${missing.join(", ")}`);
+    }
+  });
+}
+
 function validateLesson(lessonMeta, lesson) {
   if (!lesson) {
     issue(`${lessonMeta.id}: no lesson object found in ${lessonMeta.dataPath}`);
@@ -85,11 +155,14 @@ function validateLesson(lessonMeta, lesson) {
     return;
   }
 
+  validateSourceNotes(lessonMeta, lesson);
+
   // Track word appearances across scenes for "empty word" detection
   const wordAppearances = new Map(); // word -> { count: number, scenes: Set<string>, supportMentions: Set<string> }
 
   lesson.scenes.forEach((scene, si) => {
     const prefix = `${lessonMeta.id}::scene[${si}]`;
+    validateTargetPhrases(lessonMeta, lesson, scene, si);
 
     // Required fields
     REQUIRED_SCENE_FIELDS.forEach(field => {

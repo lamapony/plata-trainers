@@ -18,6 +18,23 @@ window.PLATA_LESSON_B2_RADIATOR = {
     { item: "sgu", function: "strong informal emphasis; risky outside close relationships" },
     { item: "passiv", function: "can hide responsibility in official writing" }
   ],
+  sourceNotes: [
+    {
+      title: "Lex: passiv",
+      url: "https://lex.dk/passiv",
+      supports: ["Danish passive can downplay or exclude the agent", "s-passive and blive-passive differ formally, semantically, and stylistically"]
+    },
+    {
+      title: "Dansk Sproghistorie: dialogiske partikler",
+      url: "https://www.dansksproghistorie.dk/75/",
+      supports: ["jo, da, sgu, nok, vel, and related words can mark the speaker's stance toward the listener"]
+    },
+    {
+      title: "sproget.dk: grammatiske betegnelser",
+      url: "https://sproget.dk/sprogviden/ordlister/grammatiske-betegnelser/",
+      supports: ["blive-passiv / omskreven passiv terminology"]
+    }
+  ],
   scenes: [
     {
       id: "official-reply-passive",
@@ -31,6 +48,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
         { speaker: "Udlejer", line: "En håndværker vil blive sendt, når det passer ind i planlægningen." }
       ],
       notice: "Passive voice removes the actor. Nobody says: Vi sender en håndværker på fredag.",
+      targetPhrases: ["Der er blevet noteret", "reklamation vedrørende radiatoren", "vil blive sendt", "de lover ikke en dato"],
       prompt: "What does the reply actually promise?",
       options: [
         { id: "too-trusting", label: "De lover, at radiatoren bliver fikset hurtigt.", detail: "too trusting", correct: false, effects: { landlordTension: 0 }, feedback: "No. The email sounds responsible, but it gives no date and no named actor." },
@@ -52,6 +70,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
         { speaker: "Emil", line: "Det er sgu ikke godt nok. Skriv igen." }
       ],
       notice: "Jo, da, sgu, nok, bare are not filler. They position the speaker socially.",
+      targetPhrases: ["det er da helt fint", "han svarer jo", "det er sgu ikke godt nok", "det løser sig nok"],
       prompt: "Match each line to the stance it carries.",
       pairs: [
         { id: "soften", left: "Ej, det er da helt fint. Han svarer jo.", right: "de-escalating; expects agreement" },
@@ -70,6 +89,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
       pressure: "You must answer the landlord and also text Emil. If you use one register for both, somebody will misunderstand you.",
       narrative: "Formal Danish should move the case forward without sounding like a threat. Chat Danish can carry emotion, but not destroy your judgement.",
       notice: "Register shift is not decoration. It changes which doors stay open.",
+      targetPhrases: ["jeg vil gerne bede om", "en mere præcis dato", "temperaturen er faldet", "sgu alt for koldt"],
       prompt: "Choose the best formal sentence for the landlord.",
       options: [
         { id: "formal-clear", label: "Jeg vil gerne bede om en mere præcis dato, da temperaturen er faldet til under 12 grader.", detail: "clear formal request", correct: true, effects: { landlordTension: -1, workplaceTrust: 1 }, feedback: "Clear, specific, and firm without sounding like a threat." },
@@ -90,6 +110,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
         { speaker: "Mette", line: "Hvordan går det med lejligheden? Har du fået varme?" }
       ],
       notice: "Danish understatement can be socially intelligent, but passivity can hide inside it.",
+      targetPhrases: ["det går fint nok", "lidt bøvl med varmen", "jeg har bedt udlejeren", "en konkret dato"],
       prompt: "Complete a balanced B2 answer. Include at least one key action word.",
       prefix: "Det går fint nok. Der har været lidt bøvl med varmen, men",
       placeholder: "jeg har bedt udlejeren om en konkret dato",
@@ -108,6 +129,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
       pressure: "A week later, the case is closed. But language did not only repair a radiator. It changed how people read you.",
       narrative: "The best outcome is not always the one where you were maximally right. B2 means seeing the price of tone.",
       notice: "A complaint has two goals: solve the problem and preserve enough relationship to live with the solution.",
+      targetPhrases: ["være tydelig", "uden at lyde aggressiv", "undgå konflikt", "vente"],
       prompt: "Which sentence best summarises the lesson?",
       options: [
         { id: "balanced", label: "Man kan godt være tydelig uden at lyde aggressiv.", detail: "balanced B2 takeaway", correct: true, feedback: "Exactly. This is the core adult-language move." },

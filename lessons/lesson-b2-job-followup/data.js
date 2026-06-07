@@ -18,6 +18,23 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
     { item: "partikler: jo/da/nok", function: "soften or position stance in professional mail" },
     { item: "passiv: 'der gives svar'", function: "can sound evasive; active 'vi svarer' owns it" }
   ],
+  sourceNotes: [
+    {
+      title: "borger.dk/lifeindenmark.dk skrivevejledning",
+      url: "https://digitaliser.dk/Media/638295979179542926/Skrivevejledning%20for%20borger.dk_september%202023_version%201.0.pdf",
+      supports: ["Public-service Danish should be short, concrete, precise, and avoid kancellisprog where possible"]
+    },
+    {
+      title: "Dansk Sproghistorie: dialogiske partikler",
+      url: "https://www.dansksproghistorie.dk/75/",
+      supports: ["Small words such as jo, da, nok, and vel can position the speaker socially"]
+    },
+    {
+      title: "Den Danske Ordbog / ordnet.dk",
+      url: "https://ordnet.dk/ddo",
+      supports: ["Lexical checks for formal words such as henvendelse, vedrørende, opfølgning, and stilling"]
+    }
+  ],
   scenes: [
     {
       id: "silence-pressure",
@@ -30,6 +47,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         { speaker: "Internal voice", line: "Skal jeg skrive? Venter de på mig? Er det for tidligt?" }
       ],
       notice: "Danish hiring culture: silence ≠ no. Process takes 1–2 weeks. Acting on anxiety reads as juniormess.",
+      targetPhrases: ["vent 5 arbejdsdage", "kort, præcis opfølgning", "er det for tidligt", "skriv efter 2 dage"],
       prompt: "What is the professional move right now?",
       options: [
         { id: "wait-calm", label: "Vent 5 arbejdsdage. Skriv så en kort, præcis opfølgning.", detail: "calm, process-aware", correct: true, effects: { employerTone: 1, desperation: 0, professionalism: 1 }, feedback: "Yes. You respect their process and signal seniority." },
@@ -51,6 +69,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         { speaker: "CTO (memory)", line: "Vi lægger vægt på, at folk kan skrive professionelt på dansk." }
       ],
       notice: "Kære = formal, safe, expected. Hej = acceptable if they used du first, but risky in follow-up. B2 writers choose Kære unless du was explicitly agreed.",
+      targetPhrases: ["Kære [Navn]", "jeg tager stilling til", "jeres henvendelse", "god dialog i torsdags"],
       prompt: "Choose the opening + first sentence that hits warm professional Danish.",
       options: [
         { id: "formal-warm", label: "Kære [Navn],\n\nJeg tager stilling til jeres henvendelse og vil takke for en god dialog i torsdags.", detail: "formal, warm, owns the follow-up", correct: true, effects: { employerTone: 1, professionalism: 1, networkTrust: 1 }, feedback: "Strong. 'Jeg tager stilling til' signals professional ownership. 'God dialog' is specific, not generic." },
@@ -71,6 +90,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         { speaker: "You (drafting)", line: "Kære [Navn] / Hej [Navn] — tak for tiden / tak for interviewet?" }
       ],
       notice: "LinkedIn notes are read on mobile. First 120 chars must carry the signal. 'Kære' works but 'Hej' is standard here — if you reference the specific conversation.",
+      targetPhrases: ["Hej [Navn]", "tak for en god teknisk dialog", "vil gerne holde kontakt", "uanset udgang"],
       prompt: "Choose the LinkedIn note that complements (not duplicates) your email.",
       options: [
         { id: "linkedin-good", label: "Hej [Navn],\nTak for en god teknisk dialog i torsdags. Vil gerne holde kontakt uanset udgang.\n— [Dit navn]", detail: "specific, low-pressure, keeps door open", correct: true, effects: { networkTrust: 2, professionalism: 1 }, feedback: "Perfect. 'Uanset udgang' shows maturity. Specific reference ('teknisk dialog') proves attention." },
@@ -91,6 +111,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         { speaker: "Hiring Manager", line: "[Variabel svar baseret på dine valg]" }
       ],
       notice: "Professional Danish replies mirror your register. Warm professional → warm specific. Pushy → formal distance. Passive → generic template.",
+      targetPhrases: ["takke for din mail", "den gode dialog", "proces", "næste skridt"],
       prompt: "Complete the hiring manager's reply based on the tone you built. Use at least one keyword from: [takke, dialog, proces, tid, høre, fremtidig].",
       prefix: "Kære [Dit navn],\n\n",
       placeholder: "takke for din mail og den gode dialog...",
@@ -112,6 +133,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         { speaker: "CTO (internal)", line: "Den der kunne skrive 'Jeg tager stilling til' — den kan vi bruge." }
       ],
       notice: "B2 Danish is not grammar. It is social operating system: register, particles, agency, patience. The language you choose writes the relationship before the contract.",
+      targetPhrases: ["professionel dansk tager ejerskab", "jeg tager stilling til", "der gives besked", "den kan vi bruge"],
       prompt: "Which principle summarises the lesson?",
       options: [
         { id: "principle-owned", label: "Professionel dansk tager ejerskab: 'Jeg tager stilling til' i stedet for 'Der gives besked'.", detail: "agency + register", correct: true, feedback: "Exactly. Agency in language = agency in role." },

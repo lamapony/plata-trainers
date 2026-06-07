@@ -24,6 +24,15 @@ window.PLATA_LESSON_XX = {
   subtitle: "One-line description",
   estimatedMinutes: 10,             // shown in UI, approximate
 
+  // --- REQUIRED FOR B2: source support ---
+  sourceNotes: [
+    {
+      title: "Source title",
+      url: "https://example.com/source",
+      supports: ["What this source supports in the lesson"]
+    }
+  ],
+
   // --- OPTIONAL: social state (B2+) ---
   variables: {                      // initial values, tracked across scenes
     landlordTension: 0,
@@ -75,6 +84,9 @@ Every scene follows the `pressure → notice → action → feedback → carry-f
   ],
   danish: "Danish text",             // optional: highlighted Danish block
   notice: "One compact linguistic observation.",
+  targetPhrases: [
+    "Danish phrase actively trained in this scene"
+  ],
   prompt: "The action the learner must take.",
   carry: "What this scene stores for later reuse.",
   tags: ["skill", "word", "pattern"]
@@ -209,6 +221,8 @@ All lessons inherit the headpage-v2 design system:
 ## Scene density rules
 
 - One scene = one active pattern
+- B2 scenes must name their `targetPhrases`; these are the Danish phrases the scene actively trains, not decorative vocabulary
+- B2 lessons must include `sourceNotes` with URLs and a short `supports` list
 - A new word appears in ≥2 modes (dialogue/sign/action/feedback)
 - If a word appears only once, it's flavour — not a learning target
 - Grammar terms only when the scene needs them
