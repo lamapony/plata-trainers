@@ -8,6 +8,7 @@ const vm = require("vm");
 const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
 const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catalog.js"), "utf8");
+const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
@@ -126,6 +127,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
 
@@ -168,6 +170,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   assert(env.context.PlataCatalog.trainers.length === 6, "dashboard reads trainer catalog");
@@ -187,6 +190,7 @@ async function runDynamicCatalogSmoke() {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   seedWeakMasteryState(env);
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
   await Promise.resolve();
   await Promise.resolve();

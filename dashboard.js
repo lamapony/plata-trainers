@@ -185,44 +185,44 @@ function renderDueCards() {
   const container = $("#due-cards");
   if (!container) return;
   container.innerHTML = "";
+  const planner = window.PlataPlanner;
 
-  // Find trainers with most weak tags or longest gap since last session
-  const due = trainers().map(trainer => {
+  const candidates = trainers().map((trainer, index) => {
     const state = loadTrainerState(trainer.id);
     const stats = computeStats(state, trainer);
     if (!stats) return null;
-    return { trainer, stats };
-  }).filter(x => x !== null)
-    .sort((a, b) => {
-      // Prefer: has weak mastery signals, then weak tags, then low accuracy, then old last session
-      const aMastery = a.stats.weakMastery.length;
-      const bMastery = b.stats.weakMastery.length;
-      if (aMastery !== bMastery) return bMastery - aMastery;
-      const aWeak = a.stats.weakTags.length;
-      const bWeak = b.stats.weakTags.length;
-      if (aWeak !== bWeak) return bWeak - aWeak;
-      if (a.stats.accuracy !== null && b.stats.accuracy !== null) return a.stats.accuracy - b.stats.accuracy;
-      const aDate = a.stats.lastSessionDate ? new Date(a.stats.lastSessionDate).getTime() : 0;
-      const bDate = b.stats.lastSessionDate ? new Date(b.stats.lastSessionDate).getTime() : 0;
-      return aDate - bDate;
-    })
-    .slice(0, 3);
+    const decision = planner && planner.dashboardDecision ? planner.dashboardDecision({
+      trainer,
+      state,
+      stats,
+      weakMastery: stats.weakMastery,
+      weakTags: stats.weakTags,
+      index
+    }) : null;
+    return { trainer, stats, decision, index };
+  }).filter(x => x !== null && x.decision);
+
+  const due = planner && planner.rankDashboardDecisions
+    ? planner.rankDashboardDecisions(candidates, 3)
+    : candidates.slice(0, 3);
 
   if (due.length === 0) {
     container.innerHTML = '<p class="narrative">No progress data yet. Start a trainer to see recommendations.</p>';
     return;
   }
 
-  due.forEach(({ trainer, stats }) => {
-    const topMastery = stats.weakMastery.slice(0, 2);
-    const repair = topMastery.map(w => w.remediation).find(Boolean);
-    const topWeak = stats.weakTags.filter(w => isRawDiagnosticTag(w.tag)).slice(0, 3);
+  due.forEach(({ trainer, stats, decision }) => {
+    const topMastery = (decision.signals || []).filter(w => w.label).slice(0, 2);
+    const topWeak = (decision.signals || []).filter(w => !w.label).slice(0, 3);
+    const repair = decision.repair || null;
+    const reasons = decision.reasons || [];
     const card = document.createElement("article");
-    card.className = "trainer-card due-card";
+    const decisionClass = String(decision.kind || "continue").replace(/[^a-z0-9-]/gi, "");
+    card.className = `trainer-card due-card ${decisionClass}`;
     card.innerHTML = `
-      <span class="tag due">${trainer.icon} Practice now</span>
-      <h3>${escapeHtml(trainer.name)}</h3>
-      <p>${escapeHtml(trainer.description)}</p>
+      <span class="tag due">${trainer.icon} ${escapeHtml(decision.badge || "Practice now")}</span>
+      <h3>${escapeHtml(decision.title || trainer.name)}</h3>
+      <p>${escapeHtml(decision.copy || trainer.description)}</p>
       <div class="due-reasons">
         ${topMastery.length ? `
           <div class="mastery-tags">
@@ -243,18 +243,11 @@ function renderDueCards() {
             ${topWeak.map(w => `<span class="weak-tag">${escapeHtml(w.tag)} (${w.wrong}/${w.total})</span>`).join("")}
           </div>
         ` : ""}
-        ${stats.accuracy !== null && stats.accuracy < 70 ? `
-          <div class="due-reason">Accuracy ${stats.accuracy}% — below comfort zone</div>
-        ` : ""}
-        ${!stats.lastSessionDate ? `
-          <div class="due-reason">Never started</div>
-        ` : (() => {
-          const daysSince = Math.floor((Date.now() - new Date(stats.lastSessionDate).getTime()) / 86400000);
-          if (daysSince >= 7) return `<div class="due-reason">${daysSince} days since last session</div>`;
-          return "";
-        })()}
+        ${decision.meta && !repair ? `<div class="due-reason">${escapeHtml(decision.meta)}</div>` : ""}
+        ${reasons.map(reason => `<div class="due-reason">${escapeHtml(reason)}</div>`).join("")}
+        ${stats.accuracy !== null ? `<div class="due-reason">Current accuracy: ${stats.accuracy}%</div>` : ""}
       </div>
-      <a class="card-link" href="${escapeHtml(repair ? repair.href : trainer.path)}">Open ${repair ? "repair scene" : trainer.type} →</a>
+      <a class="card-link" href="${escapeHtml(decision.primaryHref || trainer.path)}">${escapeHtml(decision.primaryLabel || "Open trainer")} →</a>
     `;
     container.appendChild(card);
   });
