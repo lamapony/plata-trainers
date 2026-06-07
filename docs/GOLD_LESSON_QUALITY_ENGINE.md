@@ -78,11 +78,41 @@ The gold simulator also checks that every `masteryMap` remediation entry can be 
 
 The lesson-engine smoke test goes one layer closer to production: it replays the declared gold simulation paths through the real `PlataLessonEngine` renderers and event handlers using a no-dependency fake DOM, then checks the LocalStorage attempts that the learner would actually produce.
 
+## Authoring Pipeline
+
+Gold lesson authoring starts from a checked scaffold:
+
+```bash
+npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic"
+```
+
+The scaffold creates the lesson folder, `app.js`, `index.html`, `styles.css`, a `qualityTier: "gold"` `data.js`, and a catalog entry. The generated lesson is intentionally generic, but it already satisfies the contract:
+
+- five scenes across choice, match, completion, and final principle;
+- `sourceNotes`, scene `sourceRefs`, `learningGoal`, `targetPhrases`, and `masteryTags`;
+- `masteryMap` remediation links;
+- grouped completion checks;
+- `endingLogic` and three endings;
+- `simulation.paths` covering strong, neutral, and strained outcomes.
+
+`npm run check:gold-scaffold` keeps this authoring path honest. It generates a temporary scaffold lesson under `.dist/scaffold-smoke`, then runs:
+
+```bash
+node scripts/validate-lesson.js --file <generated-data.js>
+node scripts/simulate-gold-lessons.js --file <generated-data.js>
+node scripts/smoke-lesson-engine.js --file <generated-data.js>
+```
+
+That means the scaffold itself must stay compatible with the lesson schema, the simulator, and the real shared lesson engine.
+
 ## Current Scope
 
-The first implementation focuses on `lesson-b2-radiator-register`.
+The first gold implementations are:
 
-It introduces these mastery signals:
+- `lesson-b2-radiator-register`
+- `lesson-b2-job-followup`
+
+`lesson-b2-radiator-register` introduces these mastery signals:
 
 - `passive-agency`
 - `modal-particle-stance`
@@ -90,13 +120,15 @@ It introduces these mastery signals:
 - `understatement-with-agency`
 - `consequence-aware-tone`
 
-The current simulator covers three radiator paths:
+The simulator covers three radiator paths:
 
 - `diplomatic`
 - `aggressive`
 - `passive`
 
-That means the QA suite now checks the consequence system, not only the ideal answer path.
+`lesson-b2-job-followup` adds a second independent gold lesson with different social variables and endings, proving that the consequence system is data-driven rather than hardcoded to the radiator scenario.
+
+That means the QA suite now checks the consequence system, not only the ideal answer path, across multiple gold lessons.
 
 ## Non-Goals
 

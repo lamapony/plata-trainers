@@ -13,11 +13,25 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function resolveInputPath(inputPath) {
+  return path.isAbsolute(inputPath) ? inputPath : path.join(repoRoot, inputPath);
+}
+
+function relInputPath(inputPath) {
+  return path.relative(repoRoot, resolveInputPath(inputPath)).replaceAll(path.sep, "/");
+}
+
+function argValue(name) {
+  const index = process.argv.indexOf(name);
+  if (index === -1) return "";
+  return process.argv[index + 1] || "";
+}
+
 function loadLessonData(relPath) {
   const context = { window: {} };
   context.globalThis = context.window;
   vm.createContext(context);
-  vm.runInContext(fs.readFileSync(path.join(repoRoot, relPath), "utf8"), context, { filename: relPath });
+  vm.runInContext(fs.readFileSync(resolveInputPath(relPath), "utf8"), context, { filename: relPath });
   const key = Object.keys(context.window).find(candidate => candidate.startsWith("PLATA_LESSON_"));
   return key ? context.window[key] : null;
 }
@@ -31,7 +45,9 @@ function findLessonDataFiles() {
 }
 
 function loadGoldLessons() {
-  return findLessonDataFiles()
+  const file = argValue("--file");
+  const dataFiles = file ? [relInputPath(file)] : findLessonDataFiles();
+  return dataFiles
     .map(loadLessonData)
     .filter(Boolean)
     .filter(lesson => lesson.qualityTier === "gold");
@@ -356,13 +372,16 @@ function runGoldRuntimePathSmoke(lessons) {
 }
 
 function run() {
+  const file = argValue("--file");
   const lessons = loadGoldLessons();
-  assert(lessons.length > 0, "no gold lessons found");
-  const radiatorLesson = lessons.find(lesson => lesson.id === "lesson-b2-radiator-register");
-  assert(radiatorLesson, "radiator gold lesson missing");
-  runRepairAttemptSmoke(radiatorLesson);
+  assert(lessons.length > 0, file ? `no gold lesson found in ${file}` : "no gold lessons found");
+  if (!file) {
+    const radiatorLesson = lessons.find(lesson => lesson.id === "lesson-b2-radiator-register");
+    assert(radiatorLesson, "radiator gold lesson missing");
+    runRepairAttemptSmoke(radiatorLesson);
+  }
   runGoldRuntimePathSmoke(lessons);
-  console.log("ok - lesson engine records repair attempts");
+  if (!file) console.log("ok - lesson engine records repair attempts");
   console.log("ok - lesson engine replays gold simulation paths");
 }
 

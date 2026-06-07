@@ -13,7 +13,7 @@ function issue(message) { issues.push(message); }
 function warn(message) { warnings.push(message); }
 
 function loadLesson(relPath) {
-  const source = fs.readFileSync(path.join(root, relPath), "utf8");
+  const source = fs.readFileSync(resolveInputPath(relPath), "utf8");
   const context = { window: {} };
   context.globalThis = context.window;
   vm.createContext(context);
@@ -22,6 +22,32 @@ function loadLesson(relPath) {
   const keys = Object.keys(context.window).filter(k => k.startsWith("PLATA_LESSON_"));
   if (keys.length === 0) return null;
   return context.window[keys[0]];
+}
+
+function resolveInputPath(inputPath) {
+  return path.isAbsolute(inputPath) ? inputPath : path.join(root, inputPath);
+}
+
+function relInputPath(inputPath) {
+  return path.relative(root, resolveInputPath(inputPath)).replaceAll(path.sep, "/");
+}
+
+function argValue(name) {
+  const index = process.argv.indexOf(name);
+  if (index === -1) return "";
+  return process.argv[index + 1] || "";
+}
+
+function selectedLessons() {
+  const file = argValue("--file");
+  if (!file) return findLessons();
+  const fullPath = resolveInputPath(file);
+  if (!fs.existsSync(fullPath)) {
+    console.error(`Lesson file not found: ${file}`);
+    process.exit(1);
+  }
+  const relPath = relInputPath(file);
+  return [{ id: path.basename(path.dirname(fullPath)), dataPath: relPath }];
 }
 
 function nonEmptyString(value) {
@@ -521,7 +547,7 @@ function validateLesson(lessonMeta, lesson) {
 }
 
 // Main
-const lessons = findLessons();
+const lessons = selectedLessons();
 if (lessons.length === 0) {
   console.error("No lessons found in lessons/*/data.js");
   process.exit(1);

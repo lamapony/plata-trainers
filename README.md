@@ -62,6 +62,13 @@ npm run build:pages
 npm run check:pages
 ```
 
+Gold lesson scaffold:
+
+```bash
+npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic"
+npm run check
+```
+
 Individual checks:
 
 ```bash
@@ -74,6 +81,7 @@ node scripts/static-qa.js
 node scripts/check-syntax.js
 node scripts/validate-lesson.js
 node scripts/simulate-gold-lessons.js
+node scripts/smoke-gold-scaffold.js
 npm run check:pages
 ```
 
@@ -84,6 +92,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. S
 - Add 5-10 sourced Danish exercise items with explanations.
 - Fix a wrong form, translation, or word-order explanation.
 - Add B2 register examples where the same meaning changes tone.
+- Scaffold a gold lesson with `npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic"` and replace the generated scenario with sourced Danish.
 - Improve accessibility while keeping the app static and dependency-free.
 - Add a focused QA check that prevents bad data from landing.
 

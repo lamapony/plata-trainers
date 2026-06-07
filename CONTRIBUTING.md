@@ -36,6 +36,9 @@ That runs:
 - `scripts/validate-data.js` — trainer data shape, uniqueness, explanations.
 - `scripts/static-qa.js` — HTML metadata, local links, public static assets.
 - `scripts/validate-lesson.js` — narrative lesson pattern enforcement.
+- `scripts/simulate-gold-lessons.js` — deterministic gold lesson simulation paths.
+- `scripts/smoke-lesson-engine.js` — runtime replay through the real shared lesson engine.
+- `scripts/smoke-gold-scaffold.js` — proves the gold lesson scaffold still generates a valid lesson.
 - `scripts/build-pages-artifact.js` via `npm run check:pages` — production Pages artifact whitelist and link check.
 
 For browser interaction smoke tests, serve locally:
@@ -102,6 +105,27 @@ lessons/your-lesson-id/
 ├── styles.css      # usually shared with lesson-01; customise if needed
 ├── data.js         # exports window.PLATA_LESSON_YOUR_ID
 └── app.js          # one line: PlataLessonEngine.run(window.PLATA_LESSON_YOUR_ID)
+```
+
+For a new B2 gold lesson, start with the checked scaffold instead of copying by hand:
+
+```bash
+npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic" --name "B2: Your Topic" --description "What this trains"
+npm run check
+```
+
+The scaffold creates:
+
+- `index.html`, `app.js`, `data.js`, and `styles.css`
+- a `qualityTier: "gold"` lesson with `masteryMap`, `sourceNotes`, `simulation.paths`, grouped completion checks, `endingLogic`, and three endings
+- a matching `shared/plata-catalog.js` entry unless you pass `--no-catalog`
+
+You can validate a draft `data.js` before adding it to the real catalog:
+
+```bash
+node scripts/validate-lesson.js --file lessons/lesson-b2-your-topic/data.js
+node scripts/simulate-gold-lessons.js --file lessons/lesson-b2-your-topic/data.js
+node scripts/smoke-lesson-engine.js --file lessons/lesson-b2-your-topic/data.js
 ```
 
 **Lesson data schema** (`data.js`):

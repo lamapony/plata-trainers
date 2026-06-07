@@ -14,6 +14,14 @@ lessons/<lesson-slug>/
 └── styles.css       ← optional overrides; shared styles are inherited
 ```
 
+For B2 gold lessons, generate this structure with the checked scaffold:
+
+```bash
+npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic"
+```
+
+The scaffold emits a validator-clean gold lesson with `masteryMap`, grouped completion checks, `simulation.paths`, `endingLogic`, and a catalog entry. Replace the generated scenario with sourced Danish content, then run `npm run check`.
+
 ## data.js — top-level fields
 
 ```js
@@ -286,21 +294,22 @@ All lessons inherit the headpage-v2 design system:
 
 ## Adding a new lesson — checklist
 
-1. Create `lessons/<slug>/data.js` following this schema
-2. Create `lessons/<slug>/app.js`:
+1. For B2 gold lessons, run `npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic"`.
+2. For non-gold lessons, create `lessons/<slug>/data.js` following this schema.
+3. For non-gold lessons, create `lessons/<slug>/app.js`:
    ```js
    PlataLessonEngine.run(window.PLATA_LESSON_YOUR_ID);
    ```
-3. Copy `index.html` from `lesson-01/`, update:
+4. For non-gold lessons, copy `index.html` from `lesson-01/`, update:
    - `<title>` and `<meta name="description">`
    - `<h1>` text
    - Hero subtitle
    - `eyebrow` level tag (A2/B1/B2)
    - Script includes (should already be correct)
-4. Copy `styles.css` from `lesson-01/` (or `lesson-b2-radiator/` for variable support)
-5. Add the lesson entry to `shared/plata-catalog.js`
-6. Add row to `trainers-repo/README.md` table
-7. Run `npm run check`
+5. For non-gold lessons, copy `styles.css` from `lesson-01/` (or `lesson-b2-radiator/` for variable support).
+6. Add the lesson entry to `shared/plata-catalog.js` if the scaffold did not do it.
+7. Add row to `trainers-repo/README.md` table.
+8. Run `npm run check`.
 
 ## Scene density rules
 
@@ -311,6 +320,10 @@ All lessons inherit the headpage-v2 design system:
 - Gold lessons (`qualityTier: "gold"`) must include `masteryMap` with remediation actions, scene `learningGoal`, valid `sourceRefs`, scene `masteryTags`, unique choice `diagnostic` keys, and grouped completion checks
 - Gold lessons with endings must cover every ending through `simulation.paths`
 - Gold lessons should pass the simulator via `npm run check:gold-lessons`
+- Draft gold lesson files can be checked before catalog wiring:
+  - `node scripts/validate-lesson.js --file lessons/lesson-b2-your-topic/data.js`
+  - `node scripts/simulate-gold-lessons.js --file lessons/lesson-b2-your-topic/data.js`
+  - `node scripts/smoke-lesson-engine.js --file lessons/lesson-b2-your-topic/data.js`
 - A new word appears in ≥2 modes (dialogue/sign/action/feedback)
 - If a word appears only once, it's flavour — not a learning target
 - Grammar terms only when the scene needs them

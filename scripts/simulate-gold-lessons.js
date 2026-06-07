@@ -44,9 +44,23 @@ function loadContext() {
   return context;
 }
 
+function resolveInputPath(inputPath) {
+  return path.isAbsolute(inputPath) ? inputPath : path.join(root, inputPath);
+}
+
+function relInputPath(inputPath) {
+  return path.relative(root, resolveInputPath(inputPath)).replaceAll(path.sep, "/");
+}
+
+function argValue(name) {
+  const index = process.argv.indexOf(name);
+  if (index === -1) return "";
+  return process.argv[index + 1] || "";
+}
+
 function loadLesson(context, relPath) {
   const before = new Set(Object.keys(context).filter(k => k.startsWith("PLATA_LESSON_")));
-  vm.runInContext(fs.readFileSync(path.join(root, relPath), "utf8"), context, { filename: relPath });
+  vm.runInContext(fs.readFileSync(resolveInputPath(relPath), "utf8"), context, { filename: relPath });
   const key = Object.keys(context).find(k => k.startsWith("PLATA_LESSON_") && !before.has(k));
   return key ? context[key] : null;
 }
@@ -320,12 +334,14 @@ function run() {
   const mergedTags = context.PlataLessonEngine.getSceneAttemptTags({ tags: ["B2", "register"], masteryTags: ["register", "formal-register-control"] });
   assert(mergedTags.join(",") === "B2,register,formal-register-control", "lesson engine should merge and dedupe mastery tags");
 
-  const lessons = findLessonDataFiles()
+  const file = argValue("--file");
+  const dataFiles = file ? [relInputPath(file)] : findLessonDataFiles();
+  const lessons = dataFiles
     .map(relPath => loadLesson(context, relPath))
     .filter(Boolean)
     .filter(lesson => lesson.qualityTier === "gold");
 
-  assert(lessons.length > 0, "no gold lessons found");
+  assert(lessons.length > 0, file ? `no gold lesson found in ${file}` : "no gold lessons found");
   const results = lessons.map(lesson => simulateGoldLesson(context, lesson));
   const attempts = results.reduce((sum, result) => sum + result.attempts, 0);
   const paths = results.reduce((sum, result) => sum + result.paths, 0);
