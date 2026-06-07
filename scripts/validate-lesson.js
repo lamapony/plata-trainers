@@ -44,6 +44,32 @@ function findLessons() {
 
 const REQUIRED_SCENE_FIELDS = ["id", "type", "eyebrow", "title", "pressure", "narrative", "prompt", "carry", "tags"];
 const VALID_TYPES = ["choice", "input", "match", "completion"];
+const DENSITY_STOPWORDS = new Set([
+  "alle", "alt", "altid", "anden", "andre", "bare", "den", "der", "det",
+  "dig", "din", "dit", "dine", "du", "eller", "for", "fra", "gerne", "har", "havde",
+  "hos", "hun", "hvad", "hvem", "hvor", "hvornår", "ind", "jeg", "jer",
+  "jeres", "kan", "kun", "kunne", "man", "med", "men", "mig", "mod", "når", "også",
+  "om", "over", "sig", "skal", "som", "til", "ud", "uden", "var", "være",
+  "været", "ville"
+]);
+
+function wordsFromText(value) {
+  return String(value || "").replace(/\[[^\]]+\]/g, " ").toLowerCase().match(/[a-zæøå]{3,}/g) || [];
+}
+
+function buildSupportWords(lesson, scene) {
+  const supportText = [
+    scene.notice || "",
+    scene.prompt || "",
+    scene.carry || "",
+    scene.success || "",
+    scene.failure || "",
+    scene.placeholder || "",
+    ...((scene.options || []).map(o => [o.detail, o.feedback].join(" "))),
+    ...((lesson.languagePhenomena || []).map(p => [p.item, p.function].join(" ")))
+  ].join(" ");
+  return new Set(wordsFromText(supportText));
+}
 
 function validateLesson(lessonMeta, lesson) {
   if (!lesson) {
@@ -60,7 +86,7 @@ function validateLesson(lessonMeta, lesson) {
   }
 
   // Track word appearances across scenes for "empty word" detection
-  const wordAppearances = new Map(); // word -> { count: number, scenes: Set<string>, carryMentions: Set<string> }
+  const wordAppearances = new Map(); // word -> { count: number, scenes: Set<string>, supportMentions: Set<string> }
 
   lesson.scenes.forEach((scene, si) => {
     const prefix = `${lessonMeta.id}::scene[${si}]`;
@@ -144,32 +170,33 @@ function validateLesson(lessonMeta, lesson) {
       // acceptKeywords intentionally excluded: they are accepted answers, not vocabulary targets
     ];
     const danishText = danishSources.join(" ").toLowerCase();
+    const supportWords = buildSupportWords(lesson, scene);
 
     // Simple Danish word extraction (letters + æøå, ignore short words)
-    const words = danishText.match(/[a-zæøå]{3,}/g) || [];
+    const words = wordsFromText(danishText).filter(w => !DENSITY_STOPWORDS.has(w));
     words.forEach(w => {
-      if (!wordAppearances.has(w)) wordAppearances.set(w, { count: 0, scenes: new Set(), carryMentions: new Set() });
+      if (!wordAppearances.has(w)) wordAppearances.set(w, { count: 0, scenes: new Set(), supportMentions: new Set() });
       const entry = wordAppearances.get(w);
       entry.count += 1;
       entry.scenes.add(`scene[${si}]`);
-      // Check if word appears in carry-forward
-      if (scene.carry && scene.carry.toLowerCase().includes(w)) {
-        entry.carryMentions.add(`scene[${si}]`);
+      // Check if the lesson explicitly supports the word in carry-forward, notices, prompts, feedback, or phenomena notes.
+      if (supportWords.has(w)) {
+        entry.supportMentions.add(`scene[${si}]`);
       }
     });
   });
 
-  // Density check: words appearing only once and not in any carry-forward
+  // Density check: words appearing only once and not in any teaching support
   const singletons = [];
   wordAppearances.forEach((entry, word) => {
-    if (entry.count === 1 && entry.carryMentions.size === 0) {
+    if (entry.count === 1 && entry.supportMentions.size === 0) {
       singletons.push({ word, scene: [...entry.scenes][0] });
     }
   });
 
   if (singletons.length > 0) {
     // Only warn, don't fail - some flavour words are OK
-    warn(`${lessonMeta.id}: ${singletons.length} word(s) appear only once without carry-forward:`);
+    warn(`${lessonMeta.id}: ${singletons.length} word(s) appear only once without teaching support:`);
     singletons.slice(0, 10).forEach(s => warn(`  - "${s.word}" in ${s.scene}`));
   }
 

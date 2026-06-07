@@ -37,7 +37,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
         { id: "accurate", label: "De har registreret sagen, men de lover ikke en dato.", detail: "accurate reading", correct: true, effects: { landlordTension: 0, workplaceTrust: 1 }, feedback: "Yes. You separate politeness from commitment. That is B2 reading." },
         { id: "too-aggressive", label: "De nægter at reparere radiatoren.", detail: "too aggressive", correct: false, effects: { landlordTension: 1 }, feedback: "Too far. They have not refused. B2 means noticing evasion without inventing conflict." }
       ],
-      carry: "Carry-forward: passive wording can be polite and evasive at the same time.",
+      carry: "Carry-forward: official passive wording like 'Der er blevet noteret en reklamation vedrørende radiatoren' and 'vil blive sendt' can sound polite while avoiding hvem, hvornår, sagen, håndværker, passer ind i planlægningen, registreret, and lover.",
       tags: ["B2", "passive", "official-register", "housing"]
     },
     {
@@ -59,7 +59,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
         { id: "practical", left: "Det løser sig nok, men jeg ville bede om en dato.", right: "cautious and practical" },
         { id: "suspicious", left: "Han prøver bare at trække tiden.", right: "suspicious and dismissive" }
       ],
-      carry: "Carry-forward: particles become social variables, not vocabulary trivia.",
+      carry: "Carry-forward: particles become social variables, not vocabulary trivia; 'det løser sig nok' calms, while 'han prøver at trække tiden' escalates suspicion.",
       tags: ["B2", "modal-particles", "subtext", "informal-register"]
     },
     {
@@ -76,7 +76,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
         { id: "formal-aggressive", label: "Jeg kræver, at I fikser det nu, for det er sgu alt for koldt.", detail: "register clash", correct: false, effects: { landlordTension: 2, sofiaTrust: -1 }, feedback: "The content is understandable, but the register clash escalates the conflict." },
         { id: "formal-passive", label: "Det løser sig nok, men det ville være fint med varme på et tidspunkt.", detail: "too weak", correct: false, effects: { landlordTension: 0, workplaceTrust: -1 }, feedback: "Too soft. You sound like you are apologising for having a radiator." }
       ],
-      carry: "Carry-forward: being polite is not the same as being vague.",
+      carry: "Carry-forward: being polite is not the same as being vague; a useful request asks for en mere præcis dato because temperaturen er faldet til under 12 grader.",
       tags: ["B2", "register", "complaint", "formal-writing"]
     },
     {
@@ -97,7 +97,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
       success: "Good. Fint nok and lidt bøvl soften the social surface, while jeg har bedt keeps agency.",
       failure: "Try including at least one action word: udlejer, dato, bedt, varme, skrevet, ringet, or kontaktet.",
       effects: { workplaceTrust: 1 },
-      carry: "Carry-forward: tone is not honesty versus lying. It is choosing the useful amount of truth for the room.",
+      carry: "Carry-forward: tone is not honesty versus lying. When Mette asks 'Hvordan går det med lejligheden? Har du fået varme?', 'lidt bøvl med varmen' gives the useful amount of truth for the room.",
       tags: ["B2", "understatement", "workplace-register", "agency"]
     },
     {
@@ -114,7 +114,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
         { id: "always-hard", label: "Man skal altid skrive så hårdt som muligt.", detail: "overcorrection", correct: false, feedback: "Sometimes directness works, but always escalating makes you predictable and expensive socially." },
         { id: "always-soft", label: "Man skal helst undgå konflikt og vente.", detail: "passive", correct: false, feedback: "Avoiding conflict is also a choice, and it can cost you heat, time, and respect." }
       ],
-      carry: "Unlocked B2 theme: Danish as social operating system — not only grammar, but consequence.",
+      carry: "Unlocked B2 theme: Danish as social operating system — not only grammar, but consequence: be tydelig uden at lyde aggressiv.",
       tags: ["B2", "reflection", "argumentation", "social-consequence"]
     }
   ],

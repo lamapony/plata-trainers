@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a broken page, trainer behavior, or data import/export issue.
+title: "Bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a concrete problem. Please keep the report reproducible.
+  - type: input
+    id: page
+    attributes:
+      label: Page or trainer
+      description: Which page did you use?
+      placeholder: "https://lamapony.github.io/plata-trainers/bojning-drill/"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include exact clicks, typed answers, or imported JSON shape when relevant.
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. Type ...
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: "Safari 18, Chrome 126, Firefox 127"

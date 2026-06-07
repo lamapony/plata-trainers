@@ -66,6 +66,7 @@ function loadTrainerState(trainerId) {
 
 function computeStats(state) {
   if (!state) return null;
+  const kernel = window.PlataKernel;
   const meta = state.meta || {};
   const total = meta.totalAttempts || 0;
   const correct = meta.totalCorrect || 0;

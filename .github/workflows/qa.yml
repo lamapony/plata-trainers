@@ -28,6 +28,7 @@ jobs:
       - name: Verify public pages map to files
         run: |
           test -f index.html
+          test -f dashboard.html
           test -f 404.html
           test -f robots.txt
           test -f sitemap.xml
@@ -35,3 +36,6 @@ jobs:
           test -f bojning-drill/index.html
           test -f ordstilling-drill/index.html
           test -f vocab-sr/index.html
+          test -f lessons/lesson-01/index.html
+          test -f lessons/lesson-b2-radiator/index.html
+          test -f lessons/lesson-b2-job-followup/index.html

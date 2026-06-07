@@ -1,7 +1,9 @@
 # Platå Trainers
 
+[![QA](https://github.com/lamapony/plata-trainers/actions/workflows/qa.yml/badge.svg)](https://github.com/lamapony/plata-trainers/actions/workflows/qa.yml)
+
 Open-source Danish plateau-breaker for Danish learners who are no longer starting from zero but still feel stuck. Static HTML/JS, no build step, no backend.
-Live via GitHub Pages at [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/) and later at `plata.dk/trainers/`.
+Live demo: [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/).
 
 Platå does not try to teach Danish from the beginning. It helps learners overcome the plateau: the point where they know enough Danish to recognize the language, but not enough to act fluently under social pressure.
 
@@ -11,12 +13,20 @@ Each trainer is a self-contained single-page app. Progress is private by default
 
 The current trainers share a small static learning kernel in [`shared/`](./shared/). It provides the common progress schema, LocalStorage migration, attempt recording, stats, gates, and JSON export/import. Old v0 trainer progress is migrated into stable v1 keys such as `plata:trainer:bojning:state:v1`; exported v1 JSON is validated against the trainer ID before import.
 
+## Why this is different
+
+- **Plateau-first:** built for learners who know basic Danish but freeze when forms, word order, tone, and social pressure meet.
+- **Private by default:** browser LocalStorage only; no accounts, backend, analytics, or tracking.
+- **Contributor-friendly data:** exercises are plain JavaScript data files with validation scripts and narrative lesson schemas.
+- **Static and forkable:** every trainer can run from `index.html` or GitHub Pages without a build step.
+
 ## Available trainers
 
 | Trainer | Status | Description |
 |---------|--------|-------------|
 | [Lesson 01: The First Morning](./lessons/lesson-01/) | v0.1 | Narrative A0/A1 onboarding: arrive in Copenhagen, meet Lene, read signs, use `tak`, and say `Jeg hedder ...`. |
 | [B2: Det afhænger af, hvordan du siger det](./lessons/lesson-b2-radiator/) | v1.0 | B2 narrative: register, modal particles, complaint tone, and social consequences. Your wording changes the outcome. |
+| [B2: Efter interviews](./lessons/lesson-b2-job-followup/) | v0.1 | Professional follow-up after interviews: email tone, LinkedIn register, and patient precision. |
 | [bøjning-drill](./bojning-drill/) | v0.2 | Verb tenses (nutid/datid/førnutid) + noun bøjning (bestemt/ubestemt, ental/flertal). Type the answer. |
 | [ordstilling-drill](./ordstilling-drill/) | v0.1 | V2 rule, inversion, ledsætninger. Multiple choice with explanations. |
 | [vocab-sr](./vocab-sr/) | v0.1 | Spaced-repetition vocabulary, DA ↔ RU. 48 high-frequency A2-B1 words. |
@@ -47,12 +57,22 @@ Individual checks:
 
 ```bash
 node scripts/smoke-kernel.js
+node scripts/smoke-dashboard.js
 node scripts/validate-data.js
 node scripts/static-qa.js
 node scripts/check-syntax.js
+node scripts/validate-lesson.js
 ```
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. See [ROADMAP.md](./ROADMAP.md) for planned trainer expansion.
+
+## Good first contributions
+
+- Add 5-10 sourced Danish exercise items with explanations.
+- Fix a wrong form, translation, or word-order explanation.
+- Add B2 register examples where the same meaning changes tone.
+- Improve accessibility while keeping the app static and dependency-free.
+- Add a focused QA check that prevents bad data from landing.
 
 ## Design
 

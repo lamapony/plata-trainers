@@ -1,0 +1,41 @@
+name: Exercise data
+description: Suggest new Danish exercise items or corrections to existing items.
+title: "Data: "
+labels: ["data", "good first issue"]
+body:
+  - type: dropdown
+    id: trainer
+    attributes:
+      label: Trainer
+      options:
+        - bojning-drill
+        - ordstilling-drill
+        - vocab-sr
+        - narrative lesson
+    validations:
+      required: true
+  - type: textarea
+    id: items
+    attributes:
+      label: Proposed item(s)
+      description: Add the Danish form, correct answer, translations, and learner-facing explanation.
+      placeholder: |
+        Danish:
+        Correct answer:
+        Explanation:
+        Tags:
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Source or rationale
+      description: Prefer real Danish sources such as DR, Dansk Sprognævn, KorpusDK, textbooks, or clearly marked personal notes.
+    validations:
+      required: true
+  - type: textarea
+    id: level
+    attributes:
+      label: Level and skill
+      description: Which learner level and skill does this support?
+      placeholder: "A2 noun forms, B1 word order, B2 register..."

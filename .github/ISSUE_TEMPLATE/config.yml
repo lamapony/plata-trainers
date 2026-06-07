@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Live demo
+    url: https://lamapony.github.io/plata-trainers/
+    about: Try the trainers before opening an issue.

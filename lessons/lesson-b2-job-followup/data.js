@@ -36,7 +36,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         { id: "wait-anxious", label: "Vent, men tjek mail hver time. Skriv efter 2 dage alligevel.", detail: "anxious waiting", correct: false, effects: { desperation: 1 }, feedback: "The behaviour leaks. Even a polite mail after 2 days carries tension." },
         { id: "push-now", label: "Skriv i dag. Vis engagement. 'Jeg er meget interesseret.'", detail: "pushy", correct: false, effects: { employerTone: -1, desperation: 2, professionalism: -1 }, feedback: "Too early. Reads as insecurity, not interest. Danish employers value autonomi." }
       ],
-      carry: "Carry-forward: silence is data. Your reaction to it is the first test of professional Danish.",
+      carry: "Carry-forward: silence is data. When anxiety says 'venter de på mig?' and 'er det for tidligt?', the professional move is: vent 5 arbejdsdage, then skriv a kort, præcis opfølgning.",
       tags: ["B2", "professional-culture", "silence", "patience", "register-awareness"]
     },
     {
@@ -48,7 +48,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       narrative: "You open a blank compose window. Subject line: 'Opfølgning på interview — [Stilling]'. Now the body. Every word choice is a register signal.",
       dialogue: [
         { speaker: "You (drafting)", line: "Kære [Navn] / Hej [Navn] — hvad signalerer hvad?" },
-        { speaker: "CTO (memory)", line: "Vi værdsætter på at folk kan skrive professionelt på dansk." }
+        { speaker: "CTO (memory)", line: "Vi lægger vægt på, at folk kan skrive professionelt på dansk." }
       ],
       notice: "Kære = formal, safe, expected. Hej = acceptable if they used du first, but risky in follow-up. B2 writers choose Kære unless du was explicitly agreed.",
       prompt: "Choose the opening + first sentence that hits warm professional Danish.",
@@ -57,7 +57,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         { id: "casual-generic", label: "Hej [Navn],\n\nTak for snakken i torsdags! Bare en hurtig opfølgning — jeg er super interesseret.", detail: "too casual, 'bare' weakens", correct: false, effects: { employerTone: -1, professionalism: -1, desperation: 1 }, feedback: "'Bare en hurtig opfølgning' minimises your effort. 'Super interesseret' reads junior." },
         { id: "stiff-passive", label: "Kære [Navn],\n\nDer gives besked på, at jeg fortsat er interesseret i stillingen.", detail: "passive, evasive", correct: false, effects: { employerTone: -1, professionalism: 0 }, feedback: "Passive 'der gives besked' hides agency. You sound like a form letter, not a candidate." }
       ],
-      carry: "Carry-forward: 'Jeg tager stilling til' + concrete reference ('god dialog i torsdags') = professional warmth.",
+      carry: "Carry-forward: 'Kære' signalerer formalitet; 'vi lægger vægt på', 'jeg tager stilling til', 'jeres henvendelse', 'takke', and a concrete reference to folk writing professionelt på dansk create professional warmth.",
       tags: ["B2", "formal-email", "register", "tage-stilling-til", "particles"]
     },
     {
@@ -77,7 +77,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         { id: "linkedin-pushy", label: "Kære [Navn],\nJeg skriver for at understrege mit store interesse i stillingen. Håber på hurtigt svar.\n— [Dit navn]", detail: "duplicates email, pushy", correct: false, effects: { desperation: 1, networkTrust: -1 }, feedback: "Redundant with email. 'Håber på hurtigt svar' pressures a connection, not a conversation." },
         { id: "linkedin-generic", label: "Hej [Navn],\nTak for at tilføje mig. Ser frem til at følge jeres arbejde.\n— [Dit navn]", detail: "generic, low signal", correct: false, effects: { networkTrust: 0 }, feedback: "Safe but forgettable. No reference to interview = could be any recruiter spam." }
       ],
-      carry: "Carry-forward: platform-specific register. Email = formal ownership. LinkedIn = specific, low-pressure, human.",
+      carry: "Carry-forward: platform-specific register. Email = formal ownership. LinkedIn = 'tak for tiden/interviewet' plus 'vil gerne holde kontakt' in a specific, low-pressure, human tone.",
       tags: ["B2", "linkedin", "networking", "register-shift", "low-pressure"]
     },
     {
@@ -109,7 +109,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       pressure: "Two weeks later. The decision email arrives. But the real outcome — your reputation in this network — was decided by how you handled the wait, the follow-up, and the connection.",
       narrative: "Three candidates. Same skills. Different Danish. The hiring manager remembers: who wrote like a colleague, who wrote like a supplicant, who wrote like a template.",
       dialogue: [
-        { speaker: "CTO (internal)", line: "Den der kunde skrive 'Jeg tager stilling til' — den kan vi bruge." }
+        { speaker: "CTO (internal)", line: "Den der kunne skrive 'Jeg tager stilling til' — den kan vi bruge." }
       ],
       notice: "B2 Danish is not grammar. It is social operating system: register, particles, agency, patience. The language you choose writes the relationship before the contract.",
       prompt: "Which principle summarises the lesson?",
@@ -118,7 +118,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         { id: "principle-polite", label: "Vær altid maksimalt høflig — 'Kære', 'venligst', 'hvis De vil være så god'.", detail: "over-politeness", correct: false, feedback: "Over-politeness reads as distance, not warmth. Danish professional warmth is direct + human." },
         { id: "principle-wait", label: "Skriv aldrig opfølgning. Venter viser tålmodighed.", detail: "passive", correct: false, feedback: "Silence is not strategy. A well-timed, well-toned follow-up signals competence." }
       ],
-      carry: "Unlocked B2 theme: Danish as professional operating system — register choice writes your reputation before the handshake.",
+      carry: "Unlocked B2 theme: Danish as professional operating system — professionel dansk tager ejerskab: 'Jeg tager stilling til' i stedet for 'Der gives besked', so a team thinks den kandidat kan vi bruge.",
       tags: ["B2", "reputation", "agency", "professional-identity", "reflection"]
     }
   ],

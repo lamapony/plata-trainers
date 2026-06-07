@@ -1,0 +1,38 @@
+name: Narrative lesson idea
+description: Propose a new scene-based lesson for the shared lesson engine.
+title: "Lesson: "
+labels: ["lesson", "good first issue"]
+body:
+  - type: input
+    id: level
+    attributes:
+      label: Level
+      placeholder: "A2, B1, or B2"
+    validations:
+      required: true
+  - type: input
+    id: situation
+    attributes:
+      label: Real-life situation
+      placeholder: "Calling a landlord, asking a colleague for help, following up after an interview..."
+    validations:
+      required: true
+  - type: textarea
+    id: pressure
+    attributes:
+      label: Pressure and payoff
+      description: What is at stake for the learner, and what should they be able to do after the lesson?
+    validations:
+      required: true
+  - type: textarea
+    id: language
+    attributes:
+      label: Target language
+      description: List the words, forms, register choices, or grammar pattern the lesson should make active.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources or examples
+      description: Add source links or short paraphrased examples. Do not paste copyrighted text wholesale.
