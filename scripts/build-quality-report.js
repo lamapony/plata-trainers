@@ -17,28 +17,33 @@ function rel(file, root = repoRoot) {
   return path.relative(root, file).replaceAll(path.sep, "/");
 }
 
-function loadWindowScript(relPath) {
+function reportRoot(options) {
+  if (typeof options === "string") return path.resolve(options);
+  return path.resolve(options && options.root || repoRoot);
+}
+
+function loadWindowScript(root, relPath) {
   const context = { window: {} };
   context.globalThis = context.window;
   vm.createContext(context);
-  vm.runInContext(fs.readFileSync(path.join(repoRoot, relPath), "utf8"), context, { filename: relPath });
+  vm.runInContext(fs.readFileSync(path.join(root, relPath), "utf8"), context, { filename: relPath });
   return context.window;
 }
 
-function loadCatalog() {
-  return loadWindowScript("shared/plata-catalog.js").PlataCatalog;
+function loadCatalog(root) {
+  return loadWindowScript(root, "shared/plata-catalog.js").PlataCatalog;
 }
 
-function findLessonDataFiles() {
-  const lessonsRoot = path.join(repoRoot, "lessons");
+function findLessonDataFiles(root) {
+  const lessonsRoot = path.join(root, "lessons");
   return fs.readdirSync(lessonsRoot)
     .filter(dir => fs.statSync(path.join(lessonsRoot, dir)).isDirectory())
     .map(dir => path.join("lessons", dir, "data.js").replaceAll(path.sep, "/"))
-    .filter(relPath => fs.existsSync(path.join(repoRoot, relPath)));
+    .filter(relPath => fs.existsSync(path.join(root, relPath)));
 }
 
-function loadLesson(relPath) {
-  const win = loadWindowScript(relPath);
+function loadLesson(root, relPath) {
+  const win = loadWindowScript(root, relPath);
   const key = Object.keys(win).find(name => name.startsWith("PLATA_LESSON_"));
   return key ? { globalName: key, lesson: win[key], dataPath: relPath } : null;
 }
@@ -368,11 +373,12 @@ function summarizeLesson(entry, catalogById) {
   };
 }
 
-function buildQualityReport() {
-  const catalog = loadCatalog();
+function buildQualityReport(options = {}) {
+  const root = reportRoot(options);
+  const catalog = loadCatalog(root);
   const catalogById = new Map(asArray(catalog && catalog.trainers).map(trainer => [trainer.id, trainer]));
-  const lessons = findLessonDataFiles()
-    .map(loadLesson)
+  const lessons = findLessonDataFiles(root)
+    .map(relPath => loadLesson(root, relPath))
     .filter(Boolean)
     .map(entry => summarizeLesson(entry, catalogById))
     .sort((a, b) => a.id.localeCompare(b.id));
@@ -409,8 +415,9 @@ function buildQualityReport() {
   };
 }
 
-function writeQualityReport(outPath) {
-  const report = buildQualityReport();
+function writeQualityReport(outPath, options = {}) {
+  const root = reportRoot(options);
+  const report = buildQualityReport({ root });
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, JSON.stringify(report, null, 2) + "\n");
   if (report.status !== "pass") {
@@ -420,7 +427,7 @@ function writeQualityReport(outPath) {
     });
     process.exit(1);
   }
-  console.log(`quality report built: ${rel(outPath)} (${report.totals.goldLessons} gold lesson(s), ${report.totals.simulationPaths} path(s))`);
+  console.log(`quality report built: ${rel(outPath, root)} (${report.totals.goldLessons} gold lesson(s), ${report.totals.simulationPaths} path(s))`);
   return report;
 }
 

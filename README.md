@@ -85,6 +85,7 @@ node scripts/check-syntax.js
 node scripts/validate-lesson.js
 node scripts/simulate-gold-lessons.js
 node scripts/smoke-gold-scaffold.js
+node scripts/mutation-quality-report.js
 node scripts/smoke-quality-report.js
 npm run check:pages
 ```

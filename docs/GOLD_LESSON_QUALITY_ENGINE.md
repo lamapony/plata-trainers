@@ -94,7 +94,7 @@ The report is built from lesson data during `npm run build:pages`, not edited by
 
 The report fails the build if a gold scene is not covered by a simulation path, or if a remediation target does not train the mastery signal it claims to repair.
 
-`npm run check:quality-report` builds the JSON report and fails if the report detects contract issues. `npm run check:quality-page` runs the public page renderer against the generated report object.
+`npm run check:quality-report` builds the JSON report and fails if the report detects contract issues. `npm run check:quality-mutations` creates temporary broken gold lessons and proves the report catches missing sources, missing simulation coverage, broken remediation, bad completion answer specs, and duplicate diagnostics. `npm run check:quality-page` runs the public page renderer against the generated report object.
 
 ## Authoring Pipeline
 
