@@ -45,6 +45,7 @@ function makeContext(initialStorage, options) {
   const elements = {
     "#trainer-cards": makeElement("div"),
     "#due-cards": makeElement("div"),
+    "#practice-plan": makeElement("div"),
     "#competency-list": makeElement("div"),
     "#mastery-list": makeElement("div"),
     "#weak-list": makeElement("div"),
@@ -193,6 +194,8 @@ function runEmptyDashboardSmoke() {
 
   assert(env.elements["#trainer-cards"].children.length === 6, "dashboard renders all trainer cards");
   assert(env.elements["#due-cards"].children.length === 3, "dashboard renders practice recommendations");
+  assert(/Starter plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders starter practice plan");
+  assert(/Start Lesson 01/.test(env.elements["#practice-plan"].innerHTML), "dashboard starter plan includes first lesson");
   assert(/No weak root skills/.test(env.elements["#competency-list"].innerHTML), "dashboard renders empty competency graph state");
   assert(/No weak mastery signals/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders empty mastery state");
   assert(/No raw weak tags detected/.test(env.elements["#weak-list"].innerHTML), "dashboard renders empty raw weak-tag state");
@@ -220,6 +223,9 @@ function runSeededMasterySmoke() {
   assert(/Agency and responsibility/.test(env.elements["#competency-list"].innerHTML), "dashboard renders root competency label");
   assert(/passive-agency/.test(env.elements["#competency-list"].innerHTML), "dashboard competency graph lists source signal");
   assert(/Root skill/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation carries root competency");
+  assert(/Repair plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders repair practice plan");
+  assert(/Agency and responsibility/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan shows root competency");
+  assert(/mode=repair/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links repair mode");
   assert(/Read passive agency/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation highlights weak mastery");
   assert(/Open repair scene/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation opens the repair scene");
 }
@@ -236,10 +242,12 @@ function runClosedMasterySmoke() {
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   const dueHtml = env.elements["#due-cards"].children.map(child => child.innerHTML).join("\n");
+  const planHtml = env.elements["#practice-plan"].innerHTML;
   assert(/No weak mastery signals/.test(env.elements["#mastery-list"].innerHTML), "dashboard retires closed mastery signal");
   assert(/No weak root skills/.test(env.elements["#competency-list"].innerHTML), "dashboard retires closed root competency");
   assert(!/signal=passive-agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard closed mastery list has no repair link");
   assert(!/signal=passive-agency/.test(dueHtml), "dashboard closed due cards have no repair link");
+  assert(!/signal=passive-agency/.test(planHtml), "dashboard closed practice plan has no repair link");
   assert(!/Open repair scene/.test(dueHtml), "dashboard closed due cards do not use repair CTA");
 }
 
@@ -258,6 +266,7 @@ async function runDynamicCatalogSmoke() {
   assert(env.context.PLATA_LESSON_B2_JOB_FOLLOWUP, "dashboard loads job follow-up lesson data from catalog");
   assert(/Read passive agency/.test(env.elements["#mastery-list"].innerHTML), "dynamic catalog load renders mastery diagnostics");
   assert(/Agency and responsibility/.test(env.elements["#competency-list"].innerHTML), "dynamic catalog load renders competency diagnostics");
+  assert(/Repair plan/.test(env.elements["#practice-plan"].innerHTML), "dynamic catalog load renders compiled practice plan");
 }
 
 async function run() {
@@ -269,6 +278,7 @@ async function run() {
   console.log("ok - dashboard renders without runtime errors");
   console.log("ok - dashboard renders mastery signal diagnostics");
   console.log("ok - dashboard renders competency graph diagnostics");
+  console.log("ok - dashboard renders compiled practice plans");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");
   console.log("ok - dashboard loads lesson data from catalog");

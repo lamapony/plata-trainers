@@ -229,6 +229,16 @@ function runDashboardDecisionSmoke(context) {
     { trainer, decision: repair, index: 1 }
   ], 1);
   assert(ranked[0].decision.kind === "repair", "ranker should put higher score first");
+
+  const plan = planner.practicePlan([
+    { trainer, decision: repair, index: 1 },
+    { trainer, decision: repair, index: 2 },
+    { trainer: { id: "lesson-01-arrival", name: "Lesson 01", type: "lesson", path: "./lessons/lesson-01/", description: "Story", icon: "🌅" }, decision: lessonStart, index: 3 }
+  ], { limit: 3 });
+  assert(plan.kind === "repair", "practice plan starts with repair when repair is open");
+  assert(plan.steps.length === 1, "practice plan does not pad repair work with starter tasks");
+  assert(plan.steps[0].competency.id === "agency", "practice plan keeps root competency on repair step");
+  assert(plan.steps[0].primaryHref.includes("mode=repair"), "practice plan repair step links to repair mode");
 }
 
 function run() {

@@ -415,6 +415,103 @@
     }).slice(0, limit || 3);
   }
 
+  function minutesForDecision(kind) {
+    if (kind === "repair") return "4-6 min";
+    if (kind === "repeat" || kind === "weak" || kind === "accuracy") return "6-8 min";
+    if (kind === "start") return "10-15 min";
+    if (kind === "enough") return "0 min";
+    return "8-10 min";
+  }
+
+  function planTitle(kind) {
+    if (kind === "repair") return "Repair plan";
+    if (kind === "start") return "Starter plan";
+    if (kind === "enough") return "Stop here";
+    if (kind === "accuracy" || kind === "weak") return "Stabilization plan";
+    return "Practice plan";
+  }
+
+  function planCopy(kind, count) {
+    if (kind === "repair") return "Start with the smallest open root problem, then use the next step only if you still have attention.";
+    if (kind === "start") return "Do one short session first. The planner needs real attempts before it can diagnose you.";
+    if (kind === "enough") return "You have enough signal for today. Spacing will do more than another forced round.";
+    return "Keep the session short and ordered. Finish the first step before switching topics.";
+  }
+
+  function itemKey(item) {
+    var decision = item && item.decision || {};
+    return String(decision.primaryHref || "") + "::" + String(decision.kind || "");
+  }
+
+  function planStep(item, number) {
+    var decision = item.decision || {};
+    var trainer = item.trainer || {};
+    var competency = decision.competency || null;
+    return {
+      number: number,
+      kind: decision.kind || "continue",
+      trainerId: trainer.id || decision.trainerId || "",
+      trainerName: trainer.name || "",
+      trainerIcon: trainer.icon || "",
+      badge: decision.badge || decision.eyebrow || "Next",
+      title: decision.title || trainer.name || "Practice",
+      copy: decision.copy || trainer.description || "",
+      primaryLabel: decision.primaryLabel || "Open",
+      primaryHref: decision.primaryHref || trainer.path || "#",
+      minutes: minutesForDecision(decision.kind),
+      score: Number(decision.score || 0),
+      competency: competency,
+      reasons: decision.reasons || []
+    };
+  }
+
+  function practicePlan(items, options) {
+    options = options || {};
+    var limit = Math.max(1, Number(options.limit || 3));
+    var ranked = rankDashboardDecisions(items || [], Math.max(limit + 4, 8));
+    if (!ranked.length) {
+      return {
+        kind: "empty",
+        title: "Practice plan",
+        copy: "Start any trainer to give the planner enough local signal.",
+        steps: [],
+        meta: "No local progress yet."
+      };
+    }
+
+    var picked = [];
+    var seen = {};
+    function push(item) {
+      if (!item || !item.decision || picked.length >= limit) return;
+      var key = itemKey(item);
+      if (!key || seen[key]) return;
+      seen[key] = true;
+      picked.push(item);
+    }
+
+    var firstRepair = ranked.find(function (item) { return item.decision && item.decision.kind === "repair"; });
+    if (firstRepair) push(firstRepair);
+    if (!picked.length) push(ranked[0]);
+    var primaryKind = picked[0] && picked[0].decision && picked[0].decision.kind || "";
+    ranked.forEach(function (item) {
+      var kind = item && item.decision && item.decision.kind || "";
+      if (kind === "start") return;
+      if (primaryKind === "enough" && kind !== "enough") return;
+      push(item);
+    });
+
+    var steps = picked.map(function (item, index) { return planStep(item, index + 1); });
+    var firstKind = steps[0] && steps[0].kind || "continue";
+    return {
+      kind: firstKind,
+      title: planTitle(firstKind),
+      copy: planCopy(firstKind, steps.length),
+      steps: steps,
+      primaryStep: steps[0] || null,
+      meta: steps.length + " step" + (steps.length === 1 ? "" : "s") + " compiled from current local progress."
+    };
+  }
+
   root.PlataPlanner = {
     todayAttempts: todayAttempts,
     sceneHref: sceneHref,
@@ -425,6 +522,7 @@
     drillDecision: drillDecision,
     dashboardDecision: dashboardDecision,
     rankDashboardDecisions: rankDashboardDecisions,
+    practicePlan: practicePlan,
     nonDiagnosticTags: NON_DIAGNOSTIC_TAGS
   };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -192,13 +192,9 @@ function renderTrainerCards() {
   });
 }
 
-function renderDueCards() {
-  const container = $("#due-cards");
-  if (!container) return;
-  container.innerHTML = "";
+function dashboardCandidates() {
   const planner = window.PlataPlanner;
-
-  const candidates = trainers().map((trainer, index) => {
+  return trainers().map((trainer, index) => {
     const state = loadTrainerState(trainer.id);
     const stats = computeStats(state, trainer);
     if (!stats) return null;
@@ -213,6 +209,55 @@ function renderDueCards() {
     }) : null;
     return { trainer, stats, decision, index };
   }).filter(x => x !== null && x.decision);
+}
+
+function renderPracticePlan(candidates) {
+  const container = $("#practice-plan");
+  if (!container) return;
+  container.innerHTML = "";
+  const planner = window.PlataPlanner;
+  const plan = planner && planner.practicePlan ? planner.practicePlan(candidates, { limit: 3 }) : null;
+  if (!plan || !plan.steps || plan.steps.length === 0) {
+    container.innerHTML = '<p class="narrative">Start any trainer to compile a short practice plan.</p>';
+    return;
+  }
+
+  container.innerHTML = `
+    <article class="practice-plan-card ${escapeHtml(plan.kind || "continue")}">
+      <div class="practice-plan-head">
+        <div>
+          <p class="eyebrow">Compiled plan</p>
+          <h3>${escapeHtml(plan.title)}</h3>
+          <p>${escapeHtml(plan.copy)}</p>
+        </div>
+        <span>${escapeHtml(plan.meta || "")}</span>
+      </div>
+      <div class="plan-steps">
+        ${plan.steps.map(step => `
+          <div class="plan-step ${escapeHtml(step.kind)}">
+            <span class="plan-step-number">${step.number}</span>
+            <div>
+              <div class="plan-step-meta">
+                <span>${escapeHtml(step.trainerIcon)} ${escapeHtml(step.trainerName)}</span>
+                <span>${escapeHtml(step.minutes)}</span>
+              </div>
+              <h4>${escapeHtml(step.title)}</h4>
+              <p>${escapeHtml(step.copy)}</p>
+              ${step.competency ? `<span class="competency-chip">${escapeHtml(step.competency.label)}</span>` : ""}
+              <a href="${escapeHtml(step.primaryHref)}">${escapeHtml(step.primaryLabel)} →</a>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    </article>
+  `;
+}
+
+function renderDueCards(candidates) {
+  const container = $("#due-cards");
+  if (!container) return;
+  container.innerHTML = "";
+  const planner = window.PlataPlanner;
 
   const due = planner && planner.rankDashboardDecisions
     ? planner.rankDashboardDecisions(candidates, 3)
@@ -504,8 +549,10 @@ function importAll() {
 
 function renderDashboard() {
   masteryCatalogCache = null;
+  const candidates = dashboardCandidates();
   renderTrainerCards();
-  renderDueCards();
+  renderPracticePlan(candidates);
+  renderDueCards(candidates);
   renderCompetencyList();
   renderMasteryList();
   renderWeakList();
