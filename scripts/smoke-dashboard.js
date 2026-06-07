@@ -8,6 +8,7 @@ const vm = require("vm");
 const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
 const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catalog.js"), "utf8");
+const competencySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-competencies.js"), "utf8");
 const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
@@ -44,6 +45,7 @@ function makeContext(initialStorage, options) {
   const elements = {
     "#trainer-cards": makeElement("div"),
     "#due-cards": makeElement("div"),
+    "#competency-list": makeElement("div"),
     "#mastery-list": makeElement("div"),
     "#weak-list": makeElement("div"),
     "#export-all": makeElement("button"),
@@ -127,6 +129,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
@@ -190,6 +193,7 @@ function runEmptyDashboardSmoke() {
 
   assert(env.elements["#trainer-cards"].children.length === 6, "dashboard renders all trainer cards");
   assert(env.elements["#due-cards"].children.length === 3, "dashboard renders practice recommendations");
+  assert(/No weak root skills/.test(env.elements["#competency-list"].innerHTML), "dashboard renders empty competency graph state");
   assert(/No weak mastery signals/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders empty mastery state");
   assert(/No raw weak tags detected/.test(env.elements["#weak-list"].innerHTML), "dashboard renders empty raw weak-tag state");
 }
@@ -201,6 +205,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
@@ -212,6 +217,9 @@ function runSeededMasterySmoke() {
   assert(/official-reply-passive/.test(env.elements["#mastery-list"].innerHTML), "mastery repair CTA links to the source scene");
   assert(/mode=repair/.test(env.elements["#mastery-list"].innerHTML), "mastery repair CTA opens repair mode");
   assert(/signal=passive-agency/.test(env.elements["#mastery-list"].innerHTML), "mastery repair CTA carries the mastery signal");
+  assert(/Agency and responsibility/.test(env.elements["#competency-list"].innerHTML), "dashboard renders root competency label");
+  assert(/passive-agency/.test(env.elements["#competency-list"].innerHTML), "dashboard competency graph lists source signal");
+  assert(/Root skill/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation carries root competency");
   assert(/Read passive agency/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation highlights weak mastery");
   assert(/Open repair scene/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation opens the repair scene");
 }
@@ -223,11 +231,13 @@ function runClosedMasterySmoke() {
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   const dueHtml = env.elements["#due-cards"].children.map(child => child.innerHTML).join("\n");
   assert(/No weak mastery signals/.test(env.elements["#mastery-list"].innerHTML), "dashboard retires closed mastery signal");
+  assert(/No weak root skills/.test(env.elements["#competency-list"].innerHTML), "dashboard retires closed root competency");
   assert(!/signal=passive-agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard closed mastery list has no repair link");
   assert(!/signal=passive-agency/.test(dueHtml), "dashboard closed due cards have no repair link");
   assert(!/Open repair scene/.test(dueHtml), "dashboard closed due cards do not use repair CTA");
@@ -238,6 +248,7 @@ async function runDynamicCatalogSmoke() {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   seedWeakMasteryState(env);
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
   await Promise.resolve();
@@ -246,6 +257,7 @@ async function runDynamicCatalogSmoke() {
   assert(env.context.PLATA_LESSON_B2_RADIATOR, "dashboard loads gold lesson data from catalog");
   assert(env.context.PLATA_LESSON_B2_JOB_FOLLOWUP, "dashboard loads job follow-up lesson data from catalog");
   assert(/Read passive agency/.test(env.elements["#mastery-list"].innerHTML), "dynamic catalog load renders mastery diagnostics");
+  assert(/Agency and responsibility/.test(env.elements["#competency-list"].innerHTML), "dynamic catalog load renders competency diagnostics");
 }
 
 async function run() {
@@ -256,6 +268,7 @@ async function run() {
 
   console.log("ok - dashboard renders without runtime errors");
   console.log("ok - dashboard renders mastery signal diagnostics");
+  console.log("ok - dashboard renders competency graph diagnostics");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");
   console.log("ok - dashboard loads lesson data from catalog");

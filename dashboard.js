@@ -13,6 +13,10 @@ function trainers() {
   return window.PlataCatalog && Array.isArray(window.PlataCatalog.trainers) ? window.PlataCatalog.trainers : [];
 }
 
+function competencyGraph() {
+  return window.PlataCompetencies || null;
+}
+
 function loadScript(src) {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
@@ -49,6 +53,7 @@ function buildMasteryCatalog() {
           tag,
           label: spec.label || tag,
           evidence: spec.evidence || "",
+          competencyId: spec.competencyId || "",
           refs: []
         };
       }
@@ -89,12 +94,15 @@ function isMasteryTag(tag) {
 
 function enrichMasteryTag(weakTag, trainer) {
   const spec = masterySpec(weakTag.tag) || {};
-  return {
+  const signal = {
     ...weakTag,
     label: spec.label || weakTag.tag,
     evidence: spec.evidence || "",
+    competencyId: spec.competencyId || "",
     remediation: remediationFor(spec, trainer)
   };
+  const graph = competencyGraph();
+  return graph && graph.enrichSignal ? graph.enrichSignal(signal) : signal;
 }
 
 function isRawDiagnosticTag(tag) {
@@ -120,6 +128,8 @@ function computeStats(state, trainer) {
   const totalItems = records.length;
   const weakTags = kernel.getWeakTags ? kernel.getWeakTags(state, 10) : [];
   const weakMastery = weakTags.filter(w => isMasteryTag(w.tag)).map(w => enrichMasteryTag(w, trainer));
+  const graph = competencyGraph();
+  const weakCompetencies = graph && graph.rank ? graph.rank(weakMastery) : [];
   const registerProfile = kernel.getRegisterProfile ? kernel.getRegisterProfile(state) : { formal: 0, informal: 0, neutral: 0, total: 0 };
   return {
     total,
@@ -132,6 +142,7 @@ function computeStats(state, trainer) {
     lastSessionDate: meta.lastSessionDate || "",
     weakTags,
     weakMastery,
+    weakCompetencies,
     registerProfile
   };
 }
@@ -196,6 +207,7 @@ function renderDueCards() {
       state,
       stats,
       weakMastery: stats.weakMastery,
+      weakCompetencies: stats.weakCompetencies,
       weakTags: stats.weakTags,
       index
     }) : null;
@@ -215,6 +227,7 @@ function renderDueCards() {
     const topMastery = (decision.signals || []).filter(w => w.label).slice(0, 2);
     const topWeak = (decision.signals || []).filter(w => !w.label).slice(0, 3);
     const repair = decision.repair || null;
+    const competency = decision.competency || null;
     const reasons = decision.reasons || [];
     const card = document.createElement("article");
     const decisionClass = String(decision.kind || "continue").replace(/[^a-z0-9-]/gi, "");
@@ -237,6 +250,12 @@ function renderDueCards() {
             <p>${escapeHtml(repair.action)}</p>
           </div>
         ` : ""}
+        ${competency ? `
+          <div class="competency-chip-block">
+            <span class="eyebrow">Root skill</span>
+            <span class="competency-chip">${escapeHtml(competency.label)} · ${competency.signalCount} signal${competency.signalCount === 1 ? "" : "s"}</span>
+          </div>
+        ` : ""}
         ${topWeak.length ? `
           <div class="weak-tags">
             <span class="eyebrow">Weak tags</span>
@@ -251,6 +270,64 @@ function renderDueCards() {
     `;
     container.appendChild(card);
   });
+}
+
+function renderCompetencyList() {
+  const container = $("#competency-list");
+  if (!container) return;
+  const graph = competencyGraph();
+  if (!graph || !graph.rank) {
+    container.innerHTML = '<p class="narrative">Competency graph is unavailable. Mastery signals still work normally.</p>';
+    return;
+  }
+
+  const signals = [];
+  trainers().forEach(trainer => {
+    const state = loadTrainerState(trainer.id);
+    const stats = computeStats(state, trainer);
+    if (!stats) return;
+    stats.weakMastery.forEach(signal => {
+      signals.push({
+        ...signal,
+        trainerId: trainer.id,
+        trainerName: trainer.name,
+        trainerIcon: trainer.icon
+      });
+    });
+  });
+
+  const competencies = graph.rank(signals, 6);
+  if (competencies.length === 0) {
+    container.innerHTML = '<p class="narrative">No weak root skills yet. The graph appears after gold lesson mastery signals produce enough evidence.</p>';
+    return;
+  }
+
+  container.innerHTML = competencies.map(item => {
+    const primary = item.primarySignal || {};
+    const repair = primary.remediation || null;
+    return `
+      <article class="mastery-card competency-card">
+        <div class="mastery-card-head">
+          <span class="mastery-key">${escapeHtml(item.id)}</span>
+          <span class="mastery-score">${item.signalCount} signal${item.signalCount === 1 ? "" : "s"}</span>
+        </div>
+        <h3>${escapeHtml(item.label)}</h3>
+        <p>${escapeHtml(item.copy)}</p>
+        <div class="mastery-meta">
+          <span>${item.wrong} wrong / ${item.total} total · ${Math.round(item.errorRate * 100)}% error rate</span>
+          <span>${item.signals.map(signal => `${escapeHtml(signal.tag)} (${signal.wrong}/${signal.total})`).join(" · ")}</span>
+        </div>
+        ${repair ? `
+          <div class="repair-block">
+            <span class="eyebrow">Best first repair</span>
+            <strong>${escapeHtml(primary.label || primary.tag)}</strong>
+            <p>${escapeHtml(repair.action)}</p>
+            <a href="${escapeHtml(repair.href)}">${escapeHtml(primary.trainerIcon || repair.trainerIcon || "")} Open scene →</a>
+          </div>
+        ` : ""}
+      </article>
+    `;
+  }).join("");
 }
 
 function renderMasteryList() {
@@ -429,6 +506,7 @@ function renderDashboard() {
   masteryCatalogCache = null;
   renderTrainerCards();
   renderDueCards();
+  renderCompetencyList();
   renderMasteryList();
   renderWeakList();
 }

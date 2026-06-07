@@ -8,6 +8,7 @@ const vm = require("node:vm");
 const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
 const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catalog.js"), "utf8");
+const competencySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-competencies.js"), "utf8");
 const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
@@ -143,6 +144,7 @@ function makeContext(initialStorage) {
 function loadKernelAndCatalog(env) {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
 }
 
@@ -248,6 +250,7 @@ async function runWeakMasteryHomeSmoke() {
   assert(/signal=understatement-with-agency/.test(env.ids["#home-start-link"].href), "home repair link carries signal");
   assert(/workplace-understatement/.test(env.ids["#home-start-link"].href), "home repair link targets source scene");
   assert(env.ids["#home-primary-action"].textContent === "Open repair scene", "home primary CTA uses repair action");
+  assert(/Root competency: Agency and responsibility/.test(env.ids["#home-start-meta"].textContent), "home repair explains root competency");
 }
 
 async function runClosedMasteryHomeSmoke() {

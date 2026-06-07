@@ -396,6 +396,7 @@ function summarizeLesson(entry, catalogById, root) {
     masterySignals: masteryKeys.map(key => ({
       key,
       label: masteryMap[key].label || key,
+      competencyId: masteryMap[key].competencyId || "",
       remediationSceneId: masteryMap[key].remediation && masteryMap[key].remediation.sceneId || "",
       sourceRefs: asArray(masteryMap[key].sourceRefs)
     })),

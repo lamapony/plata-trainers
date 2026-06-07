@@ -16,6 +16,10 @@
     return window.PlataCatalog && Array.isArray(window.PlataCatalog.trainers) ? window.PlataCatalog.trainers : [];
   }
 
+  function competencyGraph() {
+    return window.PlataCompetencies || null;
+  }
+
   function loadScript(src) {
     return new Promise(function (resolve, reject) {
       var script = document.createElement("script");
@@ -67,6 +71,7 @@
             tag: tag,
             label: spec.label || tag,
             evidence: spec.evidence || "",
+            competencyId: spec.competencyId || "",
             refs: []
           };
         }
@@ -107,11 +112,14 @@
 
   function enrichMasteryTag(weakTag, trainer) {
     var spec = masterySpec(weakTag.tag) || {};
-    return Object.assign({}, weakTag, {
+    var signal = Object.assign({}, weakTag, {
       label: spec.label || weakTag.tag,
       evidence: spec.evidence || "",
+      competencyId: spec.competencyId || "",
       remediation: remediationFor(spec, trainer)
     });
+    var graph = competencyGraph();
+    return graph && graph.enrichSignal ? graph.enrichSignal(signal) : signal;
   }
 
   function trainerStats(trainer, index) {
@@ -122,6 +130,8 @@
     var kernel = window.PlataKernel;
     var weakTags = state && kernel && kernel.getWeakTags ? kernel.getWeakTags(state, 10) : [];
     var weakMastery = weakTags.filter(function (w) { return isMasteryTag(w.tag); }).map(function (w) { return enrichMasteryTag(w, trainer); });
+    var graph = competencyGraph();
+    var weakCompetencies = graph && graph.rank ? graph.rank(weakMastery) : [];
     var stats = {
       trainer: trainer,
       state: state,
@@ -132,6 +142,7 @@
       hasProgress: attempts > 0,
       weakTags: weakTags,
       weakMastery: weakMastery,
+      weakCompetencies: weakCompetencies,
       index: index || 0
     };
     var planner = window.PlataPlanner;
@@ -147,6 +158,7 @@
           lastSessionDate: stats.lastSessionDate
         },
         weakMastery: weakMastery,
+        weakCompetencies: weakCompetencies,
         weakTags: weakTags,
         index: index || 0
       });

@@ -102,17 +102,21 @@
 
   function weakMasteryForLesson(lesson, state) {
     var kernel = root.PlataKernel;
+    var graph = root.PlataCompetencies;
     if (!lesson || !lesson.masteryMap || !state || !kernel || !kernel.getWeakTags) return null;
     var weak = kernel.getWeakTags(state, 20);
     for (var i = 0; i < weak.length; i++) {
       var tag = weak[i].tag;
       if (lesson.masteryMap[tag] && lesson.masteryMap[tag].remediation) {
-        return {
+        var spec = lesson.masteryMap[tag];
+        var signal = {
           tag: tag,
           stats: weak[i],
-          spec: lesson.masteryMap[tag],
-          remediation: lesson.masteryMap[tag].remediation
+          spec: spec,
+          competencyId: spec.competencyId || "",
+          remediation: spec.remediation
         };
+        return graph && graph.enrichSignal ? graph.enrichSignal(signal) : signal;
       }
     }
     return null;
@@ -155,6 +159,7 @@
     if (weak) {
       var repair = weak.remediation || {};
       var href = sceneHref("", repair.sceneId || "", weak.tag).replace(/^\?/, "?");
+      var competency = weak.competency || null;
       return {
         kind: "repair",
         targetKind: "repair",
@@ -169,7 +174,8 @@
         secondaryLabel: "Open dashboard",
         secondaryHref: dashboardHref,
         meta: repair.action || "",
-        reasons: ["Weak mastery signal: " + (weak.spec.label || weak.tag)]
+        competency: competency,
+        reasons: (competency ? ["Root competency: " + competency.label] : []).concat(["Weak mastery signal: " + (weak.spec.label || weak.tag)])
       };
     }
 
@@ -260,6 +266,18 @@
     return null;
   }
 
+  function competencyForSignal(competencies, signal) {
+    if (!signal) return null;
+    for (var i = 0; i < (competencies || []).length; i++) {
+      var competency = competencies[i];
+      var signals = competency.signals || [];
+      for (var j = 0; j < signals.length; j++) {
+        if (signals[j].tag === signal.tag) return competency;
+      }
+    }
+    return signal.competency || null;
+  }
+
   function dashboardDecision(options) {
     options = options || {};
     var trainer = options.trainer || {};
@@ -268,16 +286,20 @@
     var trainerPath = trainer.path || "#";
     var weakMastery = options.weakMastery || [];
     var weakTags = options.weakTags || [];
+    var graph = root.PlataCompetencies;
+    var weakCompetencies = options.weakCompetencies || (graph && graph.rank ? graph.rank(weakMastery) : []);
     var topMastery = weakMastery.find(function (item) { return item.remediation && item.remediation.href; });
     var index = Number(options.index || 0);
 
     if (topMastery) {
+      var repairCompetency = competencyForSignal(weakCompetencies, topMastery);
+      var competencyBoost = repairCompetency ? Math.min(30, Math.round(Number(repairCompetency.score || 0) / 4)) : 0;
       return {
         kind: "repair",
         targetKind: "repair",
         trainerId: trainer.id || "",
         signalTag: topMastery.tag,
-        score: weakScore(topMastery),
+        score: weakScore(topMastery) + competencyBoost,
         badge: "Repair now",
         title: "Repair " + (topMastery.label || topMastery.tag),
         copy: topMastery.evidence || "A gold lesson mastery signal is currently weak.",
@@ -285,8 +307,9 @@
         primaryHref: topMastery.remediation.href,
         meta: topMastery.remediation.action || "",
         signals: [topMastery],
+        competency: repairCompetency,
         repair: topMastery.remediation,
-        reasons: ["Highest weak mastery signal"]
+        reasons: (repairCompetency ? ["Root competency: " + repairCompetency.label] : []).concat(["Highest weak mastery signal"])
       };
     }
 

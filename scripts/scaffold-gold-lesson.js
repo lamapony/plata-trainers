@@ -195,6 +195,7 @@ function buildLesson(options) {
   },
   masteryMap: {
     "context-reading": {
+      competencyId: "process-control",
       label: "Read the situation",
       evidence: "The learner identifies what the professional situation requires before choosing words.",
       remediation: {
@@ -205,6 +206,7 @@ function buildLesson(options) {
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"]
     },
     "register-signal-control": {
+      competencyId: "register-control",
       label: "Control register signals",
       evidence: "The learner recognizes which Danish phrases signal acknowledgement, action, and next step.",
       remediation: {
@@ -215,6 +217,7 @@ function buildLesson(options) {
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Dansk Sproghistorie: dialogiske partikler"]
     },
     "agency-without-pressure": {
+      competencyId: "agency",
       label: "Use agency without pressure",
       evidence: "The learner writes an active professional response without over-demanding or hiding behind vague politeness.",
       remediation: {
@@ -225,6 +228,7 @@ function buildLesson(options) {
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"]
     },
     "concrete-next-step": {
+      competencyId: "process-control",
       label: "Give a concrete next step",
       evidence: "The learner completes a sentence with both an action and a time or next-step signal.",
       remediation: {
@@ -235,6 +239,7 @@ function buildLesson(options) {
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"]
     },
     "consequence-aware-register": {
+      competencyId: "consequence-awareness",
       label: "Name the register principle",
       evidence: "The learner names why tone, clarity, and relationship cost belong together.",
       remediation: {

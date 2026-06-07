@@ -24,6 +24,16 @@ function loadLesson(relPath) {
   return context.window[keys[0]];
 }
 
+function loadCompetencyIds() {
+  const context = { window: {} };
+  context.globalThis = context.window;
+  vm.createContext(context);
+  vm.runInContext(fs.readFileSync(path.join(root, "shared", "plata-competencies.js"), "utf8"), context, { filename: "shared/plata-competencies.js" });
+  const graph = context.window.PlataCompetencies;
+  if (!graph || typeof graph.definitions !== "function") return new Set();
+  return new Set(graph.definitions().map(def => def.id));
+}
+
 function resolveInputPath(inputPath) {
   return path.isAbsolute(inputPath) ? inputPath : path.join(root, inputPath);
 }
@@ -70,6 +80,7 @@ function findLessons() {
 
 const REQUIRED_SCENE_FIELDS = ["id", "type", "eyebrow", "title", "pressure", "narrative", "prompt", "carry", "tags"];
 const VALID_TYPES = ["choice", "input", "match", "completion"];
+const KNOWN_COMPETENCIES = loadCompetencyIds();
 const DENSITY_STOPWORDS = new Set([
   "alle", "alt", "altid", "anden", "andre", "bare", "den", "der", "det",
   "dig", "din", "dit", "dine", "du", "eller", "for", "fra", "gerne", "har", "havde",
@@ -181,6 +192,11 @@ function validateGoldMasteryMap(lessonMeta, lesson) {
       }
       if (!nonEmptyString(spec.remediation.cta)) issue(`${prefix}.remediation.cta: required non-empty string`);
       if (!nonEmptyString(spec.remediation.action)) issue(`${prefix}.remediation.action: required non-empty string`);
+    }
+    if (!nonEmptyString(spec.competencyId)) {
+      issue(`${prefix}.competencyId: required known competency id`);
+    } else if (!KNOWN_COMPETENCIES.has(spec.competencyId)) {
+      issue(`${prefix}.competencyId: unknown competency "${spec.competencyId}"`);
     }
     if (!Array.isArray(spec.sourceRefs) || spec.sourceRefs.length === 0) {
       issue(`${prefix}.sourceRefs: required non-empty array`);

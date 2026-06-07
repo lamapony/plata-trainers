@@ -70,6 +70,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
   },
   masteryMap: {
     "process-patience": {
+      competencyId: "process-control",
       label: "Respect process timing",
       evidence: "The learner waits before following up and treats silence as process rather than rejection.",
       remediation: {
@@ -80,6 +81,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"]
     },
     "professional-email-agency": {
+      competencyId: "agency",
       label: "Write warm formal agency",
       evidence: "The learner chooses formal follow-up wording that owns the message without sounding robotic or needy.",
       remediation: {
@@ -90,6 +92,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Den Danske Ordbog / ordnet.dk"]
     },
     "platform-register-shift": {
+      competencyId: "register-control",
       label: "Shift register by platform",
       evidence: "The learner makes LinkedIn lower-pressure and more specific than the formal email.",
       remediation: {
@@ -100,6 +103,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       sourceRefs: ["Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"]
     },
     "reply-tone-reading": {
+      competencyId: "stance-reading",
       label: "Mirror professional reply tone",
       evidence: "The learner completes a reply that includes both social acknowledgement and process language.",
       remediation: {
@@ -110,6 +114,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"]
     },
     "professional-agency-principle": {
+      competencyId: "consequence-awareness",
       label: "Name the agency principle",
       evidence: "The learner names the B2 principle that professional Danish takes responsibility instead of hiding behind passive wording.",
       remediation: {

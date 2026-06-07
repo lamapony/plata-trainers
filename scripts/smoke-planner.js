@@ -7,6 +7,7 @@ const vm = require("vm");
 
 const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
+const competencySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-competencies.js"), "utf8");
 const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 
@@ -42,6 +43,7 @@ function makeContext() {
   context.globalThis = context;
   vm.createContext(context);
   vm.runInContext(kernelSource, context, { filename: "shared/plata-kernel.js" });
+  vm.runInContext(competencySource, context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, context, { filename: "shared/plata-planner.js" });
   vm.runInContext(radiatorLessonSource, context, { filename: "lessons/lesson-b2-radiator/data.js" });
   return context;
@@ -75,6 +77,7 @@ function runLessonDecisionSmoke(context) {
   assert(decision.primaryHref.includes("mode=repair"), "repair decision should open repair mode");
   assert(decision.primaryHref.includes("signal=passive-agency"), "repair decision should carry signal");
   assert(decision.primaryHref.includes("#official-reply-passive"), "repair decision should carry source scene");
+  assert(decision.competency.id === "agency", "lesson repair carries root competency");
 
   kernel.recordAttempt(state, {
     itemId: "official-reply-passive",
@@ -185,6 +188,21 @@ function runDashboardDecisionSmoke(context) {
   assert(repair.kind === "repair", "dashboard should prioritize repair decisions");
   assert(repair.title.includes("Read passive agency"), "dashboard repair should use mastery label");
   assert(repair.primaryHref.includes("mode=repair"), "dashboard repair should link repair mode");
+  assert(repair.competency.id === "agency", "dashboard repair exposes root competency");
+
+  const mismatchedRoot = planner.dashboardDecision({
+    trainer,
+    state,
+    stats: { total: 3, correct: 0, accuracy: 0, today: 3, lastSessionDate: state.meta.lastSessionDate },
+    weakMastery: [
+      { tag: "understatement-with-agency", label: "Use understatement with agency", evidence: "Agency signal", wrong: 1, correct: 0, total: 1, score: 1, competencyId: "agency", remediation },
+      { tag: "modal-particle-stance", label: "Read particle stance", evidence: "Stance signal", wrong: 5, correct: 0, total: 5, score: 1, competencyId: "stance-reading", remediation: { ...remediation, href: "./lessons/lesson-b2-radiator/?mode=repair&signal=modal-particle-stance#group-chat-particles" } }
+    ],
+    weakTags: [weak],
+    index: 4
+  });
+  assert(mismatchedRoot.signalTag === "understatement-with-agency", "dashboard repair keeps the selected repair signal");
+  assert(mismatchedRoot.competency.id === "agency", "dashboard repair uses competency for the selected signal");
 
   const start = planner.dashboardDecision({
     trainer: { id: "bojning", name: "Bojning drill", type: "drill", path: "./bojning-drill/", description: "Forms" },

@@ -70,6 +70,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
   },
   masteryMap: {
     "passive-agency": {
+      competencyId: "agency",
       label: "Read passive agency",
       evidence: "The learner distinguishes registration/process language from an actual repair commitment.",
       remediation: {
@@ -80,6 +81,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
       sourceRefs: ["Lex: passiv", "sproget.dk: grammatiske betegnelser"]
     },
     "modal-particle-stance": {
+      competencyId: "stance-reading",
       label: "Read particle stance",
       evidence: "The learner identifies how jo, da, sgu, nok, and bare position the speaker socially.",
       remediation: {
@@ -90,6 +92,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
       sourceRefs: ["Dansk Sproghistorie: dialogiske partikler"]
     },
     "formal-register-control": {
+      competencyId: "register-control",
       label: "Control formal register",
       evidence: "The learner makes a concrete formal request without importing private-chat force.",
       remediation: {
@@ -100,6 +103,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Dansk Sproghistorie: dialogiske partikler"]
     },
     "understatement-with-agency": {
+      competencyId: "agency",
       label: "Use understatement with agency",
       evidence: "The learner softens a workplace answer while preserving an action and concrete next step.",
       remediation: {
@@ -110,6 +114,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"]
     },
     "consequence-aware-tone": {
+      competencyId: "consequence-awareness",
       label: "Choose consequence-aware tone",
       evidence: "The learner names the B2 principle that clarity and relationship control can coexist.",
       remediation: {
