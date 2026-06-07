@@ -25,7 +25,7 @@ function attrs(tag) {
   tag.replace(/([\w:-]+)\s*=\s*"([^"]*)"/g, (_, k, v) => { out[k.toLowerCase()] = v; return ""; });
   return out;
 }
-function stripHash(href) { return href.split("#")[0]; }
+function stripHash(href) { return href.split("#")[0].split("?")[0]; }
 function targetPath(file, href) {
   const clean = stripHash(href);
   if (!clean || clean.startsWith("http") || clean.startsWith("mailto:") || clean.startsWith("tel:")) return null;
