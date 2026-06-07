@@ -26,11 +26,14 @@ function makeElement(tagName) {
   return {
     tagName,
     className: "",
+    href: "",
     innerHTML: "",
     textContent: "",
+    download: "",
     style: {},
     children: [],
     files: [],
+    onchange: null,
     appendChild(child) {
       this.children.push(child);
     },
@@ -66,11 +69,28 @@ function makeContext(initialStorage, options) {
     Map,
     encodeURIComponent,
     URL: {
-      createObjectURL() { return "blob:mock"; },
+      createObjectURL(blob) {
+        context.__lastObjectUrlBlob = blob;
+        return "blob:mock";
+      },
       revokeObjectURL() {}
     },
-    Blob: function Blob() {},
-    FileReader: function FileReader() {},
+    Blob: function Blob(parts, options) {
+      this.parts = parts || [];
+      this.options = options || {};
+      context.__lastBlob = this;
+    },
+    FileReader: function FileReader() {
+      this.onload = null;
+      this.result = "";
+      this.readAsText = file => {
+        const text = file ? (file.content || file.text || file.result || "") : "";
+        this.result = text;
+        if (typeof this.onload === "function") {
+          this.onload({ target: { result: text } });
+        }
+      };
+    },
     document: {
       readyState: "complete",
       head: null,
@@ -133,6 +153,17 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
+}
+
+function invokeDashboardFunction(env, name) {
+  if (typeof env.context[name] === "function") return env.context[name]();
+  return vm.runInContext(`${name}()`, env.context, { filename: "dashboard.js" });
+}
+
+function parseLastExport(env) {
+  const blob = env.context.__lastBlob;
+  assert(blob && Array.isArray(blob.parts), "dashboard export creates a JSON blob");
+  return JSON.parse(blob.parts.map(part => String(part)).join(""));
 }
 
 function seedWeakMasteryState(env) {
@@ -314,12 +345,52 @@ async function runDynamicCatalogSmoke() {
   assert(/Repair plan/.test(env.elements["#practice-plan"].innerHTML), "dynamic catalog load renders compiled practice plan");
 }
 
+function runPortableProfileSmoke() {
+  const exportEnv = makeContext();
+  loadKernelAndDashboard(exportEnv);
+  const planner = exportEnv.context.PlataPlanner;
+  const plan = planner.readPracticePlan();
+  assert(plan && plan.steps && plan.steps.length, "dashboard has an active plan to export");
+  plan.steps[0].startedAt = "2026-06-08T00:00:00.000Z";
+  plan.steps[0].completedAt = "2026-06-08T00:10:00.000Z";
+  plan.steps[0].completionEvidence = {
+    reason: "smoke-test",
+    trainerId: plan.steps[0].trainerId,
+    correct: true
+  };
+  planner.savePracticePlan(plan);
+
+  invokeDashboardFunction(exportEnv, "exportAll");
+  const payload = parseLastExport(exportEnv);
+  assert(payload.profileSchemaVersion === 1, "dashboard export marks profile schema version");
+  assert(payload.practicePlan && payload.practicePlan.steps.length, "dashboard export includes active practice plan");
+  assert(payload.practicePlan.steps[0].completedAt === plan.steps[0].completedAt, "dashboard export includes plan execution ledger");
+
+  const importEnv = makeContext();
+  loadKernelAndDashboard(importEnv);
+  invokeDashboardFunction(importEnv, "importAll");
+  importEnv.elements["#import-file"].files = [{ content: JSON.stringify(payload) }];
+  importEnv.elements["#import-file"].onchange();
+  const importedPlan = importEnv.context.PlataPlanner.readPracticePlan();
+  assert(importedPlan && importedPlan.steps.length, "dashboard import restores active practice plan");
+  assert(importedPlan.steps[0].completedAt === payload.practicePlan.steps[0].completedAt, "dashboard import restores plan execution ledger");
+
+  const legacyEnv = makeContext();
+  loadKernelAndDashboard(legacyEnv);
+  assert(legacyEnv.context.PlataPlanner.readPracticePlan(), "dashboard starts with a plan before legacy import");
+  invokeDashboardFunction(legacyEnv, "importAll");
+  legacyEnv.elements["#import-file"].files = [{ content: JSON.stringify({ schemaVersion: 2, trainers: {} }) }];
+  legacyEnv.elements["#import-file"].onchange();
+  assert(!legacyEnv.context.PlataPlanner.readPracticePlan(), "legacy dashboard import clears stale active plan");
+}
+
 async function run() {
   runEmptyDashboardSmoke();
   runSeededMasterySmoke();
   runStartedPlanSmoke();
   runClosedMasterySmoke();
   await runDynamicCatalogSmoke();
+  runPortableProfileSmoke();
 
   console.log("ok - dashboard renders without runtime errors");
   console.log("ok - dashboard renders mastery signal diagnostics");
@@ -330,6 +401,7 @@ async function run() {
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");
   console.log("ok - dashboard loads lesson data from catalog");
+  console.log("ok - dashboard exports and imports portable practice profiles");
 }
 
 run().catch(err => {

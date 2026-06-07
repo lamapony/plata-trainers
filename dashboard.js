@@ -512,10 +512,14 @@ function exportAll() {
     if (state) all[trainer.id] = state;
   });
   const kernel = window.PlataKernel;
+  const planner = window.PlataPlanner;
+  const practicePlan = planner && planner.readPracticePlan ? planner.readPracticePlan() : null;
   const payload = {
     exportedAt: new Date().toISOString(),
+    profileSchemaVersion: 1,
     schemaVersion: kernel.schemaVersion,
-    trainers: all
+    trainers: all,
+    practicePlan: practicePlan || null
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -555,8 +559,19 @@ function importAll() {
           });
         }
 
-        window.PlataPlanner?.clearPracticePlan?.();
-        statusEl.textContent = `Imported ${imported} trainer state(s)${skipped ? `, skipped ${skipped}` : ""}. Refresh to see changes.`;
+        const planner = window.PlataPlanner;
+        const hasPracticePlan = Object.prototype.hasOwnProperty.call(payload, "practicePlan");
+        let restoredPlan = false;
+        if (planner && planner.savePracticePlan && hasPracticePlan && payload.practicePlan) {
+          const savedPlan = planner.savePracticePlan(payload.practicePlan);
+          restoredPlan = !!(savedPlan && Array.isArray(savedPlan.steps) && savedPlan.steps.length);
+          if (!restoredPlan) planner.clearPracticePlan?.();
+        } else {
+          planner?.clearPracticePlan?.();
+        }
+
+        const planText = restoredPlan ? ", restored active plan" : "";
+        statusEl.textContent = `Imported ${imported} trainer state(s)${skipped ? `, skipped ${skipped}` : ""}${planText}. Refresh to see changes.`;
         statusEl.style.color = "var(--green)";
         setTimeout(() => { statusEl.textContent = ""; }, 5000);
       } catch (err) {
