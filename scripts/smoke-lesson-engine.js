@@ -8,10 +8,33 @@ const vm = require("vm");
 const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
 const engineSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-lesson-engine.js"), "utf8");
-const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+function loadLessonData(relPath) {
+  const context = { window: {} };
+  context.globalThis = context.window;
+  vm.createContext(context);
+  vm.runInContext(fs.readFileSync(path.join(repoRoot, relPath), "utf8"), context, { filename: relPath });
+  const key = Object.keys(context.window).find(candidate => candidate.startsWith("PLATA_LESSON_"));
+  return key ? context.window[key] : null;
+}
+
+function findLessonDataFiles() {
+  const lessonsRoot = path.join(repoRoot, "lessons");
+  return fs.readdirSync(lessonsRoot)
+    .filter(dir => fs.statSync(path.join(lessonsRoot, dir)).isDirectory())
+    .map(dir => path.join("lessons", dir, "data.js"))
+    .filter(relPath => fs.existsSync(path.join(repoRoot, relPath)));
+}
+
+function loadGoldLessons() {
+  return findLessonDataFiles()
+    .map(loadLessonData)
+    .filter(Boolean)
+    .filter(lesson => lesson.qualityTier === "gold");
 }
 
 function hasClass(element, className) {
@@ -186,12 +209,15 @@ function makeContext(locationOverrides) {
   return { context, elements, storage };
 }
 
-function loadRuntime(locationOverrides) {
-  const env = makeContext(locationOverrides);
+function loadRuntime(lesson, locationOverrides) {
+  const env = makeContext(Object.assign({
+    pathname: `/lessons/${lesson.id}/`,
+    search: "",
+    hash: ""
+  }, locationOverrides || {}));
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   vm.runInContext(engineSource, env.context, { filename: "shared/plata-lesson-engine.js" });
-  vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
-  env.lesson = env.context.PLATA_LESSON_B2_RADIATOR;
+  env.lesson = lesson;
   env.context.PlataLessonEngine.run(env.lesson);
   return env;
 }
@@ -207,8 +233,18 @@ function clickNext(env) {
   next.click();
 }
 
+function comparableText(value) {
+  return String(value || "")
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, "\"")
+    .replace(/&gt;/g, ">")
+    .replace(/&lt;/g, "<")
+    .replace(/&amp;/g, "&");
+}
+
 function findChildByText(children, text, label) {
-  const found = children.find(child => String(child.innerHTML || child.textContent || "").includes(text));
+  const needle = comparableText(text);
+  const found = children.find(child => comparableText(child.innerHTML || child.textContent || "").includes(needle));
   assert(found, `${label}: missing child containing "${text}"`);
   return found;
 }
@@ -268,8 +304,8 @@ function weakMastery(env, state) {
     .sort();
 }
 
-function assertRuntimePath(pathSpec) {
-  const env = loadRuntime();
+function assertRuntimePath(lesson, pathSpec) {
+  const env = loadRuntime(lesson);
   const expectedAttempts = pathSpec.actions.reduce((sum, action) => {
     const scene = env.lesson.scenes.find(candidate => candidate.id === action.sceneId);
     return sum + (scene && scene.type === "match" ? scene.pairs.length : 1);
@@ -291,8 +327,8 @@ function assertRuntimePath(pathSpec) {
   assert(actualWeak.join(",") === expectedWeak.join(","), `${pathSpec.id}: expected weak mastery [${expectedWeak.join(", ")}], got [${actualWeak.join(", ")}]`);
 }
 
-function runRepairAttemptSmoke() {
-  const env = loadRuntime({
+function runRepairAttemptSmoke(lesson) {
+  const env = loadRuntime(lesson, {
     search: "?mode=repair&signal=passive-agency",
     hash: "#official-reply-passive"
   });
@@ -313,14 +349,19 @@ function runRepairAttemptSmoke() {
   assert(attempt.tags.includes("repair"), "recorded attempt includes repair mode tag");
 }
 
-function runGoldRuntimePathSmoke() {
-  const env = loadRuntime();
-  env.lesson.simulation.paths.forEach(assertRuntimePath);
+function runGoldRuntimePathSmoke(lessons) {
+  lessons.forEach(lesson => {
+    lesson.simulation.paths.forEach(pathSpec => assertRuntimePath(lesson, pathSpec));
+  });
 }
 
 function run() {
-  runRepairAttemptSmoke();
-  runGoldRuntimePathSmoke();
+  const lessons = loadGoldLessons();
+  assert(lessons.length > 0, "no gold lessons found");
+  const radiatorLesson = lessons.find(lesson => lesson.id === "lesson-b2-radiator-register");
+  assert(radiatorLesson, "radiator gold lesson missing");
+  runRepairAttemptSmoke(radiatorLesson);
+  runGoldRuntimePathSmoke(lessons);
   console.log("ok - lesson engine records repair attempts");
   console.log("ok - lesson engine replays gold simulation paths");
 }

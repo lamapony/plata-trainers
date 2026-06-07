@@ -73,13 +73,35 @@
     });
   }
 
+  function variableNameFromCondition(key) {
+    var match = /^(min|max)([A-Z].*)$/.exec(key);
+    if (!match) return null;
+    return match[2].charAt(0).toLowerCase() + match[2].slice(1);
+  }
+
+  function endingRuleMatches(rule, variables) {
+    if (!rule || typeof rule !== "object") return false;
+    var keys = Object.keys(rule);
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var variableName = variableNameFromCondition(key);
+      if (!variableName || !variables.hasOwnProperty(variableName) || typeof rule[key] !== "number") return false;
+      if (key.indexOf("min") === 0 && variables[variableName] < rule[key]) return false;
+      if (key.indexOf("max") === 0 && variables[variableName] > rule[key]) return false;
+    }
+    return true;
+  }
+
   function resolveEnding(lesson, state) {
     if (!lesson.endingLogic) return null;
     var logic = lesson.endingLogic;
-    var v = state.variables;
-    if (logic.diplomatic && v.landlordTension <= (logic.diplomatic.maxLandlordTension || 0) && v.workplaceTrust >= (logic.diplomatic.minWorkplaceTrust || 1)) return "diplomatic";
-    if (logic.aggressive && v.landlordTension >= (logic.aggressive.minLandlordTension || 2)) return "aggressive";
-    if (logic.passive) return "passive";
+    var variables = state.variables;
+    var endings = lesson.endings || [];
+    var endingIds = endings.length ? endings.map(function (ending) { return ending.id; }) : Object.keys(logic);
+    for (var i = 0; i < endingIds.length; i++) {
+      var id = endingIds[i];
+      if (logic.hasOwnProperty(id) && endingRuleMatches(logic[id], variables)) return id;
+    }
     return null;
   }
 
@@ -191,14 +213,39 @@
     return html;
   }
 
-  function renderVariables(state, varsEl) {
+  function mergeVariableMap(custom, fallback) {
+    var merged = {};
+    Object.keys(fallback || {}).forEach(function (key) { merged[key] = fallback[key]; });
+    Object.keys(custom || {}).forEach(function (key) { merged[key] = custom[key]; });
+    return merged;
+  }
+
+  function variableLabels(lesson) {
+    return mergeVariableMap(lesson.variableLabels, {
+      landlordTension: "Udlejer",
+      sofiaTrust: "Sofia",
+      emilEscalation: "Emil",
+      workplaceTrust: "Arbejde"
+    });
+  }
+
+  function variableDescriptions(lesson) {
+    return mergeVariableMap(lesson.variableDescriptions, {
+      landlordTension: ["kept low — professional distance maintained", "noticeable — relationship strained", "high — conflict visible"],
+      sofiaTrust: ["steady — she still trusts your judgement", "unchanged", "shaken — she distanced herself"],
+      emilEscalation: ["neutral", "neutral", "neutral"],
+      workplaceTrust: ["strong — you handled it with composure", "neutral", "weakened — you sounded too passive"]
+    });
+  }
+
+  function renderVariables(lesson, state, varsEl) {
     if (!varsEl) return;
-    var labels = { landlordTension: "Udlejer", sofiaTrust: "Sofia", emilEscalation: "Emil", workplaceTrust: "Arbejde" };
+    var labels = variableLabels(lesson);
     var html = "";
     Object.keys(state.variables).forEach(function (k) {
       var v = state.variables[k];
       var cls = v > 0 ? "high" : v < 0 ? "low" : "neutral";
-      html += "<span class=\"var-tag " + cls + "\">" + (labels[k] || k) + " " + (v > 0 ? "+" : "") + v + "</span>";
+      html += "<span class=\"var-tag " + cls + "\">" + escapeHtml(labels[k] || k) + " " + (v > 0 ? "+" : "") + v + "</span>";
     });
     varsEl.innerHTML = html;
   }
@@ -364,18 +411,14 @@
 
       if (lesson.variables) {
         html += "<div class='variable-summary'><p class='eyebrow'>Your social tone</p>";
-        var labels = { landlordTension: "Landlord tension", sofiaTrust: "Sofia's trust", emilEscalation: "Emil's stance", workplaceTrust: "Workplace read" };
-        var desc = {
-          landlordTension: ["kept low — professional distance maintained", "noticeable — relationship strained", "high — conflict visible"],
-          sofiaTrust: ["steady — she still trusts your judgement", "unchanged", "shaken — she distanced herself"],
-          emilEscalation: ["neutral", "neutral", "neutral"],
-          workplaceTrust: ["strong — you handled it with composure", "neutral", "weakened — you sounded too passive"]
-        };
+        var labels = variableLabels(lesson);
+        var desc = variableDescriptions(lesson);
         Object.keys(ctx.state.variables).forEach(function (k) {
           var v = ctx.state.variables[k];
           var level = v > 0 ? 2 : v < 0 ? 0 : 1;
-          var meaning = (desc[k] || ["", "", ""])[level] || "";
-          html += "<div class='var-bar'><span class='var-label'>" + (labels[k] || k) + "</span><span class='var-value'>" + (v > 0 ? "+" : "") + v + "</span><span class='var-desc'>" + escapeHtml(meaning) + "</span></div>";
+          var rawMeaning = desc[k] || ["", "", ""];
+          var meaning = Array.isArray(rawMeaning) ? (rawMeaning[level] || "") : rawMeaning;
+          html += "<div class='var-bar'><span class='var-label'>" + escapeHtml(labels[k] || k) + "</span><span class='var-value'>" + (v > 0 ? "+" : "") + v + "</span><span class='var-desc'>" + escapeHtml(meaning) + "</span></div>";
         });
         html += "</div>";
       }
@@ -399,7 +442,7 @@
     var scene = ctx.lesson.scenes[ctx.state.index];
     syncSceneHash(ctx.lesson, ctx.state);
     renderRoute(ctx.lesson, ctx.state, ctx.routeEl, ctx.countEl, function () { renderScene(ctx); });
-    renderVariables(ctx.state, ctx.varsEl);
+    renderVariables(ctx.lesson, ctx.state, ctx.varsEl);
 
     var html = "";
     html += "<p class='eyebrow'>" + escapeHtml(scene.eyebrow) + "</p>";
@@ -471,7 +514,7 @@
       varsEl: $("#variables-display"),
       renderSidebar: function () {
         renderRoute(lesson, ctx.state, ctx.routeEl, ctx.countEl, function () { renderScene(ctx); });
-        renderVariables(ctx.state, ctx.varsEl);
+        renderVariables(ctx.lesson, ctx.state, ctx.varsEl);
       },
       reset: function () {
         ctx.state = freshState(lesson);

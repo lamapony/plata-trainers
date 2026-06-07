@@ -51,6 +51,8 @@
         name: "B2: Job Follow-up",
         type: "lesson",
         path: "./lessons/lesson-b2-job-followup/",
+        lessonGlobal: "PLATA_LESSON_B2_JOB_FOLLOWUP",
+        lessonDataPath: "./lessons/lesson-b2-job-followup/data.js",
         description: "Post-interview email, LinkedIn, professional tone",
         icon: "💼"
       }

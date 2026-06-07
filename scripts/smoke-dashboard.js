@@ -9,7 +9,12 @@ const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
 const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catalog.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
+const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
+const dynamicLessonSources = {
+  "./lessons/lesson-b2-radiator/data.js": radiatorLessonSource,
+  "./lessons/lesson-b2-job-followup/data.js": jobFollowupLessonSource
+};
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -101,8 +106,8 @@ function makeContext(initialStorage, options) {
   context.document.head = makeElement("head");
   context.document.head.appendChild = function appendChild(child) {
     this.children.push(child);
-    if (options.dynamicLessonScripts && child.src === "./lessons/lesson-b2-radiator/data.js") {
-      vm.runInContext(radiatorLessonSource, context, { filename: "lessons/lesson-b2-radiator/data.js" });
+    if (options.dynamicLessonScripts && dynamicLessonSources[child.src]) {
+      vm.runInContext(dynamicLessonSources[child.src], context, { filename: child.src.replace(/^\.\//, "") });
       if (typeof child.onload === "function") child.onload();
       return child;
     }
@@ -120,6 +125,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
+  vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
 
@@ -161,6 +167,7 @@ function runSeededMasterySmoke() {
   seedWeakMasteryState(env);
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
+  vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   assert(env.context.PlataCatalog.trainers.length === 6, "dashboard reads trainer catalog");
@@ -185,6 +192,7 @@ async function runDynamicCatalogSmoke() {
   await Promise.resolve();
 
   assert(env.context.PLATA_LESSON_B2_RADIATOR, "dashboard loads gold lesson data from catalog");
+  assert(env.context.PLATA_LESSON_B2_JOB_FOLLOWUP, "dashboard loads job follow-up lesson data from catalog");
   assert(/Read passive agency/.test(env.elements["#mastery-list"].innerHTML), "dynamic catalog load renders mastery diagnostics");
 }
 

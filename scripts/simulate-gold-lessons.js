@@ -88,13 +88,31 @@ function checkCompletion(scene, value) {
   return { ok: lower.trim().length > 0, missing: [] };
 }
 
+function variableNameFromCondition(key) {
+  const match = /^(min|max)([A-Z].*)$/.exec(key);
+  if (!match) return null;
+  return match[2].charAt(0).toLowerCase() + match[2].slice(1);
+}
+
+function endingRuleMatches(rule, variables) {
+  if (!rule || typeof rule !== "object" || Array.isArray(rule)) return false;
+  return Object.entries(rule).every(([key, expected]) => {
+    const variableName = variableNameFromCondition(key);
+    if (!variableName || !Object.prototype.hasOwnProperty.call(variables, variableName) || typeof expected !== "number") return false;
+    if (key.startsWith("min")) return variables[variableName] >= expected;
+    if (key.startsWith("max")) return variables[variableName] <= expected;
+    return false;
+  });
+}
+
 function resolveEnding(lesson, variables) {
   if (!lesson.endingLogic) return null;
   const logic = lesson.endingLogic;
-  const v = variables;
-  if (logic.diplomatic && v.landlordTension <= (logic.diplomatic.maxLandlordTension || 0) && v.workplaceTrust >= (logic.diplomatic.minWorkplaceTrust || 1)) return "diplomatic";
-  if (logic.aggressive && v.landlordTension >= (logic.aggressive.minLandlordTension || 2)) return "aggressive";
-  if (logic.passive) return "passive";
+  const endingIds = lesson.endings && lesson.endings.length
+    ? lesson.endings.map(ending => ending.id)
+    : Object.keys(logic);
+  const matched = endingIds.find(id => Object.prototype.hasOwnProperty.call(logic, id) && endingRuleMatches(logic[id], variables));
+  if (matched) return matched;
   return null;
 }
 
