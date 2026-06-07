@@ -47,28 +47,51 @@
 
       <section class="hero-grid">
         <div>
-          <p class="eyebrow">Open Danish practice · static · no account</p>
-          <h1>Small drills for the long A2 → B2 climb.</h1>
-          <p class="lead">Platå is a set of browser trainers for Danish forms that do not become automatic by reading alone: verb tenses, noun inflection, word order, and high-frequency vocabulary.</p>
+          <p class="eyebrow">Open Danish practice · private by default</p>
+          <h1>Pick one useful Danish practice session.</h1>
+          <p class="lead">Platå helps when you already know some Danish but still freeze under forms, word order, tone, or social pressure. Choose a short session, finish it, and come back to the dashboard when you want the next step.</p>
           <div class="hero-actions">
-            <a class="btn primary" href="./lessons/lesson-01/">Start Lesson 01</a>
-            <a class="btn" href="./bojning-drill/">Open bøjning</a>
+            <a class="btn primary" id="home-primary-action" href="./lessons/lesson-01/">Start Lesson 01</a>
+            <a class="btn" href="./dashboard.html">Open dashboard</a>
             <a class="btn" href="#trainers">See all trainers</a>
           </div>
         </div>
-        <aside class="status-card" aria-label="Project status">
-          <h2>MVP status</h2>
-          <ul>
-            <li><strong>2</strong> narrative lessons</li>
-            <li><strong>3</strong> trainers live</li>
-            <li><strong>LocalStorage</strong> progress</li>
-            <li><strong>JSON</strong> export/import</li>
-            <li><strong>No backend</strong>, no tracking</li>
-          </ul>
-          <p>Useful today for A2-B1 learners who want repeatable micro-practice. Not a full course yet.</p>
+        <aside class="start-card" id="home-start-card" aria-label="Recommended start">
+          <p class="eyebrow">Start here</p>
+          <h2 id="home-start-title">New here?</h2>
+          <p id="home-start-copy">Take one short story lesson first. It shows how actions, feedback, and local progress work.</p>
+          <a class="btn primary" id="home-start-link" href="./lessons/lesson-01/">Start Lesson 01</a>
+          <p class="start-meta" id="home-start-meta">No account. Progress stays in this browser.</p>
         </aside>
       </section>
     </header>
+
+    <section class="section" id="quick-start" aria-labelledby="quick-start-title">
+      <div class="section-head">
+        <p class="eyebrow">Not sure?</p>
+        <h2 id="quick-start-title">Choose by what feels hard.</h2>
+      </div>
+      <div class="quick-start-grid">
+        <article class="path-card">
+          <span class="tag">First visit</span>
+          <h3>Learn how Platå works</h3>
+          <p>Start with a story lesson. You will make choices, get feedback, and see how progress is recorded.</p>
+          <a class="card-link" href="./lessons/lesson-01/">Start Lesson 01 →</a>
+        </article>
+        <article class="path-card">
+          <span class="tag">Real-life B2</span>
+          <h3>I sound wrong even with the right words</h3>
+          <p>Practise tone, register, and social consequences in Danish messages and workplace situations.</p>
+          <a class="card-link" href="./lessons/lesson-b2-radiator/">Try register lesson →</a>
+        </article>
+        <article class="path-card">
+          <span class="tag">Automatic forms</span>
+          <h3>I need faster grammar recall</h3>
+          <p>Use drills when forms are the bottleneck: verbs, nouns, word order, or vocabulary recall.</p>
+          <a class="card-link" href="./bojning-drill/">Open bøjning drill →</a>
+        </article>
+      </div>
+    </section>
 
     <section class="section" id="trainers" aria-labelledby="trainers-title">
       <div class="section-head">
@@ -76,37 +99,37 @@
         <h2 id="trainers-title">Trainers</h2>
       </div>
       <div class="trainer-grid">
-        <article class="trainer-card">
+        <article class="trainer-card" data-trainer-id="lesson-01-arrival">
           <span class="tag">Narrative A0/A1</span>
           <h3>Lesson 01: The First Morning</h3>
           <p>Arrive in Copenhagen, meet Lene, read signs, and say your first useful Danish sentence. Exercises are embedded as story actions.</p>
           <a class="card-link" href="./lessons/lesson-01/">Open Lesson 01 →</a>
         </article>
-        <article class="trainer-card">
+        <article class="trainer-card" data-trainer-id="lesson-b2-radiator-register">
           <span class="tag">Narrative B2 · Register</span>
           <h3>Det afhænger af, hvordan du siger det</h3>
           <p>You know the words — but do you sound right? A B2 lesson about Danish register, modal particles, and social consequences. Your tone changes the outcome.</p>
           <a class="card-link" href="./lessons/lesson-b2-radiator/">Open B2 Lesson →</a>
         </article>
-        <article class="trainer-card">
+        <article class="trainer-card" data-trainer-id="lesson-b2-job-followup">
           <span class="tag">Narrative B2 · Professional</span>
           <h3>Efter interviews — tone, tak, og tålmodighed</h3>
           <p>Nailed the interview. Now the silence starts. A B2 lesson about post-interview follow-up email, LinkedIn, and how your Danish registers as future colleague — not anxious applicant.</p>
           <a class="card-link" href="./lessons/lesson-b2-job-followup/">Open B2 Lesson →</a>
         </article>
-        <article class="trainer-card">
+        <article class="trainer-card" data-trainer-id="bojning">
           <span class="tag">A2 fundamentals</span>
           <h3>Bøjning drill</h3>
           <p>Type verb forms and noun inflections. Includes nutid, datid, førnutid, bestemt/ubestemt, ental/flertal.</p>
           <a class="card-link" href="./bojning-drill/">Open bøjning-drill →</a>
         </article>
-        <article class="trainer-card">
+        <article class="trainer-card" data-trainer-id="ordstilling">
           <span class="tag">Word order</span>
           <h3>Ordstilling drill</h3>
           <p>Multiple-choice practice for V2, inversion, and ledsætninger with short explanations after each answer.</p>
           <a class="card-link" href="./ordstilling-drill/">Open ordstilling-drill →</a>
         </article>
-        <article class="trainer-card">
+        <article class="trainer-card" data-trainer-id="vocab">
           <span class="tag">Vocabulary</span>
           <h3>Vocab SR</h3>
           <p>Spaced-repetition vocabulary in Danish ↔ Russian, with aliases for common translation variants.</p>
@@ -145,5 +168,8 @@
       <p>MIT code · built by <a href="https://dmitrii.dk">Dmitrii Babinov</a> · part of the Platå Danish-learning project.</p>
     </footer>
   </main>
+  <script src="./shared/plata-kernel.js"></script>
+  <script src="./shared/plata-catalog.js"></script>
+  <script src="./home.js"></script>
 </body>
 </html>

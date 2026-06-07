@@ -102,7 +102,7 @@ h3 { font-size: 30px; }
 .btn.primary { background: var(--ember); color: oklch(0.14 0.02 55); border-color: transparent; }
 .btn:hover { transform: translateY(-1px); }
 
-.status-card, .trainer-card, .steps, .copy-block {
+.status-card, .start-card, .trainer-card, .path-card, .steps, .copy-block {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--card);
@@ -116,11 +116,31 @@ h3 { font-size: 30px; }
 .status-card strong { color: var(--green); }
 .status-card p { color: var(--muted); line-height: 1.55; margin: 0; }
 
+.start-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 100%;
+}
+.start-card h2 { font-size: clamp(28px, 4vw, 42px); letter-spacing: 0; }
+.start-card p { margin: 0; color: var(--muted); line-height: 1.55; }
+.start-card .btn { align-self: flex-start; margin-top: auto; }
+.start-meta {
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+
 .section { padding: 46px 0; }
 .section-head { display: flex; align-items: end; justify-content: space-between; margin-bottom: 20px; }
 .trainer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .trainer-card { padding: 24px; min-height: 280px; display: flex; flex-direction: column; }
 .trainer-card p { color: var(--muted); line-height: 1.55; }
+.quick-start-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.path-card { padding: 22px; min-height: 250px; display: flex; flex-direction: column; }
+.path-card p { color: var(--muted); line-height: 1.55; }
+.path-card .card-link { margin-top: auto; }
 .tag {
   align-self: flex-start;
   margin-bottom: 18px;
@@ -132,6 +152,17 @@ h3 { font-size: 30px; }
   font-size: 12px;
 }
 .card-link { margin-top: auto; color: var(--text); font-weight: 800; text-decoration-color: var(--ember); text-underline-offset: 5px; }
+.friendly-progress {
+  margin: 12px 0 18px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: oklch(1 0 0 / 0.04);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.friendly-progress strong { color: var(--green); }
 
 .split { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(320px, 1fr); gap: 22px; align-items: start; }
 .steps { padding: 18px; display: grid; gap: 12px; }
@@ -153,7 +184,7 @@ h3 { font-size: 30px; }
 @media (max-width: 820px) {
   .site-shell { width: min(100% - 22px, 1120px); }
   .topnav { align-items: flex-start; flex-direction: column; padding-bottom: 34px; }
-  .hero-grid, .trainer-grid, .split { grid-template-columns: 1fr; }
+  .hero-grid, .trainer-grid, .quick-start-grid, .split { grid-template-columns: 1fr; }
   .section-head { align-items: flex-start; flex-direction: column; gap: 8px; }
   .section { padding: 32px 0; }
   .trainer-card { min-height: auto; }

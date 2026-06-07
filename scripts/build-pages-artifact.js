@@ -12,6 +12,7 @@ const rootFiles = [
   "404.html",
   "dashboard.html",
   "dashboard.js",
+  "home.js",
   "index.html",
   "quality.html",
   "quality.js",
