@@ -472,6 +472,12 @@
     var lesson = ctx.lesson;
     var ending = findEnding(lesson, ctx.state.endingId);
     var html = "";
+    if (root.PlataNextStep && root.PlataNextStep.renderPlanContext) {
+      html += root.PlataNextStep.renderPlanContext({
+        trainerId: lesson.id,
+        dashboardHref: "../../dashboard.html"
+      });
+    }
 
     // Record social snapshot if lesson tracks variables
     if (lesson.variables && ctx.tracker && ctx.kernel && ctx.kernel.recordSocialSnapshot) {
@@ -539,6 +545,12 @@
     renderVariables(ctx.lesson, ctx.state, ctx.varsEl);
 
     var html = "";
+    if (root.PlataNextStep && root.PlataNextStep.renderPlanContext) {
+      html += root.PlataNextStep.renderPlanContext({
+        trainerId: ctx.lesson.id,
+        dashboardHref: "../../dashboard.html"
+      });
+    }
     html += "<p class='eyebrow'>" + escapeHtml(scene.eyebrow) + "</p>";
     html += "<h2>" + escapeHtml(scene.title) + "</h2>";
     html += renderComicPanel(ctx.lesson, scene);

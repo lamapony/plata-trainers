@@ -224,6 +224,19 @@
     }
   }
 
+  function renderPlanContext() {
+    if (!window.PlataNextStep || !window.PlataNextStep.renderPlanContext || document.querySelector(".plan-context-slot")) return;
+    const html = window.PlataNextStep.renderPlanContext({
+      trainerId: TRAINER_ID,
+      dashboardHref: "../dashboard.html"
+    });
+    if (!html) return;
+    const slot = document.createElement("div");
+    slot.className = "plan-context-slot";
+    slot.innerHTML = html;
+    els.stats.insertAdjacentElement("afterend", slot);
+  }
+
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -393,6 +406,7 @@
     saveState();
 
     renderStats();
+    renderPlanContext();
     startNewSession();
   }
 

@@ -242,7 +242,7 @@ function makeContext(locationOverrides) {
   return { context, elements, storage };
 }
 
-function loadRuntime(lesson, locationOverrides) {
+function loadRuntime(lesson, locationOverrides, beforeRun) {
   const env = makeContext(Object.assign({
     pathname: `/lessons/${lesson.id}/`,
     search: "",
@@ -254,6 +254,7 @@ function loadRuntime(lesson, locationOverrides) {
   vm.runInContext(nextStepSource, env.context, { filename: "shared/plata-next-step.js" });
   vm.runInContext(engineSource, env.context, { filename: "shared/plata-lesson-engine.js" });
   env.lesson = lesson;
+  if (beforeRun) beforeRun(env);
   env.context.PlataLessonEngine.run(env.lesson);
   return env;
 }
@@ -419,6 +420,35 @@ function runHashNavigationSmoke(lesson) {
   assert(env.context.location.hash === "#official-reply-passive", "unknown hash is normalized to the rendered scene");
 }
 
+function runPlanContextSmoke(lesson) {
+  const env = loadRuntime(lesson, {
+    hash: "#official-reply-passive"
+  }, setupEnv => {
+    const planner = setupEnv.context.PlataPlanner;
+    const plan = planner.savePracticePlan({
+      kind: "repair",
+      title: "Repair plan",
+      copy: "Follow the tracked route.",
+      steps: [{
+        number: 1,
+        kind: "repair",
+        trainerId: lesson.id,
+        title: "Repair Read passive agency",
+        copy: "Replay the source scene as the active plan step.",
+        primaryLabel: "Open repair scene",
+        primaryHref: "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive",
+        minutes: "4-6 min"
+      }]
+    });
+    setupEnv.context.location.search = "?plan=" + encodeURIComponent(plan.planToken) + "&step=" + encodeURIComponent(plan.steps[0].routeId);
+  });
+
+  assert(/plan-context-card/.test(env.elements["#scene"].innerHTML), "active plan route renders plan context");
+  assert(/Active plan . Step 1 of 1/.test(env.elements["#scene"].innerHTML), "active plan context renders step count");
+  assert(/Repair Read passive agency/.test(env.elements["#scene"].innerHTML), "active plan context renders step title");
+  assert(/Back to plan/.test(env.elements["#scene"].innerHTML), "active plan context links back to dashboard");
+}
+
 function runGoldRuntimePathSmoke(lessons) {
   lessons.forEach(lesson => {
     lesson.simulation.paths.forEach(pathSpec => assertRuntimePath(lesson, pathSpec));
@@ -434,10 +464,12 @@ function run() {
     assert(radiatorLesson, "radiator gold lesson missing");
     runRepairAttemptSmoke(radiatorLesson);
     runHashNavigationSmoke(radiatorLesson);
+    runPlanContextSmoke(radiatorLesson);
   }
   runGoldRuntimePathSmoke(lessons);
   if (!file) console.log("ok - lesson engine records repair attempts");
   if (!file) console.log("ok - lesson engine follows hash navigation");
+  if (!file) console.log("ok - lesson engine renders active practice-plan context");
   console.log("ok - lesson engine replays gold simulation paths");
 }
 

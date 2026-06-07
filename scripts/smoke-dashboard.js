@@ -198,6 +198,8 @@ function runEmptyDashboardSmoke() {
   assert(/Active plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard labels the current tracked plan");
   assert(/plan-step-status open/.test(env.elements["#practice-plan"].innerHTML), "dashboard marks starter plan step as open");
   assert(/Start Lesson 01/.test(env.elements["#practice-plan"].innerHTML), "dashboard starter plan includes first lesson");
+  assert(/plan=/.test(env.elements["#practice-plan"].innerHTML), "dashboard plan links carry active plan token");
+  assert(/step=/.test(env.elements["#practice-plan"].innerHTML), "dashboard plan links carry step route id");
   assert(env.storage[env.context.PlataPlanner.practicePlanStorageKey], "dashboard persists active practice plan");
   assert(/No weak root skills/.test(env.elements["#competency-list"].innerHTML), "dashboard renders empty competency graph state");
   assert(/No weak mastery signals/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders empty mastery state");
@@ -231,6 +233,8 @@ function runSeededMasterySmoke() {
   assert(/plan-step-status open/.test(env.elements["#practice-plan"].innerHTML), "dashboard marks repair step as open before closure");
   assert(/Agency and responsibility/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan shows root competency");
   assert(/mode=repair/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links repair mode");
+  assert(/plan=/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links carry active plan token");
+  assert(/step=/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links carry step route id");
   assert(env.storage[env.context.PlataPlanner.practicePlanStorageKey], "dashboard stores repair plan tracker state");
   assert(/Read passive agency/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation highlights weak mastery");
   assert(/Open repair scene/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation opens the repair scene");

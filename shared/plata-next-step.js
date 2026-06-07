@@ -37,9 +37,35 @@
     ].join("");
   }
 
+  function planContext(options) {
+    var planner = root.PlataPlanner;
+    return planner && planner.currentPracticePlanStep ? planner.currentPracticePlanStep(options || {}) : null;
+  }
+
+  function renderPlanContext(options) {
+    var context = planContext(options);
+    if (!context || !context.step) return "";
+    var step = context.step;
+    var dashboardHref = context.dashboardHref || "dashboard.html";
+    return [
+      "<aside class='plan-context-card' aria-label='Active practice plan step'>",
+      "<p class='eyebrow'>Active plan · Step " + context.stepNumber + " of " + context.totalSteps + "</p>",
+      "<h3>" + escapeHtml(step.title || "Practice step") + "</h3>",
+      "<p>" + escapeHtml(step.copy || "Complete this step, then return to your dashboard for the next recommendation.") + "</p>",
+      "<div class='plan-context-meta'>",
+      step.minutes ? "<span>" + escapeHtml(step.minutes) + "</span>" : "",
+      step.competency && step.competency.label ? "<span>" + escapeHtml(step.competency.label) + "</span>" : "",
+      "</div>",
+      "<a class='plan-context-link' href='" + escapeHtml(dashboardHref) + "#due'>Back to plan</a>",
+      "</aside>"
+    ].join("");
+  }
+
   root.PlataNextStep = {
     lesson: lesson,
     drill: drill,
-    render: render
+    render: render,
+    planContext: planContext,
+    renderPlanContext: renderPlanContext
   };
 })(typeof window !== "undefined" ? window : globalThis);

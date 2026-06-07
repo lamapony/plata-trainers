@@ -246,7 +246,19 @@ function runDashboardDecisionSmoke(context) {
   assert(trackedPlan.steps[0].attemptsAtStart === 1, "practice plan snapshots trainer attempts");
   const savedPlan = planner.savePracticePlan(trackedPlan);
   assert(savedPlan.fingerprint === planner.planFingerprint(trackedPlan), "saved practice plan stores a stable fingerprint");
+  assert(savedPlan.planToken && savedPlan.steps[0].routeId, "saved practice plan stores route identifiers");
+  const routeHref = planner.planStepHref(savedPlan, savedPlan.steps[0]);
+  assert(routeHref.includes("plan=" + encodeURIComponent(savedPlan.planToken)), "practice plan route href carries plan token");
+  assert(routeHref.includes("step=" + encodeURIComponent(savedPlan.steps[0].routeId)), "practice plan route href carries step id");
+  assert(routeHref.includes("#official-reply-passive"), "practice plan route href preserves scene hash");
   assert(planner.readPracticePlan().fingerprint === savedPlan.fingerprint, "practice plan can be read from storage");
+  context.location = {
+    search: "?plan=" + encodeURIComponent(savedPlan.planToken) + "&step=" + encodeURIComponent(savedPlan.steps[0].routeId),
+    hash: "#official-reply-passive"
+  };
+  const currentStep = planner.currentPracticePlanStep({ trainerId: trainer.id, dashboardHref: "./dashboard.html" });
+  assert(currentStep && currentStep.step.routeId === savedPlan.steps[0].routeId, "practice plan step resolves from route parameters");
+  assert(planner.currentPracticePlanStep({ trainerId: "vocab" }) === null, "practice plan route ignores another trainer");
   const openPlan = planner.planStatus(savedPlan, [
     { trainer, stats: { total: 1, lastSessionDate: "2026-06-08" }, decision: repair, index: 1 }
   ]);

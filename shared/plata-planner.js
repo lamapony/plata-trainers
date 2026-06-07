@@ -445,6 +445,16 @@
     return String(decision.primaryHref || "") + "::" + String(decision.kind || "");
   }
 
+  function stableHash(value) {
+    var str = String(value || "");
+    var hash = 2166136261;
+    for (var i = 0; i < str.length; i++) {
+      hash ^= str.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(36);
+  }
+
   function normalizeCompetency(competency) {
     if (!competency) return null;
     return {
@@ -551,6 +561,11 @@
     ].join("::");
   }
 
+  function stepRouteId(step, index) {
+    var number = Number(step && step.number || index + 1);
+    return "s" + number + "-" + stableHash(stepTrackingKey(step)).slice(0, 8);
+  }
+
   function planFingerprint(plan) {
     var steps = plan && Array.isArray(plan.steps) ? plan.steps : [];
     return steps.map(stepTrackingKey).join("|");
@@ -558,7 +573,7 @@
 
   function normalizePlanStep(step, index) {
     step = step || {};
-    return {
+    var normalized = {
       number: Number(step.number || index + 1),
       kind: step.kind || "continue",
       targetKind: step.targetKind || step.kind || "continue",
@@ -578,6 +593,8 @@
       competency: normalizeCompetency(step.competency),
       reasons: Array.isArray(step.reasons) ? step.reasons.slice(0, 6) : []
     };
+    normalized.routeId = step.routeId || stepRouteId(normalized, index);
+    return normalized;
   }
 
   function normalizePracticePlan(plan) {
@@ -593,9 +610,11 @@
       steps: steps,
       primaryStep: steps[0] || null,
       meta: plan.meta || "",
-      fingerprint: plan.fingerprint || ""
+      fingerprint: plan.fingerprint || "",
+      planToken: plan.planToken || ""
     };
     normalized.fingerprint = normalized.fingerprint || planFingerprint(normalized);
+    normalized.planToken = normalized.planToken || "p" + stableHash(normalized.fingerprint).slice(0, 10);
     return normalized;
   }
 
@@ -631,6 +650,82 @@
     } catch (err) {
       // Ignore local storage failures.
     }
+  }
+
+  function queryParam(name) {
+    if (!root.location || !root.location.search) return "";
+    var query = root.location.search.replace(/^\?/, "").split("&");
+    for (var i = 0; i < query.length; i++) {
+      var parts = query[i].split("=");
+      var key = "";
+      try {
+        key = decodeURIComponent(parts[0] || "");
+      } catch (err) {
+        key = parts[0] || "";
+      }
+      if (key === name) {
+        try {
+          return decodeURIComponent((parts[1] || "").replace(/\+/g, " "));
+        } catch (err2) {
+          return (parts[1] || "").replace(/\+/g, " ");
+        }
+      }
+    }
+    return "";
+  }
+
+  function appendQueryParams(href, params) {
+    var raw = String(href || "#");
+    var hashIndex = raw.indexOf("#");
+    var base = hashIndex === -1 ? raw : raw.slice(0, hashIndex);
+    var hash = hashIndex === -1 ? "" : raw.slice(hashIndex);
+    var pairs = [];
+    Object.keys(params || {}).forEach(function (key) {
+      if (params[key] === undefined || params[key] === null || params[key] === "") return;
+      pairs.push(encodeURIComponent(key) + "=" + encodeURIComponent(String(params[key])));
+    });
+    if (!pairs.length) return raw;
+    return base + (base.indexOf("?") === -1 ? "?" : "&") + pairs.join("&") + hash;
+  }
+
+  function planStepHref(plan, step) {
+    var normalized = normalizePracticePlan(plan);
+    if (!normalized || !step) return step && step.primaryHref || "#";
+    var routeStep = normalized.steps.find(function (item) {
+      return item.routeId === step.routeId || item.number === step.number;
+    }) || step;
+    return appendQueryParams(routeStep.primaryHref, {
+      plan: normalized.planToken,
+      step: routeStep.routeId
+    });
+  }
+
+  function currentPracticePlanStep(options) {
+    options = options || {};
+    var plan = readPracticePlan();
+    if (!plan || !plan.steps.length) return null;
+    var token = queryParam("plan");
+    var stepId = queryParam("step");
+    if (!token || token !== plan.planToken || !stepId) return null;
+    var step = null;
+    var index = -1;
+    for (var i = 0; i < plan.steps.length; i++) {
+      if (plan.steps[i].routeId === stepId) {
+        step = plan.steps[i];
+        index = i;
+        break;
+      }
+    }
+    if (!step) return null;
+    if (options.trainerId && step.trainerId && step.trainerId !== options.trainerId) return null;
+    return {
+      plan: plan,
+      step: step,
+      stepIndex: index,
+      stepNumber: index + 1,
+      totalSteps: plan.steps.length,
+      dashboardHref: options.dashboardHref || "dashboard.html"
+    };
   }
 
   function candidateFacts(items) {
@@ -706,6 +801,8 @@
     rankDashboardDecisions: rankDashboardDecisions,
     practicePlan: practicePlan,
     planFingerprint: planFingerprint,
+    planStepHref: planStepHref,
+    currentPracticePlanStep: currentPracticePlanStep,
     readPracticePlan: readPracticePlan,
     savePracticePlan: savePracticePlan,
     clearPracticePlan: clearPracticePlan,

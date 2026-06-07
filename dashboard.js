@@ -257,7 +257,7 @@ function renderPracticePlan(candidates) {
               <h4>${escapeHtml(step.title)}</h4>
               <p>${escapeHtml(step.copy)}</p>
               ${step.competency ? `<span class="competency-chip">${escapeHtml(step.competency.label)}</span>` : ""}
-              <a href="${escapeHtml(step.primaryHref)}">${escapeHtml(step.primaryLabel)} →</a>
+              <a href="${escapeHtml(planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref)}">${escapeHtml(step.primaryLabel)} →</a>
             </div>
           </div>
         `).join("")}

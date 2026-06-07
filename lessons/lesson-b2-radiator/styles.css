@@ -63,6 +63,13 @@ h3 { margin: 0 0 14px; font-size: 1rem; }
 .repair-focus strong { font-family: "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .08em; font-size: .72rem; color: var(--ember-deep); }
 .repair-focus span { color: var(--forest); line-height: 1.55; }
 .repair-focus b { font-weight: 800; }
+.plan-context-card { margin: 0 0 20px; padding: 16px; max-width: 720px; border: 1px solid var(--line); border-left: 4px solid var(--ember); border-radius: 8px; background: rgba(185,101,69,.10); }
+.plan-context-card .eyebrow { margin-bottom: 8px; }
+.plan-context-card h3 { margin: 0 0 8px; font-family: Fraunces, Georgia, serif; font-size: clamp(1.25rem, 2.1vw, 1.6rem); line-height: 1.12; letter-spacing: 0; color: var(--forest); }
+.plan-context-card p { margin: 0; color: var(--muted); line-height: 1.58; }
+.plan-context-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.plan-context-meta span { padding: 4px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--ember-deep); font-family: "JetBrains Mono", monospace; font-size: .72rem; }
+.plan-context-link { display: inline-flex; margin-top: 12px; color: var(--forest); font-weight: 800; text-decoration-color: var(--ember); text-underline-offset: 4px; }
 .carry-forward { margin: 16px 0 0; color: var(--muted); font-size: .96rem; line-height: 1.55; }
 .next-step-card { margin: 24px 0 0; padding: 18px; max-width: 720px; border: 1px solid var(--line); border-left: 4px solid var(--sage); border-radius: 8px; background: rgba(126,155,143,.13); }
 .next-step-card.repair { border-left-color: var(--ember); background: rgba(185,101,69,.10); }
