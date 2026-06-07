@@ -124,6 +124,7 @@ function validateGoldMasteryMap(lessonMeta, lesson) {
   if (!isGoldLesson(lesson)) return new Set();
   const map = lesson.masteryMap;
   const knownSources = new Set((lesson.sourceNotes || []).map(note => note.title));
+  const knownScenes = new Set((lesson.scenes || []).map(scene => scene.id));
   if (!map || typeof map !== "object" || Array.isArray(map)) {
     issue(`${lessonMeta.id}.masteryMap: gold lessons require a masteryMap object`);
     return new Set();
@@ -142,6 +143,17 @@ function validateGoldMasteryMap(lessonMeta, lesson) {
     }
     if (!nonEmptyString(spec.label)) issue(`${prefix}.label: required non-empty string`);
     if (!nonEmptyString(spec.evidence)) issue(`${prefix}.evidence: required non-empty string`);
+    if (!spec.remediation || typeof spec.remediation !== "object" || Array.isArray(spec.remediation)) {
+      issue(`${prefix}.remediation: required object`);
+    } else {
+      if (!nonEmptyString(spec.remediation.sceneId)) {
+        issue(`${prefix}.remediation.sceneId: required non-empty string`);
+      } else if (!knownScenes.has(spec.remediation.sceneId)) {
+        issue(`${prefix}.remediation.sceneId: unknown scene "${spec.remediation.sceneId}"`);
+      }
+      if (!nonEmptyString(spec.remediation.cta)) issue(`${prefix}.remediation.cta: required non-empty string`);
+      if (!nonEmptyString(spec.remediation.action)) issue(`${prefix}.remediation.action: required non-empty string`);
+    }
     if (!Array.isArray(spec.sourceRefs) || spec.sourceRefs.length === 0) {
       issue(`${prefix}.sourceRefs: required non-empty array`);
     } else {

@@ -10,26 +10,51 @@ window.PLATA_LESSON_B2_RADIATOR = {
     "passive-agency": {
       label: "Read passive agency",
       evidence: "The learner distinguishes registration/process language from an actual repair commitment.",
+      remediation: {
+        sceneId: "official-reply-passive",
+        cta: "Review Scene 1",
+        action: "Rerun the landlord email and name the missing actor, date, and deadline before judging whether the text promises a repair."
+      },
       sourceRefs: ["Lex: passiv", "sproget.dk: grammatiske betegnelser"]
     },
     "modal-particle-stance": {
       label: "Read particle stance",
       evidence: "The learner identifies how jo, da, sgu, nok, and bare position the speaker socially.",
+      remediation: {
+        sceneId: "group-chat-particles",
+        cta: "Rematch the group chat",
+        action: "Rerun the particle matches and say what each small word does socially before you decide whether the advice calms or escalates."
+      },
       sourceRefs: ["Dansk Sproghistorie: dialogiske partikler"]
     },
     "formal-register-control": {
       label: "Control formal register",
       evidence: "The learner makes a concrete formal request without importing private-chat force.",
+      remediation: {
+        sceneId: "two-registers",
+        cta: "Repair the formal reply",
+        action: "Rerun the two-register scene and keep the useful pressure: ask for a precise date without adding chat-force words."
+      },
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Dansk Sproghistorie: dialogiske partikler"]
     },
     "understatement-with-agency": {
       label: "Use understatement with agency",
       evidence: "The learner softens a workplace answer while preserving an action and concrete next step.",
+      remediation: {
+        sceneId: "workplace-understatement",
+        cta: "Repair the workplace answer",
+        action: "Rerun the workplace completion and include both halves: one agency word and one concrete next step."
+      },
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"]
     },
     "consequence-aware-tone": {
       label: "Choose consequence-aware tone",
       evidence: "The learner names the B2 principle that clarity and relationship control can coexist.",
+      remediation: {
+        sceneId: "epilogue-consequence",
+        cta: "Review the consequence",
+        action: "Rerun the final choice and choose the principle that solves the case while preserving the room."
+      },
       sourceRefs: ["Lex: passiv", "Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"]
     }
   },

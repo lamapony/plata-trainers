@@ -38,6 +38,7 @@ const TRAINERS = [
     name: "B2: Register & Particles",
     type: "lesson",
     path: "./lessons/lesson-b2-radiator/",
+    lessonGlobal: "PLATA_LESSON_B2_RADIATOR",
     description: "Complaints, tone, modal particles",
     icon: "⚖️"
   },
@@ -51,29 +52,8 @@ const TRAINERS = [
   }
 ];
 
-const MASTERY_SIGNALS = {
-  "passive-agency": {
-    label: "Read passive agency",
-    evidence: "Passive process language is not the same as a concrete commitment."
-  },
-  "modal-particle-stance": {
-    label: "Read particle stance",
-    evidence: "Small words such as jo, da, sgu, nok, and bare change the social position of a sentence."
-  },
-  "formal-register-control": {
-    label: "Control formal register",
-    evidence: "A formal request can be concrete without importing private-chat force."
-  },
-  "understatement-with-agency": {
-    label: "Use understatement with agency",
-    evidence: "A workplace answer can sound calm while still naming an action and next step."
-  },
-  "consequence-aware-tone": {
-    label: "Choose consequence-aware tone",
-    evidence: "A B2 complaint should solve the problem and preserve enough relationship to live with the result."
-  }
-};
 const NON_DIAGNOSTIC_TAGS = new Set(["A0", "A1", "A2", "B1", "B2", "lesson"]);
+let masteryCatalogCache = null;
 
 function $(sel) { return document.querySelector(sel); }
 function $$(sel) { return document.querySelectorAll(sel); }
@@ -81,16 +61,67 @@ function escapeHtml(str) {
   return String(str || "").replace(/[&<>'"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': '&quot;' }[c]));
 }
 
-function isMasteryTag(tag) {
-  return Object.prototype.hasOwnProperty.call(MASTERY_SIGNALS, tag);
+function sceneHref(path, sceneId) {
+  return sceneId ? `${path}#${encodeURIComponent(sceneId)}` : path;
 }
 
-function enrichMasteryTag(weakTag) {
-  const spec = MASTERY_SIGNALS[weakTag.tag] || {};
+function buildMasteryCatalog() {
+  if (masteryCatalogCache) return masteryCatalogCache;
+  const catalog = {};
+  TRAINERS.forEach(trainer => {
+    const lesson = trainer.lessonGlobal ? window[trainer.lessonGlobal] : null;
+    if (!lesson || !lesson.masteryMap) return;
+    Object.entries(lesson.masteryMap).forEach(([tag, spec]) => {
+      if (!catalog[tag]) {
+        catalog[tag] = {
+          tag,
+          label: spec.label || tag,
+          evidence: spec.evidence || "",
+          refs: []
+        };
+      }
+      catalog[tag].refs.push({
+        trainerId: trainer.id,
+        trainerName: trainer.name,
+        trainerIcon: trainer.icon,
+        trainerPath: trainer.path,
+        remediation: spec.remediation || null
+      });
+    });
+  });
+  masteryCatalogCache = catalog;
+  return catalog;
+}
+
+function masterySpec(tag) {
+  return buildMasteryCatalog()[tag] || null;
+}
+
+function remediationFor(spec, trainer) {
+  if (!spec || !spec.refs || spec.refs.length === 0) return null;
+  const ref = spec.refs.find(item => trainer && item.trainerId === trainer.id) || spec.refs[0];
+  if (!ref.remediation) return null;
+  return {
+    cta: ref.remediation.cta || "Review scene",
+    action: ref.remediation.action || "",
+    sceneId: ref.remediation.sceneId || "",
+    href: sceneHref(ref.trainerPath, ref.remediation.sceneId),
+    trainerName: ref.trainerName,
+    trainerIcon: ref.trainerIcon
+  };
+}
+
+function isMasteryTag(tag) {
+  return !!masterySpec(tag);
+}
+
+function enrichMasteryTag(weakTag, trainer) {
+  const spec = masterySpec(weakTag.tag) || {};
   return {
     ...weakTag,
     label: spec.label || weakTag.tag,
-    evidence: spec.evidence || ""
+    evidence: spec.evidence || "",
+    remediation: remediationFor(spec, trainer)
   };
 }
 
@@ -105,7 +136,7 @@ function loadTrainerState(trainerId) {
   return handle.state;
 }
 
-function computeStats(state) {
+function computeStats(state, trainer) {
   if (!state) return null;
   const kernel = window.PlataKernel;
   const meta = state.meta || {};
@@ -116,7 +147,7 @@ function computeStats(state) {
   const mastered = records.filter(r => r.mastered).length;
   const totalItems = records.length;
   const weakTags = kernel.getWeakTags ? kernel.getWeakTags(state, 10) : [];
-  const weakMastery = weakTags.filter(w => isMasteryTag(w.tag)).map(enrichMasteryTag);
+  const weakMastery = weakTags.filter(w => isMasteryTag(w.tag)).map(w => enrichMasteryTag(w, trainer));
   const registerProfile = kernel.getRegisterProfile ? kernel.getRegisterProfile(state) : { formal: 0, informal: 0, neutral: 0, total: 0 };
   return {
     total,
@@ -152,7 +183,7 @@ function renderTrainerCards() {
 
   TRAINERS.forEach(trainer => {
     const state = loadTrainerState(trainer.id);
-    const stats = computeStats(state);
+    const stats = computeStats(state, trainer);
     const hasData = stats && stats.total > 0;
 
     const card = document.createElement("article");
@@ -186,7 +217,7 @@ function renderDueCards() {
   // Find trainers with most weak tags or longest gap since last session
   const due = TRAINERS.map(trainer => {
     const state = loadTrainerState(trainer.id);
-    const stats = computeStats(state);
+    const stats = computeStats(state, trainer);
     if (!stats) return null;
     return { trainer, stats };
   }).filter(x => x !== null)
@@ -212,6 +243,7 @@ function renderDueCards() {
 
   due.forEach(({ trainer, stats }) => {
     const topMastery = stats.weakMastery.slice(0, 2);
+    const repair = topMastery.map(w => w.remediation).find(Boolean);
     const topWeak = stats.weakTags.filter(w => isRawDiagnosticTag(w.tag)).slice(0, 3);
     const card = document.createElement("article");
     card.className = "trainer-card due-card";
@@ -224,6 +256,13 @@ function renderDueCards() {
           <div class="mastery-tags">
             <span class="eyebrow">Mastery signal</span>
             ${topMastery.map(w => `<span class="mastery-chip">${escapeHtml(w.label)} (${w.wrong}/${w.total})</span>`).join("")}
+          </div>
+        ` : ""}
+        ${repair ? `
+          <div class="repair-block compact">
+            <span class="eyebrow">Repair path</span>
+            <strong>${escapeHtml(repair.cta)}</strong>
+            <p>${escapeHtml(repair.action)}</p>
           </div>
         ` : ""}
         ${topWeak.length ? `
@@ -243,7 +282,7 @@ function renderDueCards() {
           return "";
         })()}
       </div>
-      <a class="card-link" href="${escapeHtml(trainer.path)}">Open ${trainer.type} →</a>
+      <a class="card-link" href="${escapeHtml(repair ? repair.href : trainer.path)}">Open ${repair ? "repair scene" : trainer.type} →</a>
     `;
     container.appendChild(card);
   });
@@ -256,7 +295,7 @@ function renderMasteryList() {
   const signalMap = new Map();
   TRAINERS.forEach(trainer => {
     const state = loadTrainerState(trainer.id);
-    const stats = computeStats(state);
+    const stats = computeStats(state, trainer);
     if (!stats) return;
     stats.weakMastery.forEach(signal => {
       if (!signalMap.has(signal.tag)) {
@@ -268,7 +307,8 @@ function renderMasteryList() {
           correct: 0,
           wrong: 0,
           score: 0,
-          trainers: []
+          trainers: [],
+          remediations: []
         });
       }
       const entry = signalMap.get(signal.tag);
@@ -277,6 +317,9 @@ function renderMasteryList() {
       entry.wrong += signal.wrong;
       entry.score = entry.wrong / Math.max(1, entry.total);
       entry.trainers.push({ id: trainer.id, name: trainer.name, icon: trainer.icon });
+      if (signal.remediation && !entry.remediations.some(item => item.href === signal.remediation.href)) {
+        entry.remediations.push(signal.remediation);
+      }
     });
   });
 
@@ -301,6 +344,14 @@ function renderMasteryList() {
         <span>${signal.wrong} wrong / ${signal.total} total</span>
         <span>${signal.trainers.map(t => `${t.icon} ${escapeHtml(t.name)}`).join(" · ")}</span>
       </div>
+      ${signal.remediations.length ? signal.remediations.slice(0, 2).map(repair => `
+        <div class="repair-block">
+          <span class="eyebrow">Repair path</span>
+          <strong>${escapeHtml(repair.cta)}</strong>
+          <p>${escapeHtml(repair.action)}</p>
+          <a href="${escapeHtml(repair.href)}">${escapeHtml(repair.trainerIcon)} Open scene →</a>
+        </div>
+      `).join("") : ""}
     </article>
   `).join("");
 }
@@ -313,7 +364,7 @@ function renderWeakList() {
   const tagMap = new Map();
   TRAINERS.forEach(trainer => {
     const state = loadTrainerState(trainer.id);
-    const stats = computeStats(state);
+    const stats = computeStats(state, trainer);
     if (!stats) return;
     stats.weakTags.filter(w => isRawDiagnosticTag(w.tag)).forEach(w => {
       const key = `${trainer.id}::${w.tag}`;

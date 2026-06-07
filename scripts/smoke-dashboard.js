@@ -7,6 +7,7 @@ const vm = require("vm");
 
 const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
+const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
 
 function assert(condition, message) {
@@ -52,6 +53,7 @@ function makeContext(initialStorage) {
     String,
     Array,
     Map,
+    encodeURIComponent,
     URL: {
       createObjectURL() { return "blob:mock"; },
       revokeObjectURL() {}
@@ -102,6 +104,7 @@ function makeContext(initialStorage) {
 
 function loadKernelAndDashboard(env) {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
+  vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
 
@@ -141,12 +144,16 @@ function runSeededMasterySmoke() {
   const env = makeContext();
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   seedWeakMasteryState(env);
+  vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   assert(/Read passive agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders weak mastery label");
   assert(/passive-agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders mastery tag key");
-  assert(/Passive process language/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders mastery evidence");
+  assert(/registration\/process language/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders lesson-owned mastery evidence");
+  assert(/Review Scene 1/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders mastery repair CTA");
+  assert(/official-reply-passive/.test(env.elements["#mastery-list"].innerHTML), "mastery repair CTA links to the source scene");
   assert(/Read passive agency/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation highlights weak mastery");
+  assert(/Open repair scene/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation opens the repair scene");
 }
 
 function run() {
@@ -155,6 +162,7 @@ function run() {
 
   console.log("ok - dashboard renders without runtime errors");
   console.log("ok - dashboard renders mastery signal diagnostics");
+  console.log("ok - dashboard renders mastery repair paths");
 }
 
 run();

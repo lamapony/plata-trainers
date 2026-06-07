@@ -31,6 +31,11 @@ window.PLATA_LESSON_XX = {
     "passive-agency": {
       label: "Read passive agency",
       evidence: "What a correct attempt proves",
+      remediation: {
+        sceneId: "scene-id",
+        cta: "Review Scene 1",
+        action: "Concrete learner action shown on the dashboard when this signal is weak"
+      },
       sourceRefs: ["Source title from sourceNotes"]
     }
   },
@@ -251,7 +256,16 @@ Good mastery tags:
 - are kebab-case (`formal-register-control`)
 - describe a transferable skill, not a scene (`passive-agency`, not `scene-one`)
 - have source-backed evidence in `masteryMap`
+- define a `remediation` action that points to the scene that can repair the weak signal
 - appear on at least one scene and at least one simulated attempt
+
+Gold `masteryMap` entries must include:
+- `label`: learner-facing signal name
+- `evidence`: what the lesson can prove about the learner
+- `remediation.sceneId`: scene to reopen from dashboard recommendations
+- `remediation.cta`: compact dashboard call to action
+- `remediation.action`: specific repair instruction
+- `sourceRefs`: source notes behind the signal
 
 Gold lessons with endings should define `simulation.paths`. Each path must include exactly one action per scene, an expected ending, and any expected social variables that make the consequence system meaningful. Completion scenes with grouped checks should define deterministic `simulation.completionAnswers` so QA can test both weak rejects and full accepts.
 
@@ -292,7 +306,7 @@ All lessons inherit the headpage-v2 design system:
 - B2 scenes must name their `targetPhrases`; these are the Danish phrases the scene actively trains, not decorative vocabulary
 - B2 lessons must include `sourceNotes` with URLs and a short `supports` list
 - B2 match pairs must include diagnostic `feedback`
-- Gold lessons (`qualityTier: "gold"`) must include `masteryMap`, scene `learningGoal`, valid `sourceRefs`, scene `masteryTags`, unique choice `diagnostic` keys, and grouped completion checks
+- Gold lessons (`qualityTier: "gold"`) must include `masteryMap` with remediation actions, scene `learningGoal`, valid `sourceRefs`, scene `masteryTags`, unique choice `diagnostic` keys, and grouped completion checks
 - Gold lessons with endings must cover every ending through `simulation.paths`
 - Gold lessons should pass the simulator via `npm run check:gold-lessons`
 - A new word appears in ≥2 modes (dialogue/sign/action/feedback)

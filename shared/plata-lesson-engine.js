@@ -91,6 +91,27 @@
     return endings[0] || null;
   }
 
+  function sceneIndexFromHash(lesson) {
+    if (!root.location || !root.location.hash) return 0;
+    var id = "";
+    try {
+      id = decodeURIComponent(root.location.hash.slice(1));
+    } catch (_) {
+      id = root.location.hash.slice(1);
+    }
+    if (!id) return 0;
+    for (var i = 0; i < lesson.scenes.length; i++) {
+      if (lesson.scenes[i].id === id) return i;
+    }
+    return 0;
+  }
+
+  function syncSceneHash(lesson, state) {
+    if (!root.location || !root.history || !lesson.scenes[state.index]) return;
+    var next = "#" + encodeURIComponent(lesson.scenes[state.index].id);
+    if (root.location.hash !== next) root.history.replaceState(null, "", next);
+  }
+
   /* ---- kernel integration ---- */
   function record(tracker, scene, correct, given, expected) {
     if (!tracker || !tracker.kernel || !tracker.kernel.recordAttempt) return;
@@ -322,6 +343,7 @@
   /* ---- main render ---- */
   function renderScene(ctx) {
     var scene = ctx.lesson.scenes[ctx.state.index];
+    syncSceneHash(ctx.lesson, ctx.state);
     renderRoute(ctx.lesson, ctx.state, ctx.routeEl, ctx.countEl, function () { renderScene(ctx); });
     renderVariables(ctx.state, ctx.varsEl);
 
@@ -399,6 +421,7 @@
         renderScene(ctx);
       }
     };
+    ctx.state.index = sceneIndexFromHash(lesson);
 
     // Reset button
     var resetBtn = $("#reset-lesson");

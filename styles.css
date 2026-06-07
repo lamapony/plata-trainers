@@ -172,6 +172,36 @@ h3 { font-size: 30px; }
 .weak-tags, .mastery-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .weak-tag { padding: 4px 8px; border-radius: 8px; background: var(--ember-soft); color: var(--ember); font-family: "JetBrains Mono", monospace; font-size: 11px; border: 1px solid var(--ember); }
 .mastery-chip { padding: 5px 8px; border-radius: 8px; background: oklch(0.74 0.12 145 / 0.14); color: var(--green); font-family: "JetBrains Mono", monospace; font-size: 11px; border: 1px solid oklch(0.74 0.12 145 / 0.44); }
+.repair-block {
+  margin-top: 16px;
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--green);
+}
+.repair-block.compact { margin-top: 4px; }
+.repair-block .eyebrow {
+  margin-bottom: 7px;
+  color: var(--green);
+}
+.repair-block strong {
+  display: block;
+  color: var(--text);
+  font-size: 15px;
+}
+.repair-block p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.repair-block a {
+  display: inline-flex;
+  margin-top: 8px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration-color: var(--green);
+  text-underline-offset: 4px;
+}
 
 .mastery-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .mastery-card {
