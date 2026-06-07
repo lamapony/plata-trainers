@@ -61,6 +61,7 @@ function makeContext(locationOverrides) {
   const storage = {};
   const elements = {};
   const roots = [];
+  const eventListeners = {};
 
   function matchingElements(selector) {
     const out = [];
@@ -168,6 +169,11 @@ function makeContext(locationOverrides) {
   resetSceneControls();
   roots.push(elements["#scene"], elements["#route"], elements["#exercise-body"]);
 
+  function dispatchEvent(event) {
+    const type = event && event.type || event;
+    (eventListeners[type] || []).forEach(handler => handler(event));
+  }
+
   const context = {
     console,
     Date,
@@ -192,6 +198,14 @@ function makeContext(locationOverrides) {
         context.location.hash = match && match[3] ? match[3] : "";
       }
     },
+    addEventListener(type, handler) {
+      eventListeners[type] = eventListeners[type] || [];
+      eventListeners[type].push(handler);
+    },
+    removeEventListener(type, handler) {
+      eventListeners[type] = (eventListeners[type] || []).filter(candidate => candidate !== handler);
+    },
+    dispatchEvent,
     document: {
       readyState: "loading",
       querySelector(selector) {
@@ -367,6 +381,28 @@ function runRepairAttemptSmoke(lesson) {
   assert(attempt.tags.includes("repair"), "recorded attempt includes repair mode tag");
 }
 
+function runHashNavigationSmoke(lesson) {
+  const env = loadRuntime(lesson, {
+    hash: "#official-reply-passive"
+  });
+
+  assert(env.elements["#scene-count"].textContent === "1 / 5", "hash navigation opens initial deep-linked scene");
+  assert(/The landlord answers politely/.test(env.elements["#scene"].innerHTML), "hash navigation rendered the initial scene");
+
+  env.context.location.hash = "#workplace-understatement";
+  env.context.dispatchEvent({ type: "hashchange" });
+
+  assert(env.elements["#scene-count"].textContent === "4 / 5", "hashchange navigates to the requested scene");
+  assert(/Honesty is not the same sentence/.test(env.elements["#scene"].innerHTML), "hashchange rendered the new scene");
+  assert(/assets\/comic\/workplace-understatement\.png/.test(env.elements["#scene"].innerHTML), "hashchange rendered the new scene comic contract");
+
+  env.context.location.hash = "#missing-scene";
+  env.context.dispatchEvent({ type: "hashchange" });
+
+  assert(env.elements["#scene-count"].textContent === "1 / 5", "unknown hash falls back to the first scene");
+  assert(env.context.location.hash === "#official-reply-passive", "unknown hash is normalized to the rendered scene");
+}
+
 function runGoldRuntimePathSmoke(lessons) {
   lessons.forEach(lesson => {
     lesson.simulation.paths.forEach(pathSpec => assertRuntimePath(lesson, pathSpec));
@@ -381,9 +417,11 @@ function run() {
     const radiatorLesson = lessons.find(lesson => lesson.id === "lesson-b2-radiator-register");
     assert(radiatorLesson, "radiator gold lesson missing");
     runRepairAttemptSmoke(radiatorLesson);
+    runHashNavigationSmoke(radiatorLesson);
   }
   runGoldRuntimePathSmoke(lessons);
   if (!file) console.log("ok - lesson engine records repair attempts");
+  if (!file) console.log("ok - lesson engine follows hash navigation");
   console.log("ok - lesson engine replays gold simulation paths");
 }
 

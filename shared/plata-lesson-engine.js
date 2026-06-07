@@ -517,6 +517,21 @@
     });
   }
 
+  function indexFromLocation(lesson, state) {
+    if (state.repair && state.repair.active) return sceneIndexById(lesson, state.repair.sceneId);
+    return sceneIndexFromHash(lesson);
+  }
+
+  function bindLocationNavigation(ctx) {
+    if (!root.addEventListener) return;
+    root.addEventListener("hashchange", function () {
+      var nextIndex = indexFromLocation(ctx.lesson, ctx.state);
+      if (nextIndex === ctx.state.index) return;
+      ctx.state.index = nextIndex;
+      renderScene(ctx);
+    });
+  }
+
   /* ---- public API ---- */
   function run(lesson) {
     if (!lesson) {
@@ -560,6 +575,7 @@
     ctx.state.index = sceneIndexFromHash(lesson);
     ctx.state.repair = repairContextFromLocation(lesson);
     if (ctx.state.repair) ctx.state.index = sceneIndexById(lesson, ctx.state.repair.sceneId);
+    bindLocationNavigation(ctx);
 
     // Reset button
     var resetBtn = $("#reset-lesson");
