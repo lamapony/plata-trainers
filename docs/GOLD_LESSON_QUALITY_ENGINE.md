@@ -155,6 +155,8 @@ npm run generate:comics -- --lesson lesson-b2-radiator-register --panel official
 
 Generated comic assets are publishable lesson files, so they should be reviewed visually before commit. API keys must never be committed or placed in lesson data.
 
+At runtime, the shared lesson engine renders the current scene's generated comic panel when the declared asset exists. Missing assets are hidden after image-load failure, so unfinished storyboards stay prompt-only without showing broken images to learners.
+
 ## Current Scope
 
 The first gold implementations are:

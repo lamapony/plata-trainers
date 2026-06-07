@@ -213,6 +213,37 @@
     return html;
   }
 
+  function findComicPanel(lesson, scene) {
+    var panels = lesson.comicStoryboard && lesson.comicStoryboard.panels || [];
+    for (var i = 0; i < panels.length; i++) {
+      if (panels[i].sceneId === scene.id) return panels[i];
+    }
+    return null;
+  }
+
+  function renderComicPanel(lesson, scene) {
+    var panel = findComicPanel(lesson, scene);
+    if (!panel || !panel.assetPath) return "";
+    return [
+      "<figure class='scene-comic' data-comic-panel='" + escapeHtml(panel.id || scene.id) + "'>",
+      "<img src='" + escapeHtml(panel.assetPath) + "' alt='" + escapeHtml(panel.alt || "") + "' loading='eager' decoding='async' />",
+      "</figure>"
+    ].join("");
+  }
+
+  function installComicImageFallback(container) {
+    if (!container || typeof container.querySelectorAll !== "function") return;
+    var images = container.querySelectorAll(".scene-comic img");
+    images.forEach(function (image) {
+      var figure = image.closest ? image.closest(".scene-comic") : null;
+      function hideMissingComic() {
+        if (figure) figure.hidden = true;
+      }
+      image.addEventListener("error", hideMissingComic);
+      if (image.complete && !image.naturalWidth) hideMissingComic();
+    });
+  }
+
   function mergeVariableMap(custom, fallback) {
     var merged = {};
     Object.keys(fallback || {}).forEach(function (key) { merged[key] = fallback[key]; });
@@ -447,6 +478,7 @@
     var html = "";
     html += "<p class='eyebrow'>" + escapeHtml(scene.eyebrow) + "</p>";
     html += "<h2>" + escapeHtml(scene.title) + "</h2>";
+    html += renderComicPanel(ctx.lesson, scene);
     if (scene.pressure) html += "<p class='pressure'>" + escapeHtml(scene.pressure) + "</p>";
     html += "<p class='narrative'>" + escapeHtml(scene.narrative) + "</p>";
     if (ctx.state.repair && ctx.state.repair.active) {
@@ -461,6 +493,7 @@
     var isLast = ctx.state.index === ctx.lesson.scenes.length - 1;
     html += "<div class='lesson-actions'><button class='ghost' id='prev' type='button'>Back</button><button class='primary' id='next' type='button'>" + (isLast ? "See outcome" : "Continue") + "</button></div>";
     ctx.sceneEl.innerHTML = html;
+    installComicImageFallback(ctx.sceneEl);
 
     // Dispatch to renderer
     var renderFn = renderers[scene.type];

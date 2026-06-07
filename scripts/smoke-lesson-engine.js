@@ -350,6 +350,8 @@ function runRepairAttemptSmoke(lesson) {
   });
 
   assert(/repair-focus/.test(env.elements["#scene"].innerHTML), "repair URL renders repair focus");
+  assert(/scene-comic/.test(env.elements["#scene"].innerHTML), "repair URL renders scene comic panel");
+  assert(/assets\/comic\/official-reply-passive\.png/.test(env.elements["#scene"].innerHTML), "repair URL renders generated comic asset");
   assert(env.elements["#scene-count"].textContent === "1 / 5", "repair URL opens the target scene");
   assert(env.elements["#exercise-body"].children.length === 3, "choice scene renders options");
 
