@@ -34,6 +34,10 @@ function copyCapabilityRoot(root) {
     "ROADMAP.md",
     "index.html",
     "dashboard.html",
+    "program.html",
+    "program.js",
+    "proof.html",
+    "proof.js",
     "quality.html",
     "dashboard.js"
   ].forEach(file => {
@@ -105,8 +109,11 @@ function runBaseSmoke() {
   assert(proof && hasGate(proof, "check:demo-learner-diff"), "proof surface should cite the demo learner diff gate");
   assert(proof && hasGate(proof, "check:review-report-fixture"), "proof surface should cite the golden review fixture gate");
   assert(proof && hasGate(proof, "check:quickstart-proof"), "proof surface should cite the contributor quickstart gate");
+  assert(proof && hasGate(proof, "check:proof-page"), "proof surface should cite the public proof page gate");
   assert(proof && hasReport(proof, "capabilities"), "proof surface should cite the capability map report");
   assert(proof && hasReport(proof, "demo-learner"), "proof surface should cite the demo learner report");
+  assert(proof && hasReport(proof, "quickstart-proof"), "proof surface should cite the public quickstart proof report");
+  assert(proof && hasSurface(proof, "proof.html"), "proof surface should cite the proof page surface");
   assert(proof && hasSurface(proof, "GitHub Step Summary"), "proof surface should cite the GitHub review summary surface");
   assert(proof && hasSurface(proof, "Contributor proof quickstart"), "proof surface should cite the contributor proof quickstart surface");
 

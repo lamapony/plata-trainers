@@ -31,7 +31,7 @@ npm run proof:quickstart
 npm run check:quickstart-proof
 ```
 
-That writes `.dist/quickstart-proof/` with demo learner, capability map, project health, and golden PR review artifacts.
+That writes `.dist/quickstart-proof/` with demo learner, capability map, project health, and golden PR review artifacts. The published Pages artifact also exposes the same quickstart index through `reports/quickstart-proof/quickstart.json` and renders it on `proof.html`.
 
 Run the full no-dependency QA suite:
 
@@ -78,7 +78,7 @@ cd .dist/pages
 python3 -m http.server 8000
 ```
 
-The Pages artifact includes `quality.html` and `reports/quality.json`. The JSON report is generated from lesson data during the build; do not edit it by hand. For gold lessons, the report also publishes a scene audit matrix showing the goal, source references, mastery tags, remediation targets, diagnostics, simulation paths, and comic panel coverage behind each pass.
+The Pages artifact includes `quality.html`, `program.html`, `proof.html`, and the generated reports under `reports/`. The JSON reports are generated during the build; do not edit them by hand. For gold lessons, the quality report also publishes a scene audit matrix showing the goal, source references, mastery tags, remediation targets, diagnostics, simulation paths, and comic panel coverage behind each pass.
 
 On pull requests, QA also compares the generated quality report against the base commit and fails on quality regressions such as new report issues, failed guarantees, removed gold lessons, removed mastery signals, removed simulation paths, removed comic panels, or removed scene evidence rows.
 

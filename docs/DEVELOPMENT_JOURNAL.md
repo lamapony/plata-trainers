@@ -153,6 +153,13 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Document the proof-first contributor path in README and CONTRIBUTING.
 - [x] Link the quickstart gate and source files from the public GitHub proof capability.
 
+## Public Proof Page Sprint
+
+- [x] Add `proof.html` and `proof.js` as the readable public surface over demo learner, capability map, project health, quickstart proof, and golden PR review artifacts.
+- [x] Publish quickstart proof artifacts into the GitHub Pages artifact under `reports/quickstart-proof/`.
+- [x] Add `check:proof-page` so report loading, hero links, quickstart commands, health guarantees, and review fixture rendering stay deterministic.
+- [x] Link the proof page from public navigation, README, sitemap, project health, and the product capability map.
+
 ## Companion Architecture Sprint
 
 - [x] Document the no-heavy-embedded-agent decision in [Companion Architecture](./COMPANION_ARCHITECTURE.md).

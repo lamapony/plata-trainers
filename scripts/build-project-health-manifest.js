@@ -86,6 +86,7 @@ const requiredGates = [
   { id: "check:quickstart-proof", category: "onboarding", contract: "Contributor proof quickstart builds the core local artifacts and links commands to reviewable project claims." },
   { id: "check:quality-page", category: "report", contract: "Quality page renderer consumes generated report data." },
   { id: "check:program-page", category: "report", contract: "Program page renders the product capability map as a user-facing proof surface." },
+  { id: "check:proof-page", category: "report", contract: "Proof / Health page renders public health, capability, demo learner, quickstart, and golden review artifacts." },
   { id: "check:capability-map", category: "report", contract: "Product capability map links user-facing claims to checks, public reports, source files, and docs." },
   { id: "check:health", category: "report", contract: "Project health manifest links gates, reports, workflows, and fixtures." },
   { id: "check:pages", category: "publish", contract: "Pages artifact builds and public files pass static QA." }
@@ -231,7 +232,7 @@ function workflowRows(root, issues) {
       id: "qa",
       path: ".github/workflows/qa.yml",
       expectedRun: "npm run check",
-      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "diff-demo-learner-report.js", "diff-today-program-report.js", "build-review-report.js", "review-report.json", "GITHUB_STEP_SUMMARY", "summary-limit", "summary-message-limit"]
+      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "diff-demo-learner-report.js", "diff-today-program-report.js", "build-review-report.js", "review-report.json", "GITHUB_STEP_SUMMARY", "summary-limit", "summary-message-limit", "proof.html"]
     },
     { id: "pages", path: ".github/workflows/pages.yml", expectedRun: "npm run check" }
   ];

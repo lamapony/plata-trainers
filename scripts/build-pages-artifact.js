@@ -9,9 +9,11 @@ const { writeDemoLearnerReport } = require("./build-demo-learner-report.js");
 const { writeTodayProgramReport } = require("./build-today-program-report.js");
 const { writeCapabilityMap } = require("./build-capability-map.js");
 const { writeProjectHealthManifest } = require("./build-project-health-manifest.js");
+const { writeQuickstartProof } = require("./build-quickstart-proof.js");
 
 const root = path.resolve(__dirname, "..");
 const outRoot = path.join(root, ".dist", "pages");
+const quickstartProofPublicIndex = "reports/quickstart-proof/quickstart.json";
 
 const rootFiles = [
   "404.html",
@@ -21,6 +23,8 @@ const rootFiles = [
   "index.html",
   "program.html",
   "program.js",
+  "proof.html",
+  "proof.js",
   "quality.html",
   "quality.js",
   "robots.txt",
@@ -142,6 +146,12 @@ writeDemoLearnerReport(path.join(outRoot, "reports", "demo-learner.json"));
 writeTodayProgramReport(path.join(outRoot, "reports", "today-program.json"));
 writeCapabilityMap(path.join(outRoot, "reports", "capabilities.json"));
 writeProjectHealthManifest(path.join(outRoot, "reports", "project-health.json"));
+writeQuickstartProof(path.join(outRoot, "reports", "quickstart-proof"));
+
+if (!fs.existsSync(path.join(outRoot, quickstartProofPublicIndex))) {
+  console.error(`pages artifact build failed: missing ${quickstartProofPublicIndex}`);
+  process.exit(1);
+}
 
 const topLevel = fs.readdirSync(outRoot);
 const leaked = topLevel.filter(name => disallowedTopLevel.has(name));

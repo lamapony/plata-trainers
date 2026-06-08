@@ -109,6 +109,8 @@ jobs:
         run: |
           test -f index.html
           test -f dashboard.html
+          test -f proof.html
+          test -f proof.js
           test -f 404.html
           test -f robots.txt
           test -f sitemap.xml

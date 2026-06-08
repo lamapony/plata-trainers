@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Proof / Health · Platå</title>
+  <meta name="description" content="Public proof and health surface for Platå Trainers: generated reports, QA gates, demo learner, and PR review fixtures." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="site-shell">
+    <header class="hero">
+      <nav class="topnav" aria-label="Main navigation">
+        <a class="brand" href="./"><span>⛰</span> platå</a>
+        <div class="navlinks">
+          <a href="./">Trainers</a>
+          <a href="./dashboard.html">Dashboard</a>
+          <a href="./program.html">Program</a>
+          <a href="./quality.html">Quality</a>
+          <a href="#" aria-current="page">Proof</a>
+          <a href="https://github.com/lamapony/plata-trainers">GitHub</a>
+        </div>
+      </nav>
+
+      <section class="hero-grid">
+        <div>
+          <p class="eyebrow">Public project health</p>
+          <h1>Proof / Health</h1>
+          <p class="lead">A readable surface over the generated reports: demo learner, capability map, project health, and the golden PR review fixture.</p>
+          <div class="hero-actions">
+            <a id="proof-health-link" class="btn primary" href="#" aria-disabled="true">Project health JSON</a>
+            <a id="proof-capabilities-link" class="btn" href="#" aria-disabled="true">Capability map JSON</a>
+            <a id="proof-quickstart-link" class="btn" href="#" aria-disabled="true">Quickstart summary</a>
+          </div>
+        </div>
+        <aside class="status-card" aria-label="Proof status">
+          <h2 id="proof-status">Loading</h2>
+          <ul id="proof-summary"></ul>
+          <p id="proof-generated">Reading generated proof artifacts...</p>
+        </aside>
+      </section>
+    </header>
+
+    <section class="section" aria-labelledby="proof-artifacts-title">
+      <div class="section-head">
+        <p class="eyebrow">Contributor quickstart</p>
+        <h2 id="proof-artifacts-title">One local proof path</h2>
+      </div>
+      <div id="proof-artifacts" class="proof-artifacts"></div>
+    </section>
+
+    <section class="section" aria-labelledby="proof-surfaces-title">
+      <div class="section-head">
+        <p class="eyebrow">Published surfaces</p>
+        <h2 id="proof-surfaces-title">What a visitor can inspect</h2>
+      </div>
+      <div id="proof-surfaces" class="proof-surfaces"></div>
+    </section>
+
+    <section class="section split" aria-labelledby="proof-health-title">
+      <div>
+        <p class="eyebrow">Health gates</p>
+        <h2 id="proof-health-title">The check graph stays visible.</h2>
+        <p class="program-copy">Project health is generated from package scripts, workflows, public reports, deterministic fixtures, and guarantees. Missing gates or stale fixtures fail the report.</p>
+      </div>
+      <div id="proof-health" class="proof-health-panel"></div>
+    </section>
+
+    <section class="section" aria-labelledby="proof-review-title">
+      <div class="section-head">
+        <p class="eyebrow">PR review proof</p>
+        <h2 id="proof-review-title">Reviewer output is tested as a product surface</h2>
+      </div>
+      <div id="proof-review" class="proof-review"></div>
+    </section>
+
+    <footer class="footer">
+      <p>MIT code · built by <a href="https://dmitrii.dk">Dmitrii Babinov</a> · part of the Platå Danish-learning project.</p>
+    </footer>
+  </main>
+
+  <script src="./proof.js"></script>
+</body>
+</html>

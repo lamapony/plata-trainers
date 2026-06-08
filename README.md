@@ -9,6 +9,7 @@ Demo learner dashboard: [lamapony.github.io/plata-trainers/dashboard.html?demo=l
 Demo learner report: [lamapony.github.io/plata-trainers/reports/demo-learner.json](https://lamapony.github.io/plata-trainers/reports/demo-learner.json).
 Public quality report: [lamapony.github.io/plata-trainers/quality.html](https://lamapony.github.io/plata-trainers/quality.html).
 Public program map: [lamapony.github.io/plata-trainers/program.html](https://lamapony.github.io/plata-trainers/program.html).
+Public proof / health page: [lamapony.github.io/plata-trainers/proof.html](https://lamapony.github.io/plata-trainers/proof.html).
 Public capability map: [lamapony.github.io/plata-trainers/reports/capabilities.json](https://lamapony.github.io/plata-trainers/reports/capabilities.json).
 
 Platå does not try to teach Danish from the beginning. It helps learners overcome the plateau: the point where they know enough Danish to recognize the language, but not enough to act fluently under social pressure.
@@ -25,7 +26,7 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Private by default:** browser LocalStorage only; no accounts, backend, analytics, or tracking.
 - **Contributor-friendly data:** exercises are plain JavaScript data files with validation scripts and narrative lesson schemas.
 - **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals, deterministic simulation, remediation, and comic storyboard prompts.
-- **Public proof reports:** Pages publishes generated JSON for quality, skill coverage, Today shell states, project health, and a capability map that links product claims to checks, source files, and docs.
+- **Public proof reports:** Pages publishes generated JSON for quality, skill coverage, Today shell states, project health, quickstart proof, and a capability map that links product claims to checks, source files, and docs.
 - **Lightweight companion:** the dashboard opens with a deterministic, stateful Today shell and exports a read-only Hermes bridge brief without embedding a heavy agent runtime.
 - **Inspectable demo learner:** `dashboard.html?demo=learner` shows a rich B2 profile in memory only, so visitors can inspect personalization without overwriting their local progress.
 - **Static and forkable:** every trainer can run from `index.html`; GitHub Pages deploys a checked static artifact.
@@ -84,6 +85,7 @@ npm run check:demo-learner-diff
 npm run check:today-program-report
 npm run check:capability-map
 npm run check:program-page
+npm run check:proof-page
 npm run check:comic-prompts
 npm run proof:quickstart
 npm run check:quickstart-proof
@@ -170,6 +172,7 @@ node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --das
 node scripts/smoke-review-report.js
 node scripts/smoke-review-report-fixture.js
 node scripts/smoke-program-page.js
+node scripts/smoke-proof-page.js
 node scripts/build-capability-map.js --out .dist/capabilities.json --text
 node scripts/smoke-capability-map.js
 node scripts/build-project-health-manifest.js --out .dist/project-health.json --text
