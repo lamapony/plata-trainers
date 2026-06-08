@@ -191,6 +191,65 @@ function planReports(replay) {
   });
 }
 
+function cleanDebugString(value, limit) {
+  if (value === undefined || value === null) return "";
+  return String(value).slice(0, limit || 160);
+}
+
+function normalizeMemoryCorrection(record) {
+  record = record && typeof record === "object" ? record : {};
+  const factId = cleanDebugString(record.factId || record.id || "", 120);
+  if (!factId) return null;
+  return {
+    factId,
+    reason: cleanDebugString(record.reason || "learner-marked-incorrect", 120),
+    correctedAt: cleanDebugString(record.correctedAt || "", 80),
+    kind: cleanDebugString(record.kind || "", 80),
+    signal: cleanDebugString(record.signal || "", 120),
+    trainerId: cleanDebugString(record.trainerId || "", 120),
+    sourceFingerprint: cleanDebugString(record.sourceFingerprint || "", 120)
+  };
+}
+
+function memoryReport(payload, warnings) {
+  const memory = payload && payload.memory && typeof payload.memory === "object" ? payload.memory : null;
+  if (!memory) {
+    return {
+      schemaVersion: null,
+      fingerprint: "",
+      visibleFactCount: 0,
+      hiddenFactCount: 0,
+      correctedFactCount: 0,
+      hiddenFactIds: [],
+      corrections: []
+    };
+  }
+
+  const facts = Array.isArray(memory.facts) ? memory.facts : [];
+  const hiddenFactIds = Array.isArray(memory.deletedFactIds) ? memory.deletedFactIds.map(id => cleanDebugString(id, 120)).filter(Boolean) : [];
+  if (Object.prototype.hasOwnProperty.call(memory, "deletedFactIds") && !Array.isArray(memory.deletedFactIds)) {
+    warnings.push("memory.deletedFactIds is not an array");
+  }
+  if (Object.prototype.hasOwnProperty.call(memory, "correctionRecords") && !Array.isArray(memory.correctionRecords)) {
+    warnings.push("memory.correctionRecords is not an array");
+  }
+  const rawCorrections = Array.isArray(memory.correctionRecords) ? memory.correctionRecords : [];
+  const corrections = rawCorrections.map(normalizeMemoryCorrection).filter(Boolean);
+  if (rawCorrections.length !== corrections.length) {
+    warnings.push(`memory correction records: ignored ${rawCorrections.length - corrections.length} invalid record(s)`);
+  }
+
+  return {
+    schemaVersion: memory.schemaVersion || null,
+    fingerprint: cleanDebugString(memory.fingerprint || "", 120),
+    visibleFactCount: facts.length,
+    hiddenFactCount: hiddenFactIds.length,
+    correctedFactCount: corrections.length,
+    hiddenFactIds: hiddenFactIds.slice(0, 20),
+    corrections
+  };
+}
+
 function addStateConsistencyWarnings(payload, replay, warnings) {
   const states = payload.trainers && typeof payload.trainers === "object" ? payload.trainers : {};
   Object.keys(states).forEach(trainerId => {
@@ -219,6 +278,7 @@ function buildReplayDebugReport(payload, options) {
   const warnings = [];
   const eventLog = deriveEventLog(payload, context, warnings);
   addStateConsistencyWarnings(payload, eventLog.replay, warnings);
+  const memory = memoryReport(payload, warnings);
   return {
     profileSchemaVersion: payload.profileSchemaVersion || null,
     exportedAt: payload.exportedAt || "",
@@ -227,6 +287,7 @@ function buildReplayDebugReport(payload, options) {
     eventCount: eventLog.replay.eventCount,
     trainers: trainerReports(eventLog.replay),
     plans: planReports(eventLog.replay),
+    memory,
     warnings
   };
 }
@@ -270,6 +331,21 @@ function formatReplayDebugReport(report) {
         const status = step.completedAt ? "done" : (step.startedAt ? "started" : "open");
         lines.push(`  ${step.stepId}: ${status}${step.signal ? `, signal ${step.signal}` : ""}${step.trainerId ? `, trainer ${step.trainerId}` : ""}`);
       });
+    });
+  }
+  lines.push("");
+  lines.push("Memory corrections:");
+  if (!report.memory || !report.memory.correctedFactCount) {
+    lines.push("- none");
+  } else {
+    lines.push(`- memory ${report.memory.fingerprint || "no fingerprint"}: ${report.memory.visibleFactCount} visible, ${report.memory.hiddenFactCount} hidden, ${report.memory.correctedFactCount} corrected`);
+    report.memory.corrections.forEach(record => {
+      const facts = [
+        record.kind || "",
+        record.signal || "",
+        record.sourceFingerprint || ""
+      ].filter(Boolean).join(", ");
+      lines.push(`  ${record.factId}: ${record.reason}${facts ? ` (${facts})` : ""}${record.correctedAt ? ` at ${record.correctedAt}` : ""}`);
     });
   }
   lines.push("");

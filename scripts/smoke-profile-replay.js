@@ -106,7 +106,30 @@ function seedPayload(context) {
       "lesson-b2-radiator-register": state
     },
     practicePlan: plan,
-    eventLog
+    eventLog,
+    memory: {
+      schemaVersion: 1,
+      fingerprint: "mem-replay",
+      facts: [{
+        id: "mem-visible-context",
+        kind: "preferred_context",
+        title: "Preferred context",
+        copy: "This safe summary should be visible.",
+        sourceFingerprint: "memsrc-visible"
+      }],
+      deletedFactIds: ["mem-hidden-repair"],
+      correctionRecords: [{
+        factId: "mem-corrected-passive",
+        reason: "learner-marked-incorrect",
+        correctedAt: "2026-06-08T08:04:00.000Z",
+        kind: "weak_signal",
+        signal: "passive-agency",
+        trainerId: "lesson-b2-radiator-register",
+        sourceFingerprint: "memsrc-corrected",
+        expected: "secret expected text",
+        given: "secret given text"
+      }]
+    }
   };
 }
 
@@ -121,12 +144,21 @@ function runExportedReplaySmoke() {
   assert(report.trainers[0].openSignals.some(signal => signal.tag === "passive-agency" && signal.reopenCount === 1), "debugger should show reopened open signal");
   assert(report.plans[0].planToken === "ptest-replay", "debugger should list replayed plan");
   assert(report.plans[0].completedSteps === 1, "debugger should replay completed plan steps");
+  assert(report.memory.fingerprint === "mem-replay", "debugger should report memory fingerprint");
+  assert(report.memory.visibleFactCount === 1, "debugger should count visible memory facts");
+  assert(report.memory.hiddenFactCount === 1, "debugger should count hidden memory facts");
+  assert(report.memory.correctedFactCount === 1, "debugger should count corrected memory facts");
+  assert(report.memory.corrections[0].factId === "mem-corrected-passive", "debugger should list corrected memory fact id");
+  assert(report.memory.corrections[0].sourceFingerprint === "memsrc-corrected", "debugger should preserve corrected source fingerprint");
   assert(!JSON.stringify(report).includes("secret expected text"), "debug report should not include raw expected text");
   assert(!JSON.stringify(report).includes("secret given text"), "debug report should not include raw given text");
 
   const formatted = formatReplayDebugReport(report);
   assert(formatted.includes("Profile Replay Debug Report"), "formatter should include report title");
   assert(formatted.includes("passive-agency"), "formatter should include signal");
+  assert(formatted.includes("Memory corrections:"), "formatter should include memory correction section");
+  assert(formatted.includes("mem-corrected-passive"), "formatter should include corrected memory fact");
+  assert(formatted.includes("memsrc-corrected"), "formatter should include corrected source fingerprint");
   assert(formatted.includes("Warnings:\nnone"), "formatter should show no warnings");
 }
 
@@ -165,6 +197,17 @@ function runCliSmoke() {
     assert(result.stdout.includes("Profile Replay Debug Report"), "debug CLI should print report title");
     assert(result.stdout.includes("ptest-replay"), "debug CLI should print plan token");
     assert(result.stdout.includes("passive-agency"), "debug CLI should print signal");
+    assert(result.stdout.includes("Memory corrections:"), "debug CLI should print memory correction section");
+    assert(result.stdout.includes("mem-corrected-passive"), "debug CLI should print corrected memory fact");
+
+    const jsonResult = spawnSync(process.execPath, ["scripts/debug-profile-replay.js", "--file", file, "--json"], {
+      cwd: repoRoot,
+      encoding: "utf8"
+    });
+    assert(jsonResult.status === 0, `debug JSON CLI failed:\n${jsonResult.stderr || jsonResult.stdout}`);
+    const jsonReport = JSON.parse(jsonResult.stdout);
+    assert(jsonReport.memory.correctedFactCount === 1, "debug JSON CLI should include corrected memory count");
+    assert(jsonReport.memory.corrections[0].factId === "mem-corrected-passive", "debug JSON CLI should include corrected memory fact");
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

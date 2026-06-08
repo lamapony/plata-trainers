@@ -66,6 +66,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Warn on event fingerprint and replay-count mismatches.
 - [x] Keep debug reports free of raw expected/given learner answer text.
 - [x] Include profile replay smoke tests in `npm run check`.
+- [x] Include learner memory correction records in replay debug reports without exposing raw answer text.
 
 ## Skill Coverage Debug Sprint
 
@@ -199,3 +200,10 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Let learners restore one corrected fact without clearing every correction.
 - [x] Keep restore-all for quick profile recovery.
 - [x] Cover visible audit rows, individual restore, imported corrections, and empty audit cleanup in dashboard smoke tests.
+
+## Profile Replay Memory Corrections Sprint
+
+- [x] Add memory fingerprint, visible fact count, hidden fact count, and corrected fact count to maintainer replay reports.
+- [x] List corrected memory fact ids, kind, signal, trainer id, source fingerprint, reason, and timestamp in `debug-profile-replay`.
+- [x] Keep correction debug output privacy-conscious by ignoring raw expected/given fields.
+- [x] Cover JSON report output and CLI text output in profile replay smoke tests.
