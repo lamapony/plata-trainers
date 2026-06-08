@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { buildQualityReport } = require("./build-quality-report.js");
 const { buildSkillCoverageReport } = require("./build-skill-coverage-report.js");
+const { buildTodayProgramReport } = require("./build-today-program-report.js");
 const {
   buildDashboardRecommendationSnapshot,
   snapshotText
@@ -60,6 +61,7 @@ const requiredGates = [
   { id: "check:home", category: "runtime", contract: "Home launcher routes starter, continue, repair, and active-plan flows." },
   { id: "check:lesson-engine", category: "runtime", contract: "Gold simulation paths replay through the real lesson engine." },
   { id: "check:dashboard", category: "runtime", contract: "Dashboard renders diagnostics, plans, ledger, catalog loading, and profile portability." },
+  { id: "check:today-program-report", category: "report", contract: "Today program shell states build as a deterministic user-facing contract report." },
   { id: "check:dashboard-snapshot", category: "snapshot", contract: "Dashboard recommendation surface matches deterministic fixtures." },
   { id: "check:dashboard-snapshot-mutations", category: "mutation", contract: "Snapshot fixtures prove preferred-entry, repair trace, and evidence drift are caught." },
   { id: "check:dashboard-snapshot-diff", category: "review", contract: "Dashboard snapshot changes produce compact review diffs and regression flags." },
@@ -94,6 +96,13 @@ const publicReportSpecs = [
     builderScript: "scripts/build-skill-coverage-report.js",
     checkScript: "check:skill-coverage",
     pagesPath: "reports/skill-coverage.json"
+  },
+  {
+    id: "today-program",
+    title: "Today program shell report",
+    builderScript: "scripts/build-today-program-report.js",
+    checkScript: "check:today-program-report",
+    pagesPath: "reports/today-program.json"
   },
   {
     id: "project-health",
@@ -225,7 +234,7 @@ function workflowRows(root, issues) {
   });
 }
 
-function reportRows(root, quality, skillCoverage, issues) {
+function reportRows(root, quality, skillCoverage, todayProgram, issues) {
   const pagesBuild = fileExists(root, "scripts/build-pages-artifact.js")
     ? readText(root, "scripts/build-pages-artifact.js")
     : "";
@@ -247,6 +256,14 @@ function reportRows(root, quality, skillCoverage, issues) {
         coveredGraphTags: skillCoverage.totals.coveredGraphTags,
         issues: skillCoverage.totals.issues,
         warnings: skillCoverage.totals.warnings
+      }
+    },
+    "today-program": {
+      status: todayProgram.status,
+      totals: {
+        scenarios: todayProgram.totals.scenarios,
+        states: todayProgram.totals.states,
+        issues: todayProgram.totals.issues
       }
     },
     "project-health": {
@@ -542,8 +559,9 @@ function buildProjectHealthManifest(options = {}) {
   const issues = [];
   const quality = buildQualityReport({ root });
   const skillCoverage = buildSkillCoverageReport({ root });
+  const todayProgram = buildTodayProgramReport({ root });
   const gates = gateRows(root, pkg, issues);
-  const reports = reportRows(root, quality, skillCoverage, issues);
+  const reports = reportRows(root, quality, skillCoverage, todayProgram, issues);
   const workflows = workflowRows(root, issues);
   const fixtures = fixtureRows(root, issues);
   const gateCategories = gates.reduce((acc, gate) => {

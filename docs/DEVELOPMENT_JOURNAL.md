@@ -29,6 +29,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add deterministic companion cards and Hermes bridge briefs over advisor/handoff packets.
 - [x] Promote the companion/planner route into a user-facing Today program shell.
 - [x] Make the Today shell stateful across onboarding, active-route, return, and memory-review scenarios.
+- [x] Publish Today shell states as a deterministic public program report.
 - [ ] Evaluate external Hermes/OpenClaw-style integrations as optional explainers, not sources of truth; see [Companion Architecture](./COMPANION_ARCHITECTURE.md).
 
 ## Current Sprint
@@ -145,6 +146,8 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add explicit Today program states for first session, active saved route, lesson return, and due memory review.
 - [x] Keep the state classifier deterministic over existing planner, URL handoff, and memory facts.
 - [x] Smoke-test each state so product wording stays aligned with planner evidence.
+- [x] Publish a deterministic Today program report for user-facing shell states.
+- [x] Add `check:today-program-report` and project-health coverage for the report.
 
 ## Lesson Exercise Audit Sprint
 

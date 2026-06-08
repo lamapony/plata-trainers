@@ -64,6 +64,7 @@ Production Pages artifact:
 npm run build:pages
 npm run check:pages
 npm run check:quality-report
+npm run check:today-program-report
 npm run check:comic-prompts
 npm run diff:quality -- --base .dist/quality-report.json --head current
 npm run diff:quality -- --base .dist/quality-report.json --head current --json > .dist/quality-diff.json
@@ -90,6 +91,8 @@ node scripts/smoke-kernel.js
 node scripts/validate-catalog.js
 node scripts/smoke-lesson-engine.js
 node scripts/smoke-dashboard.js
+node scripts/build-today-program-report.js --out .dist/today-program.json --text
+node scripts/smoke-today-program-report.js
 node scripts/validate-data.js
 node scripts/static-qa.js
 node scripts/check-syntax.js

@@ -20,6 +20,7 @@ This note records the lightweight companion decision. Plata should not embed a f
 | `PlataAdvisor` | Why this step | Deterministic advice based on planner decisions and cited facts. |
 | `PlataAgentHandoff` | Strict machine packet | A constrained task packet for future or external helpers. |
 | `PlataCompanion` | Friendly program shell | A learner-facing card with one next action, citations, guardrails, and fingerprint. |
+| `Today program report` | Inspectable program shell states | Public JSON proving onboarding, active-route, return, and memory-review states stay evidence-backed. |
 | `plata.hermes-bridge-brief` | Optional external bridge | Read-only brief for Hermes-style tools; no raw history, no memory writes, no planner override. |
 
 ## Companion Contract
@@ -66,4 +67,4 @@ Hermes cannot:
 - request raw answer history;
 - write Plata memory or planner state.
 
-`scripts/smoke-companion.js` proves the card and bridge remain deterministic, cited, read-only, and free of raw learner answer text across fixed learner profiles.
+`scripts/smoke-companion.js` proves the card and bridge remain deterministic, cited, read-only, and free of raw learner answer text across fixed learner profiles. `scripts/smoke-today-program-report.js` proves the user-facing Today shell keeps its four core states deterministic and free of raw learner answer leaks.
