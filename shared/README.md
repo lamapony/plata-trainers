@@ -51,6 +51,8 @@ Planner decisions carry two explanation layers. `explainDecision(...)` and `expl
 
 When `PlataCompetencies` is available, memory also emits `root_competency_trap` facts for cross-lesson patterns: for example, misses in `passive-agency` and `professional-email-agency` can become one inspectable `agency` root-skill fact. Planner and advisor traces can cite that fact while still routing the learner to the concrete repair scene.
 
+`plata-learner-model.js` turns derived memory facts into a deterministic adaptive profile with explicit kind weights, confidence boosts, age adjustments, transfer boosts, ranked priorities, review queue, root competency risks, recommended focus, guardrails, and a stable fingerprint. It does not expose event logs or source event ids. `scripts/smoke-learner-model.js` snapshots fixed learner profiles and mutates raw-text leaks, missing focus citations, missing source fingerprints, lost root-competency focus, raw history payloads, and fingerprint drift.
+
 The dashboard memory inspector renders those facts for the learner, supports hiding/restoring individual derived facts, supports learner-marked correction records for false assumptions, renders corrected records as an audit trail with individual restore, and includes visible facts plus hidden/corrected fact records in portable profile export/import.
 
 `scripts/smoke-memory-corrections.js` protects the correction-record contract. It proves corrected memory facts keep stable fact ids, reasons, timestamps, source fingerprints, and no raw expected/given answer text, while duplicate or malformed correction records fail CI.

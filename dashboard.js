@@ -1125,6 +1125,11 @@ function exportAll() {
   const eventLog = profileEventLogPayload(all, practicePlan);
   const memoryBundle = buildMemoryFacts(all, practicePlan);
   const exportedAt = new Date().toISOString();
+  const learnerModel = window.PlataLearnerModel ? window.PlataLearnerModel.buildModel(memoryBundle.visibleFacts, {
+    generatedAt: exportedAt,
+    now: exportedAt,
+    memoryFingerprint: memoryBundle.fingerprint
+  }) : null;
   const memoryVault = window.PlataMemoryVault ? window.PlataMemoryVault.createVault({
     fingerprint: memoryBundle.fingerprint,
     summary: memoryBundle.summary,
@@ -1155,6 +1160,7 @@ function exportAll() {
       deletedFactIds: memoryBundle.deletedIds,
       correctionRecords: memoryBundle.corrections
     } : null,
+    learnerModel,
     memoryVault,
     memoryBrief,
     agentHandoff

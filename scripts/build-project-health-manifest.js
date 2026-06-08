@@ -16,6 +16,9 @@ const {
   evaluateAdvisorFixtures
 } = require("./smoke-advisor-fixtures.js");
 const {
+  evaluateLearnerModelFixtures
+} = require("./smoke-learner-model.js");
+const {
   evaluateAgentHandoffFixtures
 } = require("./smoke-agent-handoff.js");
 const {
@@ -32,6 +35,7 @@ const requiredGates = [
   { id: "check:evidence", category: "diagnostics", contract: "Evidence ledger ranks open, closed, reopened, miss, and correct facts." },
   { id: "check:events", category: "replay", contract: "Privacy-conscious learning events replay deterministic profile facts." },
   { id: "check:memory", category: "personalization", contract: "Local learner memory facts compile from redacted events with source fingerprints and no raw answers." },
+  { id: "check:learner-model", category: "personalization", contract: "Local adaptive learner model ranks memory facts with explicit weights, citations, and privacy guardrails." },
   { id: "check:memory-fixtures", category: "personalization", contract: "Returning, stale, repaired, and recurring-trap learner memory fixtures remain deterministic and planner-cited." },
   { id: "check:memory-corrections", category: "personalization", contract: "Learner-corrected memory facts keep a strict schema, source fingerprints, and no raw answers." },
   { id: "check:memory-vault", category: "personalization", contract: "Optional account memory vaults contain derived facts only, reject raw answer history, and merge imports without resurrecting hidden/corrected facts." },
@@ -325,6 +329,39 @@ function fixtureRows(root, issues) {
     fresh: memoryIssues.length === 0 && !!memoryEvaluation,
     status: memoryIssues.length ? "fail" : "pass",
     issues: memoryIssues
+  });
+
+  const learnerModelFixturePath = "scripts/fixtures/learner-model.snapshot.json";
+  const learnerModelScript = "scripts/smoke-learner-model.js";
+  const learnerModelIssues = [];
+  let learnerModelFixture = null;
+  let learnerModelEvaluation = null;
+  if (!fileExists(root, learnerModelFixturePath)) {
+    learnerModelIssues.push("fixture file missing");
+  } else {
+    learnerModelFixture = readJson(root, learnerModelFixturePath);
+    try {
+      learnerModelEvaluation = evaluateLearnerModelFixtures({ root });
+    } catch (err) {
+      learnerModelIssues.push(`fixture is stale: ${err.message.split(/\r?\n/)[0]}`);
+    }
+  }
+  if (!fileExists(root, learnerModelScript)) learnerModelIssues.push(`missing checker ${learnerModelScript}`);
+  learnerModelIssues.forEach(issue => issues.push(`learner-model-profiles fixture: ${issue}`));
+  rows.push({
+    id: "learner-model-profiles",
+    title: "Learner model profile fixtures",
+    fixturePath: learnerModelFixturePath,
+    builderScript: learnerModelScript,
+    checkScript: "check:learner-model",
+    updateCommand: "node scripts/smoke-learner-model.js --update",
+    schemaVersion: learnerModelFixture && learnerModelFixture.schemaVersion || null,
+    fixedNow: learnerModelFixture && learnerModelFixture.generatedAt || "",
+    scenarios: learnerModelEvaluation ? learnerModelEvaluation.profiles.map(item => item.id) : [],
+    lineCount: lineCount(root, learnerModelFixturePath),
+    fresh: learnerModelIssues.length === 0 && !!learnerModelEvaluation,
+    status: learnerModelIssues.length ? "fail" : "pass",
+    issues: learnerModelIssues
   });
 
   const advisorScript = "scripts/smoke-advisor-fixtures.js";

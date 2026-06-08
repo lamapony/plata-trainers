@@ -19,7 +19,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add a compact diff for dashboard recommendation snapshot changes.
 - [x] Add a lesson exercise audit gate for pedagogical contradictions and known Danish slips.
 - [ ] Add a PR-facing dashboard snapshot diff workflow step.
-- [ ] Define the local adaptive learner model before adding any account memory.
+- [x] Define the local adaptive learner model before adding any account memory.
 - [x] Add an inspectable learner memory fact schema derived from the event log.
 - [x] Build a memory inspector so learners can see, export, and delete personalization facts.
 - [x] Prototype optional account memory as a vault for derived learning facts, not raw answer history.
@@ -138,6 +138,16 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add source event ids, source fingerprints, confidence, status, expiry, evidence rows, and privacy markers to each fact.
 - [x] Prove memory facts are deterministic and do not include raw expected/given answer text.
 - [x] Include the memory smoke test in `npm run check` and project health.
+
+## Local Adaptive Learner Model Sprint
+
+- [x] Add `PlataLearnerModel` as the deterministic scoring policy built from derived memory facts.
+- [x] Rank facts with explicit kind weights, confidence boosts, age adjustments, and transfer boosts.
+- [x] Emit a cited recommended focus, ranked priorities, open risks, review queue, strengths, root competencies, guardrails, and a stable fingerprint.
+- [x] Export `learnerModel` beside memory facts in dashboard profile JSON.
+- [x] Snapshot-test fixed learner profiles across continue, review, maintain, recurring repair, and cross-lesson root repair cases.
+- [x] Mutation-test raw-text leaks, citationless focus, missing source fingerprints, lost root-competency focus, raw history payloads, and fingerprint drift.
+- [x] Include `check:learner-model` in `npm run check` and project health deterministic fixture reporting.
 
 ## Dashboard Memory Inspector Sprint
 

@@ -1,0 +1,435 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-08T12:00:00.000Z",
+  "profiles": {
+    "returning-learner-context": {
+      "fingerprint": "lmodel-1pgg7ys",
+      "sourceMemoryFingerprint": "mem-8jcpik",
+      "recommendedFocus": {
+        "kind": "continue",
+        "rule": "learner-model.focus.context",
+        "title": "Continue from formal-register-control",
+        "signal": "formal-register-control",
+        "competencyId": "",
+        "pressure": 50,
+        "citedFactIds": [
+          "mem-75qg4m"
+        ],
+        "sourceFingerprints": [
+          "memsrc-b95chg"
+        ]
+      },
+      "priorities": [
+        {
+          "factId": "mem-75qg4m",
+          "kind": "stable_strength",
+          "priorityKind": "context",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "formal-register-control",
+          "competencyId": "",
+          "pressure": 50,
+          "confidence": 0.725,
+          "ageDays": 0,
+          "sourceFingerprint": "memsrc-b95chg"
+        },
+        {
+          "factId": "mem-s7pdax",
+          "kind": "preferred_context",
+          "priorityKind": "context",
+          "trainerId": "profile",
+          "signal": "repair",
+          "competencyId": "",
+          "pressure": 40,
+          "confidence": 0.66,
+          "ageDays": 0,
+          "sourceFingerprint": "memsrc-1xaipal"
+        },
+        {
+          "factId": "mem-dpmj6k",
+          "kind": "preferred_context",
+          "priorityKind": "context",
+          "trainerId": "profile",
+          "signal": "review",
+          "competencyId": "",
+          "pressure": 38,
+          "confidence": 0.58,
+          "ageDays": 0,
+          "sourceFingerprint": "memsrc-1seovqg"
+        }
+      ],
+      "openRisks": [],
+      "reviewQueue": [],
+      "rootCompetencies": [],
+      "summary": {
+        "total": 3,
+        "byKind": {
+          "preferred_context": 2,
+          "stable_strength": 1
+        },
+        "riskFacts": 0,
+        "reviewFacts": 0,
+        "contextFacts": 3
+      },
+      "policyVersion": "learner-model-policy-v1",
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "derivedFactsOnly": true,
+        "usesOnlyCitedFacts": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      }
+    },
+    "stale-skill-review": {
+      "fingerprint": "lmodel-u9ss40",
+      "sourceMemoryFingerprint": "mem-135517j",
+      "recommendedFocus": {
+        "kind": "review",
+        "rule": "learner-model.focus.review",
+        "title": "Review formal-register-control",
+        "signal": "formal-register-control",
+        "competencyId": "",
+        "pressure": 110,
+        "citedFactIds": [
+          "mem-tabm00"
+        ],
+        "sourceFingerprints": [
+          "memsrc-1uxszyk"
+        ]
+      },
+      "priorities": [
+        {
+          "factId": "mem-tabm00",
+          "kind": "next_review_due",
+          "priorityKind": "review",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "formal-register-control",
+          "competencyId": "",
+          "pressure": 110,
+          "confidence": 0.7,
+          "ageDays": 37,
+          "sourceFingerprint": "memsrc-1uxszyk"
+        },
+        {
+          "factId": "mem-1vg51vs",
+          "kind": "stale_skill",
+          "priorityKind": "review",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "formal-register-control",
+          "competencyId": "",
+          "pressure": 100,
+          "confidence": 0.78,
+          "ageDays": 37,
+          "sourceFingerprint": "memsrc-1uxszyk"
+        }
+      ],
+      "openRisks": [],
+      "reviewQueue": [
+        {
+          "factId": "mem-tabm00",
+          "kind": "next_review_due",
+          "signal": "formal-register-control",
+          "pressure": 110
+        },
+        {
+          "factId": "mem-1vg51vs",
+          "kind": "stale_skill",
+          "signal": "formal-register-control",
+          "pressure": 100
+        }
+      ],
+      "rootCompetencies": [],
+      "summary": {
+        "total": 2,
+        "byKind": {
+          "next_review_due": 1,
+          "stale_skill": 1
+        },
+        "riskFacts": 0,
+        "reviewFacts": 2,
+        "contextFacts": 0
+      },
+      "policyVersion": "learner-model-policy-v1",
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "derivedFactsOnly": true,
+        "usesOnlyCitedFacts": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      }
+    },
+    "repaired-signal-retained": {
+      "fingerprint": "lmodel-13epevd",
+      "sourceMemoryFingerprint": "mem-1l0jsy8",
+      "recommendedFocus": {
+        "kind": "maintain",
+        "rule": "learner-model.focus.maintenance",
+        "title": "Maintain modal-particle-stance",
+        "signal": "modal-particle-stance",
+        "competencyId": "",
+        "pressure": 65,
+        "citedFactIds": [
+          "mem-16omq3k"
+        ],
+        "sourceFingerprints": [
+          "memsrc-rze77g"
+        ]
+      },
+      "priorities": [
+        {
+          "factId": "mem-16omq3k",
+          "kind": "repaired_signal",
+          "priorityKind": "maintenance",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "modal-particle-stance",
+          "competencyId": "",
+          "pressure": 65,
+          "confidence": 0.835,
+          "ageDays": 0,
+          "sourceFingerprint": "memsrc-rze77g"
+        }
+      ],
+      "openRisks": [],
+      "reviewQueue": [],
+      "rootCompetencies": [],
+      "summary": {
+        "total": 1,
+        "byKind": {
+          "repaired_signal": 1
+        },
+        "riskFacts": 0,
+        "reviewFacts": 0,
+        "contextFacts": 1
+      },
+      "policyVersion": "learner-model-policy-v1",
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "derivedFactsOnly": true,
+        "usesOnlyCitedFacts": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      }
+    },
+    "recurring-trap-repair": {
+      "fingerprint": "lmodel-1d4s9g5",
+      "sourceMemoryFingerprint": "mem-1sa3p58",
+      "recommendedFocus": {
+        "kind": "repair",
+        "rule": "learner-model.focus.recurring-trap",
+        "title": "Repair passive-agency",
+        "signal": "passive-agency",
+        "competencyId": "",
+        "pressure": 142,
+        "citedFactIds": [
+          "mem-1b3dbr7"
+        ],
+        "sourceFingerprints": [
+          "memsrc-1ncgzt7"
+        ]
+      },
+      "priorities": [
+        {
+          "factId": "mem-1b3dbr7",
+          "kind": "recurring_trap",
+          "priorityKind": "risk",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "passive-agency",
+          "competencyId": "",
+          "pressure": 142,
+          "confidence": 0.935,
+          "ageDays": 0,
+          "sourceFingerprint": "memsrc-1ncgzt7"
+        },
+        {
+          "factId": "mem-13rq6s3",
+          "kind": "weak_signal",
+          "priorityKind": "risk",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "passive-agency",
+          "competencyId": "",
+          "pressure": 124,
+          "confidence": 0.855,
+          "ageDays": 0,
+          "sourceFingerprint": "memsrc-1ncgzt7"
+        }
+      ],
+      "openRisks": [
+        {
+          "factId": "mem-1b3dbr7",
+          "kind": "recurring_trap",
+          "signal": "passive-agency",
+          "competencyId": "",
+          "pressure": 142
+        },
+        {
+          "factId": "mem-13rq6s3",
+          "kind": "weak_signal",
+          "signal": "passive-agency",
+          "competencyId": "",
+          "pressure": 124
+        }
+      ],
+      "reviewQueue": [],
+      "rootCompetencies": [],
+      "summary": {
+        "total": 2,
+        "byKind": {
+          "recurring_trap": 1,
+          "weak_signal": 1
+        },
+        "riskFacts": 2,
+        "reviewFacts": 0,
+        "contextFacts": 0
+      },
+      "policyVersion": "learner-model-policy-v1",
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "derivedFactsOnly": true,
+        "usesOnlyCitedFacts": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      }
+    },
+    "cross-lesson-agency-trap": {
+      "fingerprint": "lmodel-1io1x",
+      "sourceMemoryFingerprint": "mem-fwyejg",
+      "recommendedFocus": {
+        "kind": "repair",
+        "rule": "learner-model.focus.root-competency",
+        "title": "Repair Agency and responsibility",
+        "signal": "agency",
+        "competencyId": "agency",
+        "pressure": 164,
+        "citedFactIds": [
+          "mem-1m60lop"
+        ],
+        "sourceFingerprints": [
+          "memsrc-41qsvm"
+        ]
+      },
+      "priorities": [
+        {
+          "factId": "mem-1m60lop",
+          "kind": "root_competency_trap",
+          "priorityKind": "risk",
+          "trainerId": "profile",
+          "signal": "agency",
+          "competencyId": "agency",
+          "pressure": 164,
+          "confidence": 0.79,
+          "ageDays": 0,
+          "sourceFingerprint": "memsrc-41qsvm"
+        },
+        {
+          "factId": "mem-12h0wzo",
+          "kind": "recurring_trap",
+          "priorityKind": "risk",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "passive-agency",
+          "competencyId": "",
+          "pressure": 139,
+          "confidence": 0.82,
+          "ageDays": 0,
+          "sourceFingerprint": "memsrc-1k2nir0"
+        },
+        {
+          "factId": "mem-n5mrys",
+          "kind": "weak_signal",
+          "priorityKind": "risk",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "passive-agency",
+          "competencyId": "",
+          "pressure": 121,
+          "confidence": 0.74,
+          "ageDays": 0,
+          "sourceFingerprint": "memsrc-1k2nir0"
+        },
+        {
+          "factId": "mem-1mnzr7o",
+          "kind": "weak_signal",
+          "priorityKind": "risk",
+          "trainerId": "lesson-b2-job-followup",
+          "signal": "professional-email-agency",
+          "competencyId": "",
+          "pressure": 118,
+          "confidence": 0.66,
+          "ageDays": 0,
+          "sourceFingerprint": "memsrc-1jkm1e9"
+        }
+      ],
+      "openRisks": [
+        {
+          "factId": "mem-1m60lop",
+          "kind": "root_competency_trap",
+          "signal": "agency",
+          "competencyId": "agency",
+          "pressure": 164
+        },
+        {
+          "factId": "mem-12h0wzo",
+          "kind": "recurring_trap",
+          "signal": "passive-agency",
+          "competencyId": "",
+          "pressure": 139
+        },
+        {
+          "factId": "mem-n5mrys",
+          "kind": "weak_signal",
+          "signal": "passive-agency",
+          "competencyId": "",
+          "pressure": 121
+        },
+        {
+          "factId": "mem-1mnzr7o",
+          "kind": "weak_signal",
+          "signal": "professional-email-agency",
+          "competencyId": "",
+          "pressure": 118
+        }
+      ],
+      "reviewQueue": [],
+      "rootCompetencies": [
+        {
+          "competencyId": "agency",
+          "riskScore": 164,
+          "factIds": [
+            "mem-1m60lop"
+          ],
+          "signals": [
+            "agency",
+            "passive-agency",
+            "professional-email-agency"
+          ],
+          "trainerIds": [
+            "profile",
+            "lesson-b2-job-followup",
+            "lesson-b2-radiator-register"
+          ]
+        }
+      ],
+      "summary": {
+        "total": 4,
+        "byKind": {
+          "recurring_trap": 1,
+          "root_competency_trap": 1,
+          "weak_signal": 2
+        },
+        "riskFacts": 4,
+        "reviewFacts": 0,
+        "contextFacts": 0
+      },
+      "policyVersion": "learner-model-policy-v1",
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "derivedFactsOnly": true,
+        "usesOnlyCitedFacts": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      }
+    }
+  }
+}

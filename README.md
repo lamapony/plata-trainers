@@ -94,6 +94,7 @@ node scripts/snapshot-dashboard-recommendations.js
 node scripts/mutation-dashboard-snapshot.js
 node scripts/diff-dashboard-snapshot.js --base scripts/fixtures/dashboard-recommendations.snapshot.json --head current
 node scripts/smoke-memory.js
+node scripts/smoke-learner-model.js
 node scripts/smoke-memory-fixtures.js
 node scripts/smoke-memory-corrections.js
 node scripts/smoke-memory-vault.js

@@ -13,6 +13,7 @@ const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-plann
 const evidenceSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-evidence.js"), "utf8");
 const eventsSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-events.js"), "utf8");
 const memorySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory.js"), "utf8");
+const learnerModelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-learner-model.js"), "utf8");
 const memoryVaultSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory-vault.js"), "utf8");
 const memoryBriefSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory-brief.js"), "utf8");
 const agentHandoffSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-agent-handoff.js"), "utf8");
@@ -169,6 +170,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
+  vm.runInContext(learnerModelSource, env.context, { filename: "shared/plata-learner-model.js" });
   vm.runInContext(memoryVaultSource, env.context, { filename: "shared/plata-memory-vault.js" });
   vm.runInContext(memoryBriefSource, env.context, { filename: "shared/plata-memory-brief.js" });
   vm.runInContext(agentHandoffSource, env.context, { filename: "shared/plata-agent-handoff.js" });
@@ -571,6 +573,14 @@ function runPortableProfileSmoke() {
   assert(payload.memory.facts.some(fact => fact.kind === "preferred_context"), "dashboard export includes derived memory fact rows");
   assert(Array.isArray(payload.memory.correctionRecords), "dashboard export includes learner memory corrections");
   assert(!JSON.stringify(payload.memory).includes("should not leak"), "dashboard memory export excludes raw plan answer text");
+  assert(payload.learnerModel && payload.learnerModel.modelType === "plata.learner-model", "dashboard export includes local learner model");
+  assert(payload.learnerModel.sourceMemoryFingerprint === payload.memory.fingerprint, "dashboard learner model cites exported memory fingerprint");
+  assert(payload.learnerModel.guardrails && payload.learnerModel.guardrails.usesOnlyCitedFacts === true, "dashboard learner model declares cited-fact guardrail");
+  assert(payload.learnerModel.guardrails && payload.learnerModel.guardrails.containsRawAnswerText === false, "dashboard learner model excludes raw answer text");
+  assert(payload.learnerModel.recommendedFocus.kind === "inspect" || payload.learnerModel.recommendedFocus.citedFactIds.length > 0, "dashboard learner model focus cites facts");
+  assert(!Object.prototype.hasOwnProperty.call(payload.learnerModel, "eventLog"), "dashboard learner model excludes event log payloads");
+  assert(!Object.prototype.hasOwnProperty.call(payload.learnerModel, "sourceEventIds"), "dashboard learner model excludes source event ids");
+  assert(!JSON.stringify(payload.learnerModel).includes("should not leak"), "dashboard learner model excludes raw plan answer text");
   assert(payload.memoryVault && payload.memoryVault.vaultType === "plata.memory-vault", "dashboard export includes derived memory vault");
   assert(payload.memoryVault.privacy && payload.memoryVault.privacy.derivedFactsOnly === true, "dashboard memory vault declares derived-facts-only privacy");
   assert(payload.memoryVault.privacy && payload.memoryVault.privacy.excludesEventLog === true, "dashboard memory vault excludes event logs");

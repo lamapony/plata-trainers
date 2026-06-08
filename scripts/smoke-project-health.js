@@ -38,6 +38,7 @@ function runBaseSmoke() {
   const manifest = buildProjectHealthManifest();
   assert(manifest.status === "pass", `project health manifest should pass:\n${manifest.issues.join("\n")}`);
   assert(manifest.totals.gates >= 28, "manifest should enumerate the full QA gate set");
+  assert(manifest.gates.some(gate => gate.id === "check:learner-model" && gate.requiredInCheck), "manifest should require local learner model contracts");
   assert(manifest.gates.some(gate => gate.id === "check:memory-fixtures" && gate.requiredInCheck), "manifest should require learner memory fixtures");
   assert(manifest.gates.some(gate => gate.id === "check:memory-corrections" && gate.requiredInCheck), "manifest should require learner memory correction contracts");
   assert(manifest.gates.some(gate => gate.id === "check:memory-vault" && gate.requiredInCheck), "manifest should require learner memory vault contracts");
@@ -51,6 +52,7 @@ function runBaseSmoke() {
   assert(manifest.publicReports.some(report => report.id === "project-health" && report.pagesPath === "reports/project-health.json"), "manifest should link itself as a public report");
   assert(manifest.workflows.every(workflow => workflow.runsFullCheck && workflow.nodeVersion === "24"), "manifest should link full-check workflows");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "dashboard-recommendations" && fixture.fresh), "manifest should link fresh deterministic fixtures");
+  assert(manifest.deterministicFixtures.some(fixture => fixture.id === "learner-model-profiles" && fixture.fresh), "manifest should link fresh learner model fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "learner-memory-profiles" && fixture.fresh), "manifest should link fresh learner memory fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "agent-advice-profiles" && fixture.fresh), "manifest should link fresh agent advice fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "agent-handoff-profiles" && fixture.fresh), "manifest should link fresh agent handoff fixtures");
