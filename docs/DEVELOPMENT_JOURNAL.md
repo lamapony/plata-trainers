@@ -245,6 +245,15 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Include the evaluation harness in `npm run check` and project health.
 - [x] Add `check:personalization-mutations` to prove broken advisor/planner personalization contracts fail CI.
 
+## Personalization Trajectory Replay Sprint
+
+- [x] Add a staged replay harness that evaluates personalization over time, not only fixed profile snapshots.
+- [x] Prove a repair lifecycle transitions from weak signal to repaired signal, exact review-due boundary, post-review maintenance, and reopened recurring trap.
+- [x] Prove cross-lesson agency misses become a `root_competency_trap` only after evidence spans multiple lessons.
+- [x] Require learner-model focus facts to stay advisor-cited and planner-selected at each trajectory stage.
+- [x] Mutation-test dropped `signal.reopened` handling, review boundary drift, root learner-model priority drift, and broken planner root-memory selection.
+- [x] Include `check:personalization-trajectory` and `check:personalization-trajectory-mutations` in `npm run check` and project health.
+
 ## Cross-Lesson Memory Sprint
 
 - [x] Emit `root_competency_trap` memory facts when weak signals from different lessons share one root competency.

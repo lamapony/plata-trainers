@@ -73,6 +73,8 @@ The dashboard memory inspector renders those facts for the learner, supports hid
 
 `scripts/mutation-personalization-eval.js` proves that harness is not decorative. It mutates temporary copies of the advisor and planner to catch memory-backed repair drift, dropped fallback facts, corrupted planner-selected citations, ignored review-due facts, and raw-text guardrail regressions.
 
+`scripts/smoke-personalization-trajectory.js` checks personalization over time instead of only at fixed profile snapshots. It replays staged learner timelines where a repair closes, spacing makes review due, review retires the due fact, a later miss reopens the signal, and a cross-lesson agency pattern becomes a root-competency focus. `scripts/mutation-personalization-trajectory.js` proves those transitions fail when reopen handling, review-age boundaries, root learner-model priority, or planner root-memory selection drift.
+
 `scripts/debug-profile-replay.js --file plata-backup.json` is the maintainer-facing replay debugger for dashboard exports. It reads the exported `eventLog` when present, derives one from legacy `trainers` + `practicePlan` exports when needed, and prints trainer, signal, item, plan, memory-correction, fingerprint, and warning summaries without raw learner answer text.
 
 `plata-catalog.js` is the static trainer registry used by the dashboard. Gold lesson entries can declare `lessonGlobal` and `lessonDataPath`; the dashboard loads those data files on demand to build mastery/remediation recommendations without hardcoding individual lesson globals.

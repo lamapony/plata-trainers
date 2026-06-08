@@ -49,6 +49,8 @@ function runBaseSmoke() {
   assert(manifest.gates.some(gate => gate.id === "check:advisor" && gate.requiredInCheck), "manifest should require advisor fixtures");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-eval" && gate.requiredInCheck), "manifest should require personalization evaluation");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-mutations" && gate.requiredInCheck), "manifest should require personalization mutation proof");
+  assert(manifest.gates.some(gate => gate.id === "check:personalization-trajectory" && gate.requiredInCheck), "manifest should require personalization trajectory replay");
+  assert(manifest.gates.some(gate => gate.id === "check:personalization-trajectory-mutations" && gate.requiredInCheck), "manifest should require personalization trajectory mutation proof");
   assert(manifest.publicReports.some(report => report.id === "quality" && report.pagesPath === "reports/quality.json"), "manifest should link the quality report");
   assert(manifest.publicReports.some(report => report.id === "skill-coverage" && report.pagesPath === "reports/skill-coverage.json"), "manifest should link the skill coverage report");
   assert(manifest.publicReports.some(report => report.id === "project-health" && report.pagesPath === "reports/project-health.json"), "manifest should link itself as a public report");
