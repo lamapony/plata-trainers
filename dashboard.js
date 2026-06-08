@@ -159,6 +159,24 @@ function getStreakLabel(streak) {
   return `${streak} days`;
 }
 
+function routeParam(name) {
+  if (!window.location || !window.location.search) return "";
+  const query = String(window.location.search || "").replace(/^\?/, "").split("&");
+  for (const pair of query) {
+    const parts = pair.split("=");
+    let key = parts[0] || "";
+    let value = parts.slice(1).join("=") || "";
+    try {
+      key = decodeURIComponent(key);
+      value = decodeURIComponent(value.replace(/\+/g, " "));
+    } catch (err) {
+      // Keep the raw value if the URL contains malformed escapes.
+    }
+    if (key === name) return value;
+  }
+  return "";
+}
+
 function formatPlanDateTime(iso) {
   if (!iso) return "";
   const d = new Date(iso);
@@ -213,6 +231,42 @@ function planPrimaryActionHtml(plan, planner) {
     <div class="plan-primary-action">
       <a class="btn primary" href="${escapeHtml(href)}">${escapeHtml(label)}</a>
       <span>${escapeHtml(meta)}</span>
+    </div>
+  `;
+}
+
+function planReturnReceiptHtml(plan, planner) {
+  if (!routeParam("ledger-return") || !plan || !plan.steps || !planner) return "";
+  const returnedStepId = routeParam("step");
+  const returnedStep = plan.steps.find(step => step.routeId === returnedStepId) || null;
+  const nextStep = planner.actionablePracticePlanStep ? planner.actionablePracticePlanStep(plan) : plan.primaryStep;
+  const returnedLabel = returnedStep
+    ? `Step ${returnedStep.number} recorded`
+    : "Plan updated";
+  const returnedCopy = returnedStep
+    ? `${returnedStep.title} is in the plan ledger.`
+    : "Your latest practice result is reflected below.";
+
+  if (nextStep && !plan.completed) {
+    const href = planner.planStepHref ? planner.planStepHref(plan, nextStep) : nextStep.primaryHref;
+    return `
+      <div class="plan-return-receipt">
+        <div>
+          <strong>${escapeHtml(returnedLabel)}</strong>
+          <span>${escapeHtml(returnedCopy)}</span>
+        </div>
+        <a class="btn primary" href="${escapeHtml(href)}">Continue next step</a>
+        <span class="plan-return-next">Step ${escapeHtml(nextStep.number)} of ${escapeHtml(plan.steps.length)} · ${escapeHtml(nextStep.trainerName || "Practice")} · ${escapeHtml(nextStep.minutes)}</span>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="plan-return-receipt complete">
+      <div>
+        <strong>${escapeHtml(returnedLabel)}</strong>
+        <span>${escapeHtml(plan.completed ? "All tracked steps are complete." : returnedCopy)}</span>
+      </div>
     </div>
   `;
 }
@@ -307,6 +361,7 @@ function renderPracticePlan(candidates) {
       <div class="plan-progress" aria-label="${planProgress}% complete">
         <span style="width: ${planProgress}%"></span>
       </div>
+      ${planReturnReceiptHtml(plan, planner)}
       <div class="plan-steps">
         ${plan.steps.map(step => `
           <div class="plan-step ${escapeHtml(step.kind)} ${escapeHtml(step.status || "open")}">

@@ -68,6 +68,11 @@ function makeContext(initialStorage, options) {
     Array,
     Map,
     encodeURIComponent,
+    decodeURIComponent,
+    location: {
+      search: options.locationSearch || "",
+      hash: options.locationHash || ""
+    },
     URL: {
       createObjectURL(blob) {
         context.__lastObjectUrlBlob = blob;
@@ -345,6 +350,53 @@ function runPrimaryPlanActionSmoke() {
   assert(html.includes("./vocab-sr/"), "dashboard primary action links to the next unfinished step");
 }
 
+function runPlanReturnReceiptSmoke() {
+  const env = makeContext();
+  vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
+  vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
+  vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
+  vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
+  const planner = env.context.PlataPlanner;
+  const plan = planner.savePracticePlan({
+    kind: "continue",
+    title: "Two-step plan",
+    copy: "Return from a completed step.",
+    steps: [
+      {
+        number: 1,
+        kind: "continue",
+        trainerId: "lesson-b2-radiator-register",
+        trainerName: "B2: Register & Particles",
+        title: "Repair workplace answer",
+        primaryLabel: "Review",
+        primaryHref: "./lessons/lesson-b2-radiator/",
+        completedAt: "2026-06-08T00:10:00.000Z"
+      },
+      {
+        number: 2,
+        kind: "continue",
+        trainerId: "vocab",
+        trainerName: "Vocab SR",
+        title: "Vocabulary stabilizer",
+        primaryLabel: "Open vocab",
+        primaryHref: "./vocab-sr/",
+        minutes: "5 min"
+      }
+    ]
+  });
+  env.context.location.search = `?ledger-return=1&plan=${encodeURIComponent(plan.planToken)}&step=${encodeURIComponent(plan.steps[0].routeId)}`;
+  vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
+  const html = env.elements["#practice-plan"].innerHTML;
+  assert(/plan-return-receipt/.test(html), "dashboard renders return receipt after a plan step handoff");
+  assert(/Step 1 recorded/.test(html), "dashboard return receipt confirms the completed step");
+  assert(/Repair workplace answer is in the plan ledger/.test(html), "dashboard return receipt names the returned step");
+  assert(/Continue next step/.test(html), "dashboard return receipt offers the next step");
+  assert(/Step 2 of 2/.test(html), "dashboard return receipt identifies the next step");
+  assert(html.includes("./vocab-sr/"), "dashboard return receipt links to the next unfinished step");
+}
+
 function runClosedMasterySmoke() {
   const env = makeContext();
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
@@ -433,6 +485,7 @@ async function run() {
   runSeededMasterySmoke();
   runStartedPlanSmoke();
   runPrimaryPlanActionSmoke();
+  runPlanReturnReceiptSmoke();
   runClosedMasterySmoke();
   await runDynamicCatalogSmoke();
   runPortableProfileSmoke();
@@ -444,6 +497,7 @@ async function run() {
   console.log("ok - dashboard persists active practice-plan tracking");
   console.log("ok - dashboard renders active practice-plan execution state");
   console.log("ok - dashboard promotes the next actionable practice-plan step");
+  console.log("ok - dashboard confirms plan-step returns from trainer routes");
   console.log("ok - dashboard explains practice-plan execution evidence");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");
