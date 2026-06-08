@@ -81,7 +81,7 @@ const requiredGates = [
   { id: "check:quality-report", category: "report", contract: "Public gold lesson quality report builds cleanly." },
   { id: "check:quality-mutations", category: "mutation", contract: "Quality report proves broken gold lesson contracts fail." },
   { id: "check:quality-diff", category: "review", contract: "Quality report diffs fail only on regressions." },
-  { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, demo learner, Today program, and personalization diffs." },
+  { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, demo learner, Today program, and personalization diffs with JSON and Markdown reviewer output." },
   { id: "check:quality-page", category: "report", contract: "Quality page renderer consumes generated report data." },
   { id: "check:program-page", category: "report", contract: "Program page renders the product capability map as a user-facing proof surface." },
   { id: "check:capability-map", category: "report", contract: "Product capability map links user-facing claims to checks, public reports, source files, and docs." },
@@ -229,7 +229,7 @@ function workflowRows(root, issues) {
       id: "qa",
       path: ".github/workflows/qa.yml",
       expectedRun: "npm run check",
-      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "diff-demo-learner-report.js", "diff-today-program-report.js", "build-review-report.js"]
+      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "diff-demo-learner-report.js", "diff-today-program-report.js", "build-review-report.js", "review-report.json", "GITHUB_STEP_SUMMARY"]
     },
     { id: "pages", path: ".github/workflows/pages.yml", expectedRun: "npm run check" }
   ];

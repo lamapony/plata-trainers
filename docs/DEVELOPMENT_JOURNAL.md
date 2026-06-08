@@ -19,7 +19,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add a compact diff for dashboard recommendation snapshot changes.
 - [x] Add a lesson exercise audit gate for pedagogical contradictions and known Danish slips.
 - [x] Add a PR-facing dashboard snapshot diff workflow step.
-- [x] Add a unified PR review report across quality, dashboard recommendations, and personalization trajectory.
+- [x] Add a unified PR review report across quality, dashboard recommendations, demo learner, Today program, and personalization trajectory.
 - [x] Define the local adaptive learner model before adding any account memory.
 - [x] Add an inspectable learner memory fact schema derived from the event log.
 - [x] Build a memory inspector so learners can see, export, and delete personalization facts.
@@ -141,6 +141,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Make pull-request QA build JSON diff artifacts and fail through the unified report.
 - [x] Include the unified report in project health workflow checks.
 - [x] Add Today program diff artifacts to pull-request review summaries.
+- [x] Write `.dist/review-report.json` and append a Markdown summary to `$GITHUB_STEP_SUMMARY` for pull-request reviewers.
 
 ## Companion Architecture Sprint
 

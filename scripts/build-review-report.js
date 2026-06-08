@@ -27,6 +27,11 @@ function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+function ensureDir(file) {
+  const dir = path.dirname(path.resolve(repoRoot, file));
+  fs.mkdirSync(dir, { recursive: true });
+}
+
 function readJson(file) {
   return JSON.parse(fs.readFileSync(path.resolve(repoRoot, file), "utf8"));
 }
@@ -118,6 +123,55 @@ function formatReviewReport(report) {
   ].join("\n");
 }
 
+function markdownCell(value) {
+  return String(value === undefined || value === null ? "" : value)
+    .replaceAll("|", "\\|")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function formatMarkdownEntries(entries) {
+  if (!entries.length) return ["None."];
+  return entries.map(item => `- **${item.label} / ${item.scope || "report"}**: ${item.message}`);
+}
+
+function formatReviewMarkdown(report) {
+  return [
+    "# PR Review Report",
+    "",
+    `Status: **${report.status}**`,
+    "",
+    `Surfaces: ${report.summary.surfaces} | Changes: ${report.summary.changes} | Regressions: ${report.summary.regressions} | Review changes: ${report.summary.reviewChanges} | Improvements: ${report.summary.improvements}`,
+    "",
+    "| Surface | Status | Changes | Regressions | Improvements |",
+    "| --- | --- | ---: | ---: | ---: |",
+    ...report.surfaces.map(surface => `| ${markdownCell(surface.label)} | ${markdownCell(surface.status)} | ${surface.summary.changes} | ${surface.summary.regressions} | ${surface.summary.improvements} |`),
+    "",
+    "## Regressions",
+    ...formatMarkdownEntries(report.regressions),
+    "",
+    "## Review Changes",
+    ...formatMarkdownEntries(report.reviewChanges),
+    "",
+    "## Improvements",
+    ...formatMarkdownEntries(report.improvements),
+    "",
+    "## Other Changes",
+    ...formatMarkdownEntries(report.infoChanges),
+    ""
+  ].join("\n");
+}
+
+function writeJson(file, value) {
+  ensureDir(file);
+  fs.writeFileSync(path.resolve(repoRoot, file), JSON.stringify(value, null, 2) + "\n");
+}
+
+function writeSummary(file, markdown) {
+  ensureDir(file);
+  fs.appendFileSync(path.resolve(repoRoot, file), markdown + "\n");
+}
+
 function readCliInput() {
   const input = {};
   surfaces.forEach(surface => {
@@ -129,7 +183,7 @@ function readCliInput() {
 }
 
 function usage() {
-  return "usage: node scripts/build-review-report.js --quality-diff <quality.json> --dashboard-diff <dashboard.json> --demo-diff <demo.json> --today-diff <today.json> --trajectory-diff <trajectory.json> [--json] [--fail-on-change] [--fail-on-regression]";
+  return "usage: node scripts/build-review-report.js --quality-diff <quality.json> --dashboard-diff <dashboard.json> --demo-diff <demo.json> --today-diff <today.json> --trajectory-diff <trajectory.json> [--out <review.json>] [--summary-out <summary.md>] [--json] [--markdown] [--fail-on-change] [--fail-on-regression]";
 }
 
 function main() {
@@ -141,7 +195,13 @@ function main() {
     process.exit(2);
   }
   const report = buildReviewReport(input);
+  const outPath = argValue("--out");
+  const summaryPath = argValue("--summary-out");
+  const markdown = formatReviewMarkdown(report);
+  if (outPath) writeJson(outPath, report);
+  if (summaryPath) writeSummary(summaryPath, markdown);
   if (hasFlag("--json")) console.log(JSON.stringify(report, null, 2));
+  else if (hasFlag("--markdown")) console.log(markdown);
   else console.log(formatReviewReport(report));
   if (hasFlag("--fail-on-regression") && report.regressions.length) process.exit(1);
   if (hasFlag("--fail-on-change") && report.summary.changes) process.exit(1);
@@ -151,5 +211,6 @@ if (require.main === module) main();
 
 module.exports = {
   buildReviewReport,
+  formatReviewMarkdown,
   formatReviewReport
 };

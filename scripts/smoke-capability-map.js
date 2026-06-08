@@ -67,6 +67,10 @@ function hasDoc(item, docPath) {
   return item.docs.some(doc => doc.path === docPath && doc.exists);
 }
 
+function hasSurface(item, surface) {
+  return item.surfaces.includes(surface);
+}
+
 function runBaseSmoke() {
   const report = buildCapabilityMap();
   assert(report.status === "pass", `capability map should pass:\n${report.issues.join("\n")}`);
@@ -101,6 +105,7 @@ function runBaseSmoke() {
   assert(proof && hasGate(proof, "check:demo-learner-diff"), "proof surface should cite the demo learner diff gate");
   assert(proof && hasReport(proof, "capabilities"), "proof surface should cite the capability map report");
   assert(proof && hasReport(proof, "demo-learner"), "proof surface should cite the demo learner report");
+  assert(proof && hasSurface(proof, "GitHub Step Summary"), "proof surface should cite the GitHub review summary surface");
 
   const formatted = formatCapabilityMap(report);
   assert(formatted.includes("Product Capability Map"), "formatter should include report title");

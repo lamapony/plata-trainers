@@ -181,7 +181,7 @@ const capabilitySpecs = [
     title: "Public GitHub proof surface",
     stage: "shipped",
     userValue: "Visitors can inspect the project's claims as generated JSON reports and reviewers can see focused PR drift instead of trusting prose.",
-    surfaces: ["program.html", "dashboard.html?demo=learner", "reports/demo-learner.json", "reports/capabilities.json", "reports/project-health.json", "Pull-request QA review report", "README"],
+    surfaces: ["program.html", "dashboard.html?demo=learner", "reports/demo-learner.json", "reports/capabilities.json", "reports/project-health.json", "Pull-request QA review report", "GitHub Step Summary", "README"],
     proofGates: ["check:program-page", "check:capability-map", "check:health", "check:pages", "check:quality-report", "check:demo-learner-report", "check:demo-learner-diff", "check:today-program-report", "check:review-report"],
     publicReports: ["capabilities", "demo-learner", "project-health", "quality", "skill-coverage", "today-program"],
     docs: ["README.md", "docs/DEVELOPMENT_JOURNAL.md"],
@@ -190,7 +190,7 @@ const capabilitySpecs = [
       "Every declared capability links to checks, source files, docs, and public reports.",
       "Program and home pages expose the read-only demo learner dashboard for first-time evaluators.",
       "Project health verifies full-check workflows and report publishing.",
-      "PR review output groups regressions, review changes, improvements, and informational drift."
+      "PR review output writes a JSON artifact and GitHub Step Summary that group regressions, review changes, improvements, and informational drift."
     ]
   }
 ];

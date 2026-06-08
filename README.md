@@ -90,7 +90,7 @@ npm run diff:today-program -- --base .dist/today-program.json --head current --j
 node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-trajectory.json
 npm run diff:personalization-trajectory -- --base .dist/personalization-trajectory.json --head current
 npm run diff:personalization-trajectory -- --base .dist/personalization-trajectory.json --head current --json > .dist/personalization-trajectory-diff.json
-npm run diff:review -- --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json
+npm run diff:review -- --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --out .dist/review-report.json --summary-out .dist/review-summary.md
 ```
 
 Gold lesson scaffold:
@@ -152,7 +152,8 @@ node scripts/diff-personalization-trajectory.js --base .dist/personalization-tra
 node scripts/smoke-personalization-trajectory-diff.js
 node scripts/build-quality-report.js --out .dist/quality-report.json
 node scripts/diff-quality-report.js --base .dist/quality-report.json --head current --json > .dist/quality-diff.json
-node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json
+node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --out .dist/review-report.json --summary-out .dist/review-summary.md
+node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --markdown
 node scripts/smoke-review-report.js
 node scripts/smoke-program-page.js
 node scripts/build-capability-map.js --out .dist/capabilities.json --text
