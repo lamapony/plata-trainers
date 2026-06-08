@@ -30,6 +30,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Promote the companion/planner route into a user-facing Today program shell.
 - [x] Make the Today shell stateful across onboarding, active-route, return, and memory-review scenarios.
 - [x] Publish Today shell states as a deterministic public program report.
+- [x] Add PR diffs for Today shell state drift.
 - [ ] Evaluate external Hermes/OpenClaw-style integrations as optional explainers, not sources of truth; see [Companion Architecture](./COMPANION_ARCHITECTURE.md).
 
 ## Current Sprint
@@ -121,11 +122,12 @@ This journal tracks technical bets that make the project more valuable as an ope
 
 ## Unified Review Report Sprint
 
-- [x] Add `scripts/build-review-report.js` to combine quality, dashboard recommendation, and personalization trajectory diffs.
+- [x] Add `scripts/build-review-report.js` to combine quality, dashboard recommendation, Today program, and personalization trajectory diffs.
 - [x] Preserve each surface status while grouping regressions, review changes, improvements, and informational drift.
 - [x] Add `check:review-report` to prove unchanged, review-only, regression, JSON, and fail-mode behavior.
 - [x] Make pull-request QA build JSON diff artifacts and fail through the unified report.
 - [x] Include the unified report in project health workflow checks.
+- [x] Add Today program diff artifacts to pull-request review summaries.
 
 ## Companion Architecture Sprint
 
@@ -148,6 +150,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Smoke-test each state so product wording stays aligned with planner evidence.
 - [x] Publish a deterministic Today program report for user-facing shell states.
 - [x] Add `check:today-program-report` and project-health coverage for the report.
+- [x] Add `check:today-program-diff` so user-facing Today state drift is PR-reviewable.
 
 ## Lesson Exercise Audit Sprint
 

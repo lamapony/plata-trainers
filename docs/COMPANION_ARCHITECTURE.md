@@ -67,4 +67,4 @@ Hermes cannot:
 - request raw answer history;
 - write Plata memory or planner state.
 
-`scripts/smoke-companion.js` proves the card and bridge remain deterministic, cited, read-only, and free of raw learner answer text across fixed learner profiles. `scripts/smoke-today-program-report.js` proves the user-facing Today shell keeps its four core states deterministic and free of raw learner answer leaks.
+`scripts/smoke-companion.js` proves the card and bridge remain deterministic, cited, read-only, and free of raw learner answer text across fixed learner profiles. `scripts/smoke-today-program-report.js` proves the user-facing Today shell keeps its four core states deterministic and free of raw learner answer leaks. `scripts/smoke-today-program-diff.js` makes user-facing state drift reviewable in pull requests.

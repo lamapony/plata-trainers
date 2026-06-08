@@ -62,6 +62,7 @@ const requiredGates = [
   { id: "check:lesson-engine", category: "runtime", contract: "Gold simulation paths replay through the real lesson engine." },
   { id: "check:dashboard", category: "runtime", contract: "Dashboard renders diagnostics, plans, ledger, catalog loading, and profile portability." },
   { id: "check:today-program-report", category: "report", contract: "Today program shell states build as a deterministic user-facing contract report." },
+  { id: "check:today-program-diff", category: "review", contract: "Today program report changes produce compact review diffs and regression flags." },
   { id: "check:dashboard-snapshot", category: "snapshot", contract: "Dashboard recommendation surface matches deterministic fixtures." },
   { id: "check:dashboard-snapshot-mutations", category: "mutation", contract: "Snapshot fixtures prove preferred-entry, repair trace, and evidence drift are caught." },
   { id: "check:dashboard-snapshot-diff", category: "review", contract: "Dashboard snapshot changes produce compact review diffs and regression flags." },
@@ -76,7 +77,7 @@ const requiredGates = [
   { id: "check:quality-report", category: "report", contract: "Public gold lesson quality report builds cleanly." },
   { id: "check:quality-mutations", category: "mutation", contract: "Quality report proves broken gold lesson contracts fail." },
   { id: "check:quality-diff", category: "review", contract: "Quality report diffs fail only on regressions." },
-  { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, and personalization diffs." },
+  { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, Today program, and personalization diffs." },
   { id: "check:quality-page", category: "report", contract: "Quality page renderer consumes generated report data." },
   { id: "check:health", category: "report", contract: "Project health manifest links gates, reports, workflows, and fixtures." },
   { id: "check:pages", category: "publish", contract: "Pages artifact builds and public files pass static QA." }
@@ -208,7 +209,7 @@ function workflowRows(root, issues) {
       id: "qa",
       path: ".github/workflows/qa.yml",
       expectedRun: "npm run check",
-      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "build-review-report.js"]
+      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "diff-today-program-report.js", "build-review-report.js"]
     },
     { id: "pages", path: ".github/workflows/pages.yml", expectedRun: "npm run check" }
   ];

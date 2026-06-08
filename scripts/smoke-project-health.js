@@ -55,6 +55,7 @@ function runBaseSmoke() {
   assert(manifest.gates.some(gate => gate.id === "check:personalization-trajectory-diff" && gate.requiredInCheck), "manifest should require personalization trajectory diff review");
   assert(manifest.gates.some(gate => gate.id === "check:review-report" && gate.requiredInCheck), "manifest should require unified review report");
   assert(manifest.gates.some(gate => gate.id === "check:today-program-report" && gate.requiredInCheck), "manifest should require Today program report");
+  assert(manifest.gates.some(gate => gate.id === "check:today-program-diff" && gate.requiredInCheck), "manifest should require Today program diff review");
   assert(manifest.publicReports.some(report => report.id === "quality" && report.pagesPath === "reports/quality.json"), "manifest should link the quality report");
   assert(manifest.publicReports.some(report => report.id === "skill-coverage" && report.pagesPath === "reports/skill-coverage.json"), "manifest should link the skill coverage report");
   assert(manifest.publicReports.some(report => report.id === "today-program" && report.pagesPath === "reports/today-program.json"), "manifest should link the Today program report");
@@ -62,6 +63,7 @@ function runBaseSmoke() {
   assert(manifest.workflows.every(workflow => workflow.runsFullCheck && workflow.nodeVersion === "24"), "manifest should link full-check workflows");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("diff-personalization-trajectory.js")), "manifest should require personalization trajectory PR diff");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("diff-dashboard-snapshot.js")), "manifest should require dashboard snapshot PR diff");
+  assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("diff-today-program-report.js")), "manifest should require Today program PR diff");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("build-review-report.js")), "manifest should require unified PR review report");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "dashboard-recommendations" && fixture.fresh), "manifest should link fresh deterministic fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "learner-model-profiles" && fixture.fresh), "manifest should link fresh learner model fixtures");
