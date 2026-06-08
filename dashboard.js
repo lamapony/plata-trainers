@@ -1066,8 +1066,16 @@ function exportAll() {
   const practicePlan = currentPracticePlan();
   const eventLog = profileEventLogPayload(all, practicePlan);
   const memoryBundle = buildMemoryFacts(all, practicePlan);
+  const exportedAt = new Date().toISOString();
+  const memoryVault = window.PlataMemoryVault ? window.PlataMemoryVault.createVault({
+    fingerprint: memoryBundle.fingerprint,
+    summary: memoryBundle.summary,
+    facts: memoryBundle.visibleFacts,
+    deletedFactIds: memoryBundle.deletedIds,
+    correctionRecords: memoryBundle.corrections
+  }, { exportedAt }) : null;
   const payload = {
-    exportedAt: new Date().toISOString(),
+    exportedAt,
     profileSchemaVersion: 1,
     schemaVersion: kernel.schemaVersion,
     trainers: all,
@@ -1080,7 +1088,8 @@ function exportAll() {
       facts: memoryBundle.visibleFacts,
       deletedFactIds: memoryBundle.deletedIds,
       correctionRecords: memoryBundle.corrections
-    } : null
+    } : null,
+    memoryVault
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);

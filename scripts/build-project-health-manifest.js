@@ -31,6 +31,7 @@ const requiredGates = [
   { id: "check:memory", category: "personalization", contract: "Local learner memory facts compile from redacted events with source fingerprints and no raw answers." },
   { id: "check:memory-fixtures", category: "personalization", contract: "Returning, stale, repaired, and recurring-trap learner memory fixtures remain deterministic and planner-cited." },
   { id: "check:memory-corrections", category: "personalization", contract: "Learner-corrected memory facts keep a strict schema, source fingerprints, and no raw answers." },
+  { id: "check:memory-vault", category: "personalization", contract: "Optional account memory vaults contain derived facts only and reject raw answer history." },
   { id: "check:advisor", category: "personalization", contract: "Deterministic advisor advice cites learner memory facts and rejects privacy leaks." },
   { id: "check:personalization-eval", category: "personalization", contract: "Fixed learner profiles prove memory, planner, advisor, and counterfactual drift stay aligned." },
   { id: "check:personalization-mutations", category: "mutation", contract: "Bad personalization advisor/planner contracts fail the cross-layer evaluation harness." },

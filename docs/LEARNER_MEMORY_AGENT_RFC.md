@@ -73,7 +73,7 @@ If account sync is added later, the target should be a memory vault, not a gener
 
 5. Optional account vault
 
-   Only after the local model is useful: add optional account sync for memory facts. The account should synchronize a compact, auditable learner profile across devices.
+   Only after the local model is useful: add optional account sync for memory facts. The account should synchronize a compact, auditable learner profile across devices. The first local contract is `PlataMemoryVault`: a derived-facts-only payload with source fingerprints, corrections, and privacy flags, explicitly excluding trainer state, event logs, practice plans, source event ids, and raw answer text.
 
 6. Account-resident agent
 

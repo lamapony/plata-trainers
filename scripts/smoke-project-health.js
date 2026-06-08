@@ -40,6 +40,7 @@ function runBaseSmoke() {
   assert(manifest.totals.gates >= 28, "manifest should enumerate the full QA gate set");
   assert(manifest.gates.some(gate => gate.id === "check:memory-fixtures" && gate.requiredInCheck), "manifest should require learner memory fixtures");
   assert(manifest.gates.some(gate => gate.id === "check:memory-corrections" && gate.requiredInCheck), "manifest should require learner memory correction contracts");
+  assert(manifest.gates.some(gate => gate.id === "check:memory-vault" && gate.requiredInCheck), "manifest should require learner memory vault contracts");
   assert(manifest.gates.some(gate => gate.id === "check:advisor" && gate.requiredInCheck), "manifest should require advisor fixtures");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-eval" && gate.requiredInCheck), "manifest should require personalization evaluation");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-mutations" && gate.requiredInCheck), "manifest should require personalization mutation proof");

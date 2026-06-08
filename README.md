@@ -96,6 +96,7 @@ node scripts/diff-dashboard-snapshot.js --base scripts/fixtures/dashboard-recomm
 node scripts/smoke-memory.js
 node scripts/smoke-memory-fixtures.js
 node scripts/smoke-memory-corrections.js
+node scripts/smoke-memory-vault.js
 node scripts/smoke-advisor-fixtures.js
 node scripts/smoke-personalization-eval.js
 node scripts/mutation-personalization-eval.js

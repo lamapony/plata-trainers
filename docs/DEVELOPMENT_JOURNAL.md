@@ -22,7 +22,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [ ] Define the local adaptive learner model before adding any account memory.
 - [x] Add an inspectable learner memory fact schema derived from the event log.
 - [x] Build a memory inspector so learners can see, export, and delete personalization facts.
-- [ ] Prototype optional account memory as a vault for derived learning facts, not raw answer history.
+- [x] Prototype optional account memory as a vault for derived learning facts, not raw answer history.
 - [ ] Evaluate a small account-resident `OpenClaw` agent against deterministic learner profiles; see [Learner Memory Agent RFC](./LEARNER_MEMORY_AGENT_RFC.md).
 
 ## Current Sprint
@@ -233,3 +233,11 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Let planner traces cite root competency facts while routing to a concrete repair scene.
 - [x] Give advisor a distinct `advisor.repair.root-competency` rule for transferable root-skill repair.
 - [x] Extend personalization mutation tests so dropping root competency facts fails CI.
+
+## Account Memory Vault Sprint
+
+- [x] Add `PlataMemoryVault` as a browser-safe account-sync contract for derived learner memory.
+- [x] Export a compact `memoryVault` beside full dashboard backup JSON without replacing local-first profile export.
+- [x] Strip trainer state, event logs, practice plans, source event ids, and raw answer fields from vault payloads.
+- [x] Preserve root competency facts, source fingerprints, hidden fact ids, and correction records.
+- [x] Include `check:memory-vault` in `npm run check` and project health.

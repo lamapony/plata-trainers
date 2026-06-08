@@ -13,6 +13,7 @@ const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-plann
 const evidenceSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-evidence.js"), "utf8");
 const eventsSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-events.js"), "utf8");
 const memorySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory.js"), "utf8");
+const memoryVaultSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory-vault.js"), "utf8");
 const advisorSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-advisor.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
@@ -166,6 +167,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
+  vm.runInContext(memoryVaultSource, env.context, { filename: "shared/plata-memory-vault.js" });
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
@@ -565,6 +567,14 @@ function runPortableProfileSmoke() {
   assert(payload.memory.facts.some(fact => fact.kind === "preferred_context"), "dashboard export includes derived memory fact rows");
   assert(Array.isArray(payload.memory.correctionRecords), "dashboard export includes learner memory corrections");
   assert(!JSON.stringify(payload.memory).includes("should not leak"), "dashboard memory export excludes raw plan answer text");
+  assert(payload.memoryVault && payload.memoryVault.vaultType === "plata.memory-vault", "dashboard export includes derived memory vault");
+  assert(payload.memoryVault.privacy && payload.memoryVault.privacy.derivedFactsOnly === true, "dashboard memory vault declares derived-facts-only privacy");
+  assert(payload.memoryVault.privacy && payload.memoryVault.privacy.excludesEventLog === true, "dashboard memory vault excludes event logs");
+  assert(payload.memoryVault.facts.every(fact => !Object.prototype.hasOwnProperty.call(fact, "sourceEventIds")), "dashboard memory vault strips source event ids");
+  assert(!Object.prototype.hasOwnProperty.call(payload.memoryVault, "trainers"), "dashboard memory vault excludes trainer state");
+  assert(!Object.prototype.hasOwnProperty.call(payload.memoryVault, "eventLog"), "dashboard memory vault excludes event log payloads");
+  assert(!Object.prototype.hasOwnProperty.call(payload.memoryVault, "practicePlan"), "dashboard memory vault excludes practice plans");
+  assert(!JSON.stringify(payload.memoryVault).includes("should not leak"), "dashboard memory vault excludes raw plan answer text");
 
   const importEnv = makeContext();
   loadKernelAndDashboard(importEnv);
