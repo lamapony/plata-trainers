@@ -17,6 +17,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Prove dashboard recommendation snapshots catch planner and evidence drift with mutation tests.
 - [x] Publish a project health manifest that links QA gates, public reports, and deterministic fixtures.
 - [x] Add a compact diff for dashboard recommendation snapshot changes.
+- [x] Add a lesson exercise audit gate for pedagogical contradictions and known Danish slips.
 - [ ] Add a PR-facing dashboard snapshot diff workflow step.
 
 ## Current Sprint
@@ -103,3 +104,10 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Mark removed open evidence and root-skill diagnostics as regressions.
 - [x] Support `--fail-on-regression` and `--fail-on-change` automation modes.
 - [x] Include dashboard snapshot diff smoke tests in `npm run check`.
+
+## Lesson Exercise Audit Sprint
+
+- [x] Remove the `lesson-01` name whitelist that contradicted “Any name works.”
+- [x] Fix incidental Danish slips in the B2 job-followup distractors and endings.
+- [x] Add an exercise audit for contradictory completion gates, duplicate exercise answers, simulation accept/reject drift, and a small editorial phrase watchlist.
+- [x] Include the exercise audit in `npm run check` and project health.

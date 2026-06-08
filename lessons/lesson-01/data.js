@@ -131,7 +131,6 @@ window.PLATA_LESSON_01 = {
       prompt: "Complete the sentence you can now actually use.",
       prefix: "Hej, jeg hedder",
       placeholder: "your name",
-      acceptKeywords: ["anders", "lena", "lego", "mia", "noah", "oliver", "oskar", "sofia", "alberte", "emil"],
       success: "You did not learn a list. You carried a sentence through the city and used it when it mattered.",
       failure: "Give Anders a name to answer with. Any name works.",
       carry: "Unlocked: greetings (hej), identity (jeg hedder + name), signage compass (indgang/udgang), politeness loop (tak/selv tak), question frame (hvad hedder du?). The words jeg, hedder, hvad, du, Anders, hej are now yours in the wild.",

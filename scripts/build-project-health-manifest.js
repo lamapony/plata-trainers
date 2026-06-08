@@ -32,6 +32,7 @@ const requiredGates = [
   { id: "check:data", category: "content", contract: "Drill data has valid item shapes and coverage." },
   { id: "check:static", category: "static", contract: "Static HTML files satisfy no-dependency page QA." },
   { id: "check:lessons", category: "schema", contract: "Narrative lesson data satisfies the lesson schema." },
+  { id: "check:exercise-audit", category: "content", contract: "Lesson exercises avoid contradictory completion gates, duplicate answers, and known Danish editorial slips." },
   { id: "check:gold-lessons", category: "simulation", contract: "Gold lesson simulations cover paths, endings, attempts, and weak signals." },
   { id: "check:counterfactuals", category: "simulation", contract: "Lesson edits are compared against deterministic learner profiles." },
   { id: "check:gold-scaffold", category: "authoring", contract: "Generated gold lesson scaffolds remain validator, simulator, and runtime clean." },

@@ -264,7 +264,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       options: [
         { id: "formal-warm", diagnostic: "formal-warm-agency", label: "Kære [Navn],\n\nJeg tager stilling til jeres henvendelse og vil takke for en god dialog i torsdags.", detail: "formal, warm, owns the follow-up", correct: true, effects: { employerTone: 1, professionalism: 1, networkTrust: 1 }, feedback: "Diagnostic: strong. Kære sets the register, jeg tager stilling til gives agency, and god dialog makes the thanks specific." },
         { id: "casual-generic", diagnostic: "casual-self-minimising", label: "Hej [Navn],\n\nTak for snakken i torsdags! Bare en hurtig opfølgning — jeg er super interesseret.", detail: "too casual, 'bare' weakens", correct: false, effects: { employerTone: -1, professionalism: -1, desperation: 1 }, feedback: "Diagnostic: bare en hurtig opfølgning minimises your own message, and super interesseret sounds junior in this channel." },
-        { id: "stiff-passive", diagnostic: "passive-agency-removal", label: "Kære [Navn],\n\nDer gives besked på, at jeg fortsat er interesseret i stillingen.", detail: "passive, evasive", correct: false, effects: { employerTone: -1, professionalism: 0 }, feedback: "Diagnostic: der gives besked hides the actor. You sound like a form letter, not like a candidate owning the follow-up." }
+        { id: "stiff-passive", diagnostic: "passive-agency-removal", label: "Kære [Navn],\n\nDer gives besked om, at jeg fortsat er interesseret i stillingen.", detail: "passive, evasive", correct: false, effects: { employerTone: -1, professionalism: 0 }, feedback: "Diagnostic: der gives besked hides the actor. You sound like a form letter, not like a candidate owning the follow-up." }
       ],
       carry: "Carry-forward: 'Kære' signalerer formalitet; 'vi lægger vægt på', 'jeg tager stilling til', 'jeres henvendelse', 'takke', and a concrete reference to folk writing professionelt på dansk create professional warmth.",
       tags: ["B2", "formal-email", "register", "tage-stilling-til", "particles"]
@@ -285,7 +285,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       prompt: "Choose the LinkedIn note that complements, not duplicates, your email.",
       options: [
         { id: "linkedin-good", diagnostic: "platform-specific-low-pressure", label: "Hej [Navn],\nTak for en god teknisk dialog i torsdags. Vil gerne holde kontakt uanset udgang.\n— [Dit navn]", detail: "specific, low-pressure, keeps door open", correct: true, effects: { networkTrust: 2, professionalism: 1 }, feedback: "Diagnostic: perfect. Uanset udgang lowers pressure, and teknisk dialog proves this is not a generic networking ping." },
-        { id: "linkedin-pushy", diagnostic: "platform-pressure-duplicate", label: "Kære [Navn],\nJeg skriver for at understrege mit store interesse i stillingen. Håber på hurtigt svar.\n— [Dit navn]", detail: "duplicates email, pushy", correct: false, effects: { desperation: 1, networkTrust: -1 }, feedback: "Diagnostic: you duplicated the email and added hurry. Håber på hurtigt svar pressures a connection instead of opening one." },
+        { id: "linkedin-pushy", diagnostic: "platform-pressure-duplicate", label: "Kære [Navn],\nJeg skriver for at understrege min store interesse i stillingen. Håber på hurtigt svar.\n— [Dit navn]", detail: "duplicates email, pushy", correct: false, effects: { desperation: 1, networkTrust: -1 }, feedback: "Diagnostic: you duplicated the email and added hurry. Håber på hurtigt svar pressures a connection instead of opening one." },
         { id: "linkedin-generic", diagnostic: "generic-low-signal", label: "Hej [Navn],\nTak for at tilføje mig. Ser frem til at følge jeres arbejde.\n— [Dit navn]", detail: "generic, low signal", correct: false, effects: { networkTrust: 0 }, feedback: "Diagnostic: safe but forgettable. No reference to the interview means the note could be sent to anyone." }
       ],
       carry: "Carry-forward: platform-specific register. Email = formal ownership. LinkedIn = 'tak for tiden/interviewet' plus 'vil gerne holde kontakt' in a specific, low-pressure, human tone.",
@@ -333,7 +333,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       prompt: "Which principle summarises the lesson?",
       options: [
         { id: "principle-owned", diagnostic: "agency-register-principle", label: "Professionel dansk tager ejerskab: 'Jeg tager stilling til' i stedet for 'Der gives besked'.", detail: "agency + register", correct: true, feedback: "Diagnostic: exactly. Agency in language signals agency in the role." },
-        { id: "principle-polite", diagnostic: "overformal-politeness", label: "Vær altid maksimalt høflig — 'Kære', 'venligst', 'hvis De vil være så god'.", detail: "over-politeness", correct: false, feedback: "Diagnostic: over-politeness reads as distance, not warmth. Danish professional warmth is direct, human, and concrete." },
+        { id: "principle-polite", diagnostic: "overformal-politeness", label: "Vær altid maksimalt høflig — 'Kære', 'venligst', 'hvis De vil være så venlig'.", detail: "over-politeness", correct: false, feedback: "Diagnostic: over-politeness reads as distance, not warmth. Danish professional warmth is direct, human, and concrete." },
         { id: "principle-wait", diagnostic: "passive-waiting-strategy", label: "Skriv aldrig opfølgning. Venter viser tålmodighed.", detail: "passive", correct: false, feedback: "Diagnostic: waiting is not the same as strategy. A well-timed, well-toned follow-up signals competence." }
       ],
       carry: "Unlocked B2 theme: Danish as professional operating system — professionel dansk tager ejerskab: 'Jeg tager stilling til' i stedet for 'Der gives besked', so a team thinks den kandidat kan vi bruge.",
@@ -356,14 +356,14 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
     {
       id: "acceptable",
       title: "Standard process",
-      narrative: "The reply comes on day 14: 'Tak for din opfølgning. Vi vurderer nu alle kandidater og vender retur inden næste uge.' Polite, correct, template. You are still in the process, but you did not stand out. LinkedIn request accepted without note.",
-      danish: "Du foregik korrekt — men uvæsentlig.",
+      narrative: "The reply comes on day 14: 'Tak for din opfølgning. Vi vurderer nu alle kandidater og vender tilbage inden næste uge.' Polite, correct, template. You are still in the process, but you did not stand out. LinkedIn request accepted without note.",
+      danish: "Du gik korrekt frem — men gjorde ikke indtryk.",
       carry: "B2 unlocked: correct Danish keeps you in the room. Warm Danish gets you a seat at the table."
     },
     {
       id: "damaged",
       title: "Tone cost",
-      narrative: "The reply comes on day 10 — a brief rejection: 'Vi har valgt en anden kandidat.' No specifics. Your LinkedIn request is ignored. Later you learn: the CTO mentioned 'den der trykkede for meget' in the debrief. Your Danish wrote 'junior', not 'ready'.",
+      narrative: "The reply comes on day 10 — a brief rejection: 'Vi har valgt en anden kandidat.' No specifics. Your LinkedIn request is ignored. Later you learn: the CTO mentioned 'den der pressede for meget' in the debrief. Your Danish wrote 'junior', not 'ready'.",
       danish: "Forkert register koster mere end en afvisning.",
       carry: "B2 unlocked: desperation in Danish is visible. Calm agency is the only signal that scales."
     }

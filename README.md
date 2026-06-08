@@ -85,6 +85,7 @@ node scripts/validate-data.js
 node scripts/static-qa.js
 node scripts/check-syntax.js
 node scripts/validate-lesson.js
+node scripts/audit-lesson-exercises.js
 node scripts/simulate-gold-lessons.js
 node scripts/counterfactual-learner-simulator.js
 node scripts/debug-profile-replay.js --file plata-backup.json
