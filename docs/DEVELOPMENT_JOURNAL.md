@@ -240,4 +240,6 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Export a compact `memoryVault` beside full dashboard backup JSON without replacing local-first profile export.
 - [x] Strip trainer state, event logs, practice plans, source event ids, and raw answer fields from vault payloads.
 - [x] Preserve root competency facts, source fingerprints, hidden fact ids, and correction records.
+- [x] Merge imported vaults deterministically so deletions/corrections beat incoming facts and repeated imports are idempotent.
+- [x] Let dashboard import standalone vault payloads without clearing trainer state or active practice plans.
 - [x] Include `check:memory-vault` in `npm run check` and project health.

@@ -593,20 +593,39 @@ function runPortableProfileSmoke() {
   assert(importedPlan.steps[0].completedAt === correctedPayload.practicePlan.steps[0].completedAt, "dashboard import restores plan execution ledger");
   assert(!importEnv.storage["plata:learner-memory:deleted-facts:v1"], "dashboard import restores empty memory deletion set");
   assert((importEnv.storage["plata:learner-memory:corrections:v1"] || "").includes(portableFact.id), "dashboard import restores memory correction records");
+  assert((importEnv.storage["plata:learner-memory:vault:v1"] || "").includes("plata.memory-vault"), "dashboard import stores merged memory vault");
   invokeDashboardFunction(importEnv, "renderDashboard");
   assert(/Corrected assumptions/.test(importEnv.elements["#memory-facts"].innerHTML), "dashboard import renders memory correction audit trail");
   assert(importEnv.elements["#memory-facts"].innerHTML.includes(portableFact.id), "dashboard import audit trail includes corrected fact id");
+
+  const vaultOnlyEnv = makeContext();
+  loadKernelAndDashboard(vaultOnlyEnv);
+  const preVaultPlan = vaultOnlyEnv.context.PlataPlanner.readPracticePlan();
+  assert(preVaultPlan && preVaultPlan.planToken, "dashboard has an active plan before standalone vault import");
+  const standaloneFact = payload.memoryVault.facts[0];
+  assert(standaloneFact, "dashboard export has a vault fact for standalone import");
+  invokeDashboardFunction(vaultOnlyEnv, "importAll");
+  vaultOnlyEnv.elements["#import-file"].files = [{ content: JSON.stringify(payload.memoryVault) }];
+  vaultOnlyEnv.elements["#import-file"].onchange();
+  const postVaultPlan = vaultOnlyEnv.context.PlataPlanner.readPracticePlan();
+  assert(postVaultPlan && postVaultPlan.planToken === preVaultPlan.planToken, "standalone vault import preserves active practice plan");
+  assert((vaultOnlyEnv.storage["plata:learner-memory:vault:v1"] || "").includes("plata.memory-vault"), "standalone vault import stores account memory vault");
+  const vaultBundle = vm.runInContext("buildMemoryFacts()", vaultOnlyEnv.context, { filename: "dashboard.js" });
+  assert(vaultBundle.facts.some(fact => fact.id === standaloneFact.id), "standalone vault import feeds account facts into dashboard memory");
+  assert(!JSON.stringify(vaultBundle).includes("should not leak"), "standalone vault import keeps raw answer text out of dashboard memory");
 
   const legacyEnv = makeContext();
   loadKernelAndDashboard(legacyEnv);
   assert(legacyEnv.context.PlataPlanner.readPracticePlan(), "dashboard starts with a plan before legacy import");
   legacyEnv.storage["plata:learner-memory:corrections:v1"] = JSON.stringify([{ factId: "legacy-corrected" }]);
+  legacyEnv.storage["plata:learner-memory:vault:v1"] = JSON.stringify(correctedPayload.memoryVault);
   invokeDashboardFunction(legacyEnv, "importAll");
   legacyEnv.elements["#import-file"].files = [{ content: JSON.stringify({ schemaVersion: 2, trainers: {} }) }];
   legacyEnv.elements["#import-file"].onchange();
   assert(!legacyEnv.context.PlataPlanner.readPracticePlan(), "legacy dashboard import clears stale active plan");
   assert(!legacyEnv.storage["plata:learner-memory:deleted-facts:v1"], "legacy dashboard import clears stale hidden memory facts");
   assert(!legacyEnv.storage["plata:learner-memory:corrections:v1"], "legacy dashboard import clears stale corrected memory facts");
+  assert(!legacyEnv.storage["plata:learner-memory:vault:v1"], "legacy dashboard import clears stale account memory vault");
 }
 
 async function run() {

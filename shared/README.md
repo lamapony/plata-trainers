@@ -55,7 +55,7 @@ The dashboard memory inspector renders those facts for the learner, supports hid
 
 `scripts/smoke-memory-corrections.js` protects the correction-record contract. It proves corrected memory facts keep stable fact ids, reasons, timestamps, source fingerprints, and no raw expected/given answer text, while duplicate or malformed correction records fail CI.
 
-`plata-memory-vault.js` defines the optional account-sync payload for future OpenClaw-style memory. It stores compact derived facts, source fingerprints, hidden/corrected fact metadata, and privacy flags, while rejecting trainer state, event logs, practice plans, source event ids, raw expected/given keys, and raw answer text. `scripts/smoke-memory-vault.js` covers root competency facts and unsafe payload mutations.
+`plata-memory-vault.js` defines the optional account-sync payload for future OpenClaw-style memory. It stores compact derived facts, source fingerprints, hidden/corrected fact metadata, and privacy flags, while rejecting trainer state, event logs, practice plans, source event ids, raw expected/given keys, and raw answer text. It also exposes deterministic vault merging: tombstones and learner corrections beat incoming facts, repeated imports are idempotent, and duplicate semantic facts from the same source collapse to the freshest version. `scripts/smoke-memory-vault.js` covers root competency facts, merge conflicts, and unsafe payload mutations.
 
 `scripts/smoke-memory-fixtures.js` checks deterministic learner memory profiles in `scripts/fixtures/learner-memory-profiles.json`: returning learner context, stale review, repaired signal retention, and recurring trap repair. Use `--update` only when intentional memory/planner drift should become the new baseline.
 

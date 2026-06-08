@@ -3,6 +3,7 @@
 const NON_DIAGNOSTIC_TAGS = new Set(["A0", "A1", "A2", "B1", "B2", "lesson", "repair"]);
 const MEMORY_DELETIONS_KEY = "plata:learner-memory:deleted-facts:v1";
 const MEMORY_CORRECTIONS_KEY = "plata:learner-memory:corrections:v1";
+const MEMORY_VAULT_KEY = "plata:learner-memory:vault:v1";
 let masteryCatalogCache = null;
 
 function $(sel) { return document.querySelector(sel); }
@@ -289,6 +290,29 @@ function writeMemoryCorrections(records) {
   }
 }
 
+function readStoredMemoryVault() {
+  const vaultApi = window.PlataMemoryVault;
+  if (!vaultApi || !window.localStorage) return null;
+  const vault = safeReadJson(window.localStorage.getItem(MEMORY_VAULT_KEY), null);
+  if (!vault) return null;
+  const result = vaultApi.validateVault ? vaultApi.validateVault(vault) : { status: "fail", issues: ["validator missing"] };
+  if (result.status === "pass") return vault;
+  console.warn("Stored memory vault ignored", result.issues);
+  return null;
+}
+
+function writeStoredMemoryVault(vault) {
+  if (!window.localStorage) return;
+  if (!vault) {
+    window.localStorage.removeItem(MEMORY_VAULT_KEY);
+    return;
+  }
+  const vaultApi = window.PlataMemoryVault;
+  const result = vaultApi && vaultApi.validateVault ? vaultApi.validateVault(vault) : { status: "fail", issues: ["validator missing"] };
+  if (result.status !== "pass") throw new Error("Stored memory vault failed validation: " + result.issues.join("; "));
+  window.localStorage.setItem(MEMORY_VAULT_KEY, JSON.stringify(vault));
+}
+
 function correctionRecordForFact(fact) {
   fact = fact || {};
   return normalizeMemoryCorrection({
@@ -307,12 +331,29 @@ function buildMemoryFacts(stateMap, practicePlan) {
   if (!memory || !memory.compileMemoryFacts) {
     return { facts: [], visibleFacts: [], deletedIds: [], corrections: [], correctedIds: [], summary: null, fingerprint: "" };
   }
-  const facts = memory.compileMemoryFacts({
+  let facts = memory.compileMemoryFacts({
     trainers: profileTrainerEntries(stateMap),
     practicePlan
   }, { kernel: window.PlataKernel });
-  const deletedIds = readDeletedMemoryFactIds();
-  const corrections = readMemoryCorrections();
+  let deletedIds = readDeletedMemoryFactIds();
+  let corrections = readMemoryCorrections();
+  const storedVault = readStoredMemoryVault();
+  if (storedVault && window.PlataMemoryVault && window.PlataMemoryVault.mergeVault) {
+    try {
+      const mergedVault = window.PlataMemoryVault.mergeVault({
+        fingerprint: memory.memoryFingerprint ? memory.memoryFingerprint(facts) : "",
+        summary: memory.summarizeMemoryFacts ? memory.summarizeMemoryFacts(facts) : null,
+        facts,
+        deletedFactIds: deletedIds,
+        correctionRecords: corrections
+      }, storedVault, { exportedAt: storedVault.exportedAt || new Date().toISOString() });
+      facts = mergedVault.facts;
+      deletedIds = mergedVault.deletedFactIds;
+      corrections = mergedVault.correctionRecords;
+    } catch (err) {
+      console.warn("Stored memory vault merge failed", err);
+    }
+  }
   const deleted = new Set(deletedIds);
   const corrected = new Set(corrections.map(record => record.factId));
   const visibleFacts = facts.filter(fact => !deleted.has(fact.id) && !corrected.has(fact.id));
@@ -325,6 +366,23 @@ function buildMemoryFacts(stateMap, practicePlan) {
     summary: memory.summarizeMemoryFacts ? memory.summarizeMemoryFacts(visibleFacts) : null,
     fingerprint: memory.memoryFingerprint ? memory.memoryFingerprint(visibleFacts) : ""
   };
+}
+
+function mergeImportedMemoryVault(vaultPayload, stateMap, practicePlan) {
+  const vaultApi = window.PlataMemoryVault;
+  if (!vaultApi || !vaultApi.mergeVault || !vaultPayload) return null;
+  const bundle = buildMemoryFacts(stateMap, practicePlan);
+  const mergedVault = vaultApi.mergeVault({
+    fingerprint: bundle.fingerprint,
+    summary: bundle.summary,
+    facts: bundle.facts,
+    deletedFactIds: bundle.deletedIds,
+    correctionRecords: bundle.corrections
+  }, vaultPayload, { exportedAt: new Date().toISOString() });
+  writeStoredMemoryVault(mergedVault);
+  writeDeletedMemoryFactIds(mergedVault.deletedFactIds);
+  writeMemoryCorrections(mergedVault.correctionRecords);
+  return mergedVault;
 }
 
 function deleteMemoryFact(factId) {
@@ -1112,6 +1170,9 @@ function importAll() {
         const payload = JSON.parse(e.target.result);
         const kernel = window.PlataKernel;
         const statusEl = $("#import-status");
+        const vaultApi = window.PlataMemoryVault;
+        const vaultPayload = vaultApi && payload && payload.vaultType === vaultApi.vaultType ? payload : payload && payload.memoryVault;
+        const standaloneVaultImport = !!(vaultPayload && payload && payload.vaultType === vaultApi.vaultType);
         let imported = 0;
         let skipped = 0;
 
@@ -1132,24 +1193,31 @@ function importAll() {
         const planner = window.PlataPlanner;
         const hasPracticePlan = Object.prototype.hasOwnProperty.call(payload, "practicePlan");
         let restoredPlan = false;
-        if (planner && planner.savePracticePlan && hasPracticePlan && payload.practicePlan) {
-          const savedPlan = planner.savePracticePlan(payload.practicePlan);
-          restoredPlan = !!(savedPlan && Array.isArray(savedPlan.steps) && savedPlan.steps.length);
-          if (!restoredPlan) planner.clearPracticePlan?.();
-        } else {
-          planner?.clearPracticePlan?.();
+        if (!standaloneVaultImport) {
+          if (planner && planner.savePracticePlan && hasPracticePlan && payload.practicePlan) {
+            const savedPlan = planner.savePracticePlan(payload.practicePlan);
+            restoredPlan = !!(savedPlan && Array.isArray(savedPlan.steps) && savedPlan.steps.length);
+            if (!restoredPlan) planner.clearPracticePlan?.();
+          } else {
+            planner?.clearPracticePlan?.();
+          }
         }
 
         if (Object.prototype.hasOwnProperty.call(payload, "memory") && payload.memory) {
           writeDeletedMemoryFactIds(Array.isArray(payload.memory.deletedFactIds) ? payload.memory.deletedFactIds : []);
           writeMemoryCorrections(Array.isArray(payload.memory.correctionRecords) ? payload.memory.correctionRecords : []);
-        } else {
+        } else if (!standaloneVaultImport && !vaultPayload) {
           writeDeletedMemoryFactIds([]);
           writeMemoryCorrections([]);
+          writeStoredMemoryVault(null);
         }
 
+        const mergedVault = vaultPayload ? mergeImportedMemoryVault(vaultPayload, collectTrainerStates(), currentPracticePlan()) : null;
         const planText = restoredPlan ? ", restored active plan" : "";
-        statusEl.textContent = `Imported ${imported} trainer state(s)${skipped ? `, skipped ${skipped}` : ""}${planText}. Refresh to see changes.`;
+        const vaultText = mergedVault ? `, merged memory vault (${mergedVault.factCount} fact(s))` : "";
+        statusEl.textContent = standaloneVaultImport && mergedVault
+          ? `Merged memory vault (${mergedVault.factCount} fact(s)). Refresh to see changes.`
+          : `Imported ${imported} trainer state(s)${skipped ? `, skipped ${skipped}` : ""}${planText}${vaultText}. Refresh to see changes.`;
         statusEl.style.color = "var(--green)";
         setTimeout(() => { statusEl.textContent = ""; }, 5000);
       } catch (err) {

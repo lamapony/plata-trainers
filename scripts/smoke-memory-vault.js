@@ -22,6 +22,15 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function stableJson(value) {
+  if (value === null || value === undefined) return "null";
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(",")}]`;
+  if (typeof value === "object") {
+    return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
 function fixedDateConstructor(fixedNow) {
   const RealDate = Date;
   function FixedDate(...args) {
@@ -183,9 +192,61 @@ function run() {
       throw new Error("correction reason drift should fail validation");
     }
   }, "correction reason drift should fail validation");
+  runMutation("tampered incoming fingerprint", ({ context, vault }) => {
+    vault.fingerprint = "vault-tampered";
+    context.PlataMemoryVault.mergeVault({ facts: [] }, vault);
+  }, "incoming memory vault validation failed");
+
+  const oldDuplicate = clone(facts[1]);
+  oldDuplicate.id = "merge-old-source";
+  oldDuplicate.sourceFingerprint = "memsrc-merge-shared";
+  oldDuplicate.copy = "older account memory";
+  oldDuplicate.at = "2026-06-01T12:00:00.000Z";
+  const freshDuplicate = clone(oldDuplicate);
+  freshDuplicate.id = "merge-fresh-source";
+  freshDuplicate.copy = "newer account memory";
+  freshDuplicate.at = "2026-06-08T12:00:00.000Z";
+  const tombstonedFact = clone(facts[2]);
+  tombstonedFact.id = "merge-deleted-fact";
+  const correctedFact = clone(facts[3]);
+  correctedFact.id = "merge-corrected-fact";
+  correctedFact.sourceFingerprint = "memsrc-merge-corrected";
+  const incomingVault = context.PlataMemoryVault.createVault({
+    fingerprint: "mem-incoming-merge",
+    facts: [freshDuplicate, tombstonedFact, correctedFact],
+    deletedFactIds: [tombstonedFact.id],
+    correctionRecords: [{
+      schemaVersion: 1,
+      factId: correctedFact.id,
+      reason: "learner-marked-incorrect",
+      correctedAt: fixedNow,
+      kind: correctedFact.kind,
+      signal: correctedFact.signal,
+      trainerId: correctedFact.trainerId,
+      sourceFingerprint: correctedFact.sourceFingerprint
+    }]
+  }, { exportedAt: fixedNow });
+  const mergedVault = context.PlataMemoryVault.mergeVault({
+    fingerprint: "mem-local-merge",
+    facts: [oldDuplicate, tombstonedFact, correctedFact],
+    deletedFactIds: ["local-hidden-fact"],
+    correctionRecords: []
+  }, incomingVault, { exportedAt: fixedNow });
+  const mergedValidation = context.PlataMemoryVault.validateVault(mergedVault);
+  assert(mergedValidation.status === "pass", `merged vault should validate: ${mergedValidation.issues.join("; ")}`);
+  assert(mergedVault.facts.some(fact => fact.id === freshDuplicate.id && fact.copy === "newer account memory"), "merge should keep newer duplicate-source fact");
+  assert(!mergedVault.facts.some(fact => fact.id === oldDuplicate.id), "merge should drop older duplicate-source fact");
+  assert(!mergedVault.facts.some(fact => fact.id === tombstonedFact.id), "merge should not resurrect deleted facts");
+  assert(!mergedVault.facts.some(fact => fact.id === correctedFact.id), "merge should not resurrect corrected facts");
+  assert(mergedVault.deletedFactIds.includes("local-hidden-fact"), "merge should preserve local tombstones");
+  assert(mergedVault.deletedFactIds.includes(tombstonedFact.id), "merge should import incoming tombstones");
+  assert(mergedVault.correctionRecords.some(record => record.factId === correctedFact.id), "merge should import corrections");
+  const repeatedMerge = context.PlataMemoryVault.mergeVault(mergedVault, incomingVault, { exportedAt: fixedNow });
+  assert(stableJson(repeatedMerge) === stableJson(mergedVault), "merge should be idempotent for repeated vault imports");
 
   console.log("ok - memory vault stores portable derived facts only");
   console.log("ok - memory vault preserves root competency facts without raw history");
+  console.log("ok - memory vault merges imports without resurrecting deleted or corrected facts");
   console.log("ok - memory vault mutations prove unsafe sync payloads fail");
 }
 
