@@ -10,7 +10,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add deterministic replay checks that rebuild progress facts from events.
 - [x] Add a planner decision trace so every recommendation can explain its inputs and score.
 - [x] Add mutation-style pedagogy tests that prove bad mastery/remediation contracts fail CI.
-- [ ] Build a counterfactual learner simulator for checking whether lesson edits improve or harm repair paths.
+- [x] Build a counterfactual learner simulator for checking whether lesson edits improve or harm repair paths.
 - [ ] Add a profile replay debugger for maintainers, starting from JSON exports rather than user screenshots.
 - [ ] Compile mastery signals into a skill graph coverage report so gaps are visible before new content is added.
 - [ ] Add deterministic snapshot tests for the dashboard recommendation surface.
@@ -38,3 +38,12 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Prove missing or mistargeted remediation scenes fail the planner contract.
 - [x] Prove missing remediation action/evidence fails the planner contract.
 - [x] Include the mutation suite in `npm run check`.
+
+## Counterfactual Simulator Sprint
+
+- [x] Simulate every declared gold learner profile as baseline repair pressure.
+- [x] Compare baseline lessons with mutated lesson variants using the same learner behavior.
+- [x] Report `correctDelta`, `wrongDelta`, `repairLoadDelta`, weak-signal deltas, and ending drift.
+- [x] Prove stricter answer edits can create new repair pressure for a successful learner.
+- [x] Prove over-lenient edits can mask repair pressure for a weak learner.
+- [x] Include the counterfactual simulator in `npm run check`.

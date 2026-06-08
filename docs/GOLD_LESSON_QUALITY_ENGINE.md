@@ -85,6 +85,8 @@ The gold simulator also checks that every `masteryMap` remediation entry can be 
 
 The lesson-engine smoke test goes one layer closer to production: it replays the declared gold simulation paths through the real `PlataLessonEngine` renderers and event handlers using a no-dependency fake DOM, then checks the LocalStorage attempts that the learner would actually produce.
 
+`npm run check:counterfactuals` compares each gold lesson's baseline learner profiles with edited variants. It keeps learner behavior fixed, then reports whether the edit changed correct counts, repair load, weak mastery signals, or social endings. This catches both strict regressions that make a successful learner need repair and lenient regressions that hide a weak learner's repair need.
+
 ## Public Report
 
 Pages publishes a generated report at `quality.html`, backed by `reports/quality.json`.
