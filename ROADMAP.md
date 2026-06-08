@@ -32,10 +32,19 @@ This is a public MVP roadmap, not a promise. Platå is not a from-zero Danish co
 - [ ] Lytteøvelser: links to public Danish audio plus comprehension prompts.
 - [ ] Mock exam mode for Studieprøven-style timed practice.
 
+## Later: inspectable personalization
+
+- [ ] Build a local adaptive learner model from attempts, repairs, evidence rows, practice-plan completions, and skill roots.
+- [ ] Add a learner memory inspector: show what the system believes, why it believes it, and how to delete a fact.
+- [ ] Make recommendations cite memory facts, not only recent attempts.
+- [ ] Keep export/import strong enough to move the full personalization state between devices.
+- [ ] Explore optional account memory as a vault for derived learning facts.
+- [ ] Explore a small account-resident `OpenClaw` agent that remembers the student and prepares evidence-backed practice; see [Learner Memory Agent RFC](./docs/LEARNER_MEMORY_AGENT_RFC.md).
+
 ## Non-goals for now
 
-- User accounts.
-- Backend syncing.
+- Mandatory user accounts.
+- Backend syncing before the local learner memory model is useful.
 - Analytics/tracking.
 - A framework rewrite.
 - AI-generated exercise dumps without human review.

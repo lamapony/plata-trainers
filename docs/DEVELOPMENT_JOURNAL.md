@@ -19,6 +19,11 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add a compact diff for dashboard recommendation snapshot changes.
 - [x] Add a lesson exercise audit gate for pedagogical contradictions and known Danish slips.
 - [ ] Add a PR-facing dashboard snapshot diff workflow step.
+- [ ] Define the local adaptive learner model before adding any account memory.
+- [ ] Add an inspectable learner memory fact schema derived from the event log.
+- [ ] Build a memory inspector so learners can see, export, and delete personalization facts.
+- [ ] Prototype optional account memory as a vault for derived learning facts, not raw answer history.
+- [ ] Evaluate a small account-resident `OpenClaw` agent against deterministic learner profiles; see [Learner Memory Agent RFC](./LEARNER_MEMORY_AGENT_RFC.md).
 
 ## Current Sprint
 
@@ -111,3 +116,15 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Fix incidental Danish slips in the B2 job-followup distractors and endings.
 - [x] Add an exercise audit for contradictory completion gates, duplicate exercise answers, simulation accept/reject drift, and a small editorial phrase watchlist.
 - [x] Include the exercise audit in `npm run check` and project health.
+
+## Learner Memory Agent Track
+
+- [x] Document `OpenClaw` as a future account-resident learner memory agent, not a mascot or opaque chatbot: [Learner Memory Agent RFC](./LEARNER_MEMORY_AGENT_RFC.md).
+- [ ] Specify a local memory fact schema with source event fingerprints, confidence, decay, and deletion semantics.
+- [ ] Compile memory facts from attempts, repair closures, evidence ledger rows, practice-plan completions, and root skills.
+- [ ] Add deterministic fixtures for returning learners, stale skills, repaired signals, and recurring traps.
+- [ ] Upgrade planner traces so every memory-based recommendation cites the facts it used.
+- [ ] Add a dashboard memory inspector before any account sync.
+- [ ] Keep basic practice local-first and account-free.
+- [ ] Prototype optional account sync only after local memory improves recommendations.
+- [ ] Gate any AI agent advice through replayable profiles and privacy-leak tests.
