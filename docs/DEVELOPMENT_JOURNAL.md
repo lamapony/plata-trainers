@@ -13,7 +13,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Build a counterfactual learner simulator for checking whether lesson edits improve or harm repair paths.
 - [x] Add a profile replay debugger for maintainers, starting from JSON exports rather than user screenshots.
 - [x] Compile mastery signals into a skill graph coverage report so gaps are visible before new content is added.
-- [ ] Add deterministic snapshot tests for the dashboard recommendation surface.
+- [x] Add deterministic snapshot tests for the dashboard recommendation surface.
 
 ## Current Sprint
 
@@ -65,3 +65,12 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Keep planned graph tags without content as warnings instead of build blockers.
 - [x] Publish `reports/skill-coverage.json` in the Pages artifact beside the quality report.
 - [x] Include mutation smoke tests in `npm run check`.
+
+## Dashboard Recommendation Snapshot Sprint
+
+- [x] Add a deterministic dashboard VM harness with a fixed clock.
+- [x] Snapshot the empty-profile recommendation surface so the preferred first path is reviewable.
+- [x] Snapshot a weak-mastery profile so repair priority, root skill, planner trace, plan route, and evidence ledger drift are visible.
+- [x] Normalize volatile fields out of the fixture while preserving route ids, trace fingerprints, scores, and decision rules.
+- [x] Add an explicit `--update` path for intentional baseline changes.
+- [x] Include the snapshot check in `npm run check`.
