@@ -74,6 +74,8 @@ function runBaseSmoke() {
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("build-review-report.js")), "manifest should require unified PR review report");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("review-report.json")), "manifest should require unified PR review JSON artifact");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("GITHUB_STEP_SUMMARY")), "manifest should require unified PR review step summary");
+  assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("summary-limit")), "manifest should require capped PR review summaries");
+  assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("summary-message-limit")), "manifest should require bounded PR review messages");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "dashboard-recommendations" && fixture.fresh), "manifest should link fresh deterministic fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "learner-model-profiles" && fixture.fresh), "manifest should link fresh learner model fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "learner-memory-profiles" && fixture.fresh), "manifest should link fresh learner memory fixtures");

@@ -101,6 +101,8 @@ jobs:
             --trajectory-diff .dist/personalization-trajectory-diff.json \
             --out .dist/review-report.json \
             --summary-out "$GITHUB_STEP_SUMMARY" \
+            --summary-limit 8 \
+            --summary-message-limit 180 \
             --fail-on-regression
 
       - name: Verify public pages map to files

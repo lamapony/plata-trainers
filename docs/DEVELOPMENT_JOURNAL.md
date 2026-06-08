@@ -142,6 +142,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Include the unified report in project health workflow checks.
 - [x] Add Today program diff artifacts to pull-request review summaries.
 - [x] Write `.dist/review-report.json` and append a Markdown summary to `$GITHUB_STEP_SUMMARY` for pull-request reviewers.
+- [x] Cap PR review Markdown by severity section with stable ordering, truncated messages, and `+N more` pointers to the full JSON artifact.
 
 ## Companion Architecture Sprint
 

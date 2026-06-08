@@ -229,7 +229,7 @@ function workflowRows(root, issues) {
       id: "qa",
       path: ".github/workflows/qa.yml",
       expectedRun: "npm run check",
-      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "diff-demo-learner-report.js", "diff-today-program-report.js", "build-review-report.js", "review-report.json", "GITHUB_STEP_SUMMARY"]
+      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "diff-demo-learner-report.js", "diff-today-program-report.js", "build-review-report.js", "review-report.json", "GITHUB_STEP_SUMMARY", "summary-limit", "summary-message-limit"]
     },
     { id: "pages", path: ".github/workflows/pages.yml", expectedRun: "npm run check" }
   ];

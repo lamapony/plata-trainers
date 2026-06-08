@@ -190,7 +190,7 @@ const capabilitySpecs = [
       "Every declared capability links to checks, source files, docs, and public reports.",
       "Program and home pages expose the read-only demo learner dashboard for first-time evaluators.",
       "Project health verifies full-check workflows and report publishing.",
-      "PR review output writes a JSON artifact and GitHub Step Summary that group regressions, review changes, improvements, and informational drift."
+      "PR review output writes a full JSON artifact plus a capped GitHub Step Summary that groups regressions, review changes, improvements, and informational drift."
     ]
   }
 ];

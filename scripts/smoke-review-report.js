@@ -99,6 +99,35 @@ function regressionInput() {
   };
 }
 
+function largeReviewInput() {
+  return {
+    quality: diff("regression", [
+      {
+        severity: "regression",
+        scope: "a-quality-contract",
+        message: `long quality regression ${"x".repeat(120)}`
+      },
+      {
+        severity: "regression",
+        scope: "z-quality-contract",
+        message: "second quality regression"
+      }
+    ]),
+    dashboard: diff("regression", [{
+      severity: "regression",
+      scope: "dashboard.contract",
+      message: "dashboard regression"
+    }]),
+    demo: diff("regression", [{
+      severity: "regression",
+      scope: "demo.contract",
+      message: "demo regression"
+    }]),
+    today: diff("unchanged"),
+    personalization: diff("unchanged")
+  };
+}
+
 function writeJson(file, value) {
   fs.writeFileSync(file, JSON.stringify(value, null, 2) + "\n");
 }
@@ -133,6 +162,14 @@ assert(regression.regressions.some(item => item.label === "Demo learner"), "regr
 assert(regression.regressions.some(item => item.label === "Today program"), "regression report should include Today regression");
 assert(regression.regressions.some(item => item.label === "Personalization trajectory"), "regression report should include personalization regression");
 
+const large = buildReviewReport(largeReviewInput());
+const cappedMarkdown = formatReviewMarkdown(large, { entryLimit: 2, messageLimit: 48 });
+assert(cappedMarkdown.includes("a-quality-contract"), "capped markdown should keep first sorted quality regression");
+assert(cappedMarkdown.includes("z-quality-contract"), "capped markdown should keep second sorted quality regression");
+assert(!cappedMarkdown.includes("dashboard.contract"), "capped markdown should hide lower-priority entries past the limit");
+assert(cappedMarkdown.includes("+2 more in JSON artifact"), "capped markdown should disclose hidden entries");
+assert(!cappedMarkdown.includes("x".repeat(80)), "capped markdown should truncate long messages");
+
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "plata-review-report-"));
 try {
   const quality = path.join(tmp, "quality.json");
@@ -154,9 +191,10 @@ try {
   assert(JSON.parse(fs.readFileSync(reviewOut, "utf8")).status === "changed", "CLI should write review JSON artifact");
   assert(fs.readFileSync(summaryOut, "utf8").includes("## Review Changes"), "CLI should write Markdown step summary");
 
-  const markdownReview = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--trajectory-diff", trajectory, "--markdown"]);
+  const markdownReview = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--trajectory-diff", trajectory, "--markdown", "--summary-limit", "1", "--summary-message-limit", "40"]);
   assert(markdownReview.status === 0, `CLI Markdown should render review report\n${markdownReview.stdout}\n${markdownReview.stderr}`);
   assert(markdownReview.stdout.includes("# PR Review Report"), "CLI Markdown should include report title");
+  assert(markdownReview.stdout.includes("+2 more in JSON artifact"), "CLI Markdown should honor summary limits");
 
   const failingChange = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--trajectory-diff", trajectory, "--fail-on-change"]);
   assert(failingChange.status === 1, "CLI should fail on any change when requested");
@@ -179,4 +217,5 @@ try {
 console.log("ok - review report aggregates unchanged, review, and regression surfaces");
 console.log("ok - review report formats quality, dashboard, demo, Today, and personalization summaries");
 console.log("ok - review report writes JSON artifacts and Markdown summaries");
-console.log("ok - review report CLI supports JSON, Markdown, and fail modes");
+console.log("ok - review report caps Markdown summaries while preserving full JSON");
+console.log("ok - review report CLI supports JSON, Markdown, summary limits, and fail modes");

@@ -5,6 +5,9 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const repoRoot = path.resolve(__dirname, "..");
+const DEFAULT_MARKDOWN_ENTRY_LIMIT = 8;
+const DEFAULT_MARKDOWN_MESSAGE_LIMIT = 180;
+const DEFAULT_MARKDOWN_SCOPE_LIMIT = 96;
 const surfaces = [
   { id: "quality", label: "Quality", flag: "--quality-diff" },
   { id: "dashboard", label: "Dashboard recommendations", flag: "--dashboard-diff" },
@@ -21,6 +24,14 @@ function argValue(name) {
 
 function hasFlag(name) {
   return process.argv.includes(name);
+}
+
+function numberArg(name, fallback) {
+  const raw = argValue(name);
+  if (!raw) return fallback;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0) return fallback;
+  return Math.floor(value);
 }
 
 function asArray(value) {
@@ -130,12 +141,50 @@ function markdownCell(value) {
     .trim();
 }
 
-function formatMarkdownEntries(entries) {
-  if (!entries.length) return ["None."];
-  return entries.map(item => `- **${item.label} / ${item.scope || "report"}**: ${item.message}`);
+function truncateText(value, limit) {
+  const text = String(value === undefined || value === null ? "" : value)
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!Number.isFinite(limit) || limit <= 0 || text.length <= limit) return text;
+  if (limit <= 3) return text.slice(0, limit);
+  return `${text.slice(0, limit - 3)}...`;
 }
 
-function formatReviewMarkdown(report) {
+function surfaceRank(entry) {
+  const index = surfaces.findIndex(surface => surface.id === entry.surface);
+  return index === -1 ? surfaces.length : index;
+}
+
+function sortedEntries(entries) {
+  return [...entries].sort((a, b) => {
+    const rank = surfaceRank(a) - surfaceRank(b);
+    if (rank) return rank;
+    return [
+      String(a.scope || "").localeCompare(String(b.scope || "")),
+      String(a.message || "").localeCompare(String(b.message || ""))
+    ].find(result => result) || 0;
+  });
+}
+
+function formatMarkdownEntries(entries, options = {}) {
+  if (!entries.length) return ["None."];
+  const entryLimit = Number.isFinite(options.entryLimit) ? options.entryLimit : DEFAULT_MARKDOWN_ENTRY_LIMIT;
+  const messageLimit = Number.isFinite(options.messageLimit) ? options.messageLimit : DEFAULT_MARKDOWN_MESSAGE_LIMIT;
+  const scopeLimit = Number.isFinite(options.scopeLimit) ? options.scopeLimit : DEFAULT_MARKDOWN_SCOPE_LIMIT;
+  const ordered = sortedEntries(entries);
+  const visible = ordered.slice(0, entryLimit);
+  const hidden = ordered.length - visible.length;
+  const rows = visible.map(item => {
+    const label = truncateText(item.label, 64);
+    const scope = truncateText(item.scope || "report", scopeLimit);
+    const message = truncateText(item.message, messageLimit);
+    return `- **${label} / ${scope}**: ${message}`;
+  });
+  if (hidden > 0) rows.push(`- +${hidden} more in JSON artifact.`);
+  return rows;
+}
+
+function formatReviewMarkdown(report, options = {}) {
   return [
     "# PR Review Report",
     "",
@@ -143,21 +192,23 @@ function formatReviewMarkdown(report) {
     "",
     `Surfaces: ${report.summary.surfaces} | Changes: ${report.summary.changes} | Regressions: ${report.summary.regressions} | Review changes: ${report.summary.reviewChanges} | Improvements: ${report.summary.improvements}`,
     "",
+    "Full details stay in `.dist/review-report.json`; this summary is capped for review speed.",
+    "",
     "| Surface | Status | Changes | Regressions | Improvements |",
     "| --- | --- | ---: | ---: | ---: |",
     ...report.surfaces.map(surface => `| ${markdownCell(surface.label)} | ${markdownCell(surface.status)} | ${surface.summary.changes} | ${surface.summary.regressions} | ${surface.summary.improvements} |`),
     "",
     "## Regressions",
-    ...formatMarkdownEntries(report.regressions),
+    ...formatMarkdownEntries(report.regressions, options),
     "",
     "## Review Changes",
-    ...formatMarkdownEntries(report.reviewChanges),
+    ...formatMarkdownEntries(report.reviewChanges, options),
     "",
     "## Improvements",
-    ...formatMarkdownEntries(report.improvements),
+    ...formatMarkdownEntries(report.improvements, options),
     "",
     "## Other Changes",
-    ...formatMarkdownEntries(report.infoChanges),
+    ...formatMarkdownEntries(report.infoChanges, options),
     ""
   ].join("\n");
 }
@@ -183,7 +234,7 @@ function readCliInput() {
 }
 
 function usage() {
-  return "usage: node scripts/build-review-report.js --quality-diff <quality.json> --dashboard-diff <dashboard.json> --demo-diff <demo.json> --today-diff <today.json> --trajectory-diff <trajectory.json> [--out <review.json>] [--summary-out <summary.md>] [--json] [--markdown] [--fail-on-change] [--fail-on-regression]";
+  return "usage: node scripts/build-review-report.js --quality-diff <quality.json> --dashboard-diff <dashboard.json> --demo-diff <demo.json> --today-diff <today.json> --trajectory-diff <trajectory.json> [--out <review.json>] [--summary-out <summary.md>] [--summary-limit <n>] [--summary-message-limit <n>] [--json] [--markdown] [--fail-on-change] [--fail-on-regression]";
 }
 
 function main() {
@@ -197,7 +248,11 @@ function main() {
   const report = buildReviewReport(input);
   const outPath = argValue("--out");
   const summaryPath = argValue("--summary-out");
-  const markdown = formatReviewMarkdown(report);
+  const markdownOptions = {
+    entryLimit: numberArg("--summary-limit", DEFAULT_MARKDOWN_ENTRY_LIMIT),
+    messageLimit: numberArg("--summary-message-limit", DEFAULT_MARKDOWN_MESSAGE_LIMIT)
+  };
+  const markdown = formatReviewMarkdown(report, markdownOptions);
   if (outPath) writeJson(outPath, report);
   if (summaryPath) writeSummary(summaryPath, markdown);
   if (hasFlag("--json")) console.log(JSON.stringify(report, null, 2));
