@@ -33,6 +33,8 @@ Planner decisions carry two explanation layers. `explainDecision(...)` and `expl
 
 `plata-competencies.js` exposes `window.PlataCompetencies`, the competency graph that groups gold lesson mastery signals into root skills such as agency, register control, stance reading, process control, and consequence awareness. Dashboard and planner code use it to explain why several weak signals point to the same underlying capability.
 
+`scripts/build-skill-coverage-report.js` compiles the competency graph, catalog, and gold lesson mastery maps into a coverage report. It blocks live content/graph drift such as unmapped lesson signals, competency mismatches, duplicate graph tags, unsimulated signals, and empty root skills, while keeping planned graph tags without content as warnings.
+
 `plata-evidence.js` exposes `window.PlataEvidence`, the shared evidence ledger contract. It turns trainer state, enriched weak mastery stats, recent attempts, and repair closures into ranked ledger entries such as open mastery signals, closed repairs, reopened signals, missed attempts, and correct attempts. UI layers should render these entries instead of interpreting raw attempts directly.
 
 `plata-events.js` exposes `window.PlataEvents`, a replay-ready event-log contract derived from existing trainer state and active practice-plan state. It emits privacy-conscious events such as `attempt.recorded`, `repair.closed`, `signal.reopened`, `plan.compiled`, `plan.step.started`, and `plan.step.completed`, then can replay those events into deterministic progress facts for export debugging and CI.

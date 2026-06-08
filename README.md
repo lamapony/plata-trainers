@@ -88,6 +88,7 @@ node scripts/validate-lesson.js
 node scripts/simulate-gold-lessons.js
 node scripts/counterfactual-learner-simulator.js
 node scripts/debug-profile-replay.js --file plata-backup.json
+node scripts/build-skill-coverage-report.js --out .dist/skill-coverage.json --text
 node scripts/smoke-gold-scaffold.js
 node scripts/generate-comic-assets-openrouter.js --dry-run --out .dist/comic-prompts.json
 node scripts/mutation-quality-report.js

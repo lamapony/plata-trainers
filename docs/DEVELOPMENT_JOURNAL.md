@@ -12,7 +12,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add mutation-style pedagogy tests that prove bad mastery/remediation contracts fail CI.
 - [x] Build a counterfactual learner simulator for checking whether lesson edits improve or harm repair paths.
 - [x] Add a profile replay debugger for maintainers, starting from JSON exports rather than user screenshots.
-- [ ] Compile mastery signals into a skill graph coverage report so gaps are visible before new content is added.
+- [x] Compile mastery signals into a skill graph coverage report so gaps are visible before new content is added.
 - [ ] Add deterministic snapshot tests for the dashboard recommendation surface.
 
 ## Current Sprint
@@ -56,3 +56,12 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Warn on event fingerprint and replay-count mismatches.
 - [x] Keep debug reports free of raw expected/given learner answer text.
 - [x] Include profile replay smoke tests in `npm run check`.
+
+## Skill Coverage Debug Sprint
+
+- [x] Tighten the plan from a generic coverage page to a CI contract for competency/content drift.
+- [x] Compile the competency graph, catalog, and gold lesson mastery maps into a JSON report.
+- [x] Fail on live contract errors: unmapped mastery tags, graph mismatches, duplicate graph tags, unsimulated signals, and empty root skills.
+- [x] Keep planned graph tags without content as warnings instead of build blockers.
+- [x] Publish `reports/skill-coverage.json` in the Pages artifact beside the quality report.
+- [x] Include mutation smoke tests in `npm run check`.

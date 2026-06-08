@@ -4,6 +4,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { writeQualityReport } = require("./build-quality-report.js");
+const { writeSkillCoverageReport } = require("./build-skill-coverage-report.js");
 
 const root = path.resolve(__dirname, "..");
 const outRoot = path.join(root, ".dist", "pages");
@@ -130,6 +131,7 @@ publicDirs.forEach(dir => {
 
 fs.writeFileSync(path.join(outRoot, ".nojekyll"), "");
 writeQualityReport(path.join(outRoot, "reports", "quality.json"));
+writeSkillCoverageReport(path.join(outRoot, "reports", "skill-coverage.json"));
 
 const topLevel = fs.readdirSync(outRoot);
 const leaked = topLevel.filter(name => disallowedTopLevel.has(name));
