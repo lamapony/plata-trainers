@@ -324,6 +324,22 @@ function runSeededMasterySmoke() {
   invokeDashboardFunction(env, "restoreDeletedMemoryFacts");
   assert(!env.storage["plata:learner-memory:deleted-facts:v1"], "dashboard clears hidden memory fact ids");
   assert(/Weak signal: passive-agency/.test(env.elements["#memory-facts"].innerHTML), "dashboard restores hidden memory facts");
+
+  vm.runInContext(`correctMemoryFact(${JSON.stringify(weakFact.id)})`, env.context, { filename: "dashboard.js" });
+  const correctionRecords = JSON.parse(env.storage["plata:learner-memory:corrections:v1"] || "[]");
+  assert(correctionRecords.some(record => record.factId === weakFact.id), "dashboard persists learner memory correction records");
+  assert(correctionRecords.some(record => record.sourceFingerprint === weakFact.sourceFingerprint), "dashboard correction records preserve source fingerprints");
+  assert(/corrected facts/.test(env.elements["#memory-facts"].innerHTML), "dashboard shows corrected memory fact count");
+  assert(/Restore 1 corrected/.test(env.elements["#memory-facts"].innerHTML), "dashboard offers corrected fact restore");
+  assert(!/Weak signal: passive-agency/.test(env.elements["#memory-facts"].innerHTML), "dashboard removes corrected facts from visible memory");
+  const correctedCandidates = invokeDashboardFunction(env, "dashboardCandidates");
+  const correctedRepairCandidate = correctedCandidates.find(item => item.trainer.id === "lesson-b2-radiator-register");
+  assert(!(correctedRepairCandidate.decision.trace.inputs.selectedMemoryFacts || []).some(fact => fact.id === weakFact.id), "dashboard planner ignores corrected memory facts");
+  assert(!correctedRepairCandidate.decision.trace.scoreBreakdown.some(part => part.label === "memory weak_signal boost"), "dashboard planner removes corrected memory score boosts");
+  assert(!/Local advisor/.test(env.elements["#practice-plan"].innerHTML), "dashboard advisor receipt disappears when no cited memory fact remains");
+  invokeDashboardFunction(env, "restoreMemoryCorrections");
+  assert(!env.storage["plata:learner-memory:corrections:v1"], "dashboard clears memory correction records");
+  assert(/Weak signal: passive-agency/.test(env.elements["#memory-facts"].innerHTML), "dashboard restores corrected memory facts");
 }
 
 function runStartedPlanSmoke() {
@@ -538,26 +554,37 @@ function runPortableProfileSmoke() {
   assert(payload.memory && payload.memory.schemaVersion === 1, "dashboard export includes memory facts");
   assert(payload.memory.fingerprint && payload.memory.fingerprint.startsWith("mem-"), "dashboard export includes memory fingerprint");
   assert(payload.memory.facts.some(fact => fact.kind === "preferred_context"), "dashboard export includes derived memory fact rows");
+  assert(Array.isArray(payload.memory.correctionRecords), "dashboard export includes learner memory corrections");
   assert(!JSON.stringify(payload.memory).includes("should not leak"), "dashboard memory export excludes raw plan answer text");
 
   const importEnv = makeContext();
   loadKernelAndDashboard(importEnv);
+  const portableFact = payload.memory.facts[0];
+  assert(portableFact, "dashboard export profile has a fact available for correction");
+  vm.runInContext(`correctMemoryFact(${JSON.stringify(portableFact.id)})`, exportEnv.context, { filename: "dashboard.js" });
+  invokeDashboardFunction(exportEnv, "exportAll");
+  const correctedPayload = parseLastExport(exportEnv);
+  assert(correctedPayload.memory.correctionRecords.some(record => record.factId === portableFact.id), "dashboard export preserves memory correction records");
+
   invokeDashboardFunction(importEnv, "importAll");
-  importEnv.elements["#import-file"].files = [{ content: JSON.stringify(payload) }];
+  importEnv.elements["#import-file"].files = [{ content: JSON.stringify(correctedPayload) }];
   importEnv.elements["#import-file"].onchange();
   const importedPlan = importEnv.context.PlataPlanner.readPracticePlan();
   assert(importedPlan && importedPlan.steps.length, "dashboard import restores active practice plan");
-  assert(importedPlan.steps[0].completedAt === payload.practicePlan.steps[0].completedAt, "dashboard import restores plan execution ledger");
+  assert(importedPlan.steps[0].completedAt === correctedPayload.practicePlan.steps[0].completedAt, "dashboard import restores plan execution ledger");
   assert(!importEnv.storage["plata:learner-memory:deleted-facts:v1"], "dashboard import restores empty memory deletion set");
+  assert((importEnv.storage["plata:learner-memory:corrections:v1"] || "").includes(portableFact.id), "dashboard import restores memory correction records");
 
   const legacyEnv = makeContext();
   loadKernelAndDashboard(legacyEnv);
   assert(legacyEnv.context.PlataPlanner.readPracticePlan(), "dashboard starts with a plan before legacy import");
+  legacyEnv.storage["plata:learner-memory:corrections:v1"] = JSON.stringify([{ factId: "legacy-corrected" }]);
   invokeDashboardFunction(legacyEnv, "importAll");
   legacyEnv.elements["#import-file"].files = [{ content: JSON.stringify({ schemaVersion: 2, trainers: {} }) }];
   legacyEnv.elements["#import-file"].onchange();
   assert(!legacyEnv.context.PlataPlanner.readPracticePlan(), "legacy dashboard import clears stale active plan");
   assert(!legacyEnv.storage["plata:learner-memory:deleted-facts:v1"], "legacy dashboard import clears stale hidden memory facts");
+  assert(!legacyEnv.storage["plata:learner-memory:corrections:v1"], "legacy dashboard import clears stale corrected memory facts");
 }
 
 async function run() {
@@ -582,6 +609,7 @@ async function run() {
   console.log("ok - dashboard explains practice-plan execution evidence");
   console.log("ok - dashboard renders the learning evidence ledger");
   console.log("ok - dashboard renders inspectable learner memory facts");
+  console.log("ok - dashboard lets learners correct memory facts");
   console.log("ok - dashboard renders explainable local advisor receipts");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");

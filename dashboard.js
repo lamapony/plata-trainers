@@ -2,6 +2,7 @@
 
 const NON_DIAGNOSTIC_TAGS = new Set(["A0", "A1", "A2", "B1", "B2", "lesson", "repair"]);
 const MEMORY_DELETIONS_KEY = "plata:learner-memory:deleted-facts:v1";
+const MEMORY_CORRECTIONS_KEY = "plata:learner-memory:corrections:v1";
 let masteryCatalogCache = null;
 
 function $(sel) { return document.querySelector(sel); }
@@ -248,22 +249,79 @@ function writeDeletedMemoryFactIds(ids) {
   }
 }
 
+function normalizeMemoryCorrection(record) {
+  record = record && typeof record === "object" ? record : {};
+  const factId = String(record.factId || record.id || "");
+  if (!factId) return null;
+  return {
+    schemaVersion: 1,
+    factId,
+    reason: String(record.reason || "learner-marked-incorrect"),
+    correctedAt: String(record.correctedAt || new Date().toISOString()),
+    kind: String(record.kind || ""),
+    signal: String(record.signal || ""),
+    trainerId: String(record.trainerId || ""),
+    sourceFingerprint: String(record.sourceFingerprint || "")
+  };
+}
+
+function readMemoryCorrections() {
+  const raw = window.localStorage ? window.localStorage.getItem(MEMORY_CORRECTIONS_KEY) : "";
+  const parsed = safeReadJson(raw, []);
+  const source = Array.isArray(parsed) ? parsed : Object.values(parsed || {});
+  return source
+    .map(normalizeMemoryCorrection)
+    .filter(Boolean)
+    .sort((a, b) => a.factId.localeCompare(b.factId));
+}
+
+function writeMemoryCorrections(records) {
+  if (!window.localStorage) return;
+  const unique = new Map();
+  (records || []).map(normalizeMemoryCorrection).filter(Boolean).forEach(record => {
+    unique.set(record.factId, record);
+  });
+  const rows = Array.from(unique.values()).sort((a, b) => a.factId.localeCompare(b.factId));
+  if (rows.length) {
+    window.localStorage.setItem(MEMORY_CORRECTIONS_KEY, JSON.stringify(rows));
+  } else {
+    window.localStorage.removeItem(MEMORY_CORRECTIONS_KEY);
+  }
+}
+
+function correctionRecordForFact(fact) {
+  fact = fact || {};
+  return normalizeMemoryCorrection({
+    factId: fact.id || "",
+    reason: "learner-marked-incorrect",
+    correctedAt: new Date().toISOString(),
+    kind: fact.kind || "",
+    signal: fact.signal || "",
+    trainerId: fact.trainerId || "",
+    sourceFingerprint: fact.sourceFingerprint || ""
+  });
+}
+
 function buildMemoryFacts(stateMap, practicePlan) {
   const memory = window.PlataMemory;
   if (!memory || !memory.compileMemoryFacts) {
-    return { facts: [], visibleFacts: [], deletedIds: [], summary: null, fingerprint: "" };
+    return { facts: [], visibleFacts: [], deletedIds: [], corrections: [], correctedIds: [], summary: null, fingerprint: "" };
   }
   const facts = memory.compileMemoryFacts({
     trainers: profileTrainerEntries(stateMap),
     practicePlan
   }, { kernel: window.PlataKernel });
   const deletedIds = readDeletedMemoryFactIds();
+  const corrections = readMemoryCorrections();
   const deleted = new Set(deletedIds);
-  const visibleFacts = facts.filter(fact => !deleted.has(fact.id));
+  const corrected = new Set(corrections.map(record => record.factId));
+  const visibleFacts = facts.filter(fact => !deleted.has(fact.id) && !corrected.has(fact.id));
   return {
     facts,
     visibleFacts,
     deletedIds,
+    corrections,
+    correctedIds: Array.from(corrected).sort(),
     summary: memory.summarizeMemoryFacts ? memory.summarizeMemoryFacts(visibleFacts) : null,
     fingerprint: memory.memoryFingerprint ? memory.memoryFingerprint(visibleFacts) : ""
   };
@@ -278,6 +336,23 @@ function deleteMemoryFact(factId) {
 
 function restoreDeletedMemoryFacts() {
   writeDeletedMemoryFactIds([]);
+  renderDashboard();
+}
+
+function correctMemoryFact(factId) {
+  const bundle = buildMemoryFacts();
+  const fact = bundle.facts.find(item => item.id === factId) || { id: factId };
+  const record = correctionRecordForFact(fact);
+  if (!record) return;
+  const corrections = readMemoryCorrections().filter(item => item.factId !== record.factId);
+  corrections.push(record);
+  writeMemoryCorrections(corrections);
+  writeDeletedMemoryFactIds(readDeletedMemoryFactIds().filter(id => id !== record.factId));
+  renderDashboard();
+}
+
+function restoreMemoryCorrections() {
+  writeMemoryCorrections([]);
   renderDashboard();
 }
 
@@ -721,6 +796,7 @@ function renderMemoryFacts() {
   const facts = bundle.visibleFacts.slice(0, 12);
   const summary = bundle.summary || { total: 0, openSignals: 0, dueReviews: 0 };
   const hiddenCount = bundle.deletedIds.length;
+  const correctedCount = bundle.corrections.length;
 
   if (!window.PlataMemory) {
     container.innerHTML = '<p class="narrative">Learner memory is unavailable. Progress tracking still works normally.</p>';
@@ -737,11 +813,14 @@ function renderMemoryFacts() {
       <span><strong>${summary.total}</strong> visible facts</span>
       <span><strong>${summary.openSignals}</strong> open signals</span>
       <span><strong>${summary.dueReviews}</strong> due reviews</span>
+      ${correctedCount ? `<span><strong>${correctedCount}</strong> corrected facts</span>` : ""}
       ${bundle.fingerprint ? `<span><strong>${escapeHtml(bundle.fingerprint)}</strong> fingerprint</span>` : ""}
       ${hiddenCount ? `<button class="btn" id="restore-memory-facts" type="button">Restore ${hiddenCount} hidden</button>` : ""}
+      ${correctedCount ? `<button class="btn" id="restore-memory-corrections" type="button">Restore ${correctedCount} corrected</button>` : ""}
     </div>
-    <div class="memory-grid">
-      ${facts.map(fact => `
+    ${facts.length ? `
+      <div class="memory-grid">
+        ${facts.map(fact => `
         <article class="memory-card ${escapeHtml(fact.kind)}">
           <div class="memory-card-head">
             <span>${escapeHtml(fact.kind)}</span>
@@ -755,15 +834,23 @@ function renderMemoryFacts() {
             ${fact.signal ? `<span>${escapeHtml(fact.signal)}</span>` : ""}
             ${fact.sourceFingerprint ? `<span>${escapeHtml(fact.sourceFingerprint)}</span>` : ""}
           </div>
-          <button class="memory-delete" type="button" data-memory-delete="${escapeHtml(fact.id)}">Hide fact</button>
+          <div class="memory-actions">
+            <button class="memory-delete" type="button" data-memory-delete="${escapeHtml(fact.id)}">Hide fact</button>
+            <button class="memory-delete correction" type="button" data-memory-correct="${escapeHtml(fact.id)}">Mark incorrect</button>
+          </div>
         </article>
-      `).join("")}
-    </div>
+        `).join("")}
+      </div>
+    ` : '<p class="narrative">All current memory facts are hidden or corrected. Restore them if the planner needs them again.</p>'}
   `;
 
   $("#restore-memory-facts")?.addEventListener("click", restoreDeletedMemoryFacts);
+  $("#restore-memory-corrections")?.addEventListener("click", restoreMemoryCorrections);
   $$("[data-memory-delete]").forEach(button => {
     button.addEventListener("click", () => deleteMemoryFact(button.getAttribute("data-memory-delete")));
+  });
+  $$("[data-memory-correct]").forEach(button => {
+    button.addEventListener("click", () => correctMemoryFact(button.getAttribute("data-memory-correct")));
   });
 }
 
@@ -953,7 +1040,8 @@ function exportAll() {
       fingerprint: memoryBundle.fingerprint,
       summary: memoryBundle.summary,
       facts: memoryBundle.visibleFacts,
-      deletedFactIds: memoryBundle.deletedIds
+      deletedFactIds: memoryBundle.deletedIds,
+      correctionRecords: memoryBundle.corrections
     } : null
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
@@ -1007,8 +1095,10 @@ function importAll() {
 
         if (Object.prototype.hasOwnProperty.call(payload, "memory") && payload.memory) {
           writeDeletedMemoryFactIds(Array.isArray(payload.memory.deletedFactIds) ? payload.memory.deletedFactIds : []);
+          writeMemoryCorrections(Array.isArray(payload.memory.correctionRecords) ? payload.memory.correctionRecords : []);
         } else {
           writeDeletedMemoryFactIds([]);
+          writeMemoryCorrections([]);
         }
 
         const planText = restoredPlan ? ", restored active plan" : "";

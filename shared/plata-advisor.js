@@ -96,7 +96,7 @@
       if (trainerId && fact.trainerId !== trainerId && fact.trainerId !== "profile") return false;
       return true;
     });
-    if (!source.length) source = (memoryFacts || []).slice();
+    if (!source.length && !signalTag) source = (memoryFacts || []).slice();
     return source.sort(compareFacts);
   }
 

@@ -182,3 +182,12 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Show the planner rule, advice rule, trace fingerprint, cited memory fact ids, source fingerprints, next action, and privacy guardrails.
 - [x] Keep hidden learner memory facts out of advisor receipts by using the same visible memory bundle as dashboard recommendations.
 - [x] Add dashboard smoke and snapshot coverage so advisor receipt drift is reviewable.
+
+## Learner Memory Correction Sprint
+
+- [x] Add a separate correction journal for learner-marked false memory facts.
+- [x] Keep corrections distinct from temporary hidden facts.
+- [x] Remove corrected facts from planner and advisor inputs while preserving source fingerprints for audit.
+- [x] Export and import correction records in portable profile JSON.
+- [x] Clear stale correction records on legacy imports.
+- [x] Cover correction, restore, planner rebuild, advisor rebuild, and profile portability in dashboard smoke tests.
