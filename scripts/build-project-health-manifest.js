@@ -15,6 +15,9 @@ const {
 const {
   evaluateAdvisorFixtures
 } = require("./smoke-advisor-fixtures.js");
+const {
+  evaluatePersonalizationProfiles
+} = require("./smoke-personalization-eval.js");
 
 const repoRoot = path.resolve(__dirname, "..");
 
@@ -29,6 +32,7 @@ const requiredGates = [
   { id: "check:memory-fixtures", category: "personalization", contract: "Returning, stale, repaired, and recurring-trap learner memory fixtures remain deterministic and planner-cited." },
   { id: "check:memory-corrections", category: "personalization", contract: "Learner-corrected memory facts keep a strict schema, source fingerprints, and no raw answers." },
   { id: "check:advisor", category: "personalization", contract: "Deterministic advisor advice cites learner memory facts and rejects privacy leaks." },
+  { id: "check:personalization-eval", category: "personalization", contract: "Fixed learner profiles prove memory, planner, advisor, and counterfactual drift stay aligned." },
   { id: "check:profile-replay", category: "debug", contract: "Dashboard JSON exports can be replay-debugged by maintainers." },
   { id: "check:planner", category: "planner", contract: "Planner decisions and practice plans preserve traces and explanations." },
   { id: "check:planner-mutations", category: "mutation", contract: "Bad mastery/remediation planner contracts fail CI." },
@@ -344,6 +348,35 @@ function fixtureRows(root, issues) {
     fresh: advisorIssues.length === 0 && !!advisorEvaluation,
     status: advisorIssues.length ? "fail" : "pass",
     issues: advisorIssues
+  });
+
+  const personalizationScript = "scripts/smoke-personalization-eval.js";
+  const personalizationIssues = [];
+  let personalizationEvaluation = null;
+  if (!fileExists(root, memoryFixturePath)) {
+    personalizationIssues.push("fixture file missing");
+  } else {
+    try {
+      personalizationEvaluation = evaluatePersonalizationProfiles({ root });
+    } catch (err) {
+      personalizationIssues.push(`evaluation failed: ${err.message.split(/\r?\n/)[0]}`);
+    }
+  }
+  if (!fileExists(root, personalizationScript)) personalizationIssues.push(`missing checker ${personalizationScript}`);
+  personalizationIssues.forEach(issue => issues.push(`personalization-evaluation fixture: ${issue}`));
+  rows.push({
+    id: "personalization-evaluation",
+    title: "Personalization evaluation harness",
+    fixturePath: memoryFixturePath,
+    builderScript: personalizationScript,
+    checkScript: "check:personalization-eval",
+    schemaVersion: memoryFixture && memoryFixture.schemaVersion || null,
+    fixedNow: memoryFixture && memoryFixture.fixedNow || "",
+    scenarios: personalizationEvaluation ? personalizationEvaluation.profiles.map(item => item.id) : [],
+    lineCount: lineCount(root, memoryFixturePath),
+    fresh: personalizationIssues.length === 0 && !!personalizationEvaluation,
+    status: personalizationIssues.length ? "fail" : "pass",
+    issues: personalizationIssues
   });
 
   return rows;

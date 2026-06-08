@@ -215,3 +215,12 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Prove duplicate corrected facts fail.
 - [x] Prove raw expected/given answer keys and private answer text fail.
 - [x] Include the correction contract in `npm run check` and project health.
+
+## Personalization Evaluation Harness Sprint
+
+- [x] Add a dedicated `check:personalization-eval` QA gate.
+- [x] Run fixed learner profiles through memory, planner, and advisor as one contract.
+- [x] Prove planner-selected memory facts are cited by advisor output with source fingerprints.
+- [x] Remove relevant memory facts and prove recommendations drift predictably.
+- [x] Split memory-backed repair advice from current-evidence repair advice when no memory facts are cited.
+- [x] Include the evaluation harness in `npm run check` and project health.

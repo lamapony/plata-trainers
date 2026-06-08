@@ -133,6 +133,15 @@
     var factKind = strongestKind(citedFacts);
 
     if (kind === "repair") {
+      if (!citedFacts.length) {
+        return {
+          kind: "repair",
+          title: "Repair " + signal,
+          advice: "Start with one repair scene because the current evidence still marks this signal as weak.",
+          nextAction: nextAction(plannerDecision, "Open repair scene"),
+          rule: "advisor.repair.current-evidence"
+        };
+      }
       return {
         kind: "repair",
         title: "Repair " + signal,
