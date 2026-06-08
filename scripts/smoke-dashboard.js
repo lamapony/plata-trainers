@@ -14,6 +14,7 @@ const evidenceSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-evid
 const eventsSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-events.js"), "utf8");
 const memorySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory.js"), "utf8");
 const memoryVaultSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory-vault.js"), "utf8");
+const memoryBriefSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory-brief.js"), "utf8");
 const advisorSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-advisor.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
@@ -168,6 +169,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   vm.runInContext(memoryVaultSource, env.context, { filename: "shared/plata-memory-vault.js" });
+  vm.runInContext(memoryBriefSource, env.context, { filename: "shared/plata-memory-brief.js" });
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
@@ -575,6 +577,12 @@ function runPortableProfileSmoke() {
   assert(!Object.prototype.hasOwnProperty.call(payload.memoryVault, "eventLog"), "dashboard memory vault excludes event log payloads");
   assert(!Object.prototype.hasOwnProperty.call(payload.memoryVault, "practicePlan"), "dashboard memory vault excludes practice plans");
   assert(!JSON.stringify(payload.memoryVault).includes("should not leak"), "dashboard memory vault excludes raw plan answer text");
+  assert(payload.memoryBrief && payload.memoryBrief.briefType === "plata.memory-brief", "dashboard export includes agent-readable memory brief");
+  assert(payload.memoryBrief.sourceVaultFingerprint === payload.memoryVault.fingerprint, "dashboard memory brief cites exported vault fingerprint");
+  assert(payload.memoryBrief.guardrails && payload.memoryBrief.guardrails.usesOnlyCitedFacts === true, "dashboard memory brief declares cited-fact guardrail");
+  assert(payload.memoryBrief.guardrails && payload.memoryBrief.guardrails.containsRawAnswerText === false, "dashboard memory brief excludes raw answer text");
+  assert(payload.memoryBrief.focus.kind === "inspect" || payload.memoryBrief.focus.citedFactIds.length > 0, "dashboard memory brief focus cites facts");
+  assert(!JSON.stringify(payload.memoryBrief).includes("should not leak"), "dashboard memory brief excludes raw plan answer text");
 
   const importEnv = makeContext();
   loadKernelAndDashboard(importEnv);

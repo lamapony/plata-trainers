@@ -243,3 +243,11 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Merge imported vaults deterministically so deletions/corrections beat incoming facts and repeated imports are idempotent.
 - [x] Let dashboard import standalone vault payloads without clearing trainer state or active practice plans.
 - [x] Include `check:memory-vault` in `npm run check` and project health.
+
+## Agent Memory Brief Sprint
+
+- [x] Add `PlataMemoryBrief` as the agent-readable context built only from memory vault facts.
+- [x] Export `memoryBrief` beside `memoryVault` in dashboard profile JSON.
+- [x] Snapshot-test briefs for fixed learner profiles, including root competency and due-review focus.
+- [x] Mutation-test raw-text leaks, missing focus citations, source-fingerprint drift, and lost root competency focus.
+- [x] Include `check:memory-brief` in `npm run check` and project health.

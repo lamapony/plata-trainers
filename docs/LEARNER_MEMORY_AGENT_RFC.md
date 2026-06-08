@@ -77,7 +77,7 @@ If account sync is added later, the target should be a memory vault, not a gener
 
 6. Account-resident agent
 
-   `OpenClaw` reads the learner memory vault, the lesson catalog, and the skill graph. It can propose practice, explain drift, and prepare repair sessions. It should not mutate the canonical memory ledger without recording an event.
+   `OpenClaw` reads an agent-facing memory brief, not the full account vault by default. `PlataMemoryBrief` turns the learner memory vault, lesson catalog, and skill graph into a compact cited focus with top facts, root-skill risks, due reviews, hidden/corrected assumptions, and guardrails. It can propose practice, explain drift, and prepare repair sessions. It should not mutate the canonical memory ledger without recording an event.
 
 7. Agent evaluation harness
 

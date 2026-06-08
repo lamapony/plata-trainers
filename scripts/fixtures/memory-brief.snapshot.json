@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-08T12:00:00.000Z",
+  "profiles": {
+    "returning-learner-context": {
+      "fingerprint": "brief-if4b4a",
+      "sourceVaultFingerprint": "vault-lm78l",
+      "headline": "Continue from stable context",
+      "focus": {
+        "kind": "continue",
+        "rule": "brief.focus.continue-context",
+        "title": "Continue from stable context",
+        "competencyId": "register-control",
+        "signal": "formal-register-control",
+        "citedFactIds": [
+          "mem-75qg4m"
+        ],
+        "sourceFingerprints": [
+          "memsrc-b95chg"
+        ]
+      },
+      "topFacts": [
+        {
+          "factId": "mem-75qg4m",
+          "kind": "stable_strength",
+          "signal": "formal-register-control",
+          "competencyId": "register-control",
+          "sourceFingerprint": "memsrc-b95chg"
+        },
+        {
+          "factId": "mem-s7pdax",
+          "kind": "preferred_context",
+          "signal": "repair",
+          "competencyId": "",
+          "sourceFingerprint": "memsrc-1xaipal"
+        },
+        {
+          "factId": "mem-dpmj6k",
+          "kind": "preferred_context",
+          "signal": "review",
+          "competencyId": "",
+          "sourceFingerprint": "memsrc-1seovqg"
+        }
+      ],
+      "rootSkillRisks": [],
+      "dueReviews": [],
+      "counts": {
+        "topFacts": 3,
+        "rootSkillRisks": 0,
+        "dueReviews": 0,
+        "corrected": 0,
+        "hidden": 0
+      },
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "usesOnlyCitedFacts": true,
+        "derivedFactsOnly": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      }
+    },
+    "stale-skill-review": {
+      "fingerprint": "brief-kad1oh",
+      "sourceVaultFingerprint": "vault-1f2zm63",
+      "headline": "Review due signal: formal-register-control",
+      "focus": {
+        "kind": "review",
+        "rule": "brief.focus.due-review",
+        "title": "Review due signal: formal-register-control",
+        "competencyId": "register-control",
+        "signal": "formal-register-control",
+        "citedFactIds": [
+          "mem-tabm00"
+        ],
+        "sourceFingerprints": [
+          "memsrc-1uxszyk"
+        ]
+      },
+      "topFacts": [
+        {
+          "factId": "mem-tabm00",
+          "kind": "next_review_due",
+          "signal": "formal-register-control",
+          "competencyId": "register-control",
+          "sourceFingerprint": "memsrc-1uxszyk"
+        },
+        {
+          "factId": "mem-1vg51vs",
+          "kind": "stale_skill",
+          "signal": "formal-register-control",
+          "competencyId": "register-control",
+          "sourceFingerprint": "memsrc-1uxszyk"
+        }
+      ],
+      "rootSkillRisks": [],
+      "dueReviews": [
+        {
+          "factId": "mem-tabm00",
+          "kind": "next_review_due",
+          "signal": "formal-register-control"
+        },
+        {
+          "factId": "mem-1vg51vs",
+          "kind": "stale_skill",
+          "signal": "formal-register-control"
+        }
+      ],
+      "counts": {
+        "topFacts": 2,
+        "rootSkillRisks": 0,
+        "dueReviews": 2,
+        "corrected": 0,
+        "hidden": 0
+      },
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "usesOnlyCitedFacts": true,
+        "derivedFactsOnly": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      }
+    },
+    "repaired-signal-retained": {
+      "fingerprint": "brief-d0v2ls",
+      "sourceVaultFingerprint": "vault-27g0i6",
+      "headline": "Maintain repaired signal: modal-particle-stance",
+      "focus": {
+        "kind": "maintain",
+        "rule": "brief.focus.resolved-signal",
+        "title": "Maintain repaired signal: modal-particle-stance",
+        "competencyId": "stance-reading",
+        "signal": "modal-particle-stance",
+        "citedFactIds": [
+          "mem-16omq3k"
+        ],
+        "sourceFingerprints": [
+          "memsrc-rze77g"
+        ]
+      },
+      "topFacts": [
+        {
+          "factId": "mem-16omq3k",
+          "kind": "repaired_signal",
+          "signal": "modal-particle-stance",
+          "competencyId": "stance-reading",
+          "sourceFingerprint": "memsrc-rze77g"
+        }
+      ],
+      "rootSkillRisks": [],
+      "dueReviews": [],
+      "counts": {
+        "topFacts": 1,
+        "rootSkillRisks": 0,
+        "dueReviews": 0,
+        "corrected": 0,
+        "hidden": 0
+      },
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "usesOnlyCitedFacts": true,
+        "derivedFactsOnly": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      }
+    },
+    "recurring-trap-repair": {
+      "fingerprint": "brief-1ic557",
+      "sourceVaultFingerprint": "vault-7m2b06",
+      "headline": "Repair recurring trap: passive-agency",
+      "focus": {
+        "kind": "repair",
+        "rule": "brief.focus.recurring-trap",
+        "title": "Repair recurring trap: passive-agency",
+        "competencyId": "agency",
+        "signal": "passive-agency",
+        "citedFactIds": [
+          "mem-1b3dbr7"
+        ],
+        "sourceFingerprints": [
+          "memsrc-1ncgzt7"
+        ]
+      },
+      "topFacts": [
+        {
+          "factId": "mem-1b3dbr7",
+          "kind": "recurring_trap",
+          "signal": "passive-agency",
+          "competencyId": "agency",
+          "sourceFingerprint": "memsrc-1ncgzt7"
+        },
+        {
+          "factId": "mem-13rq6s3",
+          "kind": "weak_signal",
+          "signal": "passive-agency",
+          "competencyId": "agency",
+          "sourceFingerprint": "memsrc-1ncgzt7"
+        }
+      ],
+      "rootSkillRisks": [],
+      "dueReviews": [],
+      "counts": {
+        "topFacts": 2,
+        "rootSkillRisks": 0,
+        "dueReviews": 0,
+        "corrected": 0,
+        "hidden": 0
+      },
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "usesOnlyCitedFacts": true,
+        "derivedFactsOnly": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      }
+    },
+    "cross-lesson-agency-trap": {
+      "fingerprint": "brief-44dmrk",
+      "sourceVaultFingerprint": "vault-12rvrh5",
+      "headline": "Repair root skill: Agency and responsibility",
+      "focus": {
+        "kind": "repair",
+        "rule": "brief.focus.root-competency",
+        "title": "Repair root skill: Agency and responsibility",
+        "competencyId": "agency",
+        "signal": "agency",
+        "citedFactIds": [
+          "mem-1m60lop"
+        ],
+        "sourceFingerprints": [
+          "memsrc-41qsvm"
+        ]
+      },
+      "topFacts": [
+        {
+          "factId": "mem-1m60lop",
+          "kind": "root_competency_trap",
+          "signal": "agency",
+          "competencyId": "agency",
+          "sourceFingerprint": "memsrc-41qsvm"
+        },
+        {
+          "factId": "mem-12h0wzo",
+          "kind": "recurring_trap",
+          "signal": "passive-agency",
+          "competencyId": "agency",
+          "sourceFingerprint": "memsrc-1k2nir0"
+        },
+        {
+          "factId": "mem-n5mrys",
+          "kind": "weak_signal",
+          "signal": "passive-agency",
+          "competencyId": "agency",
+          "sourceFingerprint": "memsrc-1k2nir0"
+        },
+        {
+          "factId": "mem-1mnzr7o",
+          "kind": "weak_signal",
+          "signal": "professional-email-agency",
+          "competencyId": "agency",
+          "sourceFingerprint": "memsrc-1jkm1e9"
+        }
+      ],
+      "rootSkillRisks": [
+        {
+          "competencyId": "agency",
+          "signals": [
+            "passive-agency",
+            "professional-email-agency"
+          ],
+          "trainerIds": [
+            "lesson-b2-job-followup",
+            "lesson-b2-radiator-register"
+          ],
+          "citedFactIds": [
+            "mem-1m60lop"
+          ]
+        }
+      ],
+      "dueReviews": [],
+      "counts": {
+        "topFacts": 4,
+        "rootSkillRisks": 1,
+        "dueReviews": 0,
+        "corrected": 0,
+        "hidden": 0
+      },
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "usesOnlyCitedFacts": true,
+        "derivedFactsOnly": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      }
+    }
+  }
+}

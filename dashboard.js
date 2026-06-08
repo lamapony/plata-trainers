@@ -1132,6 +1132,11 @@ function exportAll() {
     deletedFactIds: memoryBundle.deletedIds,
     correctionRecords: memoryBundle.corrections
   }, { exportedAt }) : null;
+  const memoryBrief = window.PlataMemoryBrief && memoryVault ? window.PlataMemoryBrief.buildBrief(memoryVault, {
+    generatedAt: exportedAt,
+    catalog: window.PlataCatalog,
+    competencyGraph: window.PlataCompetencies
+  }) : null;
   const payload = {
     exportedAt,
     profileSchemaVersion: 1,
@@ -1147,7 +1152,8 @@ function exportAll() {
       deletedFactIds: memoryBundle.deletedIds,
       correctionRecords: memoryBundle.corrections
     } : null,
-    memoryVault
+    memoryVault,
+    memoryBrief
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
