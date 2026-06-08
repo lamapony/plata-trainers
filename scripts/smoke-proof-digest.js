@@ -32,6 +32,7 @@ function runBaseSmoke() {
   assert(digest.whatChanged.length === 3, "proof digest should explain the current public proof changes");
   assert(digest.trustBoundaries.length >= 4, "proof digest should state trust boundaries");
   assert(digest.sourceReports.includes("reports/project-health.json"), "proof digest should cite project health");
+  assert(digest.sourceReports.includes("reports/guided-session.json"), "proof digest should cite guided session proof");
   assert(digest.sourceReports.includes("reports/quickstart-proof/review-report.json"), "proof digest should cite golden review JSON");
   assert(digest.whatThisProves.some(item => item.id === "private-personalization" && item.status === "pass" && item.takeaway.includes("storage writes")), "proof digest should explain read-only personalization");
   assert(digest.whatThisProves.some(item => item.id === "reviewer-output-contract" && item.evidence.includes("check:review-report-fixture")), "proof digest should cite reviewer fixture proof");

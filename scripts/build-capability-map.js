@@ -31,6 +31,12 @@ const publicReportSpecs = {
     checkScript: "check:today-program-report",
     pagesPath: "reports/today-program.json"
   },
+  "guided-session": {
+    title: "Guided session outcome-loop report",
+    builderScript: "scripts/build-guided-session-report.js",
+    checkScript: "check:guided-session-report",
+    pagesPath: "reports/guided-session.json"
+  },
   "project-health": {
     title: "Project health manifest",
     builderScript: "scripts/build-project-health-manifest.js",
@@ -157,6 +163,23 @@ const capabilitySpecs = [
     ]
   },
   {
+    id: "guided-session-outcome-loop",
+    title: "Guided session outcome loop",
+    stage: "shipped",
+    userValue: "Learners get one focused session that turns planner, memory, advisor, and companion signals into a concrete outcome receipt instead of exposing diagnostics first.",
+    surfaces: ["Dashboard Guided session section", "dashboard.html?demo=learner", "reports/guided-session.json", "Practice plan route handoff"],
+    proofGates: ["check:guided-session", "check:dashboard", "check:guided-session-report", "check:health", "check:pages"],
+    publicReports: ["guided-session", "project-health"],
+    docs: ["docs/COMPANION_ARCHITECTURE.md", "docs/DEVELOPMENT_JOURNAL.md"],
+    sourcePaths: ["shared/plata-guided-session.js", "dashboard.js", "dashboard.html", "styles.css", "scripts/smoke-guided-session.js", "scripts/smoke-dashboard.js", "scripts/build-guided-session-report.js", "scripts/smoke-guided-session-report.js", "scripts/build-pages-artifact.js"],
+    contracts: [
+      "Every guided session has four learner-facing steps: orient, practice, notice, and receipt.",
+      "Ready and active sessions carry planner route handoff ids so the dashboard can continue after lesson return.",
+      "Memory-backed sessions cite derived memory facts and reject raw answer history.",
+      "The public report covers first session, repair, active route, due review, and completed-route states."
+    ]
+  },
+  {
     id: "lightweight-companion-bridge",
     title: "Lightweight companion and read-only bridge",
     stage: "guarded",
@@ -193,11 +216,11 @@ const capabilitySpecs = [
     title: "Public GitHub proof surface",
     stage: "shipped",
     userValue: "Visitors can inspect the project's claims as generated JSON reports, a readable proof page, and focused PR drift instead of trusting prose.",
-    surfaces: ["proof.html", "program.html", "dashboard.html?demo=learner", "reports/demo-learner.json", "reports/capabilities.json", "reports/project-health.json", "reports/proof-digest.json", "reports/quickstart-proof/quickstart.json", "Pull-request QA review report", "GitHub Step Summary", "Contributor proof quickstart", "README"],
-    proofGates: ["check:program-page", "check:proof-page", "check:proof-digest", "check:capability-map", "check:health", "check:pages", "check:quality-report", "check:demo-learner-report", "check:demo-learner-diff", "check:today-program-report", "check:review-report", "check:review-report-fixture", "check:quickstart-proof"],
-    publicReports: ["capabilities", "demo-learner", "project-health", "proof-digest", "quality", "quickstart-proof", "skill-coverage", "today-program"],
+    surfaces: ["proof.html", "program.html", "dashboard.html?demo=learner", "reports/demo-learner.json", "reports/guided-session.json", "reports/capabilities.json", "reports/project-health.json", "reports/proof-digest.json", "reports/quickstart-proof/quickstart.json", "Pull-request QA review report", "GitHub Step Summary", "Contributor proof quickstart", "README"],
+    proofGates: ["check:program-page", "check:proof-page", "check:proof-digest", "check:capability-map", "check:health", "check:pages", "check:quality-report", "check:demo-learner-report", "check:demo-learner-diff", "check:today-program-report", "check:guided-session-report", "check:review-report", "check:review-report-fixture", "check:quickstart-proof"],
+    publicReports: ["capabilities", "demo-learner", "guided-session", "project-health", "proof-digest", "quality", "quickstart-proof", "skill-coverage", "today-program"],
     docs: ["README.md", "docs/DEVELOPMENT_JOURNAL.md"],
-    sourcePaths: ["proof.html", "proof.js", "program.html", "program.js", "dashboard.html", "dashboard.js", "scripts/build-demo-learner-report.js", "scripts/diff-demo-learner-report.js", "scripts/smoke-demo-learner-report.js", "scripts/smoke-demo-learner-diff.js", "scripts/smoke-program-page.js", "scripts/smoke-proof-page.js", "scripts/smoke-dashboard.js", "scripts/build-capability-map.js", "scripts/build-project-health-manifest.js", "scripts/build-proof-digest.js", "scripts/smoke-proof-digest.js", "scripts/build-review-report.js", "scripts/smoke-review-report-fixture.js", "scripts/build-quickstart-proof.js", "scripts/smoke-quickstart-proof.js", "scripts/fixtures/review-report-golden/quality-diff.json", "scripts/build-pages-artifact.js", ".github/workflows/qa.yml"],
+    sourcePaths: ["proof.html", "proof.js", "program.html", "program.js", "dashboard.html", "dashboard.js", "shared/plata-guided-session.js", "scripts/build-demo-learner-report.js", "scripts/diff-demo-learner-report.js", "scripts/smoke-demo-learner-report.js", "scripts/smoke-demo-learner-diff.js", "scripts/build-guided-session-report.js", "scripts/smoke-guided-session-report.js", "scripts/smoke-program-page.js", "scripts/smoke-proof-page.js", "scripts/smoke-dashboard.js", "scripts/build-capability-map.js", "scripts/build-project-health-manifest.js", "scripts/build-proof-digest.js", "scripts/smoke-proof-digest.js", "scripts/build-review-report.js", "scripts/smoke-review-report-fixture.js", "scripts/build-quickstart-proof.js", "scripts/smoke-quickstart-proof.js", "scripts/fixtures/review-report-golden/quality-diff.json", "scripts/build-pages-artifact.js", ".github/workflows/qa.yml"],
     contracts: [
       "Every declared capability links to checks, source files, docs, and public reports.",
       "Program and home pages expose the read-only demo learner dashboard for first-time evaluators.",

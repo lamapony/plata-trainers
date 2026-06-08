@@ -7,6 +7,7 @@ Open-source Danish plateau-breaker for Danish learners who are no longer startin
 Live demo: [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/).
 Demo learner dashboard: [lamapony.github.io/plata-trainers/dashboard.html?demo=learner](https://lamapony.github.io/plata-trainers/dashboard.html?demo=learner).
 Demo learner report: [lamapony.github.io/plata-trainers/reports/demo-learner.json](https://lamapony.github.io/plata-trainers/reports/demo-learner.json).
+Guided session report: [lamapony.github.io/plata-trainers/reports/guided-session.json](https://lamapony.github.io/plata-trainers/reports/guided-session.json).
 Public quality report: [lamapony.github.io/plata-trainers/quality.html](https://lamapony.github.io/plata-trainers/quality.html).
 Public program map: [lamapony.github.io/plata-trainers/program.html](https://lamapony.github.io/plata-trainers/program.html).
 Public proof / health page: [lamapony.github.io/plata-trainers/proof.html](https://lamapony.github.io/plata-trainers/proof.html).
@@ -27,8 +28,8 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Private by default:** browser LocalStorage only; no accounts, backend, analytics, or tracking.
 - **Contributor-friendly data:** exercises are plain JavaScript data files with validation scripts and narrative lesson schemas.
 - **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals, deterministic simulation, remediation, and comic storyboard prompts.
-- **Public proof reports:** Pages publishes generated JSON for quality, skill coverage, Today shell states, project health, quickstart proof, and a capability map that links product claims to checks, source files, and docs.
-- **Lightweight companion:** the dashboard opens with a deterministic, stateful Today shell and exports a read-only Hermes bridge brief without embedding a heavy agent runtime.
+- **Public proof reports:** Pages publishes generated JSON for quality, skill coverage, Today shell states, guided sessions, project health, quickstart proof, and a capability map that links product claims to checks, source files, and docs.
+- **Lightweight companion:** the dashboard opens with a deterministic Today shell, a guided outcome session, and a read-only Hermes bridge brief without embedding a heavy agent runtime.
 - **Inspectable demo learner:** `dashboard.html?demo=learner` shows a rich B2 profile in memory only, so visitors can inspect personalization without overwriting their local progress.
 - **Static and forkable:** every trainer can run from `index.html`; GitHub Pages deploys a checked static artifact.
 
@@ -84,6 +85,8 @@ npm run check:quality-report
 npm run check:demo-learner-report
 npm run check:demo-learner-diff
 npm run check:today-program-report
+npm run check:guided-session
+npm run check:guided-session-report
 npm run check:capability-map
 npm run check:proof-digest
 npm run check:program-page
@@ -101,6 +104,7 @@ node scripts/build-demo-learner-report.js --json > .dist/demo-learner.json
 npm run diff:demo-learner -- --base .dist/demo-learner.json --head current
 npm run diff:demo-learner -- --base .dist/demo-learner.json --head current --json > .dist/demo-learner-diff.json
 node scripts/build-today-program-report.js --json > .dist/today-program.json
+node scripts/build-guided-session-report.js --json > .dist/guided-session.json
 npm run diff:today-program -- --base .dist/today-program.json --head current
 npm run diff:today-program -- --base .dist/today-program.json --head current --json > .dist/today-program-diff.json
 node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-trajectory.json
@@ -126,6 +130,8 @@ node scripts/smoke-lesson-engine.js
 node scripts/smoke-dashboard.js
 node scripts/build-today-program-report.js --out .dist/today-program.json --text
 node scripts/smoke-today-program-report.js
+node scripts/build-guided-session-report.js --out .dist/guided-session.json --text
+node scripts/smoke-guided-session-report.js
 node scripts/validate-data.js
 node scripts/static-qa.js
 node scripts/check-syntax.js
@@ -159,6 +165,7 @@ node scripts/smoke-memory-brief.js
 node scripts/smoke-agent-handoff.js
 node scripts/smoke-advisor-fixtures.js
 node scripts/smoke-companion.js
+node scripts/smoke-guided-session.js
 node scripts/smoke-personalization-eval.js
 node scripts/mutation-personalization-eval.js
 node scripts/smoke-personalization-trajectory.js

@@ -19,6 +19,7 @@ const memoryBriefSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-m
 const agentHandoffSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-agent-handoff.js"), "utf8");
 const advisorSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-advisor.js"), "utf8");
 const companionSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-companion.js"), "utf8");
+const guidedSessionSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-guided-session.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
@@ -58,6 +59,7 @@ function makeContext(initialStorage, options) {
     "#trainer-cards": makeElement("div"),
     "#demo-profile": makeElement("section"),
     "#today-program": makeElement("div"),
+    "#guided-session-panel": makeElement("div"),
     "#due-cards": makeElement("div"),
     "#practice-plan": makeElement("div"),
     "#evidence-ledger": makeElement("div"),
@@ -179,6 +181,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(agentHandoffSource, env.context, { filename: "shared/plata-agent-handoff.js" });
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
   vm.runInContext(companionSource, env.context, { filename: "shared/plata-companion.js" });
+  vm.runInContext(guidedSessionSource, env.context, { filename: "shared/plata-guided-session.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
 
@@ -283,6 +286,12 @@ function runEmptyDashboardSmoke() {
   assert(/onboarding/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell exposes the onboarding state");
   assert(/First run/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell shows the program state strip");
   assert(/Local progress/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell labels local-progress recommendations");
+  assert(/Guided session/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard renders guided session shell");
+  assert(/Start Lesson 01/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session promotes the starter outcome");
+  assert(/Outcome receipt/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session renders an outcome receipt");
+  assert(/No model call/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session renders model guardrail");
+  assert(/No raw answers/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session renders raw-answer guardrail");
+  assert(/gds-/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session renders a stable fingerprint");
   assert(env.elements["#due-cards"].children.length === 3, "dashboard renders practice recommendations");
   assert(/Starter plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders starter practice plan");
   assert(/Active plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard labels the current tracked plan");
@@ -310,6 +319,9 @@ function runDemoLearnerSmoke() {
   assert(/Study companion/.test(env.elements["#today-program"].innerHTML), "dashboard demo mode renders a companion-backed Today step");
   assert(!/onboarding/.test(env.elements["#today-program"].innerHTML), "dashboard demo mode does not look like an empty first-run profile");
   assert(/Cited memory/.test(env.elements["#today-program"].innerHTML), "dashboard demo Today step cites learner memory");
+  assert(/Guided session/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard demo mode renders a guided session");
+  assert(/Cited memory/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard demo guided session cites learner memory");
+  assert(/No raw answers/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard demo guided session renders privacy guardrail");
   assert(/Active plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard demo mode renders a practice plan");
   assert(/plan=/.test(env.elements["#practice-plan"].innerHTML), "dashboard demo practice links carry a plan token");
   assert(/Weak signal:/.test(env.elements["#memory-facts"].innerHTML), "dashboard demo mode renders weak-signal memory facts");
@@ -343,6 +355,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
   vm.runInContext(companionSource, env.context, { filename: "shared/plata-companion.js" });
+  vm.runInContext(guidedSessionSource, env.context, { filename: "shared/plata-guided-session.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   assert(env.context.PlataCatalog.trainers.length === 6, "dashboard reads trainer catalog");
@@ -369,6 +382,13 @@ function runSeededMasterySmoke() {
   assert(/Hermes optional/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell keeps Hermes optional");
   assert(/cmp-/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell includes companion fingerprint");
   assert(!/De lover, at radiatoren bliver fikset hurtigt/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell does not leak raw learner answers");
+  assert(/Guided session/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard renders guided session for memory-backed plans");
+  assert(/Repair passive-agency/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session promotes repair focus");
+  assert(/Outcome receipt/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session includes an outcome receipt");
+  assert(/Cited memory/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session exposes cited memory");
+  assert(/No model call/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session renders model guardrail");
+  assert(/gds-/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session includes trace fingerprint");
+  assert(!/De lover, at radiatoren bliver fikset hurtigt/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session does not leak raw learner answers");
   assert(/Study companion/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders companion receipt for memory-backed plans");
   assert(/Cited memory/.test(env.elements["#practice-plan"].innerHTML), "dashboard companion receipt exposes cited memory facts");
   assert(/No model call/.test(env.elements["#practice-plan"].innerHTML), "dashboard companion receipt renders model guardrail");

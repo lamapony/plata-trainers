@@ -82,6 +82,7 @@ function runBaseSmoke() {
   assert(report.totals.proofGates >= 35, "capability map should cite the substantial QA gate surface");
   assert(report.publicReports.some(row => row.id === "capabilities" && row.pagesPath === "reports/capabilities.json"), "capability report should be part of the public report surface");
   assert(report.publicReports.some(row => row.id === "demo-learner" && row.pagesPath === "reports/demo-learner.json"), "demo learner report should be part of the public report surface");
+  assert(report.publicReports.some(row => row.id === "guided-session" && row.pagesPath === "reports/guided-session.json"), "guided session report should be part of the public report surface");
   assert(report.guarantees.every(guarantee => guarantee.pass), "capability guarantees should all pass");
 
   const gold = capability(report, "gold-lesson-quality-engine");
@@ -100,6 +101,12 @@ function runBaseSmoke() {
   assert(today && hasGate(today, "check:today-program-diff"), "Today capability should cite the Today diff gate");
   assert(today && hasReport(today, "today-program"), "Today capability should cite the public Today report");
 
+  const guided = capability(report, "guided-session-outcome-loop");
+  assert(guided && hasGate(guided, "check:guided-session"), "guided session capability should cite the runtime gate");
+  assert(guided && hasGate(guided, "check:guided-session-report"), "guided session capability should cite the report gate");
+  assert(guided && hasReport(guided, "guided-session"), "guided session capability should cite the public report");
+  assert(guided && hasSurface(guided, "Dashboard Guided session section"), "guided session capability should cite the dashboard surface");
+
   const bridge = capability(report, "lightweight-companion-bridge");
   assert(bridge && hasGate(bridge, "check:companion"), "companion capability should cite the companion gate");
   assert(bridge && hasDoc(bridge, "docs/COMPANION_ARCHITECTURE.md"), "companion capability should cite companion architecture");
@@ -113,6 +120,7 @@ function runBaseSmoke() {
   assert(proof && hasGate(proof, "check:proof-page"), "proof surface should cite the public proof page gate");
   assert(proof && hasReport(proof, "capabilities"), "proof surface should cite the capability map report");
   assert(proof && hasReport(proof, "demo-learner"), "proof surface should cite the demo learner report");
+  assert(proof && hasReport(proof, "guided-session"), "proof surface should cite the guided session report");
   assert(proof && hasReport(proof, "quickstart-proof"), "proof surface should cite the public quickstart proof report");
   assert(proof && hasReport(proof, "proof-digest"), "proof surface should cite the public proof digest report");
   assert(proof && hasSurface(proof, "proof.html"), "proof surface should cite the proof page surface");

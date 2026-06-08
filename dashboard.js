@@ -894,6 +894,125 @@ function renderTodayProgram(candidates, context) {
   `;
 }
 
+function guidedSessionForPlan(plan, planner) {
+  const guided = window.PlataGuidedSession;
+  if (!guided || !guided.buildSession) return null;
+  const step = plan && !plan.completed && planner
+    ? (planner.actionablePracticePlanStep ? planner.actionablePracticePlanStep(plan) : plan.primaryStep)
+    : null;
+  const receipt = advisorReceiptForPlan(plan);
+  const memoryBundle = buildMemoryFacts(null, plan);
+  const actionHref = step && planner
+    ? (planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref)
+    : "";
+  return guided.buildSession({
+    plan,
+    step,
+    advisorReceipt: receipt || {},
+    memoryFacts: memoryBundle.visibleFacts || [],
+    actionHref,
+    now: new Date().toISOString()
+  });
+}
+
+function guidedSessionFactHtml(fact) {
+  const labels = [
+    fact.kind || "",
+    fact.signal || "",
+    fact.sourceFingerprint || ""
+  ].filter(Boolean);
+  return `
+    <span>
+      <strong>${escapeHtml(fact.factId || fact.id || "fact")}</strong>
+      ${escapeHtml(labels.join(" · "))}
+    </span>
+  `;
+}
+
+function guidedSessionStepHtml(step, index) {
+  return `
+    <li class="guided-step ${escapeHtml(step.status || "pending")}">
+      <span class="guided-step-number">${index + 1}</span>
+      <div>
+        <div class="guided-step-meta">
+          <span>${escapeHtml(step.kind || "step")}</span>
+          <span>${escapeHtml(step.status || "pending")}</span>
+        </div>
+        <h4>${escapeHtml(step.title)}</h4>
+        <p>${escapeHtml(step.copy)}</p>
+        ${step.action && step.action.href ? `<a href="${escapeHtml(step.action.href)}">${escapeHtml(step.action.label || "Open step")} →</a>` : ""}
+      </div>
+    </li>
+  `;
+}
+
+function guidedSessionPanelHtml(session) {
+  if (!session) return '<p class="narrative">Start any trainer to build a guided session.</p>';
+  const goal = session.goal || {};
+  const route = session.route || {};
+  const outcome = session.outcomeReceipt || {};
+  const facts = Array.isArray(outcome.citedFacts) ? outcome.citedFacts.slice(0, 4) : [];
+  const guardrails = [
+    session.guardrails && session.guardrails.deterministic ? "Deterministic" : "",
+    session.guardrails && session.guardrails.requiresModel === false ? "No model call" : "",
+    session.guardrails && session.guardrails.usesOnlyCitedFacts ? "Cited facts only" : "",
+    session.guardrails && session.guardrails.containsRawAnswerText === false ? "No raw answers" : ""
+  ].filter(Boolean);
+  const validation = session.validation || {};
+  return `
+    <article class="guided-session-card ${escapeHtml(session.status || "ready")} ${escapeHtml(goal.kind || "continue")}">
+      <div class="guided-session-head">
+        <div>
+          <p class="eyebrow">Guided session</p>
+          <h3>${escapeHtml(goal.title || "Focused session")}</h3>
+          <p>${escapeHtml(goal.reason || "The route comes from local practice evidence.")}</p>
+          ${route.href ? `
+            <div class="guided-session-action">
+              <a class="btn primary" href="${escapeHtml(route.href)}">${escapeHtml(route.label || "Start session")}</a>
+              <span>${escapeHtml([route.trainerId, route.stepRouteId].filter(Boolean).join(" · "))}</span>
+            </div>
+          ` : ""}
+        </div>
+        <div class="guided-session-receipt">
+          <span>${escapeHtml(session.fingerprint || "")}</span>
+          <strong>${escapeHtml(session.status || "ready")}</strong>
+          <small>${escapeHtml(goal.signal || "starter-route")}</small>
+        </div>
+      </div>
+      <ol class="guided-session-steps">
+        ${(session.steps || []).map(guidedSessionStepHtml).join("")}
+      </ol>
+      <div class="guided-outcome">
+        <div>
+          <p class="eyebrow">Outcome receipt</p>
+          <h4>${escapeHtml(outcome.title || "Expected outcome")}</h4>
+          <p>${escapeHtml(outcome.summary || "")}</p>
+          <div class="guided-session-tags">
+            ${(outcome.trainedSignals || []).map(signal => `<span><strong>Signal</strong>${escapeHtml(signal)}</span>`).join("")}
+            ${outcome.rootCompetency ? `<span><strong>Root skill</strong>${escapeHtml(outcome.rootCompetency)}</span>` : ""}
+            ${guardrails.map(label => `<span><strong>Guardrail</strong>${escapeHtml(label)}</span>`).join("")}
+            ${validation.status ? `<span><strong>Contract</strong>${escapeHtml(validation.status)}</span>` : ""}
+          </div>
+        </div>
+        ${facts.length ? `
+          <div class="guided-citations" aria-label="Guided session cited memory">
+            <span class="eyebrow">Cited memory</span>
+            <div>${facts.map(guidedSessionFactHtml).join("")}</div>
+          </div>
+        ` : ""}
+      </div>
+    </article>
+  `;
+}
+
+function renderGuidedSession(candidates, context) {
+  const container = $("#guided-session-panel");
+  if (!container) return;
+  const resolved = context || resolvePracticePlan(candidates);
+  const session = guidedSessionForPlan(resolved.plan, resolved.planner);
+  container.innerHTML = guidedSessionPanelHtml(session);
+}
+
 function advisorAdviceForPracticePlan(plan, memoryFacts, step) {
   const advisor = window.PlataAdvisor;
   const planner = window.PlataPlanner;
@@ -1701,6 +1820,7 @@ function renderDashboard() {
   renderDemoProfileBanner();
   renderTrainerCards();
   renderTodayProgram(candidates, planContext);
+  renderGuidedSession(candidates, planContext);
   renderPracticePlan(candidates, planContext);
   renderDueCards(candidates);
   renderEvidenceLedger();

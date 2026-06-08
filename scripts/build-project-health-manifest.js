@@ -7,6 +7,7 @@ const { buildQualityReport } = require("./build-quality-report.js");
 const { buildSkillCoverageReport } = require("./build-skill-coverage-report.js");
 const { buildDemoLearnerReport } = require("./build-demo-learner-report.js");
 const { buildTodayProgramReport } = require("./build-today-program-report.js");
+const { buildGuidedSessionReport } = require("./build-guided-session-report.js");
 const { buildCapabilityMap } = require("./build-capability-map.js");
 const {
   buildDashboardRecommendationSnapshot,
@@ -51,6 +52,7 @@ const requiredGates = [
   { id: "check:agent-handoff", category: "personalization", contract: "Agent handoff packets cite memory-brief facts, constrain allowed actions, and reject raw history." },
   { id: "check:advisor", category: "personalization", contract: "Deterministic advisor advice cites learner memory facts and rejects privacy leaks." },
   { id: "check:companion", category: "personalization", contract: "Lightweight companion cards and Hermes bridge briefs stay cited, read-only, and deterministic." },
+  { id: "check:guided-session", category: "runtime", contract: "Guided session envelopes keep planner, advisor, companion, and memory outputs deterministic, cited, and raw-answer-free." },
   { id: "check:personalization-eval", category: "personalization", contract: "Fixed learner profiles prove memory, planner, advisor, and counterfactual drift stay aligned." },
   { id: "check:personalization-mutations", category: "mutation", contract: "Bad personalization advisor/planner contracts fail the cross-layer evaluation harness." },
   { id: "check:personalization-trajectory", category: "replay", contract: "Personalization trajectories prove repair, review, reopen, and root-skill transitions over time." },
@@ -67,6 +69,7 @@ const requiredGates = [
   { id: "check:demo-learner-diff", category: "review", contract: "Demo learner report changes produce compact review diffs and regression flags." },
   { id: "check:today-program-report", category: "report", contract: "Today program shell states build as a deterministic user-facing contract report." },
   { id: "check:today-program-diff", category: "review", contract: "Today program report changes produce compact review diffs and regression flags." },
+  { id: "check:guided-session-report", category: "report", contract: "Guided session states build as a deterministic outcome-loop contract report." },
   { id: "check:dashboard-snapshot", category: "snapshot", contract: "Dashboard recommendation surface matches deterministic fixtures." },
   { id: "check:dashboard-snapshot-mutations", category: "mutation", contract: "Snapshot fixtures prove preferred-entry, repair trace, and evidence drift are caught." },
   { id: "check:dashboard-snapshot-diff", category: "review", contract: "Dashboard snapshot changes produce compact review diffs and regression flags." },
@@ -121,6 +124,13 @@ const publicReportSpecs = [
     builderScript: "scripts/build-today-program-report.js",
     checkScript: "check:today-program-report",
     pagesPath: "reports/today-program.json"
+  },
+  {
+    id: "guided-session",
+    title: "Guided session outcome-loop report",
+    builderScript: "scripts/build-guided-session-report.js",
+    checkScript: "check:guided-session-report",
+    pagesPath: "reports/guided-session.json"
   },
   {
     id: "capabilities",
@@ -259,7 +269,7 @@ function workflowRows(root, issues) {
   });
 }
 
-function reportRows(root, quality, skillCoverage, demoLearner, todayProgram, capabilityMap, issues) {
+function reportRows(root, quality, skillCoverage, demoLearner, todayProgram, guidedSession, capabilityMap, issues) {
   const pagesBuild = fileExists(root, "scripts/build-pages-artifact.js")
     ? readText(root, "scripts/build-pages-artifact.js")
     : "";
@@ -299,6 +309,17 @@ function reportRows(root, quality, skillCoverage, demoLearner, todayProgram, cap
         scenarios: todayProgram.totals.scenarios,
         states: todayProgram.totals.states,
         issues: todayProgram.totals.issues
+      }
+    },
+    "guided-session": {
+      status: guidedSession.status,
+      totals: {
+        scenarios: guidedSession.totals.scenarios,
+        sessions: guidedSession.totals.sessions,
+        statuses: guidedSession.totals.statuses,
+        steps: guidedSession.totals.steps,
+        citedFacts: guidedSession.totals.citedFacts,
+        issues: guidedSession.totals.issues
       }
     },
     capabilities: {
@@ -605,9 +626,10 @@ function buildProjectHealthManifest(options = {}) {
   const skillCoverage = buildSkillCoverageReport({ root });
   const demoLearner = buildDemoLearnerReport({ root });
   const todayProgram = buildTodayProgramReport({ root });
+  const guidedSession = buildGuidedSessionReport({ root });
   const capabilityMap = buildCapabilityMap({ root });
   const gates = gateRows(root, pkg, issues);
-  const reports = reportRows(root, quality, skillCoverage, demoLearner, todayProgram, capabilityMap, issues);
+  const reports = reportRows(root, quality, skillCoverage, demoLearner, todayProgram, guidedSession, capabilityMap, issues);
   const workflows = workflowRows(root, issues);
   const fixtures = fixtureRows(root, issues);
   const gateCategories = gates.reduce((acc, gate) => {

@@ -31,6 +31,8 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Make the Today shell stateful across onboarding, active-route, return, and memory-review scenarios.
 - [x] Publish Today shell states as a deterministic public program report.
 - [x] Add PR diffs for Today shell state drift.
+- [x] Add a guided session outcome loop that turns the planner, memory, advisor, and companion into one focused learner session.
+- [x] Publish guided session states as a deterministic public report.
 - [x] Publish a product capability map that ties user-facing claims to gates, reports, docs, and source files.
 - [x] Render the capability map as a user-facing public program page.
 - [x] Add a contributor proof quickstart that builds the core local proof artifacts before the full QA suite.
@@ -105,10 +107,20 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Mutate the evidence ledger open-mastery row and prove the ledger snapshot changes.
 - [x] Include the dashboard snapshot mutation suite in `npm run check`.
 
+## Guided Session Outcome Loop Sprint
+
+- [x] Add `shared/plata-guided-session.js` as a deterministic session envelope over planner steps, advisor advice, companion copy, and cited memory facts.
+- [x] Keep the session contract model-free, cited, stable-fingerprinted, and free of raw learner answer history.
+- [x] Render a `Guided session` dashboard section with one goal, four learner-facing steps, a route action, and an outcome receipt.
+- [x] Cover starter, memory-backed repair, active route, completed route, and due-review context in smoke tests.
+- [x] Publish `reports/guided-session.json` in the Pages artifact.
+- [x] Add `check:guided-session` and `check:guided-session-report` to `npm run check`, project health, proof digest sources, and the product capability map.
+- [ ] Add PR diffing for guided session wording and contract drift if the report starts changing frequently.
+
 ## Project Health Manifest Sprint
 
 - [x] Compile required `npm run check` gates into a machine-readable contract.
-- [x] Link public reports: quality, skill coverage, Today shell, capability map, and project health.
+- [x] Link public reports: quality, skill coverage, Today shell, guided session, capability map, and project health.
 - [x] Verify QA and Pages workflows still run the full check on Node 24.
 - [x] Verify deterministic dashboard fixtures are fresh and mutation-backed.
 - [x] Fail on missing gates and stale fixtures in smoke tests.

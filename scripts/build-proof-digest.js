@@ -205,6 +205,7 @@ function buildProofDigest(options = {}) {
     },
     sourceReports: [
       "reports/demo-learner.json",
+      "reports/guided-session.json",
       "reports/capabilities.json",
       "reports/project-health.json",
       "reports/quickstart-proof/quickstart.json",

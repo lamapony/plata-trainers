@@ -8,7 +8,7 @@
       id: "practice",
       title: "Start with one useful practice step",
       copy: "The program chooses between story lessons, repair routes, review, and short drills without needing an account.",
-      capabilityIds: ["static-forkable-runtime", "today-program-shell", "gold-lesson-quality-engine"]
+      capabilityIds: ["static-forkable-runtime", "today-program-shell", "guided-session-outcome-loop", "gold-lesson-quality-engine"]
     },
     {
       id: "memory",

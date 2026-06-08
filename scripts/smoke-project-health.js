@@ -48,6 +48,7 @@ function runBaseSmoke() {
   assert(manifest.gates.some(gate => gate.id === "check:agent-handoff" && gate.requiredInCheck), "manifest should require agent handoff contracts");
   assert(manifest.gates.some(gate => gate.id === "check:advisor" && gate.requiredInCheck), "manifest should require advisor fixtures");
   assert(manifest.gates.some(gate => gate.id === "check:companion" && gate.requiredInCheck), "manifest should require lightweight companion fixtures");
+  assert(manifest.gates.some(gate => gate.id === "check:guided-session" && gate.requiredInCheck), "manifest should require guided session runtime contracts");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-eval" && gate.requiredInCheck), "manifest should require personalization evaluation");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-mutations" && gate.requiredInCheck), "manifest should require personalization mutation proof");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-trajectory" && gate.requiredInCheck), "manifest should require personalization trajectory replay");
@@ -61,6 +62,7 @@ function runBaseSmoke() {
   assert(manifest.gates.some(gate => gate.id === "check:demo-learner-diff" && gate.requiredInCheck), "manifest should require demo learner diff review");
   assert(manifest.gates.some(gate => gate.id === "check:today-program-report" && gate.requiredInCheck), "manifest should require Today program report");
   assert(manifest.gates.some(gate => gate.id === "check:today-program-diff" && gate.requiredInCheck), "manifest should require Today program diff review");
+  assert(manifest.gates.some(gate => gate.id === "check:guided-session-report" && gate.requiredInCheck), "manifest should require guided session report");
   assert(manifest.gates.some(gate => gate.id === "check:program-page" && gate.requiredInCheck), "manifest should require the user-facing program page");
   assert(manifest.gates.some(gate => gate.id === "check:proof-page" && gate.requiredInCheck), "manifest should require the public proof page");
   assert(manifest.gates.some(gate => gate.id === "check:capability-map" && gate.requiredInCheck), "manifest should require the product capability map");
@@ -68,6 +70,7 @@ function runBaseSmoke() {
   assert(manifest.publicReports.some(report => report.id === "skill-coverage" && report.pagesPath === "reports/skill-coverage.json"), "manifest should link the skill coverage report");
   assert(manifest.publicReports.some(report => report.id === "demo-learner" && report.pagesPath === "reports/demo-learner.json"), "manifest should link the demo learner report");
   assert(manifest.publicReports.some(report => report.id === "today-program" && report.pagesPath === "reports/today-program.json"), "manifest should link the Today program report");
+  assert(manifest.publicReports.some(report => report.id === "guided-session" && report.pagesPath === "reports/guided-session.json"), "manifest should link the guided session report");
   assert(manifest.publicReports.some(report => report.id === "capabilities" && report.pagesPath === "reports/capabilities.json"), "manifest should link the capability map report");
   assert(manifest.publicReports.some(report => report.id === "project-health" && report.pagesPath === "reports/project-health.json"), "manifest should link itself as a public report");
   assert(manifest.workflows.every(workflow => workflow.runsFullCheck && workflow.nodeVersion === "24"), "manifest should link full-check workflows");

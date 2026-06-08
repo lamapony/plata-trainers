@@ -23,6 +23,7 @@ The generated product capability map publishes this decision as `lightweight-com
 | `PlataAgentHandoff` | Strict machine packet | A constrained task packet for future or external helpers. |
 | `PlataCompanion` | Friendly program shell | A learner-facing card with one next action, citations, guardrails, and fingerprint. |
 | `Today program report` | Inspectable program shell states | Public JSON proving onboarding, active-route, return, and memory-review states stay evidence-backed. |
+| `PlataGuidedSession` | One focused outcome | A four-step learner session with route action, outcome receipt, cited facts, guardrails, and a stable `gds-` fingerprint. |
 | `plata.hermes-bridge-brief` | Optional external bridge | Read-only brief for Hermes-style tools; no raw history, no memory writes, no planner override. |
 
 ## Companion Contract
@@ -69,4 +70,4 @@ Hermes cannot:
 - request raw answer history;
 - write Plata memory or planner state.
 
-`scripts/smoke-companion.js` proves the card and bridge remain deterministic, cited, read-only, and free of raw learner answer text across fixed learner profiles. `scripts/smoke-today-program-report.js` proves the user-facing Today shell keeps its four core states deterministic and free of raw learner answer leaks. `scripts/smoke-today-program-diff.js` makes user-facing state drift reviewable in pull requests. `scripts/smoke-capability-map.js` keeps this companion/bridge claim linked to the public product proof surface.
+`scripts/smoke-companion.js` proves the card and bridge remain deterministic, cited, read-only, and free of raw learner answer text across fixed learner profiles. `scripts/smoke-today-program-report.js` proves the user-facing Today shell keeps its four core states deterministic and free of raw learner answer leaks. `scripts/smoke-guided-session.js` and `scripts/smoke-guided-session-report.js` prove the outcome-loop session stays cited, model-free, and publishable as `reports/guided-session.json`. `scripts/smoke-today-program-diff.js` makes user-facing Today state drift reviewable in pull requests. `scripts/smoke-capability-map.js` keeps this companion/bridge claim linked to the public product proof surface.
