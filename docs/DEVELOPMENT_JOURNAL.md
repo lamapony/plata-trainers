@@ -207,3 +207,11 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] List corrected memory fact ids, kind, signal, trainer id, source fingerprint, reason, and timestamp in `debug-profile-replay`.
 - [x] Keep correction debug output privacy-conscious by ignoring raw expected/given fields.
 - [x] Cover JSON report output and CLI text output in profile replay smoke tests.
+
+## Memory Correction Contract Sprint
+
+- [x] Add a dedicated `check:memory-corrections` QA gate.
+- [x] Validate correction record fact ids, reasons, timestamps, kind/signal/trainer context, and source fingerprints.
+- [x] Prove duplicate corrected facts fail.
+- [x] Prove raw expected/given answer keys and private answer text fail.
+- [x] Include the correction contract in `npm run check` and project health.

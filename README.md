@@ -95,6 +95,7 @@ node scripts/mutation-dashboard-snapshot.js
 node scripts/diff-dashboard-snapshot.js --base scripts/fixtures/dashboard-recommendations.snapshot.json --head current
 node scripts/smoke-memory.js
 node scripts/smoke-memory-fixtures.js
+node scripts/smoke-memory-corrections.js
 node scripts/smoke-advisor-fixtures.js
 node scripts/build-project-health-manifest.js --out .dist/project-health.json --text
 node scripts/smoke-gold-scaffold.js

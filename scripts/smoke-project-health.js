@@ -39,6 +39,7 @@ function runBaseSmoke() {
   assert(manifest.status === "pass", `project health manifest should pass:\n${manifest.issues.join("\n")}`);
   assert(manifest.totals.gates >= 28, "manifest should enumerate the full QA gate set");
   assert(manifest.gates.some(gate => gate.id === "check:memory-fixtures" && gate.requiredInCheck), "manifest should require learner memory fixtures");
+  assert(manifest.gates.some(gate => gate.id === "check:memory-corrections" && gate.requiredInCheck), "manifest should require learner memory correction contracts");
   assert(manifest.gates.some(gate => gate.id === "check:advisor" && gate.requiredInCheck), "manifest should require advisor fixtures");
   assert(manifest.publicReports.some(report => report.id === "quality" && report.pagesPath === "reports/quality.json"), "manifest should link the quality report");
   assert(manifest.publicReports.some(report => report.id === "skill-coverage" && report.pagesPath === "reports/skill-coverage.json"), "manifest should link the skill coverage report");

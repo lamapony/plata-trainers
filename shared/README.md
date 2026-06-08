@@ -51,6 +51,8 @@ Planner decisions carry two explanation layers. `explainDecision(...)` and `expl
 
 The dashboard memory inspector renders those facts for the learner, supports hiding/restoring individual derived facts, supports learner-marked correction records for false assumptions, renders corrected records as an audit trail with individual restore, and includes visible facts plus hidden/corrected fact records in portable profile export/import.
 
+`scripts/smoke-memory-corrections.js` protects the correction-record contract. It proves corrected memory facts keep stable fact ids, reasons, timestamps, source fingerprints, and no raw expected/given answer text, while duplicate or malformed correction records fail CI.
+
 `scripts/smoke-memory-fixtures.js` checks deterministic learner memory profiles in `scripts/fixtures/learner-memory-profiles.json`: returning learner context, stale review, repaired signal retention, and recurring trap repair. Use `--update` only when intentional memory/planner drift should become the new baseline.
 
 `plata-advisor.js` exposes `window.PlataAdvisor`, a deterministic advice layer underneath any future OpenClaw-style agent. It turns planner decisions and cited memory facts into a short advice object with fact ids, source fingerprints, next action, guardrails, and a trace fingerprint. `scripts/smoke-advisor-fixtures.js` locks those advice objects to the learner memory fixtures and proves raw answer text does not leak into advice.

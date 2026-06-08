@@ -27,6 +27,7 @@ const requiredGates = [
   { id: "check:events", category: "replay", contract: "Privacy-conscious learning events replay deterministic profile facts." },
   { id: "check:memory", category: "personalization", contract: "Local learner memory facts compile from redacted events with source fingerprints and no raw answers." },
   { id: "check:memory-fixtures", category: "personalization", contract: "Returning, stale, repaired, and recurring-trap learner memory fixtures remain deterministic and planner-cited." },
+  { id: "check:memory-corrections", category: "personalization", contract: "Learner-corrected memory facts keep a strict schema, source fingerprints, and no raw answers." },
   { id: "check:advisor", category: "personalization", contract: "Deterministic advisor advice cites learner memory facts and rejects privacy leaks." },
   { id: "check:profile-replay", category: "debug", contract: "Dashboard JSON exports can be replay-debugged by maintainers." },
   { id: "check:planner", category: "planner", contract: "Planner decisions and practice plans preserve traces and explanations." },
