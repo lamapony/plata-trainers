@@ -71,6 +71,8 @@ The dashboard memory inspector renders those facts for the learner, supports hid
 
 `plata-advisor.js` exposes `window.PlataAdvisor`, a deterministic advice layer underneath any future OpenClaw-style agent. It turns planner decisions and cited memory facts into a short advice object with fact ids, source fingerprints, next action, guardrails, and a trace fingerprint. `scripts/smoke-advisor-fixtures.js` locks those advice objects to the learner memory fixtures and proves raw answer text does not leak into advice.
 
+`plata-companion.js` exposes `window.PlataCompanion`, the lightweight user-facing layer above advisor and handoff packets. It builds `plata.companion-card` objects with one next action, cited facts, guardrails, and a stable `cmp-` fingerprint, then exports an optional `plata.hermes-bridge-brief` for external Hermes/OpenClaw-style tools. The bridge is read-only: it may explain or schedule around Plata's recommendation, but it cannot override the planner, request raw answer history, or write learner memory. `scripts/smoke-companion.js` proves fixed learner profiles remain deterministic, cited, and free of raw answer text.
+
 `scripts/smoke-personalization-eval.js` is the cross-layer personalization harness. It runs the fixed learner profiles through memory, planner, and advisor together, then removes relevant memory facts to prove recommendations drift predictably. This catches advice that claims learner-memory evidence without cited facts.
 
 `scripts/mutation-personalization-eval.js` proves that harness is not decorative. It mutates temporary copies of the advisor and planner to catch memory-backed repair drift, dropped fallback facts, corrupted planner-selected citations, ignored review-due facts, and raw-text guardrail regressions.

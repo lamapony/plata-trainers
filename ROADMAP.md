@@ -34,12 +34,14 @@ This is a public MVP roadmap, not a promise. Platå is not a from-zero Danish co
 
 ## Later: inspectable personalization
 
-- [ ] Build a local adaptive learner model from attempts, repairs, evidence rows, practice-plan completions, and skill roots.
-- [ ] Add a learner memory inspector: show what the system believes, why it believes it, and how to delete a fact.
-- [ ] Make recommendations cite memory facts, not only recent attempts.
-- [ ] Keep export/import strong enough to move the full personalization state between devices.
-- [ ] Explore optional account memory as a vault for derived learning facts.
-- [ ] Explore a small account-resident `OpenClaw` agent that remembers the student and prepares evidence-backed practice; see [Learner Memory Agent RFC](./docs/LEARNER_MEMORY_AGENT_RFC.md).
+- [x] Build a local adaptive learner model from attempts, repairs, evidence rows, practice-plan completions, and skill roots.
+- [x] Add a learner memory inspector: show what the system believes, why it believes it, and how to delete a fact.
+- [x] Make recommendations cite memory facts, not only recent attempts.
+- [x] Keep export/import strong enough to move the full personalization state between devices.
+- [x] Prototype optional account memory as a vault for derived learning facts.
+- [x] Add a lightweight `PlataCompanion` card instead of embedding a heavy autonomous agent runtime.
+- [x] Export a read-only Hermes bridge brief for learners who already use external agent tools; see [Companion Architecture](./docs/COMPANION_ARCHITECTURE.md).
+- [ ] Explore optional account sync for the derived memory vault without making accounts required.
 
 ## Non-goals for now
 
@@ -47,4 +49,5 @@ This is a public MVP roadmap, not a promise. Platå is not a from-zero Danish co
 - Backend syncing before the local learner memory model is useful.
 - Analytics/tracking.
 - A framework rewrite.
+- Embedded heavy agent runtimes as a requirement for basic practice.
 - AI-generated exercise dumps without human review.

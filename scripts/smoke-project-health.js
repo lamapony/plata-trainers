@@ -47,6 +47,7 @@ function runBaseSmoke() {
   assert(manifest.gates.some(gate => gate.id === "check:memory-brief" && gate.requiredInCheck), "manifest should require learner memory brief contracts");
   assert(manifest.gates.some(gate => gate.id === "check:agent-handoff" && gate.requiredInCheck), "manifest should require agent handoff contracts");
   assert(manifest.gates.some(gate => gate.id === "check:advisor" && gate.requiredInCheck), "manifest should require advisor fixtures");
+  assert(manifest.gates.some(gate => gate.id === "check:companion" && gate.requiredInCheck), "manifest should require lightweight companion fixtures");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-eval" && gate.requiredInCheck), "manifest should require personalization evaluation");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-mutations" && gate.requiredInCheck), "manifest should require personalization mutation proof");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-trajectory" && gate.requiredInCheck), "manifest should require personalization trajectory replay");
@@ -64,6 +65,7 @@ function runBaseSmoke() {
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "learner-model-profiles" && fixture.fresh), "manifest should link fresh learner model fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "learner-memory-profiles" && fixture.fresh), "manifest should link fresh learner memory fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "agent-advice-profiles" && fixture.fresh), "manifest should link fresh agent advice fixtures");
+  assert(manifest.deterministicFixtures.some(fixture => fixture.id === "companion-profiles" && fixture.fresh), "manifest should link fresh companion fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "agent-handoff-profiles" && fixture.fresh), "manifest should link fresh agent handoff fixtures");
   assert(manifest.guarantees.every(guarantee => guarantee.pass), "manifest guarantees should all pass");
 

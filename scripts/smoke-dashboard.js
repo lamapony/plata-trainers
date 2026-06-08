@@ -18,6 +18,7 @@ const memoryVaultSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-m
 const memoryBriefSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory-brief.js"), "utf8");
 const agentHandoffSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-agent-handoff.js"), "utf8");
 const advisorSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-advisor.js"), "utf8");
+const companionSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-companion.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
@@ -175,6 +176,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(memoryBriefSource, env.context, { filename: "shared/plata-memory-brief.js" });
   vm.runInContext(agentHandoffSource, env.context, { filename: "shared/plata-agent-handoff.js" });
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
+  vm.runInContext(companionSource, env.context, { filename: "shared/plata-companion.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
 
@@ -277,6 +279,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
+  vm.runInContext(companionSource, env.context, { filename: "shared/plata-companion.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   assert(env.context.PlataCatalog.trainers.length === 6, "dashboard reads trainer catalog");
@@ -297,11 +300,12 @@ function runSeededMasterySmoke() {
   assert(/highest open mastery signal/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains why the repair step is first");
   assert(/Evidence: 1 miss \/ 1 try/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders repair evidence counts");
   assert(/Memory: weak_signal passive-agency memsrc-/.test(env.elements["#practice-plan"].innerHTML), "dashboard practice plan cites planner memory facts");
-  assert(/Local advisor/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders advisor receipt for memory-backed plans");
-  assert(/Cited memory/.test(env.elements["#practice-plan"].innerHTML), "dashboard advisor receipt exposes cited memory facts");
-  assert(/No model call/.test(env.elements["#practice-plan"].innerHTML), "dashboard advisor receipt renders model guardrail");
-  assert(/adv-/.test(env.elements["#practice-plan"].innerHTML), "dashboard advisor receipt includes trace fingerprint");
-  assert(!/De lover, at radiatoren bliver fikset hurtigt/.test(env.elements["#practice-plan"].innerHTML), "dashboard advisor receipt does not leak raw learner answers");
+  assert(/Study companion/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders companion receipt for memory-backed plans");
+  assert(/Cited memory/.test(env.elements["#practice-plan"].innerHTML), "dashboard companion receipt exposes cited memory facts");
+  assert(/No model call/.test(env.elements["#practice-plan"].innerHTML), "dashboard companion receipt renders model guardrail");
+  assert(/cmp-/.test(env.elements["#practice-plan"].innerHTML), "dashboard companion receipt includes trace fingerprint");
+  assert(/Hermes optional/.test(env.elements["#practice-plan"].innerHTML), "dashboard companion keeps external agents optional");
+  assert(!/De lover, at radiatoren bliver fikset hurtigt/.test(env.elements["#practice-plan"].innerHTML), "dashboard companion receipt does not leak raw learner answers");
   assert(/mode=repair/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links repair mode");
   assert(/plan=/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links carry active plan token");
   assert(/step=/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links carry step route id");
@@ -348,7 +352,7 @@ function runSeededMasterySmoke() {
   const correctedRepairCandidate = correctedCandidates.find(item => item.trainer.id === "lesson-b2-radiator-register");
   assert(!(correctedRepairCandidate.decision.trace.inputs.selectedMemoryFacts || []).some(fact => fact.id === weakFact.id), "dashboard planner ignores corrected memory facts");
   assert(!correctedRepairCandidate.decision.trace.scoreBreakdown.some(part => part.label === "memory weak_signal boost"), "dashboard planner removes corrected memory score boosts");
-  assert(!/Local advisor/.test(env.elements["#practice-plan"].innerHTML), "dashboard advisor receipt disappears when no cited memory fact remains");
+  assert(!/Study companion/.test(env.elements["#practice-plan"].innerHTML), "dashboard companion receipt disappears when no cited memory fact remains");
   vm.runInContext(`restoreMemoryCorrection(${JSON.stringify(weakFact.id)})`, env.context, { filename: "dashboard.js" });
   assert(!env.storage["plata:learner-memory:corrections:v1"], "dashboard restores a single corrected memory fact");
   assert(/Weak signal: passive-agency/.test(env.elements["#memory-facts"].innerHTML), "dashboard returns individually restored memory facts");
@@ -372,6 +376,7 @@ function runStartedPlanSmoke() {
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
+  vm.runInContext(companionSource, env.context, { filename: "shared/plata-companion.js" });
 
   const planner = env.context.PlataPlanner;
   const plan = planner.savePracticePlan({
@@ -449,6 +454,7 @@ function runPlanReturnReceiptSmoke() {
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
+  vm.runInContext(companionSource, env.context, { filename: "shared/plata-companion.js" });
   const planner = env.context.PlataPlanner;
   const plan = planner.savePracticePlan({
     kind: "continue",
@@ -502,6 +508,7 @@ function runClosedMasterySmoke() {
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
+  vm.runInContext(companionSource, env.context, { filename: "shared/plata-companion.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   const dueHtml = env.elements["#due-cards"].children.map(child => child.innerHTML).join("\n");
@@ -528,6 +535,7 @@ async function runDynamicCatalogSmoke() {
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
+  vm.runInContext(companionSource, env.context, { filename: "shared/plata-companion.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
   await Promise.resolve();
   await Promise.resolve();
@@ -606,6 +614,24 @@ function runPortableProfileSmoke() {
   assert(!Object.prototype.hasOwnProperty.call(payload.agentHandoff, "eventLog"), "dashboard agent handoff does not embed event log");
   assert(!Object.prototype.hasOwnProperty.call(payload.agentHandoff, "practicePlan"), "dashboard agent handoff does not embed practice plan");
   assert(!JSON.stringify(payload.agentHandoff).includes("should not leak"), "dashboard agent handoff excludes raw plan answer text");
+  assert(payload.companion && payload.companion.companionType === "plata.companion-card", "dashboard export includes lightweight companion card");
+  assert(payload.companion.guardrails && payload.companion.guardrails.requiresModel === false, "dashboard companion card does not require a model");
+  assert(payload.companion.guardrails && payload.companion.guardrails.externalAgentOptional === true, "dashboard companion keeps Hermes optional");
+  assert(payload.companion.nextAction && payload.companion.nextAction.label, "dashboard companion card preserves one next action");
+  assert(payload.companion.citedFacts.length > 0, "dashboard companion card cites learner memory facts");
+  assert(!Object.prototype.hasOwnProperty.call(payload.companion, "eventLog"), "dashboard companion card does not embed event log");
+  assert(!Object.prototype.hasOwnProperty.call(payload.companion, "practicePlan"), "dashboard companion card does not embed practice plan");
+  assert(!JSON.stringify(payload.companion).includes("should not leak"), "dashboard companion card excludes raw plan answer text");
+  assert(payload.hermesBrief && payload.hermesBrief.briefType === "plata.hermes-bridge-brief", "dashboard export includes Hermes bridge brief");
+  assert(payload.hermesBrief.sourceCompanionFingerprint === payload.companion.fingerprint, "Hermes bridge cites source companion card");
+  assert(payload.hermesBrief.sourceHandoffFingerprint === payload.agentHandoff.fingerprint, "Hermes bridge cites source handoff packet");
+  assert(payload.hermesBrief.guardrails && payload.hermesBrief.guardrails.readOnlyBridge === true, "Hermes bridge is read-only");
+  assert(payload.hermesBrief.guardrails && payload.hermesBrief.guardrails.requiresModel === false, "Hermes bridge does not make models mandatory");
+  assert(payload.hermesBrief.responseContract && payload.hermesBrief.responseContract.maxRecommendations === 1, "Hermes bridge limits recommendations");
+  assert(payload.hermesBrief.blockedActions.includes("write Plata memory or planner state"), "Hermes bridge blocks memory writes");
+  assert(!Object.prototype.hasOwnProperty.call(payload.hermesBrief, "eventLog"), "Hermes bridge does not embed event log");
+  assert(!Object.prototype.hasOwnProperty.call(payload.hermesBrief, "memoryVault"), "Hermes bridge does not embed memory vault");
+  assert(!JSON.stringify(payload.hermesBrief).includes("should not leak"), "Hermes bridge excludes raw plan answer text");
 
   const importEnv = makeContext();
   loadKernelAndDashboard(importEnv);
@@ -682,7 +708,7 @@ async function run() {
   console.log("ok - dashboard renders the learning evidence ledger");
   console.log("ok - dashboard renders inspectable learner memory facts");
   console.log("ok - dashboard lets learners correct memory facts");
-  console.log("ok - dashboard renders explainable local advisor receipts");
+  console.log("ok - dashboard renders explainable study companion receipts");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");
   console.log("ok - dashboard loads lesson data from catalog");

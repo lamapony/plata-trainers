@@ -22,6 +22,7 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Contributor-friendly data:** exercises are plain JavaScript data files with validation scripts and narrative lesson schemas.
 - **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals, deterministic simulation, remediation, and comic storyboard prompts.
 - **Public quality report:** Pages publishes a generated report of gold lessons, mastery signals, simulations, endings, source coverage, comic coverage, and scene-level evidence rows.
+- **Lightweight companion:** the dashboard renders a deterministic study companion card and exports a read-only Hermes bridge brief without embedding a heavy agent runtime.
 - **Static and forkable:** every trainer can run from `index.html`; GitHub Pages deploys a checked static artifact.
 
 ## Available trainers
@@ -115,6 +116,7 @@ node scripts/smoke-memory-vault.js
 node scripts/smoke-memory-brief.js
 node scripts/smoke-agent-handoff.js
 node scripts/smoke-advisor-fixtures.js
+node scripts/smoke-companion.js
 node scripts/smoke-personalization-eval.js
 node scripts/mutation-personalization-eval.js
 node scripts/smoke-personalization-trajectory.js

@@ -16,6 +16,9 @@ const {
   evaluateAdvisorFixtures
 } = require("./smoke-advisor-fixtures.js");
 const {
+  evaluateCompanionFixtures
+} = require("./smoke-companion.js");
+const {
   evaluateLearnerModelFixtures
 } = require("./smoke-learner-model.js");
 const {
@@ -44,6 +47,7 @@ const requiredGates = [
   { id: "check:memory-brief", category: "personalization", contract: "Agent-readable memory briefs cite vault facts, preserve root-skill focus, and exclude raw history." },
   { id: "check:agent-handoff", category: "personalization", contract: "Agent handoff packets cite memory-brief facts, constrain allowed actions, and reject raw history." },
   { id: "check:advisor", category: "personalization", contract: "Deterministic advisor advice cites learner memory facts and rejects privacy leaks." },
+  { id: "check:companion", category: "personalization", contract: "Lightweight companion cards and Hermes bridge briefs stay cited, read-only, and deterministic." },
   { id: "check:personalization-eval", category: "personalization", contract: "Fixed learner profiles prove memory, planner, advisor, and counterfactual drift stay aligned." },
   { id: "check:personalization-mutations", category: "mutation", contract: "Bad personalization advisor/planner contracts fail the cross-layer evaluation harness." },
   { id: "check:personalization-trajectory", category: "replay", contract: "Personalization trajectories prove repair, review, reopen, and root-skill transitions over time." },
@@ -407,6 +411,35 @@ function fixtureRows(root, issues) {
     fresh: advisorIssues.length === 0 && !!advisorEvaluation,
     status: advisorIssues.length ? "fail" : "pass",
     issues: advisorIssues
+  });
+
+  const companionScript = "scripts/smoke-companion.js";
+  const companionIssues = [];
+  let companionEvaluation = null;
+  if (!fileExists(root, memoryFixturePath)) {
+    companionIssues.push("fixture file missing");
+  } else {
+    try {
+      companionEvaluation = evaluateCompanionFixtures({ root });
+    } catch (err) {
+      companionIssues.push(`fixture is stale: ${err.message.split(/\r?\n/)[0]}`);
+    }
+  }
+  if (!fileExists(root, companionScript)) companionIssues.push(`missing checker ${companionScript}`);
+  companionIssues.forEach(issue => issues.push(`companion-profiles fixture: ${issue}`));
+  rows.push({
+    id: "companion-profiles",
+    title: "Companion and Hermes bridge profile fixtures",
+    fixturePath: memoryFixturePath,
+    builderScript: companionScript,
+    checkScript: "check:companion",
+    schemaVersion: memoryFixture && memoryFixture.schemaVersion || null,
+    fixedNow: memoryFixture && memoryFixture.fixedNow || "",
+    scenarios: companionEvaluation ? companionEvaluation.profiles.map(item => item.id) : [],
+    lineCount: lineCount(root, memoryFixturePath),
+    fresh: companionIssues.length === 0 && !!companionEvaluation,
+    status: companionIssues.length ? "fail" : "pass",
+    issues: companionIssues
   });
 
   const agentHandoffFixturePath = "scripts/fixtures/agent-handoff.snapshot.json";

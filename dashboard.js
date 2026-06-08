@@ -495,23 +495,35 @@ function planPrimaryActionHtml(plan, planner) {
 
 function advisorReceiptForPlan(plan) {
   const advisor = window.PlataAdvisor;
+  const companionApi = window.PlataCompanion;
   const planner = window.PlataPlanner;
   if (!advisor || !advisor.advise || !plan || plan.completed || !planner) return null;
   const step = planner.actionablePracticePlanStep ? planner.actionablePracticePlanStep(plan) : plan.primaryStep;
   if (!step) return null;
   const memoryBundle = buildMemoryFacts(null, plan);
   if (!memoryBundle.visibleFacts.length) return null;
-  const advice = advisor.advise({
-    memoryFacts: memoryBundle.visibleFacts,
-    plannerDecision: step,
-    limit: 3
-  });
+  const advice = advisorAdviceForPracticePlan(plan, memoryBundle.visibleFacts, step);
   if (!advice || !Array.isArray(advice.citedFacts) || advice.citedFacts.length === 0) return null;
+  const companion = companionApi && companionApi.buildCard ? companionApi.buildCard({ advice }) : null;
   return {
     advice,
+    companion,
     step,
     actionHref: planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref
   };
+}
+
+function advisorAdviceForPracticePlan(plan, memoryFacts, step) {
+  const advisor = window.PlataAdvisor;
+  const planner = window.PlataPlanner;
+  if (!advisor || !advisor.advise || !plan || plan.completed || !planner) return null;
+  const target = step || (planner.actionablePracticePlanStep ? planner.actionablePracticePlanStep(plan) : plan.primaryStep);
+  if (!target) return null;
+  return advisor.advise({
+    memoryFacts: memoryFacts || [],
+    plannerDecision: target,
+    limit: 3
+  });
 }
 
 function advisorCitationHtml(fact) {
@@ -531,10 +543,11 @@ function advisorCitationHtml(fact) {
 function advisorReceiptHtml(receipt) {
   if (!receipt || !receipt.advice) return "";
   const advice = receipt.advice;
+  const companion = receipt.companion || null;
   const trace = advice.trace || {};
   const inputs = trace.inputs || {};
-  const guardrails = advice.guardrails || {};
-  const next = advice.nextAction || {};
+  const guardrails = companion && companion.guardrails || advice.guardrails || {};
+  const next = companion && companion.nextAction || advice.nextAction || {};
   const actionLabel = next.label || "Open next step";
   const actionHref = receipt.actionHref || next.href || "#";
   const guardrailLabels = [
@@ -545,18 +558,20 @@ function advisorReceiptHtml(receipt) {
   ].filter(Boolean);
 
   return `
-    <aside class="advisor-receipt ${escapeHtml(advice.kind || "inspect")}" aria-label="Local advisor recommendation">
+    <aside class="advisor-receipt ${escapeHtml(companion && companion.kind || advice.kind || "inspect")}" aria-label="Study companion recommendation">
       <div class="advisor-receipt-head">
         <div>
-          <p class="eyebrow">Local advisor</p>
-          <h4>${escapeHtml(advice.title || "Advisor note")}</h4>
+          <p class="eyebrow">Study companion</p>
+          <h4>${escapeHtml(companion && companion.headline || advice.title || "Companion note")}</h4>
         </div>
-        <span>${escapeHtml(trace.fingerprint || "")}</span>
+        <span>${escapeHtml(companion && companion.fingerprint || trace.fingerprint || "")}</span>
       </div>
-      <p>${escapeHtml(advice.advice || "")}</p>
+      <p>${escapeHtml(companion && companion.message || advice.advice || "")}</p>
+      ${companion && companion.why ? `<p class="narrative">${escapeHtml(companion.why)}</p>` : ""}
       <div class="advisor-chain">
         <span><strong>Planner</strong>${escapeHtml(inputs.plannerRule || receipt.step.trace && receipt.step.trace.rule || "practice-plan")}</span>
         <span><strong>Advice rule</strong>${escapeHtml(trace.rule || "")}</span>
+        ${companion ? `<span><strong>Bridge</strong>${escapeHtml(companion.guardrails && companion.guardrails.externalAgentOptional ? "Hermes optional" : "Local only")}</span>` : ""}
         ${guardrailLabels.map(label => `<span><strong>Guardrail</strong>${escapeHtml(label)}</span>`).join("")}
       </div>
       <div class="advisor-citations">
@@ -1145,6 +1160,17 @@ function exportAll() {
   const agentHandoff = window.PlataAgentHandoff && memoryBrief ? window.PlataAgentHandoff.buildHandoff(memoryBrief, {
     generatedAt: exportedAt
   }) : null;
+  const companionAdvice = advisorAdviceForPracticePlan(practicePlan, memoryBundle.visibleFacts);
+  const companion = window.PlataCompanion && window.PlataCompanion.buildCard && (companionAdvice || agentHandoff)
+    ? window.PlataCompanion.buildCard({
+      advice: companionAdvice,
+      handoff: agentHandoff,
+      generatedAt: exportedAt
+    })
+    : null;
+  const hermesBrief = window.PlataCompanion && window.PlataCompanion.buildHermesBrief && companion
+    ? window.PlataCompanion.buildHermesBrief(companion, agentHandoff, { generatedAt: exportedAt })
+    : null;
   const payload = {
     exportedAt,
     profileSchemaVersion: 1,
@@ -1163,7 +1189,9 @@ function exportAll() {
     learnerModel,
     memoryVault,
     memoryBrief,
-    agentHandoff
+    agentHandoff,
+    companion,
+    hermesBrief
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);

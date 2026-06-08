@@ -1,6 +1,6 @@
 # Learner Memory Agent RFC
 
-This is a forward-looking technical note, not a current product commitment. The working name `OpenClaw` means a small account-resident learner agent that remembers a student through explicit learning evidence, not through opaque chat history.
+This is a forward-looking technical note, not a current product commitment. The old working name `OpenClaw` meant a small account-resident learner agent that remembers a student through explicit learning evidence, not through opaque chat history. The current architecture deliberately starts smaller: `PlataCompanion` is a deterministic learner-facing card, and external Hermes/OpenClaw-style tools receive only a read-only bridge brief.
 
 ## Why This Matters
 
@@ -15,16 +15,16 @@ The long-term bet:
 
 ## Product Shape
 
-`OpenClaw` should behave less like a mascot and more like a quiet study operator:
+The first product shape is not an embedded autonomous agent. `PlataCompanion` should behave less like a mascot and more like a quiet study operator:
 
-- remembers durable weak signals, repaired signals, preferred contexts, stale skills, and recurring traps;
-- notices when a learner repeatedly fails the same underlying competency across different lessons; the deterministic memory layer now proves this with `root_competency_trap` facts before any model call is introduced;
+- reads durable weak signals, repaired signals, preferred contexts, stale skills, and recurring traps from deterministic memory;
+- notices when a learner repeatedly fails the same underlying competency across different lessons through `root_competency_trap` facts before any model call is introduced;
 - proposes the next short practice block with a reason;
 - can explain a recommendation in learner language;
-- can generate or select a repair prompt only from approved lesson contracts;
+- can route to a repair or review action only from approved lesson contracts;
 - never hides the evidence ledger that produced the advice.
 
-The agent must not become a dependency for basic practice. The app should still work without an account, network, or model call.
+The companion must not become a dependency for basic practice. The app should still work without an account, network, or model call. External agents such as Hermes can help explain or schedule around the recommendation, but they are optional and read-only.
 
 ## Privacy Contract
 
@@ -75,19 +75,19 @@ If account sync is added later, the target should be a memory vault, not a gener
 
    Only after the local model is useful: add optional account sync for memory facts. The account should synchronize a compact, auditable learner profile across devices. The first local contract is `PlataMemoryVault`: a derived-facts-only payload with source fingerprints, corrections, and privacy flags, explicitly excluding trainer state, event logs, practice plans, source event ids, and raw answer text. Vault import is a merge operation: local tombstones and learner corrections win, source-fingerprinted duplicates collapse deterministically, and standalone vault payloads do not replace trainer state or active plans.
 
-6. Account-resident agent
+6. Companion and external bridge
 
-   `OpenClaw` receives a `PlataAgentHandoff` packet built from an agent-facing memory brief, not the full account vault by default. `PlataMemoryBrief` turns the learner memory vault, lesson catalog, and skill graph into a compact cited focus with top facts, root-skill risks, due reviews, hidden/corrected assumptions, and guardrails. `PlataAgentHandoff` then adds the concrete task, required fact/source citations, allowed actions, blocked actions, and response contract. It can propose practice, explain drift, and prepare repair sessions only through cited derived facts. It should not mutate the canonical memory ledger without recording a learner-visible event.
+   `PlataMemoryBrief` turns the learner memory vault, lesson catalog, and skill graph into a compact cited focus with top facts, root-skill risks, due reviews, hidden/corrected assumptions, and guardrails. `PlataAgentHandoff` then adds the concrete task, required fact/source citations, allowed actions, blocked actions, and response contract. `PlataCompanion` turns advisor and handoff packets into a user-facing card with one next action, cited facts, guardrails, and a stable fingerprint. The optional `plata.hermes-bridge-brief` is read-only for external agent tools: it can explain Plata's recommendation, but it cannot request raw history, write memory, or override the planner.
 
 7. Agent evaluation harness
 
-   Fixed learner profiles should test whether the agent gives stable, useful, evidence-backed advice. Bad advice should fail CI in the same spirit as dashboard snapshot diffs. The first version is deterministic: `PlataAdvisor` emits local advice from cited memory facts and planner decisions, `check:advisor` snapshots the result, `check:personalization-eval` removes memory facts to prove planner/advisor drift stays explainable, and `check:personalization-trajectory` replays repair, review, reopen, and cross-lesson root-skill transitions before any model call is allowed into the loop. Pull-request QA also compares base/head trajectory reports so protected rule or root-skill drift is reviewable before merge.
+   Fixed learner profiles should test whether the companion gives stable, useful, evidence-backed advice. Bad advice should fail CI in the same spirit as dashboard snapshot diffs. The first version is deterministic: `PlataAdvisor` emits local advice from cited memory facts and planner decisions, `check:companion` proves companion cards and Hermes bridge briefs stay cited/read-only, `check:personalization-eval` removes memory facts to prove planner/advisor drift stays explainable, and `check:personalization-trajectory` replays repair, review, reopen, and cross-lesson root-skill transitions before any model call is allowed into the loop. Pull-request QA also compares base/head trajectory reports so protected rule or root-skill drift is reviewable before merge.
 
 ## Open Questions
 
 - Should account memory be encrypted client-side before sync?
 - What minimum memory schema is useful before introducing any LLM?
-- Can the agent run with a small local model for explanations, while deterministic code keeps the ranking?
+- Should an external tool such as Hermes be allowed to rewrite companion copy if it preserves the cited next action?
 - How should a learner correct a false memory fact without destroying useful historical evidence?
 - What is the smallest hosted service that preserves the static, forkable spirit of the project?
 

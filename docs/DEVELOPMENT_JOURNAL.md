@@ -25,7 +25,9 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Build a memory inspector so learners can see, export, and delete personalization facts.
 - [x] Prototype optional account memory as a vault for derived learning facts, not raw answer history.
 - [x] Add a strict agent handoff packet so a future account-resident helper receives cited tasks instead of raw learner history.
-- [ ] Evaluate a small account-resident `OpenClaw` agent against deterministic learner profiles; see [Learner Memory Agent RFC](./LEARNER_MEMORY_AGENT_RFC.md).
+- [x] Reject embedded heavy agent runtime scope in favor of a lightweight companion and read-only Hermes bridge.
+- [x] Add deterministic companion cards and Hermes bridge briefs over advisor/handoff packets.
+- [ ] Evaluate external Hermes/OpenClaw-style integrations as optional explainers, not sources of truth; see [Companion Architecture](./COMPANION_ARCHITECTURE.md).
 
 ## Current Sprint
 
@@ -121,6 +123,15 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add `check:review-report` to prove unchanged, review-only, regression, JSON, and fail-mode behavior.
 - [x] Make pull-request QA build JSON diff artifacts and fail through the unified report.
 - [x] Include the unified report in project health workflow checks.
+
+## Companion Architecture Sprint
+
+- [x] Document the no-heavy-embedded-agent decision in [Companion Architecture](./COMPANION_ARCHITECTURE.md).
+- [x] Add `shared/plata-companion.js` as the deterministic user-facing projection over advisor and handoff packets.
+- [x] Export `plata.companion-card` with one next action, cited facts, guardrails, and a stable `cmp-` fingerprint.
+- [x] Export `plata.hermes-bridge-brief` as a read-only packet for external Hermes/OpenClaw-style tools.
+- [x] Render the dashboard recommendation as a Study companion card while preserving planner/advisor traces.
+- [x] Add `check:companion` and project-health coverage for deterministic, cited, read-only bridge behavior.
 
 ## Lesson Exercise Audit Sprint
 
