@@ -49,6 +49,8 @@ Planner decisions carry two explanation layers. `explainDecision(...)` and `expl
 
 `plata-memory.js` exposes `window.PlataMemory`, the local learner memory compiler underneath future inspectable personalization. It turns the redacted event log into durable facts such as `weak_signal`, `repaired_signal`, `recurring_trap`, `stable_strength`, `stale_skill`, `preferred_context`, and `next_review_due`. Facts cite source event ids and a source fingerprint, and carry a privacy marker that no raw answer text is included.
 
+The dashboard memory inspector renders those facts for the learner, supports hiding/restoring individual derived facts, and includes visible facts plus hidden fact ids in portable profile export/import.
+
 `scripts/debug-profile-replay.js --file plata-backup.json` is the maintainer-facing replay debugger for dashboard exports. It reads the exported `eventLog` when present, derives one from legacy `trainers` + `practicePlan` exports when needed, and prints trainer, signal, item, plan, fingerprint, and warning summaries without raw learner answer text.
 
 `plata-catalog.js` is the static trainer registry used by the dashboard. Gold lesson entries can declare `lessonGlobal` and `lessonDataPath`; the dashboard loads those data files on demand to build mastery/remediation recommendations without hardcoding individual lesson globals.

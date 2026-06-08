@@ -12,6 +12,7 @@ const competencySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-co
 const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
 const evidenceSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-evidence.js"), "utf8");
 const eventsSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-events.js"), "utf8");
+const memorySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
@@ -52,6 +53,7 @@ function makeContext(initialStorage, options) {
     "#due-cards": makeElement("div"),
     "#practice-plan": makeElement("div"),
     "#evidence-ledger": makeElement("div"),
+    "#memory-facts": makeElement("div"),
     "#competency-list": makeElement("div"),
     "#mastery-list": makeElement("div"),
     "#weak-list": makeElement("div"),
@@ -162,6 +164,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
+  vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
 
@@ -245,6 +248,7 @@ function runEmptyDashboardSmoke() {
   assert(/no local progress yet/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains starter plan evidence");
   assert(env.storage[env.context.PlataPlanner.practicePlanStorageKey], "dashboard persists active practice plan");
   assert(/No evidence trail yet/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard renders empty evidence ledger state");
+  assert(/No learner memory facts yet/.test(env.elements["#memory-facts"].innerHTML), "dashboard renders empty learner memory state");
   assert(/No root-skill pattern needs attention yet/.test(env.elements["#competency-list"].innerHTML), "dashboard renders empty competency graph state");
   assert(/No repair pattern is active yet/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders empty mastery state");
   assert(/No raw weak tags yet/.test(env.elements["#weak-list"].innerHTML), "dashboard renders empty raw weak-tag state");
@@ -261,6 +265,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
+  vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   assert(env.context.PlataCatalog.trainers.length === 6, "dashboard reads trainer catalog");
@@ -289,6 +294,19 @@ function runSeededMasterySmoke() {
   assert(/Needs attention/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger shows open mastery signals");
   assert(/Read passive agency/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger names the open signal");
   assert(/1 miss \/ 1 try/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger includes signal counts");
+  assert(/Weak signal: passive-agency/.test(env.elements["#memory-facts"].innerHTML), "dashboard memory inspector shows weak signal facts");
+  assert(/memsrc-/.test(env.elements["#memory-facts"].innerHTML), "dashboard memory inspector renders source fingerprints");
+
+  const memoryBundle = invokeDashboardFunction(env, "buildMemoryFacts");
+  const weakFact = memoryBundle.visibleFacts.find(fact => fact.kind === "weak_signal" && fact.signal === "passive-agency");
+  assert(weakFact, "dashboard exposes compiled memory facts");
+  vm.runInContext(`deleteMemoryFact(${JSON.stringify(weakFact.id)})`, env.context, { filename: "dashboard.js" });
+  assert(env.storage["plata:learner-memory:deleted-facts:v1"].includes(weakFact.id), "dashboard persists hidden memory fact ids");
+  assert(!/Weak signal: passive-agency/.test(env.elements["#memory-facts"].innerHTML), "dashboard hides deleted memory facts");
+  assert(/Restore 1 hidden/.test(env.elements["#memory-facts"].innerHTML), "dashboard offers memory fact restore");
+  invokeDashboardFunction(env, "restoreDeletedMemoryFacts");
+  assert(!env.storage["plata:learner-memory:deleted-facts:v1"], "dashboard clears hidden memory fact ids");
+  assert(/Weak signal: passive-agency/.test(env.elements["#memory-facts"].innerHTML), "dashboard restores hidden memory facts");
 }
 
 function runStartedPlanSmoke() {
@@ -302,6 +320,7 @@ function runStartedPlanSmoke() {
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
+  vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
 
   const planner = env.context.PlataPlanner;
   const plan = planner.savePracticePlan({
@@ -377,6 +396,7 @@ function runPlanReturnReceiptSmoke() {
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
+  vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   const planner = env.context.PlataPlanner;
   const plan = planner.savePracticePlan({
     kind: "continue",
@@ -428,6 +448,7 @@ function runClosedMasterySmoke() {
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
+  vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   const dueHtml = env.elements["#due-cards"].children.map(child => child.innerHTML).join("\n");
@@ -451,6 +472,8 @@ async function runDynamicCatalogSmoke() {
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
+  vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
+  vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
   await Promise.resolve();
   await Promise.resolve();
@@ -491,6 +514,10 @@ function runPortableProfileSmoke() {
   assert(payload.eventLog && payload.eventLog.schemaVersion === 1, "dashboard export includes an event-log payload");
   assert(payload.eventLog.events.some(event => event.type === "plan.step.completed"), "dashboard export event log includes plan completion events");
   assert(payload.eventLog.replay.plans[payload.practicePlan.planToken].completedSteps === 1, "dashboard export event log includes replayed plan facts");
+  assert(payload.memory && payload.memory.schemaVersion === 1, "dashboard export includes memory facts");
+  assert(payload.memory.fingerprint && payload.memory.fingerprint.startsWith("mem-"), "dashboard export includes memory fingerprint");
+  assert(payload.memory.facts.some(fact => fact.kind === "preferred_context"), "dashboard export includes derived memory fact rows");
+  assert(!JSON.stringify(payload.memory).includes("should not leak"), "dashboard memory export excludes raw plan answer text");
 
   const importEnv = makeContext();
   loadKernelAndDashboard(importEnv);
@@ -500,6 +527,7 @@ function runPortableProfileSmoke() {
   const importedPlan = importEnv.context.PlataPlanner.readPracticePlan();
   assert(importedPlan && importedPlan.steps.length, "dashboard import restores active practice plan");
   assert(importedPlan.steps[0].completedAt === payload.practicePlan.steps[0].completedAt, "dashboard import restores plan execution ledger");
+  assert(!importEnv.storage["plata:learner-memory:deleted-facts:v1"], "dashboard import restores empty memory deletion set");
 
   const legacyEnv = makeContext();
   loadKernelAndDashboard(legacyEnv);
@@ -508,6 +536,7 @@ function runPortableProfileSmoke() {
   legacyEnv.elements["#import-file"].files = [{ content: JSON.stringify({ schemaVersion: 2, trainers: {} }) }];
   legacyEnv.elements["#import-file"].onchange();
   assert(!legacyEnv.context.PlataPlanner.readPracticePlan(), "legacy dashboard import clears stale active plan");
+  assert(!legacyEnv.storage["plata:learner-memory:deleted-facts:v1"], "legacy dashboard import clears stale hidden memory facts");
 }
 
 async function run() {
@@ -531,6 +560,7 @@ async function run() {
   console.log("ok - dashboard explains why planner steps were selected");
   console.log("ok - dashboard explains practice-plan execution evidence");
   console.log("ok - dashboard renders the learning evidence ledger");
+  console.log("ok - dashboard renders inspectable learner memory facts");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");
   console.log("ok - dashboard loads lesson data from catalog");

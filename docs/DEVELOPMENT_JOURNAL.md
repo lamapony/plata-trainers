@@ -21,7 +21,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [ ] Add a PR-facing dashboard snapshot diff workflow step.
 - [ ] Define the local adaptive learner model before adding any account memory.
 - [x] Add an inspectable learner memory fact schema derived from the event log.
-- [ ] Build a memory inspector so learners can see, export, and delete personalization facts.
+- [x] Build a memory inspector so learners can see, export, and delete personalization facts.
 - [ ] Prototype optional account memory as a vault for derived learning facts, not raw answer history.
 - [ ] Evaluate a small account-resident `OpenClaw` agent against deterministic learner profiles; see [Learner Memory Agent RFC](./LEARNER_MEMORY_AGENT_RFC.md).
 
@@ -124,7 +124,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Compile memory facts from attempts, repair closures, and practice-plan completions.
 - [ ] Add deterministic fixtures for returning learners, stale skills, repaired signals, and recurring traps.
 - [ ] Upgrade planner traces so every memory-based recommendation cites the facts it used.
-- [ ] Add a dashboard memory inspector before any account sync.
+- [x] Add a dashboard memory inspector before any account sync.
 - [ ] Keep basic practice local-first and account-free.
 - [ ] Prototype optional account sync only after local memory improves recommendations.
 - [ ] Gate any AI agent advice through replayable profiles and privacy-leak tests.
@@ -136,3 +136,13 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add source event ids, source fingerprints, confidence, status, expiry, evidence rows, and privacy markers to each fact.
 - [x] Prove memory facts are deterministic and do not include raw expected/given answer text.
 - [x] Include the memory smoke test in `npm run check` and project health.
+
+## Dashboard Memory Inspector Sprint
+
+- [x] Add a dashboard section that renders local learner memory facts in plain language.
+- [x] Show fact kind, confidence, source fingerprint, evidence rows, trainer context, and signal context.
+- [x] Let the learner hide individual memory facts without mutating the underlying event log.
+- [x] Let the learner restore hidden facts when they want the full local profile back.
+- [x] Include visible facts, memory summary, fingerprint, and hidden fact ids in portable profile export.
+- [x] Restore hidden fact ids on profile import and clear stale memory deletions on legacy imports.
+- [x] Cover the inspector, hide/restore controls, and memory export with dashboard smoke tests.

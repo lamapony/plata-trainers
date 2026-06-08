@@ -1,6 +1,7 @@
 /* Platå Dashboard — unified progress view */
 
 const NON_DIAGNOSTIC_TAGS = new Set(["A0", "A1", "A2", "B1", "B2", "lesson", "repair"]);
+const MEMORY_DELETIONS_KEY = "plata:learner-memory:deleted-facts:v1";
 let masteryCatalogCache = null;
 
 function $(sel) { return document.querySelector(sel); }
@@ -191,6 +192,93 @@ function formatPlanDateTime(iso) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
   return d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+}
+
+function safeReadJson(raw, fallback) {
+  if (!raw) return fallback;
+  try {
+    return JSON.parse(raw);
+  } catch (err) {
+    return fallback;
+  }
+}
+
+function collectTrainerStates() {
+  const all = {};
+  trainers().forEach(trainer => {
+    const state = loadTrainerState(trainer.id);
+    if (state) all[trainer.id] = state;
+  });
+  return all;
+}
+
+function profileTrainerEntries(stateMap) {
+  const all = stateMap || collectTrainerStates();
+  return trainers()
+    .map(trainer => ({ trainer, state: all[trainer.id] }))
+    .filter(entry => entry.state);
+}
+
+function currentPracticePlan() {
+  const planner = window.PlataPlanner;
+  return planner && planner.readPracticePlan ? planner.readPracticePlan() : null;
+}
+
+function profileEventLogPayload(stateMap, practicePlan) {
+  const events = window.PlataEvents;
+  if (!events || !events.profileEventLog) return null;
+  return events.profileEventLog({
+    trainers: profileTrainerEntries(stateMap),
+    practicePlan
+  }, { kernel: window.PlataKernel });
+}
+
+function readDeletedMemoryFactIds() {
+  const raw = window.localStorage ? window.localStorage.getItem(MEMORY_DELETIONS_KEY) : "";
+  return safeReadJson(raw, []).filter(Boolean).map(String);
+}
+
+function writeDeletedMemoryFactIds(ids) {
+  if (!window.localStorage) return;
+  const unique = Array.from(new Set((ids || []).filter(Boolean).map(String))).sort();
+  if (unique.length) {
+    window.localStorage.setItem(MEMORY_DELETIONS_KEY, JSON.stringify(unique));
+  } else {
+    window.localStorage.removeItem(MEMORY_DELETIONS_KEY);
+  }
+}
+
+function buildMemoryFacts(stateMap, practicePlan) {
+  const memory = window.PlataMemory;
+  if (!memory || !memory.compileMemoryFacts) {
+    return { facts: [], visibleFacts: [], deletedIds: [], summary: null, fingerprint: "" };
+  }
+  const facts = memory.compileMemoryFacts({
+    trainers: profileTrainerEntries(stateMap),
+    practicePlan
+  }, { kernel: window.PlataKernel });
+  const deletedIds = readDeletedMemoryFactIds();
+  const deleted = new Set(deletedIds);
+  const visibleFacts = facts.filter(fact => !deleted.has(fact.id));
+  return {
+    facts,
+    visibleFacts,
+    deletedIds,
+    summary: memory.summarizeMemoryFacts ? memory.summarizeMemoryFacts(visibleFacts) : null,
+    fingerprint: memory.memoryFingerprint ? memory.memoryFingerprint(visibleFacts) : ""
+  };
+}
+
+function deleteMemoryFact(factId) {
+  const ids = readDeletedMemoryFactIds();
+  if (!ids.includes(factId)) ids.push(factId);
+  writeDeletedMemoryFactIds(ids);
+  renderMemoryFacts();
+}
+
+function restoreDeletedMemoryFacts() {
+  writeDeletedMemoryFactIds([]);
+  renderMemoryFacts();
 }
 
 function ledgerDate(iso) {
@@ -532,6 +620,69 @@ function renderEvidenceLedger() {
   `).join("");
 }
 
+function memoryEvidenceHtml(fact) {
+  const rows = (fact.evidence || []).slice(0, 5);
+  if (!rows.length) return "";
+  return `
+    <div class="memory-evidence">
+      ${rows.map(row => `<span><strong>${escapeHtml(row.label)}</strong>${escapeHtml(row.value)}</span>`).join("")}
+    </div>
+  `;
+}
+
+function renderMemoryFacts() {
+  const container = $("#memory-facts");
+  if (!container) return;
+  const bundle = buildMemoryFacts();
+  const facts = bundle.visibleFacts.slice(0, 12);
+  const summary = bundle.summary || { total: 0, openSignals: 0, dueReviews: 0 };
+  const hiddenCount = bundle.deletedIds.length;
+
+  if (!window.PlataMemory) {
+    container.innerHTML = '<p class="narrative">Learner memory is unavailable. Progress tracking still works normally.</p>';
+    return;
+  }
+
+  if (bundle.facts.length === 0) {
+    container.innerHTML = '<p class="narrative">No learner memory facts yet. Complete a trainer or tracked practice step and this view will show what the system believes.</p>';
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="memory-summary">
+      <span><strong>${summary.total}</strong> visible facts</span>
+      <span><strong>${summary.openSignals}</strong> open signals</span>
+      <span><strong>${summary.dueReviews}</strong> due reviews</span>
+      ${bundle.fingerprint ? `<span><strong>${escapeHtml(bundle.fingerprint)}</strong> fingerprint</span>` : ""}
+      ${hiddenCount ? `<button class="btn" id="restore-memory-facts" type="button">Restore ${hiddenCount} hidden</button>` : ""}
+    </div>
+    <div class="memory-grid">
+      ${facts.map(fact => `
+        <article class="memory-card ${escapeHtml(fact.kind)}">
+          <div class="memory-card-head">
+            <span>${escapeHtml(fact.kind)}</span>
+            <span>${Math.round(Number(fact.confidence || 0) * 100)}%</span>
+          </div>
+          <h3>${escapeHtml(fact.title)}</h3>
+          <p>${escapeHtml(fact.copy)}</p>
+          ${memoryEvidenceHtml(fact)}
+          <div class="memory-meta">
+            ${fact.trainerName ? `<span>${escapeHtml(fact.trainerName)}</span>` : ""}
+            ${fact.signal ? `<span>${escapeHtml(fact.signal)}</span>` : ""}
+            ${fact.sourceFingerprint ? `<span>${escapeHtml(fact.sourceFingerprint)}</span>` : ""}
+          </div>
+          <button class="memory-delete" type="button" data-memory-delete="${escapeHtml(fact.id)}">Hide fact</button>
+        </article>
+      `).join("")}
+    </div>
+  `;
+
+  $("#restore-memory-facts")?.addEventListener("click", restoreDeletedMemoryFacts);
+  $$("[data-memory-delete]").forEach(button => {
+    button.addEventListener("click", () => deleteMemoryFact(button.getAttribute("data-memory-delete")));
+  });
+}
+
 function renderCompetencyList() {
   const container = $("#competency-list");
   if (!container) return;
@@ -701,28 +852,25 @@ function renderWeakList() {
 
 // Data tools
 function exportAll() {
-  const all = {};
-  trainers().forEach(trainer => {
-    const state = loadTrainerState(trainer.id);
-    if (state) all[trainer.id] = state;
-  });
+  const all = collectTrainerStates();
   const kernel = window.PlataKernel;
-  const planner = window.PlataPlanner;
-  const events = window.PlataEvents;
-  const practicePlan = planner && planner.readPracticePlan ? planner.readPracticePlan() : null;
-  const eventLog = events && events.profileEventLog
-    ? events.profileEventLog({
-      trainers: trainers().map(trainer => ({ trainer, state: all[trainer.id] })).filter(entry => entry.state),
-      practicePlan
-    }, { kernel })
-    : null;
+  const practicePlan = currentPracticePlan();
+  const eventLog = profileEventLogPayload(all, practicePlan);
+  const memoryBundle = buildMemoryFacts(all, practicePlan);
   const payload = {
     exportedAt: new Date().toISOString(),
     profileSchemaVersion: 1,
     schemaVersion: kernel.schemaVersion,
     trainers: all,
     practicePlan: practicePlan || null,
-    eventLog
+    eventLog,
+    memory: window.PlataMemory ? {
+      schemaVersion: window.PlataMemory.memorySchemaVersion,
+      fingerprint: memoryBundle.fingerprint,
+      summary: memoryBundle.summary,
+      facts: memoryBundle.visibleFacts,
+      deletedFactIds: memoryBundle.deletedIds
+    } : null
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -773,6 +921,12 @@ function importAll() {
           planner?.clearPracticePlan?.();
         }
 
+        if (Object.prototype.hasOwnProperty.call(payload, "memory") && payload.memory) {
+          writeDeletedMemoryFactIds(Array.isArray(payload.memory.deletedFactIds) ? payload.memory.deletedFactIds : []);
+        } else {
+          writeDeletedMemoryFactIds([]);
+        }
+
         const planText = restoredPlan ? ", restored active plan" : "";
         statusEl.textContent = `Imported ${imported} trainer state(s)${skipped ? `, skipped ${skipped}` : ""}${planText}. Refresh to see changes.`;
         statusEl.style.color = "var(--green)";
@@ -793,6 +947,7 @@ function renderDashboard() {
   renderPracticePlan(candidates);
   renderDueCards(candidates);
   renderEvidenceLedger();
+  renderMemoryFacts();
   renderCompetencyList();
   renderMasteryList();
   renderWeakList();
