@@ -1,0 +1,99 @@
+#!/usr/bin/env node
+"use strict";
+
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
+const {
+  buildProjectHealthManifest,
+  formatProjectHealthManifest
+} = require("./build-project-health-manifest.js");
+
+const repoRoot = path.resolve(__dirname, "..");
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+
+function copyDir(source, target) {
+  fs.cpSync(source, target, {
+    recursive: true,
+    filter(file) {
+      const name = path.basename(file);
+      return name !== ".git" && name !== ".dist" && name !== ".DS_Store";
+    }
+  });
+}
+
+function copyHealthRoot(root) {
+  ["package.json", "dashboard.js"].forEach(file => {
+    fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
+  });
+  [".github", "shared", "lessons", "scripts"].forEach(dir => {
+    copyDir(path.join(repoRoot, dir), path.join(root, dir));
+  });
+}
+
+function runBaseSmoke() {
+  const manifest = buildProjectHealthManifest();
+  assert(manifest.status === "pass", `project health manifest should pass:\n${manifest.issues.join("\n")}`);
+  assert(manifest.totals.gates >= 28, "manifest should enumerate the full QA gate set");
+  assert(manifest.publicReports.some(report => report.id === "quality" && report.pagesPath === "reports/quality.json"), "manifest should link the quality report");
+  assert(manifest.publicReports.some(report => report.id === "skill-coverage" && report.pagesPath === "reports/skill-coverage.json"), "manifest should link the skill coverage report");
+  assert(manifest.publicReports.some(report => report.id === "project-health" && report.pagesPath === "reports/project-health.json"), "manifest should link itself as a public report");
+  assert(manifest.workflows.every(workflow => workflow.runsFullCheck && workflow.nodeVersion === "24"), "manifest should link full-check workflows");
+  assert(manifest.deterministicFixtures.some(fixture => fixture.id === "dashboard-recommendations" && fixture.fresh), "manifest should link fresh deterministic fixtures");
+  assert(manifest.guarantees.every(guarantee => guarantee.pass), "manifest guarantees should all pass");
+
+  const formatted = formatProjectHealthManifest(manifest);
+  assert(formatted.includes("Project Health Manifest"), "formatter should include report title");
+  assert(formatted.includes("fixtures-fresh-and-proven"), "formatter should include fixture guarantee");
+  assert(formatted.includes("Issues:\nnone"), "formatter should show empty issue list");
+}
+
+function runMissingGateSmoke() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "plata-health-"));
+  try {
+    copyHealthRoot(root);
+    const packagePath = path.join(root, "package.json");
+    const pkg = JSON.parse(fs.readFileSync(packagePath, "utf8"));
+    delete pkg.scripts["check:dashboard-snapshot-mutations"];
+    pkg.scripts.check = pkg.scripts.check.replace(" && npm run check:dashboard-snapshot-mutations", "");
+    fs.writeFileSync(packagePath, JSON.stringify(pkg, null, 2) + "\n");
+
+    const manifest = buildProjectHealthManifest({ root });
+    assert(manifest.status === "fail", "manifest should fail when a required gate is missing");
+    assert(manifest.issues.some(issue => issue.includes("check:dashboard-snapshot-mutations: missing package script")), "manifest should report missing gate script");
+    assert(manifest.issues.some(issue => issue.includes("check:dashboard-snapshot-mutations: not included in npm run check")), "manifest should report missing check-chain gate");
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+}
+
+function runStaleFixtureSmoke() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "plata-health-"));
+  try {
+    copyHealthRoot(root);
+    const fixturePath = path.join(root, "scripts", "fixtures", "dashboard-recommendations.snapshot.json");
+    const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
+    fixture.scenarios[0].candidateOrder = fixture.scenarios[0].candidateOrder.slice().reverse();
+    fs.writeFileSync(fixturePath, JSON.stringify(fixture, null, 2) + "\n");
+
+    const manifest = buildProjectHealthManifest({ root });
+    assert(manifest.status === "fail", "manifest should fail when deterministic fixture is stale");
+    assert(manifest.issues.some(issue => issue.includes("dashboard-recommendations fixture: fixture is stale")), "manifest should report stale fixture");
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+}
+
+function run() {
+  runBaseSmoke();
+  runMissingGateSmoke();
+  runStaleFixtureSmoke();
+  console.log("ok - project health manifest links gates, reports, workflows, and fixtures");
+  console.log("ok - project health manifest catches missing QA gates");
+  console.log("ok - project health manifest catches stale deterministic fixtures");
+}
+
+run();

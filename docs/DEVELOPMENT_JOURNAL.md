@@ -15,7 +15,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Compile mastery signals into a skill graph coverage report so gaps are visible before new content is added.
 - [x] Add deterministic snapshot tests for the dashboard recommendation surface.
 - [x] Prove dashboard recommendation snapshots catch planner and evidence drift with mutation tests.
-- [ ] Publish a project health manifest that links QA gates, public reports, and deterministic fixtures.
+- [x] Publish a project health manifest that links QA gates, public reports, and deterministic fixtures.
 - [ ] Add a compact diff for dashboard recommendation snapshot changes.
 
 ## Current Sprint
@@ -85,3 +85,12 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Mutate the repair trace rule and prove the trace snapshot changes.
 - [x] Mutate the evidence ledger open-mastery row and prove the ledger snapshot changes.
 - [x] Include the dashboard snapshot mutation suite in `npm run check`.
+
+## Project Health Manifest Sprint
+
+- [x] Compile required `npm run check` gates into a machine-readable contract.
+- [x] Link public reports: quality, skill coverage, and project health.
+- [x] Verify QA and Pages workflows still run the full check on Node 24.
+- [x] Verify deterministic dashboard fixtures are fresh and mutation-backed.
+- [x] Fail on missing gates and stale fixtures in smoke tests.
+- [x] Publish `reports/project-health.json` in the Pages artifact.
