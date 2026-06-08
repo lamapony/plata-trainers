@@ -220,6 +220,22 @@ function planStepLedgerHtml(step) {
   return rows.length ? `<div class="plan-step-ledger">${rows.join("")}</div>` : "";
 }
 
+function planStepExplanationHtml(step, planner, options = {}) {
+  const explanation = planner && planner.explainPracticePlanStep
+    ? planner.explainPracticePlanStep(step)
+    : step && step.explanation;
+  if (!explanation || (!explanation.copy && (!explanation.facts || explanation.facts.length === 0))) return "";
+  const facts = Array.isArray(explanation.facts) ? explanation.facts.slice(0, options.compact ? 3 : 5) : [];
+  const className = options.compact ? "plan-step-explanation compact" : "plan-step-explanation";
+  return `
+    <div class="${className}">
+      <span class="eyebrow">${escapeHtml(explanation.label || "Why this step")}</span>
+      ${explanation.copy ? `<p>${escapeHtml(explanation.copy)}</p>` : ""}
+      ${facts.length ? `<div class="plan-step-facts">${facts.map(fact => `<span>${escapeHtml(fact)}</span>`).join("")}</div>` : ""}
+    </div>
+  `;
+}
+
 function planPrimaryActionHtml(plan, planner) {
   if (!plan || plan.completed || !planner) return "";
   const step = planner.actionablePracticePlanStep ? planner.actionablePracticePlanStep(plan) : plan.primaryStep;
@@ -232,6 +248,7 @@ function planPrimaryActionHtml(plan, planner) {
       <a class="btn primary" href="${escapeHtml(href)}">${escapeHtml(label)}</a>
       <span>${escapeHtml(meta)}</span>
     </div>
+    ${planStepExplanationHtml(step, planner, { compact: true })}
   `;
 }
 
@@ -257,6 +274,7 @@ function planReturnReceiptHtml(plan, planner) {
         </div>
         <a class="btn primary" href="${escapeHtml(href)}">Continue next step</a>
         <span class="plan-return-next">Step ${escapeHtml(nextStep.number)} of ${escapeHtml(plan.steps.length)} · ${escapeHtml(nextStep.trainerName || "Practice")} · ${escapeHtml(nextStep.minutes)}</span>
+        ${planStepExplanationHtml(nextStep, planner, { compact: true })}
       </div>
     `;
   }
@@ -375,6 +393,7 @@ function renderPracticePlan(candidates) {
               <h4>${escapeHtml(step.title)}</h4>
               <p>${escapeHtml(step.copy)}</p>
               ${step.competency ? `<span class="competency-chip">${escapeHtml(step.competency.label)}</span>` : ""}
+              ${planStepExplanationHtml(step, planner)}
               ${planStepLedgerHtml(step)}
               <a href="${escapeHtml(planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref)}">${escapeHtml(step.primaryLabel)} →</a>
             </div>

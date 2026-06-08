@@ -236,6 +236,8 @@ function runEmptyDashboardSmoke() {
   assert(/Start Lesson 01/.test(env.elements["#practice-plan"].innerHTML), "dashboard starter plan includes first lesson");
   assert(/plan=/.test(env.elements["#practice-plan"].innerHTML), "dashboard plan links carry active plan token");
   assert(/step=/.test(env.elements["#practice-plan"].innerHTML), "dashboard plan links carry step route id");
+  assert(/Why this step/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders planner explanations in the practice plan");
+  assert(/no local progress yet/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains starter plan evidence");
   assert(env.storage[env.context.PlataPlanner.practicePlanStorageKey], "dashboard persists active practice plan");
   assert(/No weak root skills/.test(env.elements["#competency-list"].innerHTML), "dashboard renders empty competency graph state");
   assert(/No weak mastery signals/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders empty mastery state");
@@ -268,6 +270,8 @@ function runSeededMasterySmoke() {
   assert(/Active plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders repair plan as the active tracked plan");
   assert(/plan-step-status open/.test(env.elements["#practice-plan"].innerHTML), "dashboard marks repair step as open before closure");
   assert(/Agency and responsibility/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan shows root competency");
+  assert(/highest open mastery signal/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains why the repair step is first");
+  assert(/Evidence: 1 wrong \/ 1 total/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders repair evidence counts");
   assert(/mode=repair/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links repair mode");
   assert(/plan=/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links carry active plan token");
   assert(/step=/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links carry step route id");
@@ -394,6 +398,7 @@ function runPlanReturnReceiptSmoke() {
   assert(/Repair workplace answer is in the plan ledger/.test(html), "dashboard return receipt names the returned step");
   assert(/Continue next step/.test(html), "dashboard return receipt offers the next step");
   assert(/Step 2 of 2/.test(html), "dashboard return receipt identifies the next step");
+  assert(/Chosen from the saved practice plan/.test(html), "dashboard return receipt explains the next saved step");
   assert(html.includes("./vocab-sr/"), "dashboard return receipt links to the next unfinished step");
 }
 
@@ -498,6 +503,7 @@ async function run() {
   console.log("ok - dashboard renders active practice-plan execution state");
   console.log("ok - dashboard promotes the next actionable practice-plan step");
   console.log("ok - dashboard confirms plan-step returns from trainer routes");
+  console.log("ok - dashboard explains why planner steps were selected");
   console.log("ok - dashboard explains practice-plan execution evidence");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");

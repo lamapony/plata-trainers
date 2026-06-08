@@ -465,6 +465,75 @@
     };
   }
 
+  function normalizeExplanation(explanation) {
+    if (!explanation || typeof explanation !== "object") return null;
+    var facts = Array.isArray(explanation.facts) ? explanation.facts : [];
+    return {
+      label: explanation.label || "Why this step",
+      copy: explanation.copy || "",
+      facts: facts.filter(function (fact) { return fact !== undefined && fact !== null && String(fact).trim(); }).slice(0, 5),
+      source: explanation.source || ""
+    };
+  }
+
+  function explainDecision(decision, stats) {
+    decision = decision || {};
+    stats = stats || {};
+    var kind = decision.kind || "continue";
+    var reasons = Array.isArray(decision.reasons) ? decision.reasons.filter(Boolean) : [];
+    var signal = decision.signals && decision.signals[0] || null;
+    var facts = [];
+    var copy = "";
+
+    if (decision.competency && decision.competency.label) facts.push("Root skill: " + decision.competency.label);
+    if (signal && signal.label) facts.push("Signal: " + signal.label);
+    if (signal && (signal.wrong !== undefined || signal.total !== undefined)) {
+      facts.push("Evidence: " + Number(signal.wrong || 0) + " wrong / " + Number(signal.total || 0) + " total");
+    }
+    if (decision.meta) facts.push(decision.meta);
+    reasons.forEach(function (reason) { facts.push(reason); });
+
+    if (kind === "repair") {
+      copy = "Chosen because this is the highest open mastery signal in the current evidence.";
+    } else if (kind === "weak") {
+      copy = "Chosen because this trainer still has a repeated weak tag.";
+    } else if (kind === "accuracy") {
+      copy = "Chosen because accuracy is below the comfort zone.";
+      if (stats.accuracy !== undefined && stats.accuracy !== null) facts.unshift("Current accuracy: " + stats.accuracy + "%");
+    } else if (kind === "start") {
+      copy = "Chosen because this path has no local progress yet.";
+    } else if (kind === "enough") {
+      copy = "Chosen because today's practice threshold is already reached.";
+      if (stats.today !== undefined) facts.unshift("Attempts today: " + Number(stats.today || 0));
+    } else if (kind === "stale") {
+      copy = "Chosen because this trainer has gone stale since the last session.";
+      if (stats.lastSessionDate) facts.unshift("Last session: " + stats.lastSessionDate);
+    } else {
+      copy = "Chosen as the next useful block from the current local progress.";
+    }
+
+    return normalizeExplanation({
+      label: "Why this step",
+      copy: copy,
+      facts: facts,
+      source: kind
+    });
+  }
+
+  function explainPracticePlanStep(step) {
+    step = step || {};
+    var explanation = normalizeExplanation(step.explanation);
+    if (explanation && (explanation.copy || explanation.facts.length)) return explanation;
+    return normalizeExplanation({
+      label: "Why this step",
+      copy: step.kind === "repair"
+        ? "Chosen because this repair step still matches an open weak signal."
+        : "Chosen from the saved practice plan.",
+      facts: (step.competency && step.competency.label ? ["Root skill: " + step.competency.label] : []).concat(step.reasons || []),
+      source: step.kind || ""
+    });
+  }
+
   function planStep(item, number) {
     var decision = item.decision || {};
     var trainer = item.trainer || {};
@@ -488,7 +557,8 @@
       attemptsAtStart: Number(stats.total || 0),
       lastSessionDateAtStart: stats.lastSessionDate || "",
       competency: normalizeCompetency(competency),
-      reasons: decision.reasons || []
+      reasons: decision.reasons || [],
+      explanation: explainDecision(decision, stats)
     };
   }
 
@@ -616,6 +686,7 @@
       lastSessionDateAtStart: step.lastSessionDateAtStart || "",
       competency: normalizeCompetency(step.competency),
       reasons: Array.isArray(step.reasons) ? step.reasons.slice(0, 6) : [],
+      explanation: normalizeExplanation(step.explanation),
       startedAt: step.startedAt || "",
       completedAt: step.completedAt || "",
       lastSeenAt: step.lastSeenAt || "",
@@ -889,6 +960,8 @@
     lessonDecision: lessonDecision,
     drillDecision: drillDecision,
     dashboardDecision: dashboardDecision,
+    explainDecision: explainDecision,
+    explainPracticePlanStep: explainPracticePlanStep,
     rankDashboardDecisions: rankDashboardDecisions,
     practicePlan: practicePlan,
     planFingerprint: planFingerprint,

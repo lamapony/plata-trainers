@@ -189,6 +189,10 @@ function runDashboardDecisionSmoke(context) {
   assert(repair.title.includes("Read passive agency"), "dashboard repair should use mastery label");
   assert(repair.primaryHref.includes("mode=repair"), "dashboard repair should link repair mode");
   assert(repair.competency.id === "agency", "dashboard repair exposes root competency");
+  const repairExplanation = planner.explainDecision(repair, { total: 1, correct: 0, accuracy: 0, today: 1 });
+  assert(repairExplanation.copy.includes("highest open mastery signal"), "planner explains why repair was chosen");
+  assert(repairExplanation.facts.some(fact => fact.includes("Root skill: Agency and responsibility")), "planner explanation includes root skill evidence");
+  assert(repairExplanation.facts.some(fact => fact.includes("Evidence: 1 wrong / 1 total")), "planner explanation includes signal counts");
 
   const mismatchedRoot = planner.dashboardDecision({
     trainer,
@@ -239,6 +243,9 @@ function runDashboardDecisionSmoke(context) {
   assert(plan.steps.length === 1, "practice plan does not pad repair work with starter tasks");
   assert(plan.steps[0].competency.id === "agency", "practice plan keeps root competency on repair step");
   assert(plan.steps[0].primaryHref.includes("mode=repair"), "practice plan repair step links to repair mode");
+  assert(plan.steps[0].explanation.copy.includes("highest open mastery signal"), "practice plan stores planner explanation on repair step");
+  assert(plan.steps[0].explanation.facts.some(fact => fact.includes("Root skill: Agency and responsibility")), "practice plan explanation stores root evidence");
+  assert(planner.explainPracticePlanStep(plan.steps[0]).copy.includes("highest open mastery signal"), "planner exposes a normalized step explanation");
 
   const trackedPlan = planner.practicePlan([
     { trainer, stats: { total: 1, lastSessionDate: "2026-06-08" }, decision: repair, index: 1 }
@@ -247,6 +254,7 @@ function runDashboardDecisionSmoke(context) {
   const savedPlan = planner.savePracticePlan(trackedPlan);
   assert(savedPlan.fingerprint === planner.planFingerprint(trackedPlan), "saved practice plan stores a stable fingerprint");
   assert(savedPlan.planToken && savedPlan.steps[0].routeId, "saved practice plan stores route identifiers");
+  assert(savedPlan.steps[0].explanation.copy.includes("highest open mastery signal"), "saved practice plan preserves step explanation");
   const routeHref = planner.planStepHref(savedPlan, savedPlan.steps[0]);
   assert(routeHref.includes("plan=" + encodeURIComponent(savedPlan.planToken)), "practice plan route href carries plan token");
   assert(routeHref.includes("step=" + encodeURIComponent(savedPlan.steps[0].routeId)), "practice plan route href carries step id");

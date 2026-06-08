@@ -226,11 +226,41 @@ h3 { font-size: 30px; }
   border-radius: 8px;
   background: oklch(0.74 0.12 145 / 0.08);
 }
-.plan-return-receipt div { display: grid; gap: 3px; min-width: min(100%, 280px); flex: 1 1 280px; }
+.plan-return-receipt > div:first-child { display: grid; gap: 3px; min-width: min(100%, 280px); flex: 1 1 280px; }
 .plan-return-receipt strong { color: var(--text); font-size: 14px; }
 .plan-return-receipt span { color: var(--muted); font-size: 13px; line-height: 1.4; }
 .plan-return-receipt .btn { min-height: 36px; padding: 0 12px; font-size: 13px; }
 .plan-return-next { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11px !important; text-transform: uppercase; letter-spacing: 0.06em; }
+.plan-step-explanation {
+  display: grid;
+  gap: 7px;
+  margin: 10px 0 0;
+  padding: 10px 11px;
+  border: 1px solid oklch(0.74 0.12 145 / 0.26);
+  border-left: 3px solid var(--green);
+  border-radius: 8px;
+  background: oklch(0.74 0.12 145 / 0.06);
+}
+.plan-step-explanation.compact { max-width: 760px; margin-top: 10px; }
+.plan-return-receipt .plan-step-explanation { flex: 1 1 100%; margin-top: 2px; }
+.plan-step-explanation .eyebrow { color: var(--green); font-size: 10px; }
+.plan-step-explanation p { margin: 0; color: var(--text); font-size: 13px; line-height: 1.45; }
+.plan-step-facts { display: flex; flex-wrap: wrap; gap: 6px; }
+.plan-step-facts span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: oklch(1 0 0 / 0.035);
+  color: var(--muted);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px !important;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
 .plan-steps { display: grid; gap: 10px; }
 .plan-step { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
 .plan-step-number { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ember-soft); color: var(--ember); font-family: "JetBrains Mono", monospace; font-weight: 800; }
