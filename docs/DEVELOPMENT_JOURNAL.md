@@ -174,3 +174,11 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add advisor snapshots for returning context, stale review, repaired signal, and recurring trap learner profiles.
 - [x] Prove advisor output does not include raw answer text from fixture events.
 - [x] Include advisor fixtures in `npm run check` and project health deterministic fixture reporting.
+
+## Dashboard Advisor Receipt Sprint
+
+- [x] Render the deterministic advisor inside the dashboard practice-plan surface.
+- [x] Tie the receipt to the current actionable plan step instead of a free-floating chatbot surface.
+- [x] Show the planner rule, advice rule, trace fingerprint, cited memory fact ids, source fingerprints, next action, and privacy guardrails.
+- [x] Keep hidden learner memory facts out of advisor receipts by using the same visible memory bundle as dashboard recommendations.
+- [x] Add dashboard smoke and snapshot coverage so advisor receipt drift is reviewable.

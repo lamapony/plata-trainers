@@ -13,6 +13,7 @@ const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-plann
 const evidenceSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-evidence.js"), "utf8");
 const eventsSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-events.js"), "utf8");
 const memorySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory.js"), "utf8");
+const advisorSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-advisor.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
@@ -165,6 +166,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
+  vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
 
@@ -266,6 +268,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
+  vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   assert(env.context.PlataCatalog.trainers.length === 6, "dashboard reads trainer catalog");
@@ -286,6 +289,11 @@ function runSeededMasterySmoke() {
   assert(/highest open mastery signal/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains why the repair step is first");
   assert(/Evidence: 1 miss \/ 1 try/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders repair evidence counts");
   assert(/Memory: weak_signal passive-agency memsrc-/.test(env.elements["#practice-plan"].innerHTML), "dashboard practice plan cites planner memory facts");
+  assert(/Local advisor/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders advisor receipt for memory-backed plans");
+  assert(/Cited memory/.test(env.elements["#practice-plan"].innerHTML), "dashboard advisor receipt exposes cited memory facts");
+  assert(/No model call/.test(env.elements["#practice-plan"].innerHTML), "dashboard advisor receipt renders model guardrail");
+  assert(/adv-/.test(env.elements["#practice-plan"].innerHTML), "dashboard advisor receipt includes trace fingerprint");
+  assert(!/De lover, at radiatoren bliver fikset hurtigt/.test(env.elements["#practice-plan"].innerHTML), "dashboard advisor receipt does not leak raw learner answers");
   assert(/mode=repair/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links repair mode");
   assert(/plan=/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links carry active plan token");
   assert(/step=/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links carry step route id");
@@ -330,6 +338,7 @@ function runStartedPlanSmoke() {
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
+  vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
 
   const planner = env.context.PlataPlanner;
   const plan = planner.savePracticePlan({
@@ -406,6 +415,7 @@ function runPlanReturnReceiptSmoke() {
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
+  vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
   const planner = env.context.PlataPlanner;
   const plan = planner.savePracticePlan({
     kind: "continue",
@@ -458,6 +468,7 @@ function runClosedMasterySmoke() {
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
+  vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   const dueHtml = env.elements["#due-cards"].children.map(child => child.innerHTML).join("\n");
@@ -483,6 +494,7 @@ async function runDynamicCatalogSmoke() {
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
+  vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
   await Promise.resolve();
   await Promise.resolve();
@@ -570,6 +582,7 @@ async function run() {
   console.log("ok - dashboard explains practice-plan execution evidence");
   console.log("ok - dashboard renders the learning evidence ledger");
   console.log("ok - dashboard renders inspectable learner memory facts");
+  console.log("ok - dashboard renders explainable local advisor receipts");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");
   console.log("ok - dashboard loads lesson data from catalog");

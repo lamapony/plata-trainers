@@ -18,6 +18,7 @@ const sources = [
   "shared/plata-evidence.js",
   "shared/plata-events.js",
   "shared/plata-memory.js",
+  "shared/plata-advisor.js",
   "dashboard.js"
 ];
 
@@ -397,12 +398,42 @@ function compactLedgerEntry(entry) {
   };
 }
 
+function compactAdvisorReceipt(receipt) {
+  if (!receipt || !receipt.advice) return null;
+  const advice = receipt.advice || {};
+  const trace = advice.trace || {};
+  return {
+    kind: advice.kind || "",
+    title: advice.title || "",
+    advice: advice.advice || "",
+    nextAction: {
+      label: advice.nextAction && advice.nextAction.label || "",
+      href: receipt.actionHref || advice.nextAction && advice.nextAction.href || ""
+    },
+    citedFacts: (advice.citedFacts || []).map(fact => ({
+      id: fact.id || "",
+      kind: fact.kind || "",
+      signal: fact.signal || "",
+      sourceFingerprint: fact.sourceFingerprint || ""
+    })),
+    guardrails: {
+      deterministic: !!(advice.guardrails && advice.guardrails.deterministic),
+      requiresModel: !!(advice.guardrails && advice.guardrails.requiresModel),
+      usesOnlyCitedFacts: !!(advice.guardrails && advice.guardrails.usesOnlyCitedFacts),
+      containsRawAnswerText: !!(advice.guardrails && advice.guardrails.containsRawAnswerText)
+    },
+    traceRule: trace.rule || "",
+    traceFingerprint: trace.fingerprint || ""
+  };
+}
+
 function normalizeSurface(env, seed) {
   const candidates = invoke(env, "dashboardCandidates()");
   const planner = env.context.PlataPlanner;
   const graph = env.context.PlataCompetencies;
   const due = planner.rankDashboardDecisions(candidates, 3);
   const activePlan = planner.planStatus(planner.readPracticePlan(), candidates);
+  const advisorReceipt = invoke(env, "advisorReceiptForPlan(PlataPlanner.planStatus(PlataPlanner.readPracticePlan(), dashboardCandidates()))");
   const ledger = invoke(env, "buildEvidenceLedger()");
   const weakSignals = candidates.flatMap(item => (item.stats.weakMastery || []).map(signal => ({
     ...signal,
@@ -420,6 +451,7 @@ function normalizeSurface(env, seed) {
     candidates: candidates.map(compactCandidateSummary),
     due: due.map(compactCandidate),
     practicePlan: compactPlan(activePlan, planner),
+    advisorReceipt: compactAdvisorReceipt(advisorReceipt),
     evidenceLedger: ledger.map(compactLedgerEntry),
     weakCompetencies: competencies.map(compactCompetency)
   };

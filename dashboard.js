@@ -353,6 +353,84 @@ function planPrimaryActionHtml(plan, planner) {
   `;
 }
 
+function advisorReceiptForPlan(plan) {
+  const advisor = window.PlataAdvisor;
+  const planner = window.PlataPlanner;
+  if (!advisor || !advisor.advise || !plan || plan.completed || !planner) return null;
+  const step = planner.actionablePracticePlanStep ? planner.actionablePracticePlanStep(plan) : plan.primaryStep;
+  if (!step) return null;
+  const memoryBundle = buildMemoryFacts(null, plan);
+  if (!memoryBundle.visibleFacts.length) return null;
+  const advice = advisor.advise({
+    memoryFacts: memoryBundle.visibleFacts,
+    plannerDecision: step,
+    limit: 3
+  });
+  if (!advice || !Array.isArray(advice.citedFacts) || advice.citedFacts.length === 0) return null;
+  return {
+    advice,
+    step,
+    actionHref: planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref
+  };
+}
+
+function advisorCitationHtml(fact) {
+  const labels = [
+    fact.kind || "",
+    fact.signal || "",
+    fact.sourceFingerprint || ""
+  ].filter(Boolean);
+  return `
+    <span>
+      <strong>${escapeHtml(fact.id || "memory fact")}</strong>
+      ${escapeHtml(labels.join(" · "))}
+    </span>
+  `;
+}
+
+function advisorReceiptHtml(receipt) {
+  if (!receipt || !receipt.advice) return "";
+  const advice = receipt.advice;
+  const trace = advice.trace || {};
+  const inputs = trace.inputs || {};
+  const guardrails = advice.guardrails || {};
+  const next = advice.nextAction || {};
+  const actionLabel = next.label || "Open next step";
+  const actionHref = receipt.actionHref || next.href || "#";
+  const guardrailLabels = [
+    guardrails.deterministic ? "Deterministic" : "",
+    guardrails.requiresModel === false ? "No model call" : "",
+    guardrails.usesOnlyCitedFacts ? "Cited facts only" : "",
+    guardrails.containsRawAnswerText === false ? "No raw answers" : ""
+  ].filter(Boolean);
+
+  return `
+    <aside class="advisor-receipt ${escapeHtml(advice.kind || "inspect")}" aria-label="Local advisor recommendation">
+      <div class="advisor-receipt-head">
+        <div>
+          <p class="eyebrow">Local advisor</p>
+          <h4>${escapeHtml(advice.title || "Advisor note")}</h4>
+        </div>
+        <span>${escapeHtml(trace.fingerprint || "")}</span>
+      </div>
+      <p>${escapeHtml(advice.advice || "")}</p>
+      <div class="advisor-chain">
+        <span><strong>Planner</strong>${escapeHtml(inputs.plannerRule || receipt.step.trace && receipt.step.trace.rule || "practice-plan")}</span>
+        <span><strong>Advice rule</strong>${escapeHtml(trace.rule || "")}</span>
+        ${guardrailLabels.map(label => `<span><strong>Guardrail</strong>${escapeHtml(label)}</span>`).join("")}
+      </div>
+      <div class="advisor-citations">
+        <span class="eyebrow">Cited memory</span>
+        <div>${(advice.citedFacts || []).map(advisorCitationHtml).join("")}</div>
+      </div>
+      <div class="advisor-next-action">
+        <strong>Next action</strong>
+        <a href="${escapeHtml(actionHref)}">${escapeHtml(actionLabel)} →</a>
+      </div>
+    </aside>
+  `;
+}
+
 function planReturnReceiptHtml(plan, planner) {
   if (!routeParam("ledger-return") || !plan || !plan.steps || !planner) return "";
   const returnedStepId = routeParam("step");
@@ -468,6 +546,7 @@ function renderPracticePlan(candidates) {
   const canCompileNext = plan.completed && compiled && compiled.steps && compiled.steps.length
     && (!planner.planFingerprint || planner.planFingerprint(compiled) !== plan.fingerprint);
   const planProgress = plan.steps.length ? Math.round(((plan.completedCount || 0) / plan.steps.length) * 100) : 0;
+  const advisorReceipt = advisorReceiptForPlan(plan);
 
   container.innerHTML = `
     <article class="practice-plan-card ${escapeHtml(plan.kind || "continue")}">
@@ -484,6 +563,7 @@ function renderPracticePlan(candidates) {
       <div class="plan-progress" aria-label="${planProgress}% complete">
         <span style="width: ${planProgress}%"></span>
       </div>
+      ${advisorReceiptHtml(advisorReceipt)}
       ${planReturnReceiptHtml(plan, planner)}
       <div class="plan-steps">
         ${plan.steps.map(step => `

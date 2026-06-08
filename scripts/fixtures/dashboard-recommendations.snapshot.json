@@ -423,6 +423,7 @@
           }
         ]
       },
+      "advisorReceipt": null,
       "evidenceLedger": [],
       "weakCompetencies": []
     },
@@ -970,6 +971,31 @@
             }
           }
         ]
+      },
+      "advisorReceipt": {
+        "kind": "repair",
+        "title": "Repair passive-agency",
+        "advice": "Start with one repair scene because this signal is still weak in learner memory.",
+        "nextAction": {
+          "label": "Open repair scene",
+          "href": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency&plan=p1z0mgdg&step=s1-1z0mgdg#official-reply-passive"
+        },
+        "citedFacts": [
+          {
+            "id": "mem-ow38cj",
+            "kind": "weak_signal",
+            "signal": "passive-agency",
+            "sourceFingerprint": "memsrc-h7inq3"
+          }
+        ],
+        "guardrails": {
+          "deterministic": true,
+          "requiresModel": false,
+          "usesOnlyCitedFacts": true,
+          "containsRawAnswerText": false
+        },
+        "traceRule": "advisor.repair.memory-backed",
+        "traceFingerprint": "adv-bhcoid"
       },
       "evidenceLedger": [
         {
