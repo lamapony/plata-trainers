@@ -5,6 +5,7 @@
 
 Open-source Danish plateau-breaker for Danish learners who are no longer starting from zero but still feel stuck. Static HTML/JS, no app build step, no backend.
 Live demo: [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/).
+Demo learner dashboard: [lamapony.github.io/plata-trainers/dashboard.html?demo=learner](https://lamapony.github.io/plata-trainers/dashboard.html?demo=learner).
 Public quality report: [lamapony.github.io/plata-trainers/quality.html](https://lamapony.github.io/plata-trainers/quality.html).
 Public program map: [lamapony.github.io/plata-trainers/program.html](https://lamapony.github.io/plata-trainers/program.html).
 Public capability map: [lamapony.github.io/plata-trainers/reports/capabilities.json](https://lamapony.github.io/plata-trainers/reports/capabilities.json).
@@ -25,6 +26,7 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals, deterministic simulation, remediation, and comic storyboard prompts.
 - **Public proof reports:** Pages publishes generated JSON for quality, skill coverage, Today shell states, project health, and a capability map that links product claims to checks, source files, and docs.
 - **Lightweight companion:** the dashboard opens with a deterministic, stateful Today shell and exports a read-only Hermes bridge brief without embedding a heavy agent runtime.
+- **Inspectable demo learner:** `dashboard.html?demo=learner` shows a rich B2 profile in memory only, so visitors can inspect personalization without overwriting their local progress.
 - **Static and forkable:** every trainer can run from `index.html`; GitHub Pages deploys a checked static artifact.
 
 ## Available trainers

@@ -8,6 +8,7 @@ const { buildCapabilityMap } = require("./build-capability-map.js");
 
 const root = path.resolve(__dirname, "..");
 const report = buildCapabilityMap();
+const programHtml = fs.readFileSync(path.join(root, "program.html"), "utf8");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -31,6 +32,8 @@ function makeElement(selector) {
 }
 
 async function run() {
+  assert(programHtml.includes("dashboard.html?demo=learner"), "program page does not link the demo learner dashboard");
+
   const elements = {};
   [
     "#program-status",

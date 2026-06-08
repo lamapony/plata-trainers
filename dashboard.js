@@ -4,7 +4,9 @@ const NON_DIAGNOSTIC_TAGS = new Set(["A0", "A1", "A2", "B1", "B2", "lesson", "re
 const MEMORY_DELETIONS_KEY = "plata:learner-memory:deleted-facts:v1";
 const MEMORY_CORRECTIONS_KEY = "plata:learner-memory:corrections:v1";
 const MEMORY_VAULT_KEY = "plata:learner-memory:vault:v1";
+const DEMO_PROFILE_QUERY_VALUES = new Set(["1", "true", "learner", "sample"]);
 let masteryCatalogCache = null;
+let demoTrainerStateCache = null;
 
 function $(sel) { return document.querySelector(sel); }
 function $$(sel) { return document.querySelectorAll(sel); }
@@ -115,6 +117,7 @@ function isRawDiagnosticTag(tag) {
 function loadTrainerState(trainerId) {
   const kernel = window.PlataKernel;
   if (!kernel) return null;
+  if (isDemoMode()) return demoTrainerState(trainerId);
   const handle = kernel.createTrainerState({ trainerId, save: false });
   return handle.state;
 }
@@ -189,6 +192,147 @@ function routeParam(name) {
   return "";
 }
 
+function isDemoMode() {
+  return DEMO_PROFILE_QUERY_VALUES.has(String(routeParam("demo") || "").trim().toLowerCase());
+}
+
+function cloneJson(value) {
+  return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+}
+
+function setDemoAttemptAt(state, index, at) {
+  const attempt = state && state.attempts && state.attempts[index];
+  if (!attempt) return;
+  attempt.at = at;
+  const item = state.byItemId && state.byItemId[attempt.itemId];
+  if (item) item.lastSeen = at;
+}
+
+function rebuildDemoTimeline(state) {
+  if (!state || !state.meta) return state;
+  const daily = {};
+  let latest = "";
+  (state.attempts || []).forEach(attempt => {
+    const at = String(attempt.at || "");
+    if (!at) return;
+    const day = at.slice(0, 10);
+    daily[day] = (daily[day] || 0) + 1;
+    if (!latest || at > latest) latest = at;
+  });
+  state.meta.dailyAttempts = daily;
+  if (latest) {
+    state.meta.lastSessionDate = latest.slice(0, 10);
+    state.updatedAt = latest;
+  }
+  state.items = state.byItemId || {};
+  return state;
+}
+
+function demoRecordAttempt(state, attempt, at) {
+  const kernel = window.PlataKernel;
+  if (!kernel || !kernel.recordAttempt) return;
+  kernel.recordAttempt(state, attempt);
+  setDemoAttemptAt(state, state.attempts.length - 1, at);
+}
+
+function demoRadiatorState(kernel) {
+  const state = kernel.freshState("lesson-b2-radiator-register");
+  demoRecordAttempt(state, {
+    itemId: "official-reply-passive",
+    correct: false,
+    tags: ["B2", "lesson", "passive-agency"],
+    mode: "lesson",
+    register: "formal"
+  }, "2026-06-01T08:00:00.000Z");
+  demoRecordAttempt(state, {
+    itemId: "official-reply-passive",
+    correct: true,
+    tags: ["B2", "repair", "passive-agency"],
+    mode: "repair",
+    register: "formal"
+  }, "2026-06-02T08:00:00.000Z");
+  if (kernel.recordRepairClosure) {
+    kernel.recordRepairClosure(state, {
+      signal: "passive-agency",
+      itemId: "official-reply-passive",
+      sceneId: "official-reply-passive",
+      lessonId: "lesson-b2-radiator-register",
+      label: "Read passive agency",
+      action: "Name who promises what",
+      resolvedAt: "2026-06-02T08:02:00.000Z",
+      sourceMode: "repair",
+      correct: true
+    });
+  }
+  demoRecordAttempt(state, {
+    itemId: "workplace-understatement",
+    correct: false,
+    tags: ["B2", "lesson", "understatement-with-agency", "passive-agency"],
+    mode: "lesson",
+    register: "workplace"
+  }, "2026-06-06T08:00:00.000Z");
+  demoRecordAttempt(state, {
+    itemId: "two-registers",
+    correct: true,
+    tags: ["B2", "lesson", "formal-register-control"],
+    mode: "lesson",
+    register: "formal"
+  }, "2026-06-07T08:00:00.000Z");
+  return rebuildDemoTimeline(state);
+}
+
+function demoJobFollowupState(kernel) {
+  const state = kernel.freshState("lesson-b2-job-followup");
+  demoRecordAttempt(state, {
+    itemId: "silence-pressure",
+    correct: true,
+    tags: ["B2", "lesson", "process-patience"],
+    mode: "lesson",
+    register: "professional"
+  }, "2026-05-01T08:00:00.000Z");
+  demoRecordAttempt(state, {
+    itemId: "email-register",
+    correct: false,
+    tags: ["B2", "lesson", "professional-email-agency"],
+    mode: "lesson",
+    register: "formal"
+  }, "2026-06-03T08:00:00.000Z");
+  demoRecordAttempt(state, {
+    itemId: "linkedin-choice",
+    correct: false,
+    tags: ["B2", "lesson", "platform-register-shift"],
+    mode: "lesson",
+    register: "professional"
+  }, "2026-06-04T08:00:00.000Z");
+  demoRecordAttempt(state, {
+    itemId: "reply-consequence",
+    correct: true,
+    tags: ["B2", "lesson", "reply-tone-reading"],
+    mode: "lesson",
+    register: "professional"
+  }, "2026-06-05T08:00:00.000Z");
+  return rebuildDemoTimeline(state);
+}
+
+function demoTrainerStates() {
+  const kernel = window.PlataKernel;
+  if (!kernel || !kernel.freshState) return {};
+  if (!demoTrainerStateCache) {
+    demoTrainerStateCache = {
+      "lesson-b2-radiator-register": demoRadiatorState(kernel),
+      "lesson-b2-job-followup": demoJobFollowupState(kernel)
+    };
+  }
+  return demoTrainerStateCache;
+}
+
+function demoTrainerState(trainerId) {
+  const kernel = window.PlataKernel;
+  const state = demoTrainerStates()[trainerId];
+  if (state) return cloneJson(state);
+  return kernel && kernel.freshState ? kernel.freshState(trainerId) : null;
+}
+
 function formatPlanDateTime(iso) {
   if (!iso) return "";
   const d = new Date(iso);
@@ -222,6 +366,7 @@ function profileTrainerEntries(stateMap) {
 }
 
 function currentPracticePlan() {
+  if (isDemoMode()) return null;
   const planner = window.PlataPlanner;
   return planner && planner.readPracticePlan ? planner.readPracticePlan() : null;
 }
@@ -236,11 +381,13 @@ function profileEventLogPayload(stateMap, practicePlan) {
 }
 
 function readDeletedMemoryFactIds() {
+  if (isDemoMode()) return [];
   const raw = window.localStorage ? window.localStorage.getItem(MEMORY_DELETIONS_KEY) : "";
   return safeReadJson(raw, []).filter(Boolean).map(String);
 }
 
 function writeDeletedMemoryFactIds(ids) {
+  if (isDemoMode()) return;
   if (!window.localStorage) return;
   const unique = Array.from(new Set((ids || []).filter(Boolean).map(String))).sort();
   if (unique.length) {
@@ -267,6 +414,7 @@ function normalizeMemoryCorrection(record) {
 }
 
 function readMemoryCorrections() {
+  if (isDemoMode()) return [];
   const raw = window.localStorage ? window.localStorage.getItem(MEMORY_CORRECTIONS_KEY) : "";
   const parsed = safeReadJson(raw, []);
   const source = Array.isArray(parsed) ? parsed : Object.values(parsed || {});
@@ -277,6 +425,7 @@ function readMemoryCorrections() {
 }
 
 function writeMemoryCorrections(records) {
+  if (isDemoMode()) return;
   if (!window.localStorage) return;
   const unique = new Map();
   (records || []).map(normalizeMemoryCorrection).filter(Boolean).forEach(record => {
@@ -291,6 +440,7 @@ function writeMemoryCorrections(records) {
 }
 
 function readStoredMemoryVault() {
+  if (isDemoMode()) return null;
   const vaultApi = window.PlataMemoryVault;
   if (!vaultApi || !window.localStorage) return null;
   const vault = safeReadJson(window.localStorage.getItem(MEMORY_VAULT_KEY), null);
@@ -302,6 +452,7 @@ function readStoredMemoryVault() {
 }
 
 function writeStoredMemoryVault(vault) {
+  if (isDemoMode()) return;
   if (!window.localStorage) return;
   if (!vault) {
     window.localStorage.removeItem(MEMORY_VAULT_KEY);
@@ -496,6 +647,10 @@ function planPrimaryActionHtml(plan, planner) {
 function resolvePracticePlan(candidates) {
   const planner = window.PlataPlanner;
   const compiled = planner && planner.practicePlan ? planner.practicePlan(candidates, { limit: 3 }) : null;
+  if (isDemoMode()) {
+    const demoPlan = planner && planner.planStatus && compiled ? planner.planStatus(compiled, candidates) : compiled;
+    return { planner, plan: demoPlan, compiled };
+  }
   const active = planner && planner.readPracticePlan ? planner.readPracticePlan() : null;
   let plan = active && active.steps && active.steps.length ? active : compiled;
   if ((!active || !active.steps || active.steps.length === 0) && planner && planner.savePracticePlan && compiled && compiled.steps && compiled.steps.length) {
@@ -1390,6 +1545,7 @@ function exportAll() {
     : null;
   const payload = {
     exportedAt,
+    demoProfile: isDemoMode() ? "learner" : null,
     profileSchemaVersion: 1,
     schemaVersion: kernel.schemaVersion,
     trainers: all,
@@ -1420,6 +1576,14 @@ function exportAll() {
 }
 
 function importAll() {
+  if (isDemoMode()) {
+    const statusEl = $("#import-status");
+    if (statusEl) {
+      statusEl.textContent = "Demo mode is read-only. Leave demo mode before importing a real profile.";
+      statusEl.style.color = "var(--ember)";
+    }
+    return;
+  }
   const input = $("#import-file");
   input.click();
   input.onchange = () => {
@@ -1490,10 +1654,51 @@ function importAll() {
   };
 }
 
+function renderDemoProfileBanner() {
+  const banner = $("#demo-profile");
+  const exportButton = $("#export-all");
+  const importButton = $("#import-trigger");
+  if (!isDemoMode()) {
+    if (banner) {
+      banner.hidden = true;
+      banner.innerHTML = "";
+    }
+    if (exportButton) exportButton.textContent = "Export profile JSON";
+    if (importButton) {
+      importButton.disabled = false;
+      importButton.removeAttribute?.("aria-disabled");
+      importButton.textContent = "Import profile JSON";
+    }
+    return;
+  }
+
+  if (banner) {
+    banner.hidden = false;
+    banner.innerHTML = `
+      <div>
+        <p class="eyebrow">Demo learner</p>
+        <h2>Sample B2 plateau profile</h2>
+        <p>This dashboard is rendering a deterministic in-memory learner: recent register misses, one closed repair, a recurring passive-agency trap, and a due professional follow-up review. Your browser progress is not changed.</p>
+      </div>
+      <div class="demo-profile-actions">
+        <a class="btn primary" href="./lessons/lesson-b2-radiator/?mode=repair&signal=understatement-with-agency#workplace-understatement">Open suggested repair</a>
+        <a class="btn" href="./dashboard.html">Use my own progress</a>
+      </div>
+    `;
+  }
+  if (exportButton) exportButton.textContent = "Export demo JSON";
+  if (importButton) {
+    importButton.disabled = true;
+    importButton.setAttribute?.("aria-disabled", "true");
+    importButton.textContent = "Import disabled in demo";
+  }
+}
+
 function renderDashboard() {
   masteryCatalogCache = null;
   const candidates = dashboardCandidates();
   const planContext = resolvePracticePlan(candidates);
+  renderDemoProfileBanner();
   renderTrainerCards();
   renderTodayProgram(candidates, planContext);
   renderPracticePlan(candidates, planContext);

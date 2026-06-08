@@ -56,6 +56,7 @@ function makeContext(initialStorage, options) {
   options = options || {};
   const elements = {
     "#trainer-cards": makeElement("div"),
+    "#demo-profile": makeElement("section"),
     "#today-program": makeElement("div"),
     "#due-cards": makeElement("div"),
     "#practice-plan": makeElement("div"),
@@ -297,6 +298,35 @@ function runEmptyDashboardSmoke() {
   assert(/No root-skill pattern needs attention yet/.test(env.elements["#competency-list"].innerHTML), "dashboard renders empty competency graph state");
   assert(/No repair pattern is active yet/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders empty mastery state");
   assert(/No raw weak tags yet/.test(env.elements["#weak-list"].innerHTML), "dashboard renders empty raw weak-tag state");
+}
+
+function runDemoLearnerSmoke() {
+  const env = makeContext(null, { locationSearch: "?demo=learner" });
+  loadKernelAndDashboard(env);
+
+  assert(/Sample B2 plateau profile/.test(env.elements["#demo-profile"].innerHTML), "dashboard renders the demo learner banner");
+  assert(env.elements["#demo-profile"].hidden === false, "dashboard unhides the demo learner banner");
+  assert(/Use my own progress/.test(env.elements["#demo-profile"].innerHTML), "dashboard demo banner links back to the real local profile");
+  assert(/Study companion/.test(env.elements["#today-program"].innerHTML), "dashboard demo mode renders a companion-backed Today step");
+  assert(!/onboarding/.test(env.elements["#today-program"].innerHTML), "dashboard demo mode does not look like an empty first-run profile");
+  assert(/Cited memory/.test(env.elements["#today-program"].innerHTML), "dashboard demo Today step cites learner memory");
+  assert(/Active plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard demo mode renders a practice plan");
+  assert(/plan=/.test(env.elements["#practice-plan"].innerHTML), "dashboard demo practice links carry a plan token");
+  assert(/Weak signal:/.test(env.elements["#memory-facts"].innerHTML), "dashboard demo mode renders weak-signal memory facts");
+  assert(/Review due:/.test(env.elements["#memory-facts"].innerHTML), "dashboard demo mode renders due-review memory facts");
+  assert(/Needs attention/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard demo mode renders evidence ledger rows");
+  assert(env.elements["#import-trigger"].disabled === true, "dashboard demo mode disables profile import");
+
+  const memoryBundle = invokeDashboardFunction(env, "buildMemoryFacts");
+  assert(memoryBundle.visibleFacts.length >= 4, "dashboard demo mode compiles a rich memory bundle");
+  assert(memoryBundle.visibleFacts.some(fact => fact.kind === "weak_signal" && fact.signal === "passive-agency"), "dashboard demo memory includes passive-agency weakness");
+  assert(memoryBundle.visibleFacts.some(fact => fact.kind === "next_review_due"), "dashboard demo memory includes a due review");
+  assert(!JSON.stringify(memoryBundle).includes("De lover"), "dashboard demo memory excludes raw learner answer text");
+
+  const storageKeys = Object.keys(env.storage);
+  assert(!storageKeys.includes(env.context.PlataPlanner.practicePlanStorageKey), "dashboard demo mode does not persist a practice plan");
+  assert(storageKeys.filter(key => key.startsWith("plata:trainer:")).length === 0, "dashboard demo mode does not write trainer states");
+  assert(!storageKeys.includes("plata:learner-memory:vault:v1"), "dashboard demo mode does not write a memory vault");
 }
 
 function runSeededMasterySmoke() {
@@ -763,6 +793,7 @@ function runPortableProfileSmoke() {
 
 async function run() {
   runEmptyDashboardSmoke();
+  runDemoLearnerSmoke();
   runSeededMasterySmoke();
   runStartedPlanSmoke();
   runPrimaryPlanActionSmoke();
@@ -779,6 +810,7 @@ async function run() {
   console.log("ok - dashboard persists active practice-plan tracking");
   console.log("ok - dashboard renders active practice-plan execution state");
   console.log("ok - dashboard renders Today program shell");
+  console.log("ok - dashboard renders read-only demo learner mode");
   console.log("ok - dashboard renders Today program shell states");
   console.log("ok - dashboard promotes the next actionable practice-plan step");
   console.log("ok - dashboard confirms plan-step returns from trainer routes");

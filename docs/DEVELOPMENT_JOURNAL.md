@@ -344,3 +344,13 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Snapshot-test handoff packets for fixed learner profiles, including due-review and root-competency repair paths.
 - [x] Mutation-test raw-text leaks, missing citations, disabled citation requirements, missing action constraints, lost root-skill focus, and fingerprint drift.
 - [x] Include `check:agent-handoff` in `npm run check` and project health deterministic fixture reporting.
+
+## Demo Learner Mode Sprint
+
+- [x] Add a read-only `dashboard.html?demo=learner` mode that renders a deterministic in-memory B2 plateau profile.
+- [x] Seed the demo with real mastery signals across the radiator and job-followup lessons: weak signals, a closed repair, a reopened passive-agency trap, and a due review.
+- [x] Keep demo state out of `localStorage`: no trainer states, practice plan, memory vault, hidden facts, or correction records are persisted.
+- [x] Disable profile import in demo mode while still allowing export of the inspectable demo JSON payload.
+- [x] Add user-facing entry points from the homepage and public program map.
+- [x] Cover the mode in dashboard smoke tests, including companion-backed Today, memory citations, evidence ledger rows, and no storage writes.
+- [ ] Add a generated public demo snapshot report if the demo profile becomes part of PR review policy.
