@@ -37,6 +37,8 @@ Planner decisions carry two explanation layers. `explainDecision(...)` and `expl
 
 `scripts/snapshot-dashboard-recommendations.js` locks the dashboard recommendation surface to deterministic fixtures for an empty profile and a weak-mastery profile. It snapshots ranked candidates, due cards, active practice-plan routing, planner traces, evidence ledger rows, and root-skill diagnostics; run it with `--update` only when an intentional planner/UI contract change should become the new baseline.
 
+`scripts/mutation-dashboard-snapshot.js` mutates temporary copies of the planner and evidence ledger to prove the dashboard snapshot is not decorative. It catches preferred-entry drift, repair trace-rule drift, and missing open-mastery ledger rows without touching the working tree.
+
 `plata-evidence.js` exposes `window.PlataEvidence`, the shared evidence ledger contract. It turns trainer state, enriched weak mastery stats, recent attempts, and repair closures into ranked ledger entries such as open mastery signals, closed repairs, reopened signals, missed attempts, and correct attempts. UI layers should render these entries instead of interpreting raw attempts directly.
 
 `plata-events.js` exposes `window.PlataEvents`, a replay-ready event-log contract derived from existing trainer state and active practice-plan state. It emits privacy-conscious events such as `attempt.recorded`, `repair.closed`, `signal.reopened`, `plan.compiled`, `plan.step.started`, and `plan.step.completed`, then can replay those events into deterministic progress facts for export debugging and CI.

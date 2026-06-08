@@ -90,6 +90,7 @@ node scripts/counterfactual-learner-simulator.js
 node scripts/debug-profile-replay.js --file plata-backup.json
 node scripts/build-skill-coverage-report.js --out .dist/skill-coverage.json --text
 node scripts/snapshot-dashboard-recommendations.js
+node scripts/mutation-dashboard-snapshot.js
 node scripts/smoke-gold-scaffold.js
 node scripts/generate-comic-assets-openrouter.js --dry-run --out .dist/comic-prompts.json
 node scripts/mutation-quality-report.js

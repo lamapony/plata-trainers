@@ -14,6 +14,9 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add a profile replay debugger for maintainers, starting from JSON exports rather than user screenshots.
 - [x] Compile mastery signals into a skill graph coverage report so gaps are visible before new content is added.
 - [x] Add deterministic snapshot tests for the dashboard recommendation surface.
+- [x] Prove dashboard recommendation snapshots catch planner and evidence drift with mutation tests.
+- [ ] Publish a project health manifest that links QA gates, public reports, and deterministic fixtures.
+- [ ] Add a compact diff for dashboard recommendation snapshot changes.
 
 ## Current Sprint
 
@@ -74,3 +77,11 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Normalize volatile fields out of the fixture while preserving route ids, trace fingerprints, scores, and decision rules.
 - [x] Add an explicit `--update` path for intentional baseline changes.
 - [x] Include the snapshot check in `npm run check`.
+
+## Dashboard Snapshot Mutation Sprint
+
+- [x] Allow the dashboard snapshot harness to run against a temporary source root.
+- [x] Mutate the preferred-entry planner scoring and prove the due-card snapshot changes.
+- [x] Mutate the repair trace rule and prove the trace snapshot changes.
+- [x] Mutate the evidence ledger open-mastery row and prove the ledger snapshot changes.
+- [x] Include the dashboard snapshot mutation suite in `npm run check`.

@@ -34,8 +34,13 @@ function hasFlag(name) {
   return process.argv.includes(name);
 }
 
-function readSource(relPath) {
-  return fs.readFileSync(path.join(repoRoot, relPath), "utf8");
+function sourceRoot(options) {
+  if (typeof options === "string") return path.resolve(options);
+  return path.resolve(options && options.root || repoRoot);
+}
+
+function readRootSource(root, relPath) {
+  return fs.readFileSync(path.join(root, relPath), "utf8");
 }
 
 function fixedDateConstructor() {
@@ -146,12 +151,12 @@ function makeContext(initialStorage) {
   return { context, storage, elements };
 }
 
-function runSource(env, relPath) {
-  vm.runInContext(readSource(relPath), env.context, { filename: relPath });
+function runSource(env, root, relPath) {
+  vm.runInContext(readRootSource(root, relPath), env.context, { filename: relPath });
 }
 
-function loadAll(env) {
-  sources.forEach(relPath => runSource(env, relPath));
+function loadAll(env, root) {
+  sources.forEach(relPath => runSource(env, root, relPath));
 }
 
 function invoke(env, expression) {
@@ -180,14 +185,14 @@ function seedWeakMasteryState(env) {
   env.storage[kernel.stateKey("lesson-b2-radiator-register")] = JSON.stringify(state);
 }
 
-function buildScenario(seed) {
+function buildScenario(root, seed) {
   const env = makeContext();
   if (seed === "weak-mastery") {
-    runSource(env, "shared/plata-kernel.js");
+    runSource(env, root, "shared/plata-kernel.js");
     seedWeakMasteryState(env);
-    sources.filter(relPath => relPath !== "shared/plata-kernel.js").forEach(relPath => runSource(env, relPath));
+    sources.filter(relPath => relPath !== "shared/plata-kernel.js").forEach(relPath => runSource(env, root, relPath));
   } else {
-    loadAll(env);
+    loadAll(env, root);
   }
   return normalizeSurface(env, seed);
 }
@@ -416,13 +421,14 @@ function normalizeSurface(env, seed) {
   };
 }
 
-function buildDashboardRecommendationSnapshot() {
+function buildDashboardRecommendationSnapshot(options = {}) {
+  const root = sourceRoot(options);
   return {
     schemaVersion: 1,
     fixedNow,
     scenarios: [
-      buildScenario("empty-profile"),
-      buildScenario("weak-mastery")
+      buildScenario(root, "empty-profile"),
+      buildScenario(root, "weak-mastery")
     ]
   };
 }
@@ -453,7 +459,7 @@ function writeSnapshot(outPath, snapshot) {
 }
 
 function run() {
-  const snapshot = buildDashboardRecommendationSnapshot();
+  const snapshot = buildDashboardRecommendationSnapshot({ root: argValue("--root") || repoRoot });
   const out = argValue("--out");
   if (out) writeSnapshot(path.resolve(repoRoot, out), snapshot);
 
