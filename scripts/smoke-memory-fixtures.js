@@ -10,6 +10,7 @@ const fixtureRelPath = "scripts/fixtures/learner-memory-profiles.json";
 
 const sourceFiles = [
   "shared/plata-events.js",
+  "shared/plata-competencies.js",
   "shared/plata-memory.js",
   "shared/plata-planner.js"
 ];

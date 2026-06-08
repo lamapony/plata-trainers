@@ -192,7 +192,7 @@
 
   function traceMemoryFact(fact) {
     if (!fact) return null;
-    return {
+    var out = {
       id: fact.id || "",
       kind: fact.kind || "",
       status: fact.status || "",
@@ -201,6 +201,9 @@
       confidence: Number(fact.confidence || 0),
       sourceFingerprint: fact.sourceFingerprint || ""
     };
+    if (fact.competencyId) out.competencyId = fact.competencyId;
+    if (fact.competencyLabel) out.competencyLabel = fact.competencyLabel;
+    return out;
   }
 
   function traceMemoryFacts(facts, limit) {
@@ -210,6 +213,7 @@
   function memoryFactPriority(fact) {
     var ranks = {
       recurring_trap: 100,
+      root_competency_trap: 95,
       weak_signal: 90,
       next_review_due: 70,
       stale_skill: 60,
@@ -218,6 +222,12 @@
       preferred_context: 20
     };
     return ranks[fact && fact.kind] || 0;
+  }
+
+  function competencyIdForSignal(signalTag) {
+    var graph = root.PlataCompetencies;
+    if (!graph || !graph.competencyIdForTag) return "";
+    return graph.competencyIdForTag(signalTag) || "";
   }
 
   function compareMemoryFacts(a, b) {
@@ -229,9 +239,12 @@
   function memoryFactsFor(facts, trainerId, signalTag, kinds) {
     var kindSet = {};
     (kinds || []).forEach(function (kind) { kindSet[kind] = true; });
+    var competencyId = signalTag ? competencyIdForSignal(signalTag) : "";
     return (facts || []).filter(function (fact) {
-      if (!fact || fact.trainerId !== trainerId) return false;
-      if (signalTag && fact.signal !== signalTag) return false;
+      if (!fact) return false;
+      var rootMatch = fact.kind === "root_competency_trap" && competencyId && fact.trainerId === "profile" && fact.signal === competencyId;
+      if (!rootMatch && fact.trainerId !== trainerId) return false;
+      if (signalTag && !rootMatch && fact.signal !== signalTag) return false;
       return !kinds || !kinds.length || kindSet[fact.kind];
     }).sort(compareMemoryFacts);
   }
@@ -242,7 +255,7 @@
   }
 
   function memorySupportForSignal(facts, trainerId, signalTag) {
-    var selected = memoryFactsFor(facts, trainerId, signalTag, ["recurring_trap", "weak_signal"]).slice(0, 3);
+    var selected = memoryFactsFor(facts, trainerId, signalTag, ["recurring_trap", "root_competency_trap", "weak_signal"]).slice(0, 3);
     var remaining = 30;
     var boost = 0;
     var scoreBreakdown = [];
@@ -251,6 +264,8 @@
       var confidence = Number(fact.confidence || 0);
       var raw = fact.kind === "recurring_trap"
         ? Math.max(8, Math.round(confidence * 18))
+        : fact.kind === "root_competency_trap"
+          ? Math.max(7, Math.round(confidence * 15))
         : Math.max(4, Math.round(confidence * 10));
       var value = Math.min(remaining, raw);
       if (value <= 0) return;

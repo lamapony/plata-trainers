@@ -225,3 +225,11 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Split memory-backed repair advice from current-evidence repair advice when no memory facts are cited.
 - [x] Include the evaluation harness in `npm run check` and project health.
 - [x] Add `check:personalization-mutations` to prove broken advisor/planner personalization contracts fail CI.
+
+## Cross-Lesson Memory Sprint
+
+- [x] Emit `root_competency_trap` memory facts when weak signals from different lessons share one root competency.
+- [x] Add a cross-lesson agency fixture spanning `passive-agency` and `professional-email-agency`.
+- [x] Let planner traces cite root competency facts while routing to a concrete repair scene.
+- [x] Give advisor a distinct `advisor.repair.root-competency` rule for transferable root-skill repair.
+- [x] Extend personalization mutation tests so dropping root competency facts fails CI.

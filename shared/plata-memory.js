@@ -212,7 +212,7 @@
   function baseFact(kind, bucket, options) {
     options = options || {};
     var sourceIds = (bucket.sourceEventIds || []).slice().sort();
-    return {
+    var fact = {
       schemaVersion: MEMORY_SCHEMA_VERSION,
       id: factId(kind, bucket, options.suffix),
       kind: kind,
@@ -230,6 +230,23 @@
       sourceFingerprint: sourceFingerprint(sourceIds),
       evidence: options.evidence || [],
       privacy: { containsRawAnswerText: false }
+    };
+    if (options.competencyId) fact.competencyId = options.competencyId;
+    if (options.competencyLabel) fact.competencyLabel = options.competencyLabel;
+    if (options.signals) fact.signals = options.signals;
+    if (options.trainerIds) fact.trainerIds = options.trainerIds;
+    return fact;
+  }
+
+  function competencyForSignal(signal) {
+    var graph = root.PlataCompetencies;
+    if (!graph || !graph.competencyIdForTag) return null;
+    var id = graph.competencyIdForTag(signal);
+    if (!id) return null;
+    var def = graph.get ? graph.get(id) : null;
+    return {
+      id: id,
+      label: def && def.label || id
     };
   }
 
@@ -365,9 +382,77 @@
     });
   }
 
+  function buildRootCompetencyFacts(signalBuckets) {
+    var groups = {};
+    (signalBuckets || []).forEach(function (bucket) {
+      var wrong = numberOr(bucket.wrong, 0);
+      var correct = numberOr(bucket.correct, 0);
+      if (bucket.status === "closed" || wrong <= 0 || wrong < correct) return;
+      var competency = competencyForSignal(bucket.signal);
+      if (!competency) return;
+      if (!groups[competency.id]) {
+        groups[competency.id] = {
+          competency: competency,
+          trainers: {},
+          signals: {},
+          sourceEventIds: [],
+          wrong: 0,
+          attempts: 0,
+          lastAt: ""
+        };
+      }
+      var group = groups[competency.id];
+      group.trainers[bucket.trainerId] = true;
+      group.signals[bucket.signal] = true;
+      group.wrong += wrong;
+      group.attempts += numberOr(bucket.attempts, 0);
+      if (!group.lastAt || parseTime(bucket.lastAt) > parseTime(group.lastAt)) group.lastAt = bucket.lastAt;
+      (bucket.sourceEventIds || []).forEach(function (id) {
+        if (id && group.sourceEventIds.indexOf(id) === -1) group.sourceEventIds.push(id);
+      });
+    });
+
+    return Object.keys(groups).sort().map(function (id) {
+      var group = groups[id];
+      var signals = Object.keys(group.signals).sort();
+      var trainerIds = Object.keys(group.trainers).sort();
+      if (signals.length < 2 || trainerIds.length < 2) return null;
+      var bucket = {
+        trainerId: "profile",
+        trainerName: "Profile",
+        signal: id,
+        attempts: group.attempts,
+        correct: Math.max(0, group.attempts - group.wrong),
+        wrong: group.wrong,
+        itemCounts: {},
+        sourceEventIds: group.sourceEventIds.slice().sort(),
+        lastAt: group.lastAt
+      };
+      return baseFact("root_competency_trap", bucket, {
+        status: "open",
+        suffix: signals.join("|"),
+        title: "Root skill trap: " + group.competency.label,
+        copy: "Different lessons point to the same root skill, so the next repair should treat this as a transferable pattern.",
+        confidence: clamp(0.68 + Math.min(0.2, signals.length * 0.04) + Math.min(0.08, group.wrong * 0.01), 0.05, 0.96),
+        competencyId: id,
+        competencyLabel: group.competency.label,
+        signals: signals,
+        trainerIds: trainerIds,
+        evidence: [
+          evidence("rootSkill", group.competency.label),
+          evidence("signals", signals.join(", ")),
+          evidence("trainers", trainerIds.join(", ")),
+          evidence("wrong", group.wrong),
+          evidence("attempts", group.attempts)
+        ]
+      });
+    }).filter(Boolean);
+  }
+
   function factPriority(fact) {
     var ranks = {
       recurring_trap: 100,
+      root_competency_trap: 95,
       weak_signal: 90,
       next_review_due: 70,
       stale_skill: 60,
@@ -389,9 +474,11 @@
     options = options || {};
     var events = eventLogFromInput(input, options).slice().sort(compareEvents);
     var facts = [];
-    buildSignalBuckets(events).forEach(function (bucket) {
+    var signalBuckets = buildSignalBuckets(events);
+    signalBuckets.forEach(function (bucket) {
       pushSignalFacts(facts, bucket, options);
     });
+    facts = facts.concat(buildRootCompetencyFacts(signalBuckets));
     facts = facts.concat(buildPlanFacts(events));
     return facts.sort(compareFacts).slice(0, numberOr(options.limit, 100));
   }
@@ -407,7 +494,7 @@
     (facts || []).forEach(function (fact) {
       summary.total += 1;
       summary.byKind[fact.kind] = numberOr(summary.byKind[fact.kind], 0) + 1;
-      if (fact.kind === "weak_signal" || fact.kind === "recurring_trap") summary.openSignals += 1;
+      if (fact.kind === "weak_signal" || fact.kind === "recurring_trap" || fact.kind === "root_competency_trap") summary.openSignals += 1;
       if (fact.kind === "next_review_due") summary.dueReviews += 1;
     });
     return summary;

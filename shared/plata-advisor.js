@@ -43,6 +43,7 @@
   function factPriority(fact) {
     var ranks = {
       recurring_trap: 100,
+      root_competency_trap: 95,
       weak_signal: 90,
       next_review_due: 80,
       stale_skill: 70,
@@ -54,7 +55,7 @@
   }
 
   function compactFact(fact) {
-    return {
+    var out = {
       id: stringOr(fact && fact.id, ""),
       kind: stringOr(fact && fact.kind, ""),
       status: stringOr(fact && fact.status, ""),
@@ -63,6 +64,9 @@
       confidence: numberOr(fact && fact.confidence, 0),
       sourceFingerprint: stringOr(fact && fact.sourceFingerprint, "")
     };
+    if (fact && fact.competencyId) out.competencyId = stringOr(fact.competencyId, "");
+    if (fact && fact.competencyLabel) out.competencyLabel = stringOr(fact.competencyLabel, "");
+    return out;
   }
 
   function compareFacts(a, b) {
@@ -90,9 +94,12 @@
   function fallbackFacts(memoryFacts, plannerDecision) {
     var trainerId = stringOr(plannerDecision && plannerDecision.trainerId, "");
     var signalTag = stringOr(plannerDecision && plannerDecision.signalTag, "");
+    var graph = root.PlataCompetencies;
+    var competencyId = signalTag && graph && graph.competencyIdForTag ? graph.competencyIdForTag(signalTag) : "";
     var source = (memoryFacts || []).filter(function (fact) {
       if (!fact) return false;
-      if (signalTag && fact.signal !== signalTag) return false;
+      var rootMatch = fact.kind === "root_competency_trap" && competencyId && fact.trainerId === "profile" && fact.signal === competencyId;
+      if (signalTag && !rootMatch && fact.signal !== signalTag) return false;
       if (trainerId && fact.trainerId !== trainerId && fact.trainerId !== "profile") return false;
       return true;
     });
@@ -145,11 +152,15 @@
       return {
         kind: "repair",
         title: "Repair " + signal,
-        advice: factKind === "recurring_trap"
+        advice: factKind === "root_competency_trap"
+          ? "Start with one repair scene because learner memory sees the same root skill across lessons."
+          : factKind === "recurring_trap"
           ? "Start with one repair scene because this signal is a recurring trap in learner memory."
           : "Start with one repair scene because this signal is still weak in learner memory.",
         nextAction: nextAction(plannerDecision, "Open repair scene"),
-        rule: "advisor.repair.memory-backed"
+        rule: factKind === "root_competency_trap"
+          ? "advisor.repair.root-competency"
+          : "advisor.repair.memory-backed"
       };
     }
 

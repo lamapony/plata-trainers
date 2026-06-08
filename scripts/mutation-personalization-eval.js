@@ -11,6 +11,7 @@ const {
 const repoRoot = path.resolve(__dirname, "..");
 const mutationSources = [
   "shared/plata-events.js",
+  "shared/plata-competencies.js",
   "shared/plata-memory.js",
   "shared/plata-planner.js",
   "shared/plata-advisor.js",
@@ -107,6 +108,18 @@ function run() {
         );
       },
       expectedMessage: "planner did not select required memory kinds"
+    },
+    {
+      name: "memory drops root competency facts",
+      mutate(root) {
+        replaceInFile(
+          root,
+          "shared/plata-memory.js",
+          "    facts = facts.concat(buildRootCompetencyFacts(signalBuckets));",
+          "    facts = facts.concat([]);"
+        );
+      },
+      expectedMessage: "cross-lesson-agency-trap: advisor rule should be advisor.repair.root-competency"
     },
     {
       name: "advisor raw-text guardrail drifts",

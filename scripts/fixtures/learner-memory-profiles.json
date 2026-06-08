@@ -757,6 +757,245 @@
           "plannerRule": "dashboard.repair.highest-open-mastery"
         }
       }
+    },
+    {
+      "id": "cross-lesson-agency-trap",
+      "title": "Same agency root skill appears across two B2 lessons",
+      "requiredFacts": [
+        {
+          "kind": "root_competency_trap",
+          "status": "open",
+          "trainerId": "profile",
+          "signal": "agency",
+          "competencyId": "agency"
+        },
+        {
+          "kind": "weak_signal",
+          "status": "open",
+          "trainerId": "lesson-b2-job-followup",
+          "signal": "professional-email-agency"
+        }
+      ],
+      "planner": {
+        "input": {
+          "trainer": {
+            "id": "lesson-b2-job-followup",
+            "name": "B2: Job Follow-up",
+            "type": "lesson",
+            "path": "./lessons/lesson-b2-job-followup/",
+            "description": "Follow-up email, platform register, and professional agency"
+          },
+          "stats": {
+            "total": 1,
+            "correct": 0,
+            "accuracy": 0,
+            "today": 0,
+            "lastSessionDate": "2026-06-07"
+          },
+          "weakMastery": [
+            {
+              "tag": "professional-email-agency",
+              "label": "Write warm formal agency",
+              "evidence": "Agency failed here after passive-agency misses in another B2 lesson",
+              "wrong": 1,
+              "correct": 0,
+              "total": 1,
+              "score": 1,
+              "competencyId": "agency",
+              "remediation": {
+                "action": "Keep formal address plus active ownership",
+                "href": "./lessons/lesson-b2-job-followup/?mode=repair&signal=professional-email-agency#email-register"
+              }
+            }
+          ],
+          "weakCompetencies": [
+            {
+              "id": "agency",
+              "label": "Agency and responsibility",
+              "score": 118,
+              "signalCount": 2,
+              "signals": [
+                {
+                  "tag": "passive-agency"
+                },
+                {
+                  "tag": "professional-email-agency"
+                }
+              ]
+            }
+          ],
+          "weakTags": [
+            {
+              "tag": "professional-email-agency",
+              "wrong": 1,
+              "correct": 0,
+              "total": 1,
+              "score": 1
+            }
+          ],
+          "index": 5
+        }
+      },
+      "forbiddenText": [
+        "raw-cross-secret"
+      ],
+      "events": [
+        {
+          "id": "cross-radiator-passive-1",
+          "type": "attempt.recorded",
+          "at": "2026-06-02T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "official-reply-passive",
+          "mode": "lesson",
+          "correct": false,
+          "diagnosticTags": [
+            "passive-agency"
+          ],
+          "expected": "raw-cross-secret expected"
+        },
+        {
+          "id": "cross-radiator-passive-2",
+          "type": "attempt.recorded",
+          "at": "2026-06-03T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "official-reply-passive",
+          "mode": "lesson",
+          "correct": false,
+          "diagnosticTags": [
+            "passive-agency"
+          ]
+        },
+        {
+          "id": "cross-job-agency-1",
+          "type": "attempt.recorded",
+          "at": "2026-06-07T08:00:00.000Z",
+          "trainerId": "lesson-b2-job-followup",
+          "trainerName": "B2: Job Follow-up",
+          "itemId": "email-register",
+          "mode": "lesson",
+          "correct": false,
+          "diagnosticTags": [
+            "professional-email-agency"
+          ],
+          "given": "raw-cross-secret given"
+        }
+      ],
+      "expected": {
+        "eventFingerprint": "ev-488lbj",
+        "memoryFingerprint": "mem-fwyejg",
+        "summary": {
+          "total": 4,
+          "byKind": {
+            "recurring_trap": 1,
+            "root_competency_trap": 1,
+            "weak_signal": 2
+          },
+          "openSignals": 4,
+          "dueReviews": 0
+        },
+        "requiredFacts": [
+          {
+            "id": "mem-1m60lop",
+            "kind": "root_competency_trap",
+            "status": "open",
+            "trainerId": "profile",
+            "signal": "agency",
+            "confidence": 0.79,
+            "sourceFingerprint": "memsrc-41qsvm"
+          },
+          {
+            "id": "mem-1mnzr7o",
+            "kind": "weak_signal",
+            "status": "open",
+            "trainerId": "lesson-b2-job-followup",
+            "signal": "professional-email-agency",
+            "confidence": 0.66,
+            "sourceFingerprint": "memsrc-1jkm1e9"
+          }
+        ],
+        "planner": {
+          "kind": "repair",
+          "rule": "dashboard.repair.highest-open-mastery",
+          "score": 187,
+          "traceFingerprint": "ptr-6o3n17",
+          "signalTag": "professional-email-agency",
+          "selectedMemoryFacts": [
+            {
+              "id": "mem-1m60lop",
+              "kind": "root_competency_trap",
+              "status": "open",
+              "trainerId": "profile",
+              "signal": "agency",
+              "confidence": 0.79,
+              "sourceFingerprint": "memsrc-41qsvm"
+            },
+            {
+              "id": "mem-1mnzr7o",
+              "kind": "weak_signal",
+              "status": "open",
+              "trainerId": "lesson-b2-job-followup",
+              "signal": "professional-email-agency",
+              "confidence": 0.66,
+              "sourceFingerprint": "memsrc-1jkm1e9"
+            }
+          ],
+          "memoryScoreLabels": [
+            "memory root_competency_trap boost",
+            "memory weak_signal boost"
+          ],
+          "memoryExplanationFacts": [
+            "Memory: root_competency_trap agency memsrc-41qsvm",
+            "Memory: weak_signal professional-email-agency memsrc-1jkm1e9"
+          ]
+        },
+        "advisor": {
+          "advisorId": "openclaw-local-advisor-v1",
+          "kind": "repair",
+          "title": "Repair professional-email-agency",
+          "advice": "Start with one repair scene because learner memory sees the same root skill across lessons.",
+          "nextAction": {
+            "label": "Open repair scene",
+            "href": "./lessons/lesson-b2-job-followup/?mode=repair&signal=professional-email-agency#email-register",
+            "trainerId": "lesson-b2-job-followup",
+            "signalTag": "professional-email-agency"
+          },
+          "citedFacts": [
+            {
+              "id": "mem-1m60lop",
+              "kind": "root_competency_trap",
+              "status": "open",
+              "trainerId": "profile",
+              "signal": "agency",
+              "confidence": 0.79,
+              "sourceFingerprint": "memsrc-41qsvm"
+            },
+            {
+              "id": "mem-1mnzr7o",
+              "kind": "weak_signal",
+              "status": "open",
+              "trainerId": "lesson-b2-job-followup",
+              "signal": "professional-email-agency",
+              "confidence": 0.66,
+              "sourceFingerprint": "memsrc-1jkm1e9"
+            }
+          ],
+          "evidenceSummary": [
+            "root_competency_trap:agency:memsrc-41qsvm",
+            "weak_signal:professional-email-agency:memsrc-1jkm1e9"
+          ],
+          "guardrails": {
+            "deterministic": true,
+            "requiresModel": false,
+            "usesOnlyCitedFacts": true,
+            "containsRawAnswerText": false
+          },
+          "traceRule": "advisor.repair.root-competency",
+          "traceFingerprint": "adv-5spt58",
+          "plannerRule": "dashboard.repair.highest-open-mastery"
+        }
+      }
     }
   ]
 }

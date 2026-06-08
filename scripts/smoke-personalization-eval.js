@@ -10,6 +10,7 @@ const fixtureRelPath = "scripts/fixtures/learner-memory-profiles.json";
 
 const sourceFiles = [
   "shared/plata-events.js",
+  "shared/plata-competencies.js",
   "shared/plata-memory.js",
   "shared/plata-planner.js",
   "shared/plata-advisor.js"
@@ -55,6 +56,18 @@ const profileContracts = {
     mutantPlannerScoreDrops: true,
     mutantHasNoSelectedMemory: true,
     mutantMustNotMentionMemory: true
+  },
+  "cross-lesson-agency-trap": {
+    plannerKind: "repair",
+    plannerRule: "dashboard.repair.highest-open-mastery",
+    advisorKind: "repair",
+    advisorRule: "advisor.repair.root-competency",
+    selectedKinds: ["root_competency_trap", "weak_signal"],
+    requiredKinds: ["root_competency_trap", "weak_signal"],
+    removalKinds: ["root_competency_trap"],
+    mutantAdvisorRule: "advisor.repair.memory-backed",
+    mutantPlannerScoreDrops: true,
+    forbiddenMutantSelectedKinds: ["root_competency_trap"]
   }
 };
 
@@ -254,6 +267,12 @@ function assertCounterfactualContract(profile, baseline, mutant) {
   }
   if (contract.mutantHasNoSelectedMemory) {
     assert(selectedMemoryFacts(mutant.plannerDecision).length === 0, `${profile.id}: memory removal should clear planner-selected memory facts`);
+  }
+  if (contract.forbiddenMutantSelectedKinds) {
+    const selectedKinds = new Set(factKinds(selectedMemoryFacts(mutant.plannerDecision)));
+    contract.forbiddenMutantSelectedKinds.forEach(kind => {
+      assert(!selectedKinds.has(kind), `${profile.id}: memory removal should drop selected memory kind ${kind}`);
+    });
   }
   if (contract.mutantMustNotMentionMemory) {
     const adviceText = `${mutant.advice.title} ${mutant.advice.advice}`.toLowerCase();

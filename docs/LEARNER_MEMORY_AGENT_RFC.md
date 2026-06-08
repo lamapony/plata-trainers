@@ -18,7 +18,7 @@ The long-term bet:
 `OpenClaw` should behave less like a mascot and more like a quiet study operator:
 
 - remembers durable weak signals, repaired signals, preferred contexts, stale skills, and recurring traps;
-- notices when a learner repeatedly fails the same underlying competency across different lessons;
+- notices when a learner repeatedly fails the same underlying competency across different lessons; the deterministic memory layer now proves this with `root_competency_trap` facts before any model call is introduced;
 - proposes the next short practice block with a reason;
 - can explain a recommendation in learner language;
 - can generate or select a repair prompt only from approved lesson contracts;

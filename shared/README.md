@@ -49,6 +49,8 @@ Planner decisions carry two explanation layers. `explainDecision(...)` and `expl
 
 `plata-memory.js` exposes `window.PlataMemory`, the local learner memory compiler underneath future inspectable personalization. It turns the redacted event log into durable facts such as `weak_signal`, `repaired_signal`, `recurring_trap`, `stable_strength`, `stale_skill`, `preferred_context`, and `next_review_due`. Facts cite source event ids and a source fingerprint, and carry a privacy marker that no raw answer text is included.
 
+When `PlataCompetencies` is available, memory also emits `root_competency_trap` facts for cross-lesson patterns: for example, misses in `passive-agency` and `professional-email-agency` can become one inspectable `agency` root-skill fact. Planner and advisor traces can cite that fact while still routing the learner to the concrete repair scene.
+
 The dashboard memory inspector renders those facts for the learner, supports hiding/restoring individual derived facts, supports learner-marked correction records for false assumptions, renders corrected records as an audit trail with individual restore, and includes visible facts plus hidden/corrected fact records in portable profile export/import.
 
 `scripts/smoke-memory-corrections.js` protects the correction-record contract. It proves corrected memory facts keep stable fact ids, reasons, timestamps, source fingerprints, and no raw expected/given answer text, while duplicate or malformed correction records fail CI.
