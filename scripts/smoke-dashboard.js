@@ -11,6 +11,7 @@ const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catal
 const competencySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-competencies.js"), "utf8");
 const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
 const evidenceSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-evidence.js"), "utf8");
+const eventsSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-events.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
@@ -160,6 +161,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
+  vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
 
@@ -258,6 +260,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
+  vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   assert(env.context.PlataCatalog.trainers.length === 6, "dashboard reads trainer catalog");
@@ -298,6 +301,7 @@ function runStartedPlanSmoke() {
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
+  vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
 
   const planner = env.context.PlataPlanner;
   const plan = planner.savePracticePlan({
@@ -372,6 +376,7 @@ function runPlanReturnReceiptSmoke() {
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
+  vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   const planner = env.context.PlataPlanner;
   const plan = planner.savePracticePlan({
     kind: "continue",
@@ -422,6 +427,7 @@ function runClosedMasterySmoke() {
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
+  vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   const dueHtml = env.elements["#due-cards"].children.map(child => child.innerHTML).join("\n");
@@ -481,6 +487,9 @@ function runPortableProfileSmoke() {
   assert(payload.profileSchemaVersion === 1, "dashboard export marks profile schema version");
   assert(payload.practicePlan && payload.practicePlan.steps.length, "dashboard export includes active practice plan");
   assert(payload.practicePlan.steps[0].completedAt === plan.steps[0].completedAt, "dashboard export includes plan execution ledger");
+  assert(payload.eventLog && payload.eventLog.schemaVersion === 1, "dashboard export includes an event-log payload");
+  assert(payload.eventLog.events.some(event => event.type === "plan.step.completed"), "dashboard export event log includes plan completion events");
+  assert(payload.eventLog.replay.plans[payload.practicePlan.planToken].completedSteps === 1, "dashboard export event log includes replayed plan facts");
 
   const importEnv = makeContext();
   loadKernelAndDashboard(importEnv);

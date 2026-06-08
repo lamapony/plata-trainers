@@ -708,13 +708,21 @@ function exportAll() {
   });
   const kernel = window.PlataKernel;
   const planner = window.PlataPlanner;
+  const events = window.PlataEvents;
   const practicePlan = planner && planner.readPracticePlan ? planner.readPracticePlan() : null;
+  const eventLog = events && events.profileEventLog
+    ? events.profileEventLog({
+      trainers: trainers().map(trainer => ({ trainer, state: all[trainer.id] })).filter(entry => entry.state),
+      practicePlan
+    }, { kernel })
+    : null;
   const payload = {
     exportedAt: new Date().toISOString(),
     profileSchemaVersion: 1,
     schemaVersion: kernel.schemaVersion,
     trainers: all,
-    practicePlan: practicePlan || null
+    practicePlan: practicePlan || null,
+    eventLog
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);

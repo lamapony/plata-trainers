@@ -31,4 +31,6 @@ Repair closure records retire lesson-owned weak signals after a correct repair a
 
 `plata-evidence.js` exposes `window.PlataEvidence`, the shared evidence ledger contract. It turns trainer state, enriched weak mastery stats, recent attempts, and repair closures into ranked ledger entries such as open mastery signals, closed repairs, reopened signals, missed attempts, and correct attempts. UI layers should render these entries instead of interpreting raw attempts directly.
 
+`plata-events.js` exposes `window.PlataEvents`, a replay-ready event-log contract derived from existing trainer state and active practice-plan state. It emits privacy-conscious events such as `attempt.recorded`, `repair.closed`, `signal.reopened`, `plan.compiled`, `plan.step.started`, and `plan.step.completed`, then can replay those events into deterministic progress facts for export debugging and CI.
+
 `plata-catalog.js` is the static trainer registry used by the dashboard. Gold lesson entries can declare `lessonGlobal` and `lessonDataPath`; the dashboard loads those data files on demand to build mastery/remediation recommendations without hardcoding individual lesson globals.

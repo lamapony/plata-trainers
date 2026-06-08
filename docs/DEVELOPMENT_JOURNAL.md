@@ -1,0 +1,24 @@
+# Platå Development Journal
+
+This journal tracks technical bets that make the project more valuable as an open-source learning system. It is deliberately narrower than the public roadmap: each item should produce inspectable code, a contract, or a QA check.
+
+## Deep Technical Track
+
+- [x] Document the next technical direction as a checklist instead of loose ideas.
+- [x] Add an event-sourced learning log that can be derived from existing local trainer state.
+- [x] Make exported profiles replay-ready so a bug report can include an auditable local learning timeline.
+- [x] Add deterministic replay checks that rebuild progress facts from events.
+- [ ] Add a planner decision trace so every recommendation can explain its inputs and score.
+- [ ] Add mutation-style pedagogy tests that prove bad mastery/remediation contracts fail CI.
+- [ ] Build a counterfactual learner simulator for checking whether lesson edits improve or harm repair paths.
+- [ ] Add a profile replay debugger for maintainers, starting from JSON exports rather than user screenshots.
+- [ ] Compile mastery signals into a skill graph coverage report so gaps are visible before new content is added.
+- [ ] Add deterministic snapshot tests for the dashboard recommendation surface.
+
+## Current Sprint
+
+- [x] Introduce `PlataEvents` as a shared browser-safe event contract.
+- [x] Derive attempt, repair, signal-reopen, and practice-plan events without changing storage writes.
+- [x] Keep event payloads privacy-conscious by excluding raw expected/given answer text.
+- [x] Include an event-log payload in dashboard profile export.
+- [x] Cover the event contract with smoke tests and the full project check.
