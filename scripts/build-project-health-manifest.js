@@ -9,6 +9,9 @@ const {
   buildDashboardRecommendationSnapshot,
   snapshotText
 } = require("./snapshot-dashboard-recommendations.js");
+const {
+  evaluateLearnerMemoryFixtures
+} = require("./smoke-memory-fixtures.js");
 
 const repoRoot = path.resolve(__dirname, "..");
 
@@ -20,6 +23,7 @@ const requiredGates = [
   { id: "check:evidence", category: "diagnostics", contract: "Evidence ledger ranks open, closed, reopened, miss, and correct facts." },
   { id: "check:events", category: "replay", contract: "Privacy-conscious learning events replay deterministic profile facts." },
   { id: "check:memory", category: "personalization", contract: "Local learner memory facts compile from redacted events with source fingerprints and no raw answers." },
+  { id: "check:memory-fixtures", category: "personalization", contract: "Returning, stale, repaired, and recurring-trap learner memory fixtures remain deterministic and planner-cited." },
   { id: "check:profile-replay", category: "debug", contract: "Dashboard JSON exports can be replay-debugged by maintainers." },
   { id: "check:planner", category: "planner", contract: "Planner decisions and practice plans preserve traces and explanations." },
   { id: "check:planner-mutations", category: "mutation", contract: "Bad mastery/remediation planner contracts fail CI." },
@@ -238,39 +242,76 @@ function reportRows(root, quality, skillCoverage, issues) {
 }
 
 function fixtureRows(root, issues) {
-  const fixturePath = "scripts/fixtures/dashboard-recommendations.snapshot.json";
-  const builderScript = "scripts/snapshot-dashboard-recommendations.js";
-  const mutationScript = "scripts/mutation-dashboard-snapshot.js";
-  const rowIssues = [];
-  let fixture = null;
-  let fresh = false;
-  if (!fileExists(root, fixturePath)) {
-    rowIssues.push("fixture file missing");
+  const rows = [];
+
+  const dashboardFixturePath = "scripts/fixtures/dashboard-recommendations.snapshot.json";
+  const dashboardBuilderScript = "scripts/snapshot-dashboard-recommendations.js";
+  const dashboardMutationScript = "scripts/mutation-dashboard-snapshot.js";
+  const dashboardIssues = [];
+  let dashboardFixture = null;
+  let dashboardFresh = false;
+  if (!fileExists(root, dashboardFixturePath)) {
+    dashboardIssues.push("fixture file missing");
   } else {
-    fixture = readJson(root, fixturePath);
-    fresh = snapshotText(buildDashboardRecommendationSnapshot({ root })) === readText(root, fixturePath);
-    if (!fresh) rowIssues.push("fixture is stale");
+    dashboardFixture = readJson(root, dashboardFixturePath);
+    dashboardFresh = snapshotText(buildDashboardRecommendationSnapshot({ root })) === readText(root, dashboardFixturePath);
+    if (!dashboardFresh) dashboardIssues.push("fixture is stale");
   }
-  if (!fileExists(root, builderScript)) rowIssues.push(`missing builder ${builderScript}`);
-  if (!fileExists(root, mutationScript)) rowIssues.push(`missing mutation proof ${mutationScript}`);
-  rowIssues.forEach(issue => issues.push(`dashboard-recommendations fixture: ${issue}`));
-  return [{
+  if (!fileExists(root, dashboardBuilderScript)) dashboardIssues.push(`missing builder ${dashboardBuilderScript}`);
+  if (!fileExists(root, dashboardMutationScript)) dashboardIssues.push(`missing mutation proof ${dashboardMutationScript}`);
+  dashboardIssues.forEach(issue => issues.push(`dashboard-recommendations fixture: ${issue}`));
+  rows.push({
     id: "dashboard-recommendations",
     title: "Dashboard recommendation snapshot",
-    fixturePath,
-    builderScript,
+    fixturePath: dashboardFixturePath,
+    builderScript: dashboardBuilderScript,
     checkScript: "check:dashboard-snapshot",
     updateCommand: "node scripts/snapshot-dashboard-recommendations.js --update",
-    mutationScript,
+    mutationScript: dashboardMutationScript,
     mutationCheckScript: "check:dashboard-snapshot-mutations",
-    schemaVersion: fixture && fixture.schemaVersion || null,
-    fixedNow: fixture && fixture.fixedNow || "",
-    scenarios: fixture && Array.isArray(fixture.scenarios) ? fixture.scenarios.map(item => item.id) : [],
-    lineCount: lineCount(root, fixturePath),
-    fresh,
-    status: rowIssues.length ? "fail" : "pass",
-    issues: rowIssues
-  }];
+    schemaVersion: dashboardFixture && dashboardFixture.schemaVersion || null,
+    fixedNow: dashboardFixture && dashboardFixture.fixedNow || "",
+    scenarios: dashboardFixture && Array.isArray(dashboardFixture.scenarios) ? dashboardFixture.scenarios.map(item => item.id) : [],
+    lineCount: lineCount(root, dashboardFixturePath),
+    fresh: dashboardFresh,
+    status: dashboardIssues.length ? "fail" : "pass",
+    issues: dashboardIssues
+  });
+
+  const memoryFixturePath = "scripts/fixtures/learner-memory-profiles.json";
+  const memoryScript = "scripts/smoke-memory-fixtures.js";
+  const memoryIssues = [];
+  let memoryFixture = null;
+  let memoryEvaluation = null;
+  if (!fileExists(root, memoryFixturePath)) {
+    memoryIssues.push("fixture file missing");
+  } else {
+    memoryFixture = readJson(root, memoryFixturePath);
+    try {
+      memoryEvaluation = evaluateLearnerMemoryFixtures({ root });
+    } catch (err) {
+      memoryIssues.push(`fixture is stale: ${err.message.split(/\r?\n/)[0]}`);
+    }
+  }
+  if (!fileExists(root, memoryScript)) memoryIssues.push(`missing checker ${memoryScript}`);
+  memoryIssues.forEach(issue => issues.push(`learner-memory-profiles fixture: ${issue}`));
+  rows.push({
+    id: "learner-memory-profiles",
+    title: "Learner memory profile fixtures",
+    fixturePath: memoryFixturePath,
+    builderScript: memoryScript,
+    checkScript: "check:memory-fixtures",
+    updateCommand: "node scripts/smoke-memory-fixtures.js --update",
+    schemaVersion: memoryFixture && memoryFixture.schemaVersion || null,
+    fixedNow: memoryFixture && memoryFixture.fixedNow || "",
+    scenarios: memoryFixture && Array.isArray(memoryFixture.profiles) ? memoryFixture.profiles.map(item => item.id) : [],
+    lineCount: lineCount(root, memoryFixturePath),
+    fresh: memoryIssues.length === 0 && !!memoryEvaluation,
+    status: memoryIssues.length ? "fail" : "pass",
+    issues: memoryIssues
+  });
+
+  return rows;
 }
 
 function guarantees(gates, reports, workflows, fixtures) {

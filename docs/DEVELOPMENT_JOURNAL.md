@@ -122,7 +122,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Document `OpenClaw` as a future account-resident learner memory agent, not a mascot or opaque chatbot: [Learner Memory Agent RFC](./LEARNER_MEMORY_AGENT_RFC.md).
 - [x] Specify a local memory fact schema with source event fingerprints, confidence, decay, and stable fact ids.
 - [x] Compile memory facts from attempts, repair closures, and practice-plan completions.
-- [ ] Add deterministic fixtures for returning learners, stale skills, repaired signals, and recurring traps.
+- [x] Add deterministic fixtures for returning learners, stale skills, repaired signals, and recurring traps.
 - [x] Upgrade planner traces so every memory-based recommendation cites the facts it used.
 - [x] Add a dashboard memory inspector before any account sync.
 - [ ] Keep basic practice local-first and account-free.
@@ -156,3 +156,12 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Render memory citations in practice-plan explanations without exposing raw answer text.
 - [x] Keep hidden memory facts out of the next dashboard recommendation pass.
 - [x] Add planner, dashboard, and snapshot coverage for memory-aware recommendation drift.
+
+## Learner Memory Fixture Sprint
+
+- [x] Add JSON learner profile fixtures for returning context, stale review, repaired signal, and recurring trap cases.
+- [x] Store expected event fingerprints, memory fingerprints, required fact ids, source fingerprints, and summaries.
+- [x] Store expected planner kind, trace rule, score, fingerprint, selected memory facts, and memory explanation rows where relevant.
+- [x] Prove private raw answer text in fixture events does not leak into memory facts or planner traces.
+- [x] Add an update path for intentional fixture drift: `node scripts/smoke-memory-fixtures.js --update`.
+- [x] Include learner memory fixtures in `npm run check` and project health deterministic fixture reporting.

@@ -51,6 +51,8 @@ Planner decisions carry two explanation layers. `explainDecision(...)` and `expl
 
 The dashboard memory inspector renders those facts for the learner, supports hiding/restoring individual derived facts, and includes visible facts plus hidden fact ids in portable profile export/import.
 
+`scripts/smoke-memory-fixtures.js` checks deterministic learner memory profiles in `scripts/fixtures/learner-memory-profiles.json`: returning learner context, stale review, repaired signal retention, and recurring trap repair. Use `--update` only when intentional memory/planner drift should become the new baseline.
+
 `scripts/debug-profile-replay.js --file plata-backup.json` is the maintainer-facing replay debugger for dashboard exports. It reads the exported `eventLog` when present, derives one from legacy `trainers` + `practicePlan` exports when needed, and prints trainer, signal, item, plan, fingerprint, and warning summaries without raw learner answer text.
 
 `plata-catalog.js` is the static trainer registry used by the dashboard. Gold lesson entries can declare `lessonGlobal` and `lessonDataPath`; the dashboard loads those data files on demand to build mastery/remediation recommendations without hardcoding individual lesson globals.

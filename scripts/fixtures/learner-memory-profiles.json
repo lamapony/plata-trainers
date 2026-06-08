@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 1,
+  "fixedNow": "2026-06-08T12:00:00.000Z",
+  "profiles": [
+    {
+      "id": "returning-learner-context",
+      "title": "Returning learner with completed practice contexts",
+      "requiredFacts": [
+        {
+          "kind": "stable_strength",
+          "status": "stable",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "formal-register-control"
+        },
+        {
+          "kind": "preferred_context",
+          "status": "observed",
+          "trainerId": "profile",
+          "signal": "repair"
+        },
+        {
+          "kind": "preferred_context",
+          "status": "observed",
+          "trainerId": "profile",
+          "signal": "review"
+        }
+      ],
+      "forbiddenText": [
+        "raw-returning-secret"
+      ],
+      "events": [
+        {
+          "id": "returning-attempt-1",
+          "type": "attempt.recorded",
+          "at": "2026-06-03T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "two-registers",
+          "mode": "lesson",
+          "correct": true,
+          "diagnosticTags": [
+            "formal-register-control"
+          ],
+          "expected": "raw-returning-secret expected",
+          "given": "raw-returning-secret given"
+        },
+        {
+          "id": "returning-attempt-2",
+          "type": "attempt.recorded",
+          "at": "2026-06-04T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "two-registers",
+          "mode": "lesson",
+          "correct": true,
+          "diagnosticTags": [
+            "formal-register-control"
+          ]
+        },
+        {
+          "id": "returning-attempt-3",
+          "type": "attempt.recorded",
+          "at": "2026-06-05T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "two-registers",
+          "mode": "lesson",
+          "correct": true,
+          "diagnosticTags": [
+            "formal-register-control"
+          ]
+        },
+        {
+          "id": "returning-plan-1",
+          "type": "plan.step.completed",
+          "at": "2026-06-05T08:15:00.000Z",
+          "planToken": "p-returning",
+          "stepId": "s1-returning",
+          "stepNumber": 1,
+          "trainerId": "lesson-b2-radiator-register",
+          "kind": "repair",
+          "signal": "formal-register-control"
+        },
+        {
+          "id": "returning-plan-2",
+          "type": "plan.step.completed",
+          "at": "2026-06-06T08:15:00.000Z",
+          "planToken": "p-returning",
+          "stepId": "s2-returning",
+          "stepNumber": 2,
+          "trainerId": "lesson-b2-radiator-register",
+          "kind": "review",
+          "signal": "formal-register-control"
+        },
+        {
+          "id": "returning-plan-3",
+          "type": "plan.step.completed",
+          "at": "2026-06-07T08:15:00.000Z",
+          "planToken": "p-returning",
+          "stepId": "s3-returning",
+          "stepNumber": 3,
+          "trainerId": "lesson-b2-radiator-register",
+          "kind": "repair",
+          "signal": "formal-register-control"
+        }
+      ],
+      "expected": {
+        "eventFingerprint": "ev-dxyw2z",
+        "memoryFingerprint": "mem-8jcpik",
+        "summary": {
+          "total": 3,
+          "byKind": {
+            "preferred_context": 2,
+            "stable_strength": 1
+          },
+          "openSignals": 0,
+          "dueReviews": 0
+        },
+        "requiredFacts": [
+          {
+            "id": "mem-75qg4m",
+            "kind": "stable_strength",
+            "status": "stable",
+            "trainerId": "lesson-b2-radiator-register",
+            "signal": "formal-register-control",
+            "confidence": 0.725,
+            "sourceFingerprint": "memsrc-b95chg"
+          },
+          {
+            "id": "mem-s7pdax",
+            "kind": "preferred_context",
+            "status": "observed",
+            "trainerId": "profile",
+            "signal": "repair",
+            "confidence": 0.66,
+            "sourceFingerprint": "memsrc-1xaipal"
+          },
+          {
+            "id": "mem-dpmj6k",
+            "kind": "preferred_context",
+            "status": "observed",
+            "trainerId": "profile",
+            "signal": "review",
+            "confidence": 0.58,
+            "sourceFingerprint": "memsrc-1seovqg"
+          }
+        ]
+      }
+    },
+    {
+      "id": "stale-skill-review",
+      "title": "Healthy old signal that should become a memory review",
+      "requiredFacts": [
+        {
+          "kind": "stale_skill",
+          "status": "stale",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "formal-register-control"
+        },
+        {
+          "kind": "next_review_due",
+          "status": "due",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "formal-register-control"
+        }
+      ],
+      "planner": {
+        "input": {
+          "trainer": {
+            "id": "lesson-b2-radiator-register",
+            "name": "B2: Register & Particles",
+            "type": "lesson",
+            "path": "./lessons/lesson-b2-radiator/",
+            "description": "Complaints, tone, modal particles"
+          },
+          "stats": {
+            "total": 4,
+            "correct": 4,
+            "accuracy": 100,
+            "today": 0,
+            "lastSessionDate": "2026-06-08"
+          },
+          "weakMastery": [],
+          "weakTags": [],
+          "index": 4
+        }
+      },
+      "forbiddenText": [
+        "raw-stale-secret"
+      ],
+      "events": [
+        {
+          "id": "stale-attempt-1",
+          "type": "attempt.recorded",
+          "at": "2026-05-01T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "two-registers",
+          "mode": "lesson",
+          "correct": true,
+          "diagnosticTags": [
+            "formal-register-control"
+          ],
+          "expected": "raw-stale-secret expected"
+        },
+        {
+          "id": "stale-attempt-2",
+          "type": "attempt.recorded",
+          "at": "2026-05-02T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "two-registers",
+          "mode": "lesson",
+          "correct": true,
+          "diagnosticTags": [
+            "formal-register-control"
+          ],
+          "given": "raw-stale-secret given"
+        }
+      ],
+      "expected": {
+        "eventFingerprint": "ev-mlkxan",
+        "memoryFingerprint": "mem-135517j",
+        "summary": {
+          "total": 2,
+          "byKind": {
+            "next_review_due": 1,
+            "stale_skill": 1
+          },
+          "openSignals": 0,
+          "dueReviews": 1
+        },
+        "requiredFacts": [
+          {
+            "id": "mem-1vg51vs",
+            "kind": "stale_skill",
+            "status": "stale",
+            "trainerId": "lesson-b2-radiator-register",
+            "signal": "formal-register-control",
+            "confidence": 0.78,
+            "sourceFingerprint": "memsrc-1uxszyk"
+          },
+          {
+            "id": "mem-tabm00",
+            "kind": "next_review_due",
+            "status": "due",
+            "trainerId": "lesson-b2-radiator-register",
+            "signal": "formal-register-control",
+            "confidence": 0.7,
+            "sourceFingerprint": "memsrc-1uxszyk"
+          }
+        ],
+        "planner": {
+          "kind": "stale",
+          "rule": "dashboard.review.memory-due",
+          "score": 65,
+          "traceFingerprint": "ptr-gva2xp",
+          "signalTag": "formal-register-control",
+          "selectedMemoryFacts": [
+            {
+              "id": "mem-tabm00",
+              "kind": "next_review_due",
+              "status": "due",
+              "trainerId": "lesson-b2-radiator-register",
+              "signal": "formal-register-control",
+              "confidence": 0.7,
+              "sourceFingerprint": "memsrc-1uxszyk"
+            }
+          ],
+          "memoryScoreLabels": [
+            "memory review-due base",
+            "memory confidence boost"
+          ],
+          "memoryExplanationFacts": [
+            "Memory: next_review_due formal-register-control memsrc-1uxszyk"
+          ]
+        }
+      }
+    },
+    {
+      "id": "repaired-signal-retained",
+      "title": "Closed signal retained as memory without reopening repair",
+      "requiredFacts": [
+        {
+          "kind": "repaired_signal",
+          "status": "resolved",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "modal-particle-stance"
+        }
+      ],
+      "planner": {
+        "input": {
+          "trainer": {
+            "id": "lesson-b2-radiator-register",
+            "name": "B2: Register & Particles",
+            "type": "lesson",
+            "path": "./lessons/lesson-b2-radiator/",
+            "description": "Complaints, tone, modal particles"
+          },
+          "stats": {
+            "total": 2,
+            "correct": 2,
+            "accuracy": 100,
+            "today": 0,
+            "lastSessionDate": "2026-06-07"
+          },
+          "weakMastery": [],
+          "weakTags": [],
+          "index": 4
+        }
+      },
+      "forbiddenText": [
+        "raw-repaired-secret"
+      ],
+      "events": [
+        {
+          "id": "repaired-attempt-1",
+          "type": "attempt.recorded",
+          "at": "2026-06-06T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "group-chat-particles",
+          "mode": "lesson",
+          "correct": false,
+          "diagnosticTags": [
+            "modal-particle-stance"
+          ],
+          "expected": "raw-repaired-secret expected"
+        },
+        {
+          "id": "repaired-attempt-2",
+          "type": "attempt.recorded",
+          "at": "2026-06-07T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "group-chat-particles",
+          "mode": "repair",
+          "correct": true,
+          "diagnosticTags": [
+            "modal-particle-stance"
+          ],
+          "given": "raw-repaired-secret given"
+        },
+        {
+          "id": "repaired-closure-1",
+          "type": "repair.closed",
+          "at": "2026-06-07T08:05:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "signal": "modal-particle-stance",
+          "label": "Read particle stance",
+          "action": "Name the stance before choosing advice"
+        }
+      ],
+      "expected": {
+        "eventFingerprint": "ev-jmtwle",
+        "memoryFingerprint": "mem-1l0jsy8",
+        "summary": {
+          "total": 1,
+          "byKind": {
+            "repaired_signal": 1
+          },
+          "openSignals": 0,
+          "dueReviews": 0
+        },
+        "requiredFacts": [
+          {
+            "id": "mem-16omq3k",
+            "kind": "repaired_signal",
+            "status": "resolved",
+            "trainerId": "lesson-b2-radiator-register",
+            "signal": "modal-particle-stance",
+            "confidence": 0.835,
+            "sourceFingerprint": "memsrc-rze77g"
+          }
+        ],
+        "planner": {
+          "kind": "continue",
+          "rule": "dashboard.continue.healthy-progress",
+          "score": 21.6,
+          "traceFingerprint": "ptr-127fv45",
+          "signalTag": "",
+          "selectedMemoryFacts": [],
+          "memoryScoreLabels": [],
+          "memoryExplanationFacts": []
+        }
+      }
+    },
+    {
+      "id": "recurring-trap-repair",
+      "title": "Repeated misses become a memory-backed repair recommendation",
+      "requiredFacts": [
+        {
+          "kind": "recurring_trap",
+          "status": "open",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "passive-agency"
+        },
+        {
+          "kind": "weak_signal",
+          "status": "open",
+          "trainerId": "lesson-b2-radiator-register",
+          "signal": "passive-agency"
+        }
+      ],
+      "planner": {
+        "input": {
+          "trainer": {
+            "id": "lesson-b2-radiator-register",
+            "name": "B2: Register & Particles",
+            "type": "lesson",
+            "path": "./lessons/lesson-b2-radiator/",
+            "description": "Complaints, tone, modal particles"
+          },
+          "stats": {
+            "total": 4,
+            "correct": 1,
+            "accuracy": 25,
+            "today": 0,
+            "lastSessionDate": "2026-06-06"
+          },
+          "weakMastery": [
+            {
+              "tag": "passive-agency",
+              "label": "Read passive agency",
+              "evidence": "1 correct / 4 tries in fixture",
+              "wrong": 3,
+              "correct": 1,
+              "total": 4,
+              "score": 0.75,
+              "competencyId": "agency",
+              "remediation": {
+                "action": "Name the missing actor",
+                "href": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive"
+              }
+            }
+          ],
+          "weakCompetencies": [
+            {
+              "id": "agency",
+              "label": "Agency and responsibility",
+              "score": 92,
+              "signalCount": 1,
+              "signals": [
+                {
+                  "tag": "passive-agency"
+                }
+              ]
+            }
+          ],
+          "weakTags": [
+            {
+              "tag": "passive-agency",
+              "wrong": 3,
+              "correct": 1,
+              "total": 4,
+              "score": 0.75
+            }
+          ],
+          "index": 4
+        }
+      },
+      "forbiddenText": [
+        "raw-trap-secret"
+      ],
+      "events": [
+        {
+          "id": "trap-attempt-1",
+          "type": "attempt.recorded",
+          "at": "2026-05-31T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "official-reply-passive",
+          "mode": "lesson",
+          "correct": false,
+          "diagnosticTags": [
+            "passive-agency"
+          ],
+          "expected": "raw-trap-secret expected"
+        },
+        {
+          "id": "trap-attempt-2",
+          "type": "attempt.recorded",
+          "at": "2026-06-01T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "official-reply-passive",
+          "mode": "lesson",
+          "correct": false,
+          "diagnosticTags": [
+            "passive-agency"
+          ]
+        },
+        {
+          "id": "trap-attempt-3",
+          "type": "attempt.recorded",
+          "at": "2026-06-05T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "official-reply-passive",
+          "mode": "lesson",
+          "correct": false,
+          "diagnosticTags": [
+            "passive-agency"
+          ],
+          "given": "raw-trap-secret given"
+        },
+        {
+          "id": "trap-attempt-4",
+          "type": "attempt.recorded",
+          "at": "2026-06-06T08:00:00.000Z",
+          "trainerId": "lesson-b2-radiator-register",
+          "trainerName": "B2: Register & Particles",
+          "itemId": "official-reply-passive",
+          "mode": "lesson",
+          "correct": true,
+          "diagnosticTags": [
+            "passive-agency"
+          ]
+        }
+      ],
+      "expected": {
+        "eventFingerprint": "ev-1c9f37n",
+        "memoryFingerprint": "mem-1sa3p58",
+        "summary": {
+          "total": 2,
+          "byKind": {
+            "recurring_trap": 1,
+            "weak_signal": 1
+          },
+          "openSignals": 2,
+          "dueReviews": 0
+        },
+        "requiredFacts": [
+          {
+            "id": "mem-1b3dbr7",
+            "kind": "recurring_trap",
+            "status": "open",
+            "trainerId": "lesson-b2-radiator-register",
+            "signal": "passive-agency",
+            "confidence": 0.935,
+            "sourceFingerprint": "memsrc-1ncgzt7"
+          },
+          {
+            "id": "mem-13rq6s3",
+            "kind": "weak_signal",
+            "status": "open",
+            "trainerId": "lesson-b2-radiator-register",
+            "signal": "passive-agency",
+            "confidence": 0.855,
+            "sourceFingerprint": "memsrc-1ncgzt7"
+          }
+        ],
+        "planner": {
+          "kind": "repair",
+          "rule": "dashboard.repair.highest-open-mastery",
+          "score": 196,
+          "traceFingerprint": "ptr-16ms5kt",
+          "signalTag": "passive-agency",
+          "selectedMemoryFacts": [
+            {
+              "id": "mem-1b3dbr7",
+              "kind": "recurring_trap",
+              "status": "open",
+              "trainerId": "lesson-b2-radiator-register",
+              "signal": "passive-agency",
+              "confidence": 0.935,
+              "sourceFingerprint": "memsrc-1ncgzt7"
+            },
+            {
+              "id": "mem-13rq6s3",
+              "kind": "weak_signal",
+              "status": "open",
+              "trainerId": "lesson-b2-radiator-register",
+              "signal": "passive-agency",
+              "confidence": 0.855,
+              "sourceFingerprint": "memsrc-1ncgzt7"
+            }
+          ],
+          "memoryScoreLabels": [
+            "memory recurring_trap boost",
+            "memory weak_signal boost"
+          ],
+          "memoryExplanationFacts": [
+            "Memory: recurring_trap passive-agency memsrc-1ncgzt7",
+            "Memory: weak_signal passive-agency memsrc-1ncgzt7"
+          ]
+        }
+      }
+    }
+  ]
+}
