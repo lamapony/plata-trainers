@@ -29,6 +29,8 @@ Repair closure records retire lesson-owned weak signals after a correct repair a
 
 Planner decisions carry two explanation layers. `explainDecision(...)` and `explainPracticePlanStep(...)` produce learner-facing copy. `traceDecision(...)` and `tracePracticePlanStep(...)` produce a machine-readable trace with the rule, selected target, input facts, score breakdown, reasons, and stable fingerprint; saved practice-plan steps preserve that trace for profile exports and bug reports.
 
+`scripts/mutation-planner-contract.js` protects the planner-facing pedagogy contract. It runs every gold mastery signal through the real kernel, planner, and practice-plan route, then mutates competency ids, remediation scenes, mastery tags, actions, and evidence to prove those bad contracts fail CI.
+
 `plata-competencies.js` exposes `window.PlataCompetencies`, the competency graph that groups gold lesson mastery signals into root skills such as agency, register control, stance reading, process control, and consequence awareness. Dashboard and planner code use it to explain why several weak signals point to the same underlying capability.
 
 `plata-evidence.js` exposes `window.PlataEvidence`, the shared evidence ledger contract. It turns trainer state, enriched weak mastery stats, recent attempts, and repair closures into ranked ledger entries such as open mastery signals, closed repairs, reopened signals, missed attempts, and correct attempts. UI layers should render these entries instead of interpreting raw attempts directly.

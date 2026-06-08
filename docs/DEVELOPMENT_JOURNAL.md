@@ -9,7 +9,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Make exported profiles replay-ready so a bug report can include an auditable local learning timeline.
 - [x] Add deterministic replay checks that rebuild progress facts from events.
 - [x] Add a planner decision trace so every recommendation can explain its inputs and score.
-- [ ] Add mutation-style pedagogy tests that prove bad mastery/remediation contracts fail CI.
+- [x] Add mutation-style pedagogy tests that prove bad mastery/remediation contracts fail CI.
 - [ ] Build a counterfactual learner simulator for checking whether lesson edits improve or harm repair paths.
 - [ ] Add a profile replay debugger for maintainers, starting from JSON exports rather than user screenshots.
 - [ ] Compile mastery signals into a skill graph coverage report so gaps are visible before new content is added.
@@ -30,3 +30,11 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Preserve planner traces inside saved practice-plan steps and exported profile JSON.
 - [x] Keep trace payloads privacy-conscious by stripping raw answer/prompt-style text keys.
 - [x] Cover planner traces in planner and dashboard smoke tests.
+
+## Planner Mutation Sprint
+
+- [x] Audit every gold mastery signal through the real kernel -> planner -> practice-plan route.
+- [x] Prove unknown competency ids fail the planner contract.
+- [x] Prove missing or mistargeted remediation scenes fail the planner contract.
+- [x] Prove missing remediation action/evidence fails the planner contract.
+- [x] Include the mutation suite in `npm run check`.
