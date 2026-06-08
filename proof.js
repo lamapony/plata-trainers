@@ -4,6 +4,7 @@
 
   var quickstartBase = "./reports/quickstart-proof/";
   var proofSources = {
+    digest: "./reports/proof-digest.json",
     demo: "./reports/demo-learner.json",
     capabilities: "./reports/capabilities.json",
     health: "./reports/project-health.json",
@@ -60,6 +61,7 @@
   }
 
   function renderSummary(data) {
+    enableLink("#proof-digest-link", proofSources.digest);
     enableLink("#proof-health-link", proofSources.health);
     enableLink("#proof-capabilities-link", proofSources.capabilities);
     enableLink("#proof-quickstart-link", quickstartBase + "quickstart.md");
@@ -79,6 +81,59 @@
       return "<li><span>" + escapeHtml(item[0]) + "</span><strong>" + escapeHtml(item[1]) + "</strong></li>";
     }).join("");
     $("#proof-generated").textContent = "Health generated " + new Date(data.health.generatedAt).toLocaleString();
+  }
+
+  function renderEvidenceChips(items) {
+    return (items || []).map(function (item) {
+      var href = String(item || "").indexOf("reports/") === 0 ? "./" + item : "";
+      return href ? linkChip(href, item, "") : chip(item, "");
+    }).join("");
+  }
+
+  function digestCard(item) {
+    return "<article class=\"proof-digest-card " + escapeHtml(item.status) + "\">" +
+      "<div class=\"quality-card-head\">" +
+        "<span class=\"quality-key\">" + escapeHtml(item.status) + "</span>" +
+        "<span class=\"quality-state\">" + escapeHtml(item.id) + "</span>" +
+      "</div>" +
+      "<h3>" + escapeHtml(item.title) + "</h3>" +
+      "<p>" + escapeHtml(item.takeaway) + "</p>" +
+      "<p class=\"proof-digest-detail\">" + escapeHtml(item.detail) + "</p>" +
+      "<div class=\"program-proof-strip\">" + renderEvidenceChips(item.evidence) + "</div>" +
+    "</article>";
+  }
+
+  function renderDigest(data) {
+    var digest = data.digest || {};
+    var claims = (digest.whatThisProves || []).map(digestCard).join("");
+    var changes = (digest.whatChanged || []).map(function (item) {
+      return "<div class=\"proof-change-row " + escapeHtml(item.status) + "\">" +
+        "<span>" + escapeHtml(item.status) + "</span>" +
+        "<div><strong>" + escapeHtml(item.title) + "</strong><p>" + escapeHtml(item.takeaway) + "</p>" +
+          "<div class=\"program-proof-strip\">" + renderEvidenceChips(item.evidence) + "</div></div>" +
+      "</div>";
+    }).join("");
+    var boundaries = (digest.trustBoundaries || []).map(function (item) {
+      return "<li>" + escapeHtml(item) + "</li>";
+    }).join("");
+    $("#proof-digest").innerHTML =
+      "<article class=\"proof-digest-lead " + escapeHtml(digest.status || "fail") + "\">" +
+        "<div>" +
+          "<span class=\"quality-key\">" + escapeHtml(digest.status || "unknown") + "</span>" +
+          "<h3>" + escapeHtml(digest.headline || "Proof digest unavailable") + "</h3>" +
+          "<p>" + escapeHtml(digest.summary || "") + "</p>" +
+        "</div>" +
+        "<div class=\"program-proof-strip\">" +
+          chip(countLabel(digest.totals && digest.totals.claims || 0, "claim", "claims"), "mastery") +
+          chip(countLabel(digest.totals && digest.totals.changes || 0, "change", "changes"), "") +
+          chip(countLabel(digest.totals && digest.totals.trustBoundaries || 0, "boundary", "boundaries"), "") +
+        "</div>" +
+      "</article>" +
+      "<div class=\"proof-digest-grid\">" + claims + "</div>" +
+      "<div class=\"proof-digest-lower\">" +
+        "<article class=\"proof-digest-panel\"><h3>What changed</h3>" + changes + "</article>" +
+        "<article class=\"proof-digest-panel\"><h3>Trust boundaries</h3><ul>" + boundaries + "</ul></article>" +
+      "</div>";
   }
 
   function renderArtifacts(data) {
@@ -204,6 +259,7 @@
     $("#proof-status").className = "quality-fail";
     $("#proof-summary").innerHTML = "<li><span>Proof</span><strong>missing</strong></li>";
     $("#proof-generated").textContent = error.message || "Could not load proof reports";
+    $("#proof-digest").innerHTML = "<article class=\"proof-digest-card fail\"><h3>Proof digest missing</h3><p>Run npm run build:pages to generate reports/proof-digest.json.</p></article>";
     $("#proof-artifacts").innerHTML = "<article class=\"proof-command-card fail\"><h3>Proof artifacts missing</h3><p>Run npm run build:pages to generate reports.</p></article>";
     $("#proof-surfaces").innerHTML = "";
     $("#proof-health").innerHTML = "";
@@ -211,6 +267,7 @@
   }
 
   Promise.all([
+    loadJson(proofSources.digest),
     loadJson(proofSources.demo),
     loadJson(proofSources.capabilities),
     loadJson(proofSources.health),
@@ -219,14 +276,16 @@
     loadText(proofSources.summary)
   ]).then(function (values) {
     var data = {
-      demo: values[0],
-      capabilities: values[1],
-      health: values[2],
-      quickstart: values[3],
-      review: values[4],
-      summary: values[5]
+      digest: values[0],
+      demo: values[1],
+      capabilities: values[2],
+      health: values[3],
+      quickstart: values[4],
+      review: values[5],
+      summary: values[6]
     };
     renderSummary(data);
+    renderDigest(data);
     renderArtifacts(data);
     renderSurfaces(data);
     renderHealth(data);

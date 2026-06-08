@@ -159,6 +159,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Publish quickstart proof artifacts into the GitHub Pages artifact under `reports/quickstart-proof/`.
 - [x] Add `check:proof-page` so report loading, hero links, quickstart commands, health guarantees, and review fixture rendering stay deterministic.
 - [x] Link the proof page from public navigation, README, sitemap, project health, and the product capability map.
+- [x] Add `reports/proof-digest.json` and `check:proof-digest` so the page can explain what the reports prove, what changed, and where the trust boundaries are.
 
 ## Companion Architecture Sprint
 

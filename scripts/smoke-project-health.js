@@ -56,6 +56,7 @@ function runBaseSmoke() {
   assert(manifest.gates.some(gate => gate.id === "check:review-report" && gate.requiredInCheck), "manifest should require unified review report");
   assert(manifest.gates.some(gate => gate.id === "check:review-report-fixture" && gate.requiredInCheck), "manifest should require golden PR review fixture");
   assert(manifest.gates.some(gate => gate.id === "check:quickstart-proof" && gate.requiredInCheck), "manifest should require contributor proof quickstart");
+  assert(manifest.gates.some(gate => gate.id === "check:proof-digest" && gate.requiredInCheck), "manifest should require the public proof digest");
   assert(manifest.gates.some(gate => gate.id === "check:demo-learner-report" && gate.requiredInCheck), "manifest should require demo learner report");
   assert(manifest.gates.some(gate => gate.id === "check:demo-learner-diff" && gate.requiredInCheck), "manifest should require demo learner diff review");
   assert(manifest.gates.some(gate => gate.id === "check:today-program-report" && gate.requiredInCheck), "manifest should require Today program report");

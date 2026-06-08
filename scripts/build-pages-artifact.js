@@ -10,9 +10,11 @@ const { writeTodayProgramReport } = require("./build-today-program-report.js");
 const { writeCapabilityMap } = require("./build-capability-map.js");
 const { writeProjectHealthManifest } = require("./build-project-health-manifest.js");
 const { writeQuickstartProof } = require("./build-quickstart-proof.js");
+const { writeProofDigest } = require("./build-proof-digest.js");
 
 const root = path.resolve(__dirname, "..");
 const outRoot = path.join(root, ".dist", "pages");
+const proofDigestPublicIndex = "reports/proof-digest.json";
 const quickstartProofPublicIndex = "reports/quickstart-proof/quickstart.json";
 
 const rootFiles = [
@@ -147,6 +149,12 @@ writeTodayProgramReport(path.join(outRoot, "reports", "today-program.json"));
 writeCapabilityMap(path.join(outRoot, "reports", "capabilities.json"));
 writeProjectHealthManifest(path.join(outRoot, "reports", "project-health.json"));
 writeQuickstartProof(path.join(outRoot, "reports", "quickstart-proof"));
+writeProofDigest(path.join(outRoot, proofDigestPublicIndex));
+
+if (!fs.existsSync(path.join(outRoot, proofDigestPublicIndex))) {
+  console.error(`pages artifact build failed: missing ${proofDigestPublicIndex}`);
+  process.exit(1);
+}
 
 if (!fs.existsSync(path.join(outRoot, quickstartProofPublicIndex))) {
   console.error(`pages artifact build failed: missing ${quickstartProofPublicIndex}`);

@@ -1086,6 +1086,100 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
 }
 
 /* Public proof and health surface */
+.proof-digest {
+  display: grid;
+  gap: 16px;
+}
+.proof-digest-lead, .proof-digest-card, .proof-digest-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+.proof-digest-lead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: end;
+  padding: 22px;
+}
+.proof-digest-lead.fail, .proof-digest-card.fail, .proof-change-row.fail {
+  border-color: var(--ember);
+  box-shadow: 0 0 0 1px var(--ember), var(--shadow);
+}
+.proof-digest-lead h3, .proof-digest-card h3, .proof-digest-panel h3 {
+  font-size: clamp(25px, 3vw, 34px);
+  letter-spacing: 0;
+  line-height: 1.04;
+}
+.proof-digest-lead p, .proof-digest-card p, .proof-digest-panel p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.proof-digest-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.proof-digest-card {
+  display: flex;
+  min-height: 310px;
+  flex-direction: column;
+  gap: 13px;
+  padding: 20px;
+}
+.proof-digest-detail {
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.proof-digest-lower {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 16px;
+  align-items: start;
+}
+.proof-digest-panel {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+}
+.proof-change-row {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+.proof-change-row > span {
+  width: fit-content;
+  padding: 5px 8px;
+  border: 1px solid oklch(0.74 0.12 145 / 0.42);
+  border-radius: 999px;
+  background: oklch(0.74 0.12 145 / 0.1);
+  color: var(--green);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.proof-change-row strong { color: var(--text); }
+.proof-digest-panel ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.proof-digest-panel li {
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-left: 3px solid oklch(0.72 0.12 205 / 0.58);
+  border-radius: 8px;
+  color: var(--muted);
+  line-height: 1.45;
+}
 .proof-artifacts {
   display: grid;
   grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.2fr);
@@ -1234,9 +1328,9 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   .memory-correction-row .memory-delete { justify-self: start; }
   .mastery-list, .competency-list, .memory-grid { grid-template-columns: 1fr; }
   .quality-metrics, .quality-lessons { grid-template-columns: 1fr; }
-  .program-pillars, .program-capabilities, .proof-artifacts, .proof-surfaces, .proof-health-panel, .proof-review { grid-template-columns: 1fr; }
+  .program-pillars, .program-capabilities, .proof-digest-lead, .proof-digest-grid, .proof-digest-lower, .proof-artifacts, .proof-surfaces, .proof-health-panel, .proof-review { grid-template-columns: 1fr; }
   .program-pillar { min-height: auto; }
-  .proof-surface { min-height: auto; }
+  .proof-digest-card, .proof-surface { min-height: auto; }
   .quality-evidence-row { grid-template-columns: 1fr; }
   .quality-evidence-meta { grid-template-columns: 1fr; }
   .quality-evidence-lesson h3 { font-size: 28px; }
@@ -1244,5 +1338,6 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
 
 @media (max-width: 520px) {
   .program-guarantee, .program-report { grid-template-columns: 1fr; }
+  .proof-change-row { grid-template-columns: 1fr; }
   .proof-review-row { grid-template-columns: 1fr; }
 }

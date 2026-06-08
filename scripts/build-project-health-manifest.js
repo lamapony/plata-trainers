@@ -84,6 +84,7 @@ const requiredGates = [
   { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, demo learner, Today program, and personalization diffs with JSON and Markdown reviewer output." },
   { id: "check:review-report-fixture", category: "review", contract: "Golden PR review fixture proves large reviewer summaries, JSON artifacts, ordering, caps, and fail modes end to end." },
   { id: "check:quickstart-proof", category: "onboarding", contract: "Contributor proof quickstart builds the core local artifacts and links commands to reviewable project claims." },
+  { id: "check:proof-digest", category: "report", contract: "Proof digest translates generated project reports into visitor-facing claims, current proof changes, and trust boundaries." },
   { id: "check:quality-page", category: "report", contract: "Quality page renderer consumes generated report data." },
   { id: "check:program-page", category: "report", contract: "Program page renders the product capability map as a user-facing proof surface." },
   { id: "check:proof-page", category: "report", contract: "Proof / Health page renders public health, capability, demo learner, quickstart, and golden review artifacts." },

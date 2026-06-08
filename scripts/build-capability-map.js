@@ -48,6 +48,12 @@ const publicReportSpecs = {
     builderScript: "scripts/build-quickstart-proof.js",
     checkScript: "check:quickstart-proof",
     pagesPath: "reports/quickstart-proof/quickstart.json"
+  },
+  "proof-digest": {
+    title: "Plain-language proof digest",
+    builderScript: "scripts/build-proof-digest.js",
+    checkScript: "check:proof-digest",
+    pagesPath: "reports/proof-digest.json"
   }
 };
 
@@ -187,16 +193,17 @@ const capabilitySpecs = [
     title: "Public GitHub proof surface",
     stage: "shipped",
     userValue: "Visitors can inspect the project's claims as generated JSON reports, a readable proof page, and focused PR drift instead of trusting prose.",
-    surfaces: ["proof.html", "program.html", "dashboard.html?demo=learner", "reports/demo-learner.json", "reports/capabilities.json", "reports/project-health.json", "reports/quickstart-proof/quickstart.json", "Pull-request QA review report", "GitHub Step Summary", "Contributor proof quickstart", "README"],
-    proofGates: ["check:program-page", "check:proof-page", "check:capability-map", "check:health", "check:pages", "check:quality-report", "check:demo-learner-report", "check:demo-learner-diff", "check:today-program-report", "check:review-report", "check:review-report-fixture", "check:quickstart-proof"],
-    publicReports: ["capabilities", "demo-learner", "project-health", "quality", "quickstart-proof", "skill-coverage", "today-program"],
+    surfaces: ["proof.html", "program.html", "dashboard.html?demo=learner", "reports/demo-learner.json", "reports/capabilities.json", "reports/project-health.json", "reports/proof-digest.json", "reports/quickstart-proof/quickstart.json", "Pull-request QA review report", "GitHub Step Summary", "Contributor proof quickstart", "README"],
+    proofGates: ["check:program-page", "check:proof-page", "check:proof-digest", "check:capability-map", "check:health", "check:pages", "check:quality-report", "check:demo-learner-report", "check:demo-learner-diff", "check:today-program-report", "check:review-report", "check:review-report-fixture", "check:quickstart-proof"],
+    publicReports: ["capabilities", "demo-learner", "project-health", "proof-digest", "quality", "quickstart-proof", "skill-coverage", "today-program"],
     docs: ["README.md", "docs/DEVELOPMENT_JOURNAL.md"],
-    sourcePaths: ["proof.html", "proof.js", "program.html", "program.js", "dashboard.html", "dashboard.js", "scripts/build-demo-learner-report.js", "scripts/diff-demo-learner-report.js", "scripts/smoke-demo-learner-report.js", "scripts/smoke-demo-learner-diff.js", "scripts/smoke-program-page.js", "scripts/smoke-proof-page.js", "scripts/smoke-dashboard.js", "scripts/build-capability-map.js", "scripts/build-project-health-manifest.js", "scripts/build-review-report.js", "scripts/smoke-review-report-fixture.js", "scripts/build-quickstart-proof.js", "scripts/smoke-quickstart-proof.js", "scripts/fixtures/review-report-golden/quality-diff.json", "scripts/build-pages-artifact.js", ".github/workflows/qa.yml"],
+    sourcePaths: ["proof.html", "proof.js", "program.html", "program.js", "dashboard.html", "dashboard.js", "scripts/build-demo-learner-report.js", "scripts/diff-demo-learner-report.js", "scripts/smoke-demo-learner-report.js", "scripts/smoke-demo-learner-diff.js", "scripts/smoke-program-page.js", "scripts/smoke-proof-page.js", "scripts/smoke-dashboard.js", "scripts/build-capability-map.js", "scripts/build-project-health-manifest.js", "scripts/build-proof-digest.js", "scripts/smoke-proof-digest.js", "scripts/build-review-report.js", "scripts/smoke-review-report-fixture.js", "scripts/build-quickstart-proof.js", "scripts/smoke-quickstart-proof.js", "scripts/fixtures/review-report-golden/quality-diff.json", "scripts/build-pages-artifact.js", ".github/workflows/qa.yml"],
     contracts: [
       "Every declared capability links to checks, source files, docs, and public reports.",
       "Program and home pages expose the read-only demo learner dashboard for first-time evaluators.",
       "Project health verifies full-check workflows and report publishing.",
       "Proof / Health renders the reports and golden review fixture as one readable public surface.",
+      "Proof digest translates generated reports into visitor-facing claims and trust boundaries.",
       "PR review output writes a full JSON artifact plus a capped GitHub Step Summary that groups regressions, review changes, improvements, and informational drift.",
       "The contributor proof quickstart builds the core local proof artifacts with one command."
     ]

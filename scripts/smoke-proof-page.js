@@ -9,6 +9,7 @@ const { buildDemoLearnerReport } = require("./build-demo-learner-report.js");
 const { buildCapabilityMap } = require("./build-capability-map.js");
 const { buildProjectHealthManifest } = require("./build-project-health-manifest.js");
 const { writeQuickstartProof } = require("./build-quickstart-proof.js");
+const { buildProofDigest } = require("./build-proof-digest.js");
 
 const root = path.resolve(__dirname, "..");
 const proofHtml = fs.readFileSync(path.join(root, "proof.html"), "utf8");
@@ -37,6 +38,7 @@ function makeElement(selector) {
 async function run() {
   assert(proofHtml.includes("Proof / Health"), "proof page should have a readable title");
   assert(proofHtml.includes("id=\"proof-health-link\""), "proof page should expose the health link target");
+  assert(proofHtml.includes("id=\"proof-digest\""), "proof page should expose the plain-language digest target");
   assert(!proofHtml.includes("href=\"./reports/"), "proof page should not break root static QA with pre-build report links");
 
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "plata-proof-page-"));
@@ -44,10 +46,12 @@ async function run() {
     const demo = buildDemoLearnerReport();
     const capabilities = buildCapabilityMap();
     const health = buildProjectHealthManifest();
+    const digest = buildProofDigest();
     const quickstart = writeQuickstartProof(tmp);
     const review = JSON.parse(fs.readFileSync(path.join(tmp, "review-report.json"), "utf8"));
     const summary = fs.readFileSync(path.join(tmp, "review-summary.md"), "utf8");
     const responses = {
+      "./reports/proof-digest.json": { json: digest },
       "./reports/demo-learner.json": { json: demo },
       "./reports/capabilities.json": { json: capabilities },
       "./reports/project-health.json": { json: health },
@@ -61,17 +65,19 @@ async function run() {
       "#proof-status",
       "#proof-summary",
       "#proof-generated",
+      "#proof-digest",
       "#proof-artifacts",
       "#proof-surfaces",
       "#proof-health",
       "#proof-review",
+      "#proof-digest-link",
       "#proof-health-link",
       "#proof-capabilities-link",
       "#proof-quickstart-link"
     ].forEach(selector => {
       elements[selector] = makeElement(selector);
     });
-    ["#proof-health-link", "#proof-capabilities-link", "#proof-quickstart-link"].forEach(selector => {
+    ["#proof-digest-link", "#proof-health-link", "#proof-capabilities-link", "#proof-quickstart-link"].forEach(selector => {
       elements[selector].attributes["aria-disabled"] = "true";
     });
 
@@ -107,6 +113,10 @@ async function run() {
     assert(elements["#proof-status"].textContent === "Proof passing", "proof page did not render passing status");
     assert(elements["#proof-summary"].innerHTML.includes("Health gates"), "proof page did not render health summary");
     assert(elements["#proof-summary"].innerHTML.includes("Review regressions"), "proof page did not render review summary");
+    assert(elements["#proof-digest"].innerHTML.includes("The public proof surface is coherent"), "proof page did not render digest headline");
+    assert(elements["#proof-digest"].innerHTML.includes("What changed"), "proof page did not render digest changes");
+    assert(elements["#proof-digest"].innerHTML.includes("Trust boundaries"), "proof page did not render digest trust boundaries");
+    assert(elements["#proof-digest"].innerHTML.includes("reports/proof-digest.json"), "proof page did not render digest evidence links");
     assert(elements["#proof-artifacts"].innerHTML.includes("npm run proof:quickstart"), "proof page did not render quickstart command");
     assert(elements["#proof-artifacts"].innerHTML.includes("review-report.json"), "proof page did not render review artifact link");
     assert(elements["#proof-surfaces"].innerHTML.includes("Demo learner"), "proof page did not render demo learner surface");
@@ -116,9 +126,11 @@ async function run() {
     assert(elements["#proof-health"].innerHTML.includes("all-required-gates-in-check"), "proof page did not render health guarantees");
     assert(elements["#proof-review"].innerHTML.includes("Quality"), "proof page did not render review surface rows");
     assert(elements["#proof-review"].innerHTML.includes("Open full review JSON"), "proof page did not render review links");
+    assert(elements["#proof-digest-link"].href === "./reports/proof-digest.json", "proof digest link was not enabled");
     assert(elements["#proof-health-link"].href === "./reports/project-health.json", "proof health link was not enabled");
     assert(elements["#proof-capabilities-link"].href === "./reports/capabilities.json", "proof capability link was not enabled");
     assert(elements["#proof-quickstart-link"].href === "./reports/quickstart-proof/quickstart.md", "proof quickstart link was not enabled");
+    assert(!Object.prototype.hasOwnProperty.call(elements["#proof-digest-link"].attributes, "aria-disabled"), "proof digest link remains disabled");
     assert(!Object.prototype.hasOwnProperty.call(elements["#proof-health-link"].attributes, "aria-disabled"), "proof health link remains disabled");
     assert(!Object.prototype.hasOwnProperty.call(elements["#proof-capabilities-link"].attributes, "aria-disabled"), "proof capability link remains disabled");
     assert(!Object.prototype.hasOwnProperty.call(elements["#proof-quickstart-link"].attributes, "aria-disabled"), "proof quickstart link remains disabled");

@@ -10,6 +10,7 @@ Demo learner report: [lamapony.github.io/plata-trainers/reports/demo-learner.jso
 Public quality report: [lamapony.github.io/plata-trainers/quality.html](https://lamapony.github.io/plata-trainers/quality.html).
 Public program map: [lamapony.github.io/plata-trainers/program.html](https://lamapony.github.io/plata-trainers/program.html).
 Public proof / health page: [lamapony.github.io/plata-trainers/proof.html](https://lamapony.github.io/plata-trainers/proof.html).
+Public proof digest: [lamapony.github.io/plata-trainers/reports/proof-digest.json](https://lamapony.github.io/plata-trainers/reports/proof-digest.json).
 Public capability map: [lamapony.github.io/plata-trainers/reports/capabilities.json](https://lamapony.github.io/plata-trainers/reports/capabilities.json).
 
 Platå does not try to teach Danish from the beginning. It helps learners overcome the plateau: the point where they know enough Danish to recognize the language, but not enough to act fluently under social pressure.
@@ -84,6 +85,7 @@ npm run check:demo-learner-report
 npm run check:demo-learner-diff
 npm run check:today-program-report
 npm run check:capability-map
+npm run check:proof-digest
 npm run check:program-page
 npm run check:proof-page
 npm run check:comic-prompts
@@ -171,6 +173,7 @@ node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --das
 node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --markdown --summary-limit 8 --summary-message-limit 180
 node scripts/smoke-review-report.js
 node scripts/smoke-review-report-fixture.js
+node scripts/smoke-proof-digest.js
 node scripts/smoke-program-page.js
 node scripts/smoke-proof-page.js
 node scripts/build-capability-map.js --out .dist/capabilities.json --text

@@ -31,7 +31,7 @@ npm run proof:quickstart
 npm run check:quickstart-proof
 ```
 
-That writes `.dist/quickstart-proof/` with demo learner, capability map, project health, and golden PR review artifacts. The published Pages artifact also exposes the same quickstart index through `reports/quickstart-proof/quickstart.json` and renders it on `proof.html`.
+That writes `.dist/quickstart-proof/` with demo learner, capability map, project health, and golden PR review artifacts. The published Pages artifact also exposes the same quickstart index through `reports/quickstart-proof/quickstart.json`, summarizes the proof in `reports/proof-digest.json`, and renders both on `proof.html`.
 
 Run the full no-dependency QA suite:
 
