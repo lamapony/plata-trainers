@@ -273,12 +273,12 @@ function deleteMemoryFact(factId) {
   const ids = readDeletedMemoryFactIds();
   if (!ids.includes(factId)) ids.push(factId);
   writeDeletedMemoryFactIds(ids);
-  renderMemoryFacts();
+  renderDashboard();
 }
 
 function restoreDeletedMemoryFacts() {
   writeDeletedMemoryFactIds([]);
-  renderMemoryFacts();
+  renderDashboard();
 }
 
 function ledgerDate(iso) {
@@ -425,8 +425,11 @@ function renderTrainerCards() {
 
 function dashboardCandidates() {
   const planner = window.PlataPlanner;
+  const stateMap = collectTrainerStates();
+  const practicePlan = currentPracticePlan();
+  const memoryBundle = buildMemoryFacts(stateMap, practicePlan);
   return trainers().map((trainer, index) => {
-    const state = loadTrainerState(trainer.id);
+    const state = stateMap[trainer.id] || null;
     const stats = computeStats(state, trainer);
     if (!stats) return null;
     const decision = planner && planner.dashboardDecision ? planner.dashboardDecision({
@@ -436,6 +439,7 @@ function dashboardCandidates() {
       weakMastery: stats.weakMastery,
       weakCompetencies: stats.weakCompetencies,
       weakTags: stats.weakTags,
+      memoryFacts: memoryBundle.visibleFacts,
       index
     }) : null;
     return { trainer, stats, decision, index };

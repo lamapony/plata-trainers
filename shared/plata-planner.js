@@ -190,6 +190,103 @@
     };
   }
 
+  function traceMemoryFact(fact) {
+    if (!fact) return null;
+    return {
+      id: fact.id || "",
+      kind: fact.kind || "",
+      status: fact.status || "",
+      trainerId: fact.trainerId || "",
+      signal: fact.signal || "",
+      confidence: Number(fact.confidence || 0),
+      sourceFingerprint: fact.sourceFingerprint || ""
+    };
+  }
+
+  function traceMemoryFacts(facts, limit) {
+    return (facts || []).map(traceMemoryFact).filter(Boolean).slice(0, limit || 4);
+  }
+
+  function memoryFactPriority(fact) {
+    var ranks = {
+      recurring_trap: 100,
+      weak_signal: 90,
+      next_review_due: 70,
+      stale_skill: 60,
+      repaired_signal: 45,
+      stable_strength: 25,
+      preferred_context: 20
+    };
+    return ranks[fact && fact.kind] || 0;
+  }
+
+  function compareMemoryFacts(a, b) {
+    return memoryFactPriority(b) - memoryFactPriority(a)
+      || Number(b && b.confidence || 0) - Number(a && a.confidence || 0)
+      || String(a && a.id || "").localeCompare(String(b && b.id || ""));
+  }
+
+  function memoryFactsFor(facts, trainerId, signalTag, kinds) {
+    var kindSet = {};
+    (kinds || []).forEach(function (kind) { kindSet[kind] = true; });
+    return (facts || []).filter(function (fact) {
+      if (!fact || fact.trainerId !== trainerId) return false;
+      if (signalTag && fact.signal !== signalTag) return false;
+      return !kinds || !kinds.length || kindSet[fact.kind];
+    }).sort(compareMemoryFacts);
+  }
+
+  function memoryFactLabel(fact) {
+    if (!fact) return "";
+    return fact.kind + (fact.signal ? " " + fact.signal : "") + (fact.sourceFingerprint ? " " + fact.sourceFingerprint : "");
+  }
+
+  function memorySupportForSignal(facts, trainerId, signalTag) {
+    var selected = memoryFactsFor(facts, trainerId, signalTag, ["recurring_trap", "weak_signal"]).slice(0, 3);
+    var remaining = 30;
+    var boost = 0;
+    var scoreBreakdown = [];
+    selected.forEach(function (fact) {
+      if (remaining <= 0) return;
+      var confidence = Number(fact.confidence || 0);
+      var raw = fact.kind === "recurring_trap"
+        ? Math.max(8, Math.round(confidence * 18))
+        : Math.max(4, Math.round(confidence * 10));
+      var value = Math.min(remaining, raw);
+      if (value <= 0) return;
+      boost += value;
+      remaining -= value;
+      scoreBreakdown.push({
+        label: "memory " + fact.kind + " boost",
+        value: value,
+        note: fact.sourceFingerprint || fact.id || ""
+      });
+    });
+    return {
+      facts: selected,
+      boost: boost,
+      scoreBreakdown: scoreBreakdown,
+      reasons: selected.map(function (fact) { return "Memory fact: " + memoryFactLabel(fact); })
+    };
+  }
+
+  function memoryReviewForTrainer(facts, trainerId) {
+    var selected = memoryFactsFor(facts, trainerId, "", ["next_review_due", "stale_skill"]).slice(0, 1)[0];
+    if (!selected) return null;
+    var confidence = Number(selected.confidence || 0);
+    var base = selected.kind === "next_review_due" ? 55 : 47;
+    var boost = Math.round(confidence * 14);
+    return {
+      fact: selected,
+      score: base + boost,
+      scoreBreakdown: [
+        { label: selected.kind === "next_review_due" ? "memory review-due base" : "memory stale-skill base", value: base },
+        { label: "memory confidence boost", value: boost, note: selected.sourceFingerprint || selected.id || "" }
+      ],
+      reasons: ["Memory fact: " + memoryFactLabel(selected)]
+    };
+  }
+
   function stableJson(value) {
     if (value === null || value === undefined) return "null";
     if (Array.isArray(value)) return "[" + value.map(stableJson).join(",") + "]";
@@ -511,6 +608,7 @@
     var trainerPath = trainer.path || "#";
     var weakMastery = options.weakMastery || [];
     var weakTags = options.weakTags || [];
+    var memoryFacts = Array.isArray(options.memoryFacts) ? options.memoryFacts : [];
     var graph = root.PlataCompetencies;
     var weakCompetencies = options.weakCompetencies || (graph && graph.rank ? graph.rank(weakMastery) : []);
     var topMastery = weakMastery.find(function (item) { return item.remediation && item.remediation.href; });
@@ -526,7 +624,15 @@
     if (topMastery) {
       var repairCompetency = competencyForSignal(weakCompetencies, topMastery);
       var competencyBoost = repairCompetency ? Math.min(30, Math.round(Number(repairCompetency.score || 0) / 4)) : 0;
-      var repairScore = weakScore(topMastery) + competencyBoost;
+      var repairMemory = memorySupportForSignal(memoryFacts, trainer.id || "", topMastery.tag);
+      var repairMemoryFacts = traceMemoryFacts(repairMemory.facts);
+      var repairScore = weakScore(topMastery) + competencyBoost + repairMemory.boost;
+      var repairTraceInputs = Object.assign({}, traceInputs, {
+        selectedSignal: traceSignal(topMastery),
+        selectedCompetency: traceCompetency(repairCompetency)
+      });
+      if (memoryFacts.length) repairTraceInputs.memoryFactCount = memoryFacts.length;
+      if (repairMemoryFacts.length) repairTraceInputs.selectedMemoryFacts = repairMemoryFacts;
       return withTrace({
         kind: "repair",
         targetKind: "repair",
@@ -542,23 +648,28 @@
         signals: [topMastery],
         competency: repairCompetency,
         repair: topMastery.remediation,
-        reasons: (repairCompetency ? ["Root competency: " + repairCompetency.label] : []).concat(["Highest weak mastery signal"])
+        memoryFacts: repairMemoryFacts,
+        reasons: (repairCompetency ? ["Root competency: " + repairCompetency.label] : []).concat(["Highest weak mastery signal"], repairMemory.reasons)
       }, {
         source: "dashboardDecision",
         rule: "dashboard.repair.highest-open-mastery",
-        inputs: Object.assign({}, traceInputs, {
-          selectedSignal: traceSignal(topMastery),
-          selectedCompetency: traceCompetency(repairCompetency)
-        }),
+        inputs: repairTraceInputs,
         scoreBreakdown: weakScoreBreakdown(topMastery).concat([
           { label: "root competency boost", value: competencyBoost }
-        ])
+        ], repairMemory.scoreBreakdown)
       });
     }
 
     var rawWeak = rawWeakTag(weakTags);
     if (rawWeak) {
-      var rawScore = 70 + Number(rawWeak.wrong || 0) * 5 + Math.round(Number(rawWeak.score || 0) * 20);
+      var rawMemory = memorySupportForSignal(memoryFacts, trainer.id || "", rawWeak.tag);
+      var rawMemoryFacts = traceMemoryFacts(rawMemory.facts);
+      var rawScore = 70 + Number(rawWeak.wrong || 0) * 5 + Math.round(Number(rawWeak.score || 0) * 20) + rawMemory.boost;
+      var rawTraceInputs = Object.assign({}, traceInputs, {
+        selectedSignal: traceSignal(rawWeak)
+      });
+      if (memoryFacts.length) rawTraceInputs.memoryFactCount = memoryFacts.length;
+      if (rawMemoryFacts.length) rawTraceInputs.selectedMemoryFacts = rawMemoryFacts;
       return withTrace({
         kind: "weak",
         targetKind: "practice",
@@ -571,18 +682,17 @@
         primaryLabel: "Open trainer",
         primaryHref: trainerPath,
         signals: [rawWeak],
-        reasons: ["Weak tag: " + rawWeak.tag]
+        memoryFacts: rawMemoryFacts,
+        reasons: ["Weak tag: " + rawWeak.tag].concat(rawMemory.reasons)
       }, {
         source: "dashboardDecision",
         rule: "dashboard.practice.raw-weak-tag",
-        inputs: Object.assign({}, traceInputs, {
-          selectedSignal: traceSignal(rawWeak)
-        }),
+        inputs: rawTraceInputs,
         scoreBreakdown: [
           { label: "raw weak-tag base", value: 70 },
           { label: "missed attempts", value: Number(rawWeak.wrong || 0) * 5 },
           { label: "error-rate pressure", value: Math.round(Number(rawWeak.score || 0) * 20) }
-        ]
+        ].concat(rawMemory.scoreBreakdown)
       });
     }
 
@@ -655,6 +765,33 @@
           { label: "accuracy repair base", value: 62 },
           { label: "accuracy gap", value: 70 - stats.accuracy }
         ]
+      });
+    }
+
+    var memoryReview = memoryReviewForTrainer(memoryFacts, trainer.id || "");
+    if (memoryReview) {
+      var reviewFact = traceMemoryFact(memoryReview.fact);
+      var reviewTraceInputs = Object.assign({}, traceInputs);
+      if (memoryFacts.length) reviewTraceInputs.memoryFactCount = memoryFacts.length;
+      if (reviewFact) reviewTraceInputs.selectedMemoryFacts = [reviewFact];
+      return withTrace({
+        kind: "stale",
+        targetKind: "review",
+        trainerId: trainer.id || "",
+        signalTag: memoryReview.fact.signal || "",
+        score: memoryReview.score,
+        badge: "Review",
+        title: "Review " + (trainer.name || "trainer"),
+        copy: "A learner memory fact says " + (memoryReview.fact.signal || "this skill") + " is ready for a short check.",
+        primaryLabel: "Open trainer",
+        primaryHref: trainerPath,
+        memoryFacts: traceMemoryFacts([memoryReview.fact]),
+        reasons: ["Memory review due"].concat(memoryReview.reasons)
+      }, {
+        source: "dashboardDecision",
+        rule: "dashboard.review.memory-due",
+        inputs: reviewTraceInputs,
+        scoreBreakdown: memoryReview.scoreBreakdown
       });
     }
 
@@ -788,6 +925,9 @@
     if (signal && (signal.wrong !== undefined || signal.total !== undefined)) {
       facts.push("Evidence: " + countLabel(signal.wrong, "miss", "misses") + " / " + countLabel(signal.total, "try", "tries"));
     }
+    (decision.memoryFacts || []).slice(0, 2).forEach(function (fact) {
+      facts.push("Memory: " + memoryFactLabel(fact));
+    });
     if (decision.meta) facts.push(decision.meta);
     reasons.forEach(function (reason) { facts.push(reason); });
 
@@ -804,7 +944,9 @@
       copy = "Chosen because today's practice threshold is already reached.";
       if (stats.today !== undefined) facts.unshift("Attempts today: " + Number(stats.today || 0));
     } else if (kind === "stale") {
-      copy = "Chosen because this trainer has gone stale since the last session.";
+      copy = decision.trace && decision.trace.rule === "dashboard.review.memory-due"
+        ? "Chosen because learner memory says this signal is due for review."
+        : "Chosen because this trainer has gone stale since the last session.";
       if (stats.lastSessionDate) facts.unshift("Last session: " + stats.lastSessionDate);
     } else {
       copy = "Chosen as the next useful block from the current local progress.";
@@ -877,6 +1019,7 @@
       lastSessionDateAtStart: stats.lastSessionDate || "",
       competency: normalizeCompetency(competency),
       reasons: decision.reasons || [],
+      memoryFacts: traceMemoryFacts(decision.memoryFacts),
       explanation: explainDecision(decision, stats),
       trace: trace
     };
@@ -1006,6 +1149,7 @@
       lastSessionDateAtStart: step.lastSessionDateAtStart || "",
       competency: normalizeCompetency(step.competency),
       reasons: Array.isArray(step.reasons) ? step.reasons.slice(0, 6) : [],
+      memoryFacts: traceMemoryFacts(step.memoryFacts),
       explanation: normalizeExplanation(step.explanation),
       trace: normalizeTrace(step.trace) || traceDecision(step, {
         source: "practicePlan",

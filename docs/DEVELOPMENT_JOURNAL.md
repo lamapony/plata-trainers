@@ -123,7 +123,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Specify a local memory fact schema with source event fingerprints, confidence, decay, and stable fact ids.
 - [x] Compile memory facts from attempts, repair closures, and practice-plan completions.
 - [ ] Add deterministic fixtures for returning learners, stale skills, repaired signals, and recurring traps.
-- [ ] Upgrade planner traces so every memory-based recommendation cites the facts it used.
+- [x] Upgrade planner traces so every memory-based recommendation cites the facts it used.
 - [x] Add a dashboard memory inspector before any account sync.
 - [ ] Keep basic practice local-first and account-free.
 - [ ] Prototype optional account sync only after local memory improves recommendations.
@@ -146,3 +146,13 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Include visible facts, memory summary, fingerprint, and hidden fact ids in portable profile export.
 - [x] Restore hidden fact ids on profile import and clear stale memory deletions on legacy imports.
 - [x] Cover the inspector, hide/restore controls, and memory export with dashboard smoke tests.
+
+## Memory-Aware Planner Sprint
+
+- [x] Pass visible learner memory facts into dashboard recommendation decisions.
+- [x] Boost repair priority when `weak_signal` or `recurring_trap` facts support the selected signal.
+- [x] Recommend review from `next_review_due` and `stale_skill` facts even when raw trainer stats look healthy.
+- [x] Store cited memory fact ids, kinds, signals, confidence, and source fingerprints in planner traces.
+- [x] Render memory citations in practice-plan explanations without exposing raw answer text.
+- [x] Keep hidden memory facts out of the next dashboard recommendation pass.
+- [x] Add planner, dashboard, and snapshot coverage for memory-aware recommendation drift.

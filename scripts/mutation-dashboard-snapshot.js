@@ -20,6 +20,7 @@ const snapshotSources = [
   "shared/plata-planner.js",
   "shared/plata-evidence.js",
   "shared/plata-events.js",
+  "shared/plata-memory.js",
   "dashboard.js"
 ];
 

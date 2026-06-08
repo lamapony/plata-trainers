@@ -185,6 +185,26 @@ function runDashboardDecisionSmoke(context) {
     action: spec.remediation.action,
     href: planner.sceneHref(trainer.path, spec.remediation.sceneId, "passive-agency")
   };
+  const memoryFacts = [
+    {
+      id: "mem-weak-passive-agency",
+      kind: "weak_signal",
+      status: "open",
+      trainerId: trainer.id,
+      signal: "passive-agency",
+      confidence: 0.82,
+      sourceFingerprint: "memsrc-passive-weak"
+    },
+    {
+      id: "mem-trap-passive-agency",
+      kind: "recurring_trap",
+      status: "open",
+      trainerId: trainer.id,
+      signal: "passive-agency",
+      confidence: 0.91,
+      sourceFingerprint: "memsrc-passive-trap"
+    }
+  ];
 
   const repair = planner.dashboardDecision({
     trainer,
@@ -192,6 +212,7 @@ function runDashboardDecisionSmoke(context) {
     stats: { total: 1, correct: 0, accuracy: 0, today: 1, lastSessionDate: state.meta.lastSessionDate },
     weakMastery: [{ ...weak, label: spec.label, evidence: spec.evidence, remediation }],
     weakTags: [weak],
+    memoryFacts,
     index: 4
   });
 
@@ -202,11 +223,16 @@ function runDashboardDecisionSmoke(context) {
   assert(repair.trace.rule === "dashboard.repair.highest-open-mastery", "dashboard repair carries a trace rule");
   assert(repair.trace.inputs.trainer.id === trainer.id, "dashboard repair trace records trainer input");
   assert(repair.trace.inputs.selectedSignal.tag === "passive-agency", "dashboard repair trace records selected signal");
+  assert(repair.trace.inputs.memoryFactCount === 2, "dashboard repair trace records memory fact input count");
+  assert(repair.trace.inputs.selectedMemoryFacts.some(fact => fact.id === "mem-trap-passive-agency"), "dashboard repair trace cites selected memory facts");
   assert(repair.trace.scoreBreakdown.some(part => part.label === "root competency boost"), "dashboard repair trace records competency score boost");
+  assert(repair.trace.scoreBreakdown.some(part => part.label === "memory recurring_trap boost"), "dashboard repair trace records memory score boost");
+  assert(repair.memoryFacts.some(fact => fact.kind === "recurring_trap"), "dashboard repair decision keeps memory facts for explanation");
   const repairExplanation = planner.explainDecision(repair, { total: 1, correct: 0, accuracy: 0, today: 1 });
   assert(repairExplanation.copy.includes("highest open mastery signal"), "planner explains why repair was chosen");
   assert(repairExplanation.facts.some(fact => fact.includes("Root skill: Agency and responsibility")), "planner explanation includes root skill evidence");
   assert(repairExplanation.facts.some(fact => fact.includes("Evidence: 1 miss / 1 try")), "planner explanation includes signal counts");
+  assert(repairExplanation.facts.some(fact => fact.includes("Memory: recurring_trap passive-agency memsrc-passive-trap")), "planner explanation includes memory evidence");
 
   const mismatchedRoot = planner.dashboardDecision({
     trainer,
@@ -243,6 +269,29 @@ function runDashboardDecisionSmoke(context) {
   });
   assert(lessonStart.score > start.score, "Lesson 01 should be the preferred empty-profile starter");
   assert(lessonStart.trace.rule === "dashboard.start.preferred-entry", "preferred starter carries a trace rule");
+
+  const memoryReview = planner.dashboardDecision({
+    trainer,
+    state,
+    stats: { total: 4, correct: 4, accuracy: 100, today: 0, lastSessionDate: "2026-06-08" },
+    weakMastery: [],
+    weakTags: [],
+    memoryFacts: [{
+      id: "mem-review-passive-agency",
+      kind: "next_review_due",
+      status: "due",
+      trainerId: trainer.id,
+      signal: "passive-agency",
+      confidence: 0.72,
+      sourceFingerprint: "memsrc-review-due"
+    }],
+    index: 4
+  });
+  assert(memoryReview.kind === "stale", "dashboard can recommend review from learner memory facts");
+  assert(memoryReview.trace.rule === "dashboard.review.memory-due", "memory review carries a planner trace rule");
+  assert(memoryReview.signalTag === "passive-agency", "memory review keeps the due signal");
+  assert(memoryReview.trace.inputs.selectedMemoryFacts[0].id === "mem-review-passive-agency", "memory review trace cites the due memory fact");
+  assert(planner.explainDecision(memoryReview, memoryReview.trace.inputs.stats).copy.includes("learner memory"), "memory review explanation names learner memory");
 
   const ranked = planner.rankDashboardDecisions([
     { trainer, decision: start, index: 0 },

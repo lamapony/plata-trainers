@@ -17,6 +17,7 @@ const sources = [
   "shared/plata-planner.js",
   "shared/plata-evidence.js",
   "shared/plata-events.js",
+  "shared/plata-memory.js",
   "dashboard.js"
 ];
 
@@ -87,6 +88,7 @@ function makeContext(initialStorage) {
     "#due-cards": makeElement("div"),
     "#practice-plan": makeElement("div"),
     "#evidence-ledger": makeElement("div"),
+    "#memory-facts": makeElement("div"),
     "#competency-list": makeElement("div"),
     "#mastery-list": makeElement("div"),
     "#weak-list": makeElement("div"),
@@ -269,8 +271,10 @@ function compactTraceInputs(inputs) {
   if (inputs.weakMasteryCount !== undefined) out.weakMasteryCount = inputs.weakMasteryCount;
   if (inputs.weakTagCount !== undefined) out.weakTagCount = inputs.weakTagCount;
   if (inputs.weakCompetencyCount !== undefined) out.weakCompetencyCount = inputs.weakCompetencyCount;
+  if (inputs.memoryFactCount !== undefined) out.memoryFactCount = inputs.memoryFactCount;
   if (inputs.selectedSignal) out.selectedSignal = inputs.selectedSignal;
   if (inputs.selectedCompetency) out.selectedCompetency = inputs.selectedCompetency;
+  if (inputs.selectedMemoryFacts) out.selectedMemoryFacts = inputs.selectedMemoryFacts;
   return out;
 }
 

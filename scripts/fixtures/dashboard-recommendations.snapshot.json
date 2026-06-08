@@ -512,11 +512,11 @@
             "kind": "repair",
             "trainerId": "lesson-b2-radiator-register",
             "signalTag": "passive-agency",
-            "score": 162,
+            "score": 169,
             "title": "Repair Read passive agency",
             "primaryHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive",
             "traceRule": "dashboard.repair.highest-open-mastery",
-            "traceFingerprint": "ptr-1ixx4qd"
+            "traceFingerprint": "ptr-dnrzl4"
           }
         },
         {
@@ -566,7 +566,7 @@
             "targetKind": "repair",
             "trainerId": "lesson-b2-radiator-register",
             "signalTag": "passive-agency",
-            "score": 162,
+            "score": 169,
             "badge": "Repair now",
             "title": "Repair Read passive agency",
             "primaryLabel": "Open repair scene",
@@ -574,7 +574,8 @@
             "meta": "Rerun the landlord email and name the missing actor, date, and deadline before judging whether the text promises a repair.",
             "reasons": [
               "Root competency: Agency and responsibility",
-              "Highest weak mastery signal"
+              "Highest weak mastery signal",
+              "Memory fact: weak_signal passive-agency memsrc-h7inq3"
             ],
             "competency": {
               "id": "agency",
@@ -601,7 +602,7 @@
             ],
             "trace": {
               "rule": "dashboard.repair.highest-open-mastery",
-              "fingerprint": "ptr-1ixx4qd",
+              "fingerprint": "ptr-dnrzl4",
               "selected": {
                 "kind": "repair",
                 "targetKind": "repair",
@@ -609,7 +610,7 @@
                 "signalTag": "passive-agency",
                 "primaryHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive"
               },
-              "score": 162,
+              "score": 169,
               "scoreBreakdown": [
                 {
                   "label": "base weak-signal priority",
@@ -626,6 +627,10 @@
                 {
                   "label": "root competency boost",
                   "value": 24
+                },
+                {
+                  "label": "memory weak_signal boost",
+                  "value": 7
                 }
               ],
               "inputs": {
@@ -645,6 +650,7 @@
                 "weakMasteryCount": 1,
                 "weakTagCount": 3,
                 "weakCompetencyCount": 1,
+                "memoryFactCount": 1,
                 "selectedSignal": {
                   "competencyId": "agency",
                   "correct": 0,
@@ -659,11 +665,23 @@
                   "label": "Agency and responsibility",
                   "score": 94,
                   "signalCount": 1
-                }
+                },
+                "selectedMemoryFacts": [
+                  {
+                    "confidence": 0.66,
+                    "id": "mem-ow38cj",
+                    "kind": "weak_signal",
+                    "signal": "passive-agency",
+                    "sourceFingerprint": "memsrc-h7inq3",
+                    "status": "open",
+                    "trainerId": "lesson-b2-radiator-register"
+                  }
+                ]
               },
               "reasons": [
                 "Root competency: Agency and responsibility",
-                "Highest weak mastery signal"
+                "Highest weak mastery signal",
+                "Memory fact: weak_signal passive-agency memsrc-h7inq3"
               ]
             }
           }
@@ -845,7 +863,7 @@
             "primaryHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive",
             "routedHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency&plan=p1z0mgdg&step=s1-1z0mgdg#official-reply-passive",
             "minutes": "4-6 min",
-            "score": 162,
+            "score": 169,
             "attemptsAtStart": 2,
             "status": "open",
             "statusLabel": "Open",
@@ -861,14 +879,14 @@
                 "Root skill: Agency and responsibility",
                 "Signal: Read passive agency",
                 "Evidence: 1 miss / 1 try",
-                "Rerun the landlord email and name the missing actor, date, and deadline before judging whether the text promises a repair.",
-                "Root competency: Agency and responsibility"
+                "Memory: weak_signal passive-agency memsrc-h7inq3",
+                "Rerun the landlord email and name the missing actor, date, and deadline before judging whether the text promises a repair."
               ],
               "source": "repair"
             },
             "trace": {
               "rule": "dashboard.repair.highest-open-mastery",
-              "fingerprint": "ptr-1ixx4qd",
+              "fingerprint": "ptr-dnrzl4",
               "selected": {
                 "kind": "repair",
                 "targetKind": "repair",
@@ -876,7 +894,7 @@
                 "signalTag": "passive-agency",
                 "primaryHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive"
               },
-              "score": 162,
+              "score": 169,
               "scoreBreakdown": [
                 {
                   "label": "base weak-signal priority",
@@ -893,6 +911,10 @@
                 {
                   "label": "root competency boost",
                   "value": 24
+                },
+                {
+                  "label": "memory weak_signal boost",
+                  "value": 7
                 }
               ],
               "inputs": {
@@ -912,6 +934,7 @@
                 "weakMasteryCount": 1,
                 "weakTagCount": 3,
                 "weakCompetencyCount": 1,
+                "memoryFactCount": 1,
                 "selectedSignal": {
                   "competencyId": "agency",
                   "correct": 0,
@@ -926,11 +949,23 @@
                   "label": "Agency and responsibility",
                   "score": 94,
                   "signalCount": 1
-                }
+                },
+                "selectedMemoryFacts": [
+                  {
+                    "confidence": 0.66,
+                    "id": "mem-ow38cj",
+                    "kind": "weak_signal",
+                    "signal": "passive-agency",
+                    "sourceFingerprint": "memsrc-h7inq3",
+                    "status": "open",
+                    "trainerId": "lesson-b2-radiator-register"
+                  }
+                ]
               },
               "reasons": [
                 "Root competency: Agency and responsibility",
-                "Highest weak mastery signal"
+                "Highest weak mastery signal",
+                "Memory fact: weak_signal passive-agency memsrc-h7inq3"
               ]
             }
           }

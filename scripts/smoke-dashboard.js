@@ -285,6 +285,7 @@ function runSeededMasterySmoke() {
   assert(/Agency and responsibility/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan shows root competency");
   assert(/highest open mastery signal/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains why the repair step is first");
   assert(/Evidence: 1 miss \/ 1 try/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders repair evidence counts");
+  assert(/Memory: weak_signal passive-agency memsrc-/.test(env.elements["#practice-plan"].innerHTML), "dashboard practice plan cites planner memory facts");
   assert(/mode=repair/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links repair mode");
   assert(/plan=/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links carry active plan token");
   assert(/step=/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links carry step route id");
@@ -300,9 +301,17 @@ function runSeededMasterySmoke() {
   const memoryBundle = invokeDashboardFunction(env, "buildMemoryFacts");
   const weakFact = memoryBundle.visibleFacts.find(fact => fact.kind === "weak_signal" && fact.signal === "passive-agency");
   assert(weakFact, "dashboard exposes compiled memory facts");
+  const candidates = invokeDashboardFunction(env, "dashboardCandidates");
+  const repairCandidate = candidates.find(item => item.trainer.id === "lesson-b2-radiator-register");
+  assert(repairCandidate.decision.trace.inputs.selectedMemoryFacts.some(fact => fact.id === weakFact.id), "dashboard planner trace cites memory facts");
+  assert(repairCandidate.decision.trace.scoreBreakdown.some(part => part.label === "memory weak_signal boost"), "dashboard planner trace scores memory facts");
   vm.runInContext(`deleteMemoryFact(${JSON.stringify(weakFact.id)})`, env.context, { filename: "dashboard.js" });
   assert(env.storage["plata:learner-memory:deleted-facts:v1"].includes(weakFact.id), "dashboard persists hidden memory fact ids");
   assert(!/Weak signal: passive-agency/.test(env.elements["#memory-facts"].innerHTML), "dashboard hides deleted memory facts");
+  const hiddenCandidates = invokeDashboardFunction(env, "dashboardCandidates");
+  const hiddenRepairCandidate = hiddenCandidates.find(item => item.trainer.id === "lesson-b2-radiator-register");
+  assert(!(hiddenRepairCandidate.decision.trace.inputs.selectedMemoryFacts || []).some(fact => fact.id === weakFact.id), "dashboard planner ignores hidden memory facts");
+  assert(!hiddenRepairCandidate.decision.trace.scoreBreakdown.some(part => part.label === "memory weak_signal boost"), "dashboard planner removes hidden memory score boosts");
   assert(/Restore 1 hidden/.test(env.elements["#memory-facts"].innerHTML), "dashboard offers memory fact restore");
   invokeDashboardFunction(env, "restoreDeletedMemoryFacts");
   assert(!env.storage["plata:learner-memory:deleted-facts:v1"], "dashboard clears hidden memory fact ids");
