@@ -47,7 +47,7 @@ If account sync is added later, the target should be a memory vault, not a gener
 
 1. Local adaptive learner model
 
-   Derive a student model from existing trainer state, event logs, evidence ledger rows, repair closures, practice-plan completions, and skill graph roots. The first contract is `PlataLearnerModel`: a deterministic scoring layer over derived memory facts with explicit kind weights, confidence boosts, age adjustments, transfer boosts, cited recommended focus, ranked risks, review queue, and root competency pressure. It runs entirely in the browser and in CI fixtures, and it must not expose event logs, source event ids, or raw answer text.
+   Derive a student model from existing trainer state, event logs, evidence ledger rows, repair closures, practice-plan completions, and skill graph roots. The first contract is `PlataLearnerModel`: a deterministic scoring layer over derived memory facts with explicit kind weights, confidence boosts, age adjustments, transfer boosts, cited recommended focus, ranked risks, review queue, and root competency pressure. It runs entirely in the browser and in CI fixtures, and it must not expose event logs, source event ids, or raw answer text. The learner-model alignment gate then proves its focus facts stay connected to planner-selected and advisor-cited memory facts before any model call is allowed into the loop.
 
 2. Memory fact schema
 

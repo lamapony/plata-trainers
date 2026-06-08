@@ -149,6 +149,14 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Mutation-test raw-text leaks, citationless focus, missing source fingerprints, lost root-competency focus, raw history payloads, and fingerprint drift.
 - [x] Include `check:learner-model` in `npm run check` and project health deterministic fixture reporting.
 
+## Learner Model Alignment Sprint
+
+- [x] Add an alignment gate proving `PlataLearnerModel` focus facts are planner-selected when planner decisions exist.
+- [x] Require advisor citations to include the learner-model focus fact for fixed learner profiles.
+- [x] Counterfactually remove the learner-model focus fact and prove planner/advisor citations move away from it.
+- [x] Mutation-test root-priority drift, corrupted planner citation ids, dropped advisor focus citations, and review-due handling drift.
+- [x] Include `check:learner-model-alignment` and `check:learner-model-alignment-mutations` in `npm run check` and project health.
+
 ## Dashboard Memory Inspector Sprint
 
 - [x] Add a dashboard section that renders local learner memory facts in plain language.

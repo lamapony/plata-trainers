@@ -53,6 +53,8 @@ When `PlataCompetencies` is available, memory also emits `root_competency_trap` 
 
 `plata-learner-model.js` turns derived memory facts into a deterministic adaptive profile with explicit kind weights, confidence boosts, age adjustments, transfer boosts, ranked priorities, review queue, root competency risks, recommended focus, guardrails, and a stable fingerprint. It does not expose event logs or source event ids. `scripts/smoke-learner-model.js` snapshots fixed learner profiles and mutates raw-text leaks, missing focus citations, missing source fingerprints, lost root-competency focus, raw history payloads, and fingerprint drift.
 
+`scripts/smoke-learner-model-alignment.js` proves that the learner model focus stays aligned with the real planner and advisor layers: model focus facts must be planner-selected when a planner decision exists, advisor-cited in every profile, and removed from all downstream citations after counterfactual deletion. `scripts/mutation-learner-model-alignment.js` mutates model priorities, planner citation ids, advisor fact selection, and review-due handling to prove drift fails CI.
+
 The dashboard memory inspector renders those facts for the learner, supports hiding/restoring individual derived facts, supports learner-marked correction records for false assumptions, renders corrected records as an audit trail with individual restore, and includes visible facts plus hidden/corrected fact records in portable profile export/import.
 
 `scripts/smoke-memory-corrections.js` protects the correction-record contract. It proves corrected memory facts keep stable fact ids, reasons, timestamps, source fingerprints, and no raw expected/given answer text, while duplicate or malformed correction records fail CI.

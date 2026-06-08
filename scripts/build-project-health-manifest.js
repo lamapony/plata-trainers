@@ -36,6 +36,8 @@ const requiredGates = [
   { id: "check:events", category: "replay", contract: "Privacy-conscious learning events replay deterministic profile facts." },
   { id: "check:memory", category: "personalization", contract: "Local learner memory facts compile from redacted events with source fingerprints and no raw answers." },
   { id: "check:learner-model", category: "personalization", contract: "Local adaptive learner model ranks memory facts with explicit weights, citations, and privacy guardrails." },
+  { id: "check:learner-model-alignment", category: "personalization", contract: "Learner model focus stays aligned with planner-selected and advisor-cited memory facts." },
+  { id: "check:learner-model-alignment-mutations", category: "mutation", contract: "Bad learner-model, planner, and advisor alignment contracts fail CI." },
   { id: "check:memory-fixtures", category: "personalization", contract: "Returning, stale, repaired, and recurring-trap learner memory fixtures remain deterministic and planner-cited." },
   { id: "check:memory-corrections", category: "personalization", contract: "Learner-corrected memory facts keep a strict schema, source fingerprints, and no raw answers." },
   { id: "check:memory-vault", category: "personalization", contract: "Optional account memory vaults contain derived facts only, reject raw answer history, and merge imports without resurrecting hidden/corrected facts." },
