@@ -19,6 +19,7 @@ const requiredGates = [
   { id: "check:skill-coverage", category: "pedagogy", contract: "Gold mastery signals map cleanly to the root skill graph." },
   { id: "check:evidence", category: "diagnostics", contract: "Evidence ledger ranks open, closed, reopened, miss, and correct facts." },
   { id: "check:events", category: "replay", contract: "Privacy-conscious learning events replay deterministic profile facts." },
+  { id: "check:memory", category: "personalization", contract: "Local learner memory facts compile from redacted events with source fingerprints and no raw answers." },
   { id: "check:profile-replay", category: "debug", contract: "Dashboard JSON exports can be replay-debugged by maintainers." },
   { id: "check:planner", category: "planner", contract: "Planner decisions and practice plans preserve traces and explanations." },
   { id: "check:planner-mutations", category: "mutation", contract: "Bad mastery/remediation planner contracts fail CI." },

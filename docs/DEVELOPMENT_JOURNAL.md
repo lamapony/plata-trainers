@@ -20,7 +20,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add a lesson exercise audit gate for pedagogical contradictions and known Danish slips.
 - [ ] Add a PR-facing dashboard snapshot diff workflow step.
 - [ ] Define the local adaptive learner model before adding any account memory.
-- [ ] Add an inspectable learner memory fact schema derived from the event log.
+- [x] Add an inspectable learner memory fact schema derived from the event log.
 - [ ] Build a memory inspector so learners can see, export, and delete personalization facts.
 - [ ] Prototype optional account memory as a vault for derived learning facts, not raw answer history.
 - [ ] Evaluate a small account-resident `OpenClaw` agent against deterministic learner profiles; see [Learner Memory Agent RFC](./LEARNER_MEMORY_AGENT_RFC.md).
@@ -120,11 +120,19 @@ This journal tracks technical bets that make the project more valuable as an ope
 ## Learner Memory Agent Track
 
 - [x] Document `OpenClaw` as a future account-resident learner memory agent, not a mascot or opaque chatbot: [Learner Memory Agent RFC](./LEARNER_MEMORY_AGENT_RFC.md).
-- [ ] Specify a local memory fact schema with source event fingerprints, confidence, decay, and deletion semantics.
-- [ ] Compile memory facts from attempts, repair closures, evidence ledger rows, practice-plan completions, and root skills.
+- [x] Specify a local memory fact schema with source event fingerprints, confidence, decay, and stable fact ids.
+- [x] Compile memory facts from attempts, repair closures, and practice-plan completions.
 - [ ] Add deterministic fixtures for returning learners, stale skills, repaired signals, and recurring traps.
 - [ ] Upgrade planner traces so every memory-based recommendation cites the facts it used.
 - [ ] Add a dashboard memory inspector before any account sync.
 - [ ] Keep basic practice local-first and account-free.
 - [ ] Prototype optional account sync only after local memory improves recommendations.
 - [ ] Gate any AI agent advice through replayable profiles and privacy-leak tests.
+
+## Local Learner Memory Sprint
+
+- [x] Add `PlataMemory` as a browser-safe compiler from redacted event logs to durable learner memory facts.
+- [x] Emit `weak_signal`, `repaired_signal`, `recurring_trap`, `stable_strength`, `stale_skill`, `preferred_context`, and `next_review_due` facts.
+- [x] Add source event ids, source fingerprints, confidence, status, expiry, evidence rows, and privacy markers to each fact.
+- [x] Prove memory facts are deterministic and do not include raw expected/given answer text.
+- [x] Include the memory smoke test in `npm run check` and project health.
