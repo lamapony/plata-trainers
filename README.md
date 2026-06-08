@@ -6,6 +6,7 @@
 Open-source Danish plateau-breaker for Danish learners who are no longer starting from zero but still feel stuck. Static HTML/JS, no app build step, no backend.
 Live demo: [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/).
 Public quality report: [lamapony.github.io/plata-trainers/quality.html](https://lamapony.github.io/plata-trainers/quality.html).
+Public capability map: [lamapony.github.io/plata-trainers/reports/capabilities.json](https://lamapony.github.io/plata-trainers/reports/capabilities.json).
 
 Platå does not try to teach Danish from the beginning. It helps learners overcome the plateau: the point where they know enough Danish to recognize the language, but not enough to act fluently under social pressure.
 
@@ -21,7 +22,7 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Private by default:** browser LocalStorage only; no accounts, backend, analytics, or tracking.
 - **Contributor-friendly data:** exercises are plain JavaScript data files with validation scripts and narrative lesson schemas.
 - **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals, deterministic simulation, remediation, and comic storyboard prompts.
-- **Public quality report:** Pages publishes a generated report of gold lessons, mastery signals, simulations, endings, source coverage, comic coverage, and scene-level evidence rows.
+- **Public proof reports:** Pages publishes generated JSON for quality, skill coverage, Today shell states, project health, and a capability map that links product claims to checks, source files, and docs.
 - **Lightweight companion:** the dashboard opens with a deterministic, stateful Today shell and exports a read-only Hermes bridge brief without embedding a heavy agent runtime.
 - **Static and forkable:** every trainer can run from `index.html`; GitHub Pages deploys a checked static artifact.
 
@@ -65,7 +66,9 @@ npm run build:pages
 npm run check:pages
 npm run check:quality-report
 npm run check:today-program-report
+npm run check:capability-map
 npm run check:comic-prompts
+node scripts/build-capability-map.js --out .dist/capabilities.json --text
 npm run diff:quality -- --base .dist/quality-report.json --head current
 npm run diff:quality -- --base .dist/quality-report.json --head current --json > .dist/quality-diff.json
 node scripts/snapshot-dashboard-recommendations.js --json > .dist/dashboard-recommendations.json
@@ -138,6 +141,8 @@ node scripts/build-quality-report.js --out .dist/quality-report.json
 node scripts/diff-quality-report.js --base .dist/quality-report.json --head current --json > .dist/quality-diff.json
 node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json
 node scripts/smoke-review-report.js
+node scripts/build-capability-map.js --out .dist/capabilities.json --text
+node scripts/smoke-capability-map.js
 node scripts/build-project-health-manifest.js --out .dist/project-health.json --text
 node scripts/smoke-gold-scaffold.js
 node scripts/generate-comic-assets-openrouter.js --dry-run --out .dist/comic-prompts.json

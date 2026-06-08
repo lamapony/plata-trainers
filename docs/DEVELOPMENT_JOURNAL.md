@@ -31,6 +31,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Make the Today shell stateful across onboarding, active-route, return, and memory-review scenarios.
 - [x] Publish Today shell states as a deterministic public program report.
 - [x] Add PR diffs for Today shell state drift.
+- [x] Publish a product capability map that ties user-facing claims to gates, reports, docs, and source files.
 - [ ] Evaluate external Hermes/OpenClaw-style integrations as optional explainers, not sources of truth; see [Companion Architecture](./COMPANION_ARCHITECTURE.md).
 
 ## Current Sprint
@@ -105,11 +106,20 @@ This journal tracks technical bets that make the project more valuable as an ope
 ## Project Health Manifest Sprint
 
 - [x] Compile required `npm run check` gates into a machine-readable contract.
-- [x] Link public reports: quality, skill coverage, and project health.
+- [x] Link public reports: quality, skill coverage, Today shell, capability map, and project health.
 - [x] Verify QA and Pages workflows still run the full check on Node 24.
 - [x] Verify deterministic dashboard fixtures are fresh and mutation-backed.
 - [x] Fail on missing gates and stale fixtures in smoke tests.
 - [x] Publish `reports/project-health.json` in the Pages artifact.
+
+## Product Capability Map Sprint
+
+- [x] Define the product surface as capabilities instead of scattered README claims.
+- [x] Link each capability to proof gates, public reports, source files, docs, and user-facing surfaces.
+- [x] Add `scripts/build-capability-map.js` with text, JSON, and file output modes.
+- [x] Add `check:capability-map` with smoke tests for missing gate and missing Pages publishing regressions.
+- [x] Publish `reports/capabilities.json` in the Pages artifact.
+- [x] Include the capability map in project health so public claims stay checked by `npm run check`.
 
 ## Dashboard Snapshot Diff Sprint
 

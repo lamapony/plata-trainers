@@ -6,6 +6,7 @@ const path = require("node:path");
 const { buildQualityReport } = require("./build-quality-report.js");
 const { buildSkillCoverageReport } = require("./build-skill-coverage-report.js");
 const { buildTodayProgramReport } = require("./build-today-program-report.js");
+const { buildCapabilityMap } = require("./build-capability-map.js");
 const {
   buildDashboardRecommendationSnapshot,
   snapshotText
@@ -79,6 +80,7 @@ const requiredGates = [
   { id: "check:quality-diff", category: "review", contract: "Quality report diffs fail only on regressions." },
   { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, Today program, and personalization diffs." },
   { id: "check:quality-page", category: "report", contract: "Quality page renderer consumes generated report data." },
+  { id: "check:capability-map", category: "report", contract: "Product capability map links user-facing claims to checks, public reports, source files, and docs." },
   { id: "check:health", category: "report", contract: "Project health manifest links gates, reports, workflows, and fixtures." },
   { id: "check:pages", category: "publish", contract: "Pages artifact builds and public files pass static QA." }
 ];
@@ -104,6 +106,13 @@ const publicReportSpecs = [
     builderScript: "scripts/build-today-program-report.js",
     checkScript: "check:today-program-report",
     pagesPath: "reports/today-program.json"
+  },
+  {
+    id: "capabilities",
+    title: "Product capability map",
+    builderScript: "scripts/build-capability-map.js",
+    checkScript: "check:capability-map",
+    pagesPath: "reports/capabilities.json"
   },
   {
     id: "project-health",
@@ -235,7 +244,7 @@ function workflowRows(root, issues) {
   });
 }
 
-function reportRows(root, quality, skillCoverage, todayProgram, issues) {
+function reportRows(root, quality, skillCoverage, todayProgram, capabilityMap, issues) {
   const pagesBuild = fileExists(root, "scripts/build-pages-artifact.js")
     ? readText(root, "scripts/build-pages-artifact.js")
     : "";
@@ -265,6 +274,15 @@ function reportRows(root, quality, skillCoverage, todayProgram, issues) {
         scenarios: todayProgram.totals.scenarios,
         states: todayProgram.totals.states,
         issues: todayProgram.totals.issues
+      }
+    },
+    capabilities: {
+      status: capabilityMap.status,
+      totals: {
+        capabilities: capabilityMap.totals.capabilities,
+        proofGates: capabilityMap.totals.proofGates,
+        publicReports: capabilityMap.totals.publicReports,
+        issues: capabilityMap.totals.issues
       }
     },
     "project-health": {
@@ -561,8 +579,9 @@ function buildProjectHealthManifest(options = {}) {
   const quality = buildQualityReport({ root });
   const skillCoverage = buildSkillCoverageReport({ root });
   const todayProgram = buildTodayProgramReport({ root });
+  const capabilityMap = buildCapabilityMap({ root });
   const gates = gateRows(root, pkg, issues);
-  const reports = reportRows(root, quality, skillCoverage, todayProgram, issues);
+  const reports = reportRows(root, quality, skillCoverage, todayProgram, capabilityMap, issues);
   const workflows = workflowRows(root, issues);
   const fixtures = fixtureRows(root, issues);
   const gateCategories = gates.reduce((acc, gate) => {

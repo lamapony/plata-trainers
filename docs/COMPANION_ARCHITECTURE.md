@@ -11,6 +11,8 @@ This note records the lightweight companion decision. Plata should not embed a f
 
 ## Capability Map
 
+The generated product capability map publishes this decision as `lightweight-companion-bridge` in `reports/capabilities.json`, alongside the gates and files that keep the bridge read-only.
+
 | Technical layer | User-facing shape | Contract |
 | --- | --- | --- |
 | `PlataEvidence` | What changed | Evidence rows explain open, closed, reopened, missed, and correct signals. |
@@ -67,4 +69,4 @@ Hermes cannot:
 - request raw answer history;
 - write Plata memory or planner state.
 
-`scripts/smoke-companion.js` proves the card and bridge remain deterministic, cited, read-only, and free of raw learner answer text across fixed learner profiles. `scripts/smoke-today-program-report.js` proves the user-facing Today shell keeps its four core states deterministic and free of raw learner answer leaks. `scripts/smoke-today-program-diff.js` makes user-facing state drift reviewable in pull requests.
+`scripts/smoke-companion.js` proves the card and bridge remain deterministic, cited, read-only, and free of raw learner answer text across fixed learner profiles. `scripts/smoke-today-program-report.js` proves the user-facing Today shell keeps its four core states deterministic and free of raw learner answer leaks. `scripts/smoke-today-program-diff.js` makes user-facing state drift reviewable in pull requests. `scripts/smoke-capability-map.js` keeps this companion/bridge claim linked to the public product proof surface.

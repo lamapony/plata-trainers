@@ -6,6 +6,7 @@ const path = require("node:path");
 const { writeQualityReport } = require("./build-quality-report.js");
 const { writeSkillCoverageReport } = require("./build-skill-coverage-report.js");
 const { writeTodayProgramReport } = require("./build-today-program-report.js");
+const { writeCapabilityMap } = require("./build-capability-map.js");
 const { writeProjectHealthManifest } = require("./build-project-health-manifest.js");
 
 const root = path.resolve(__dirname, "..");
@@ -135,6 +136,7 @@ fs.writeFileSync(path.join(outRoot, ".nojekyll"), "");
 writeQualityReport(path.join(outRoot, "reports", "quality.json"));
 writeSkillCoverageReport(path.join(outRoot, "reports", "skill-coverage.json"));
 writeTodayProgramReport(path.join(outRoot, "reports", "today-program.json"));
+writeCapabilityMap(path.join(outRoot, "reports", "capabilities.json"));
 writeProjectHealthManifest(path.join(outRoot, "reports", "project-health.json"));
 
 const topLevel = fs.readdirSync(outRoot);

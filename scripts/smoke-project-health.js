@@ -26,10 +26,10 @@ function copyDir(source, target) {
 }
 
 function copyHealthRoot(root) {
-  ["package.json", "dashboard.js"].forEach(file => {
+  ["package.json", "README.md", "CONTRIBUTING.md", "ROADMAP.md", "index.html", "dashboard.html", "quality.html", "dashboard.js"].forEach(file => {
     fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
   });
-  [".github", "shared", "lessons", "scripts"].forEach(dir => {
+  [".github", "docs", "shared", "lessons", "scripts"].forEach(dir => {
     copyDir(path.join(repoRoot, dir), path.join(root, dir));
   });
 }
@@ -56,9 +56,11 @@ function runBaseSmoke() {
   assert(manifest.gates.some(gate => gate.id === "check:review-report" && gate.requiredInCheck), "manifest should require unified review report");
   assert(manifest.gates.some(gate => gate.id === "check:today-program-report" && gate.requiredInCheck), "manifest should require Today program report");
   assert(manifest.gates.some(gate => gate.id === "check:today-program-diff" && gate.requiredInCheck), "manifest should require Today program diff review");
+  assert(manifest.gates.some(gate => gate.id === "check:capability-map" && gate.requiredInCheck), "manifest should require the product capability map");
   assert(manifest.publicReports.some(report => report.id === "quality" && report.pagesPath === "reports/quality.json"), "manifest should link the quality report");
   assert(manifest.publicReports.some(report => report.id === "skill-coverage" && report.pagesPath === "reports/skill-coverage.json"), "manifest should link the skill coverage report");
   assert(manifest.publicReports.some(report => report.id === "today-program" && report.pagesPath === "reports/today-program.json"), "manifest should link the Today program report");
+  assert(manifest.publicReports.some(report => report.id === "capabilities" && report.pagesPath === "reports/capabilities.json"), "manifest should link the capability map report");
   assert(manifest.publicReports.some(report => report.id === "project-health" && report.pagesPath === "reports/project-health.json"), "manifest should link itself as a public report");
   assert(manifest.workflows.every(workflow => workflow.runsFullCheck && workflow.nodeVersion === "24"), "manifest should link full-check workflows");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("diff-personalization-trajectory.js")), "manifest should require personalization trajectory PR diff");
