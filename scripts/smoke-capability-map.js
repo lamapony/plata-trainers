@@ -104,6 +104,7 @@ function runBaseSmoke() {
   const guided = capability(report, "guided-session-outcome-loop");
   assert(guided && hasGate(guided, "check:guided-session"), "guided session capability should cite the runtime gate");
   assert(guided && hasGate(guided, "check:guided-session-report"), "guided session capability should cite the report gate");
+  assert(guided && hasGate(guided, "check:guided-session-diff"), "guided session capability should cite the diff review gate");
   assert(guided && hasReport(guided, "guided-session"), "guided session capability should cite the public report");
   assert(guided && hasSurface(guided, "Dashboard Guided session section"), "guided session capability should cite the dashboard surface");
 

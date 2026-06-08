@@ -63,6 +63,7 @@ function runBaseSmoke() {
   assert(manifest.gates.some(gate => gate.id === "check:today-program-report" && gate.requiredInCheck), "manifest should require Today program report");
   assert(manifest.gates.some(gate => gate.id === "check:today-program-diff" && gate.requiredInCheck), "manifest should require Today program diff review");
   assert(manifest.gates.some(gate => gate.id === "check:guided-session-report" && gate.requiredInCheck), "manifest should require guided session report");
+  assert(manifest.gates.some(gate => gate.id === "check:guided-session-diff" && gate.requiredInCheck), "manifest should require guided session diff review");
   assert(manifest.gates.some(gate => gate.id === "check:program-page" && gate.requiredInCheck), "manifest should require the user-facing program page");
   assert(manifest.gates.some(gate => gate.id === "check:proof-page" && gate.requiredInCheck), "manifest should require the public proof page");
   assert(manifest.gates.some(gate => gate.id === "check:capability-map" && gate.requiredInCheck), "manifest should require the product capability map");
@@ -78,6 +79,8 @@ function runBaseSmoke() {
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("diff-dashboard-snapshot.js")), "manifest should require dashboard snapshot PR diff");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("diff-demo-learner-report.js")), "manifest should require demo learner PR diff");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("diff-today-program-report.js")), "manifest should require Today program PR diff");
+  assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("diff-guided-session-report.js")), "manifest should require guided session PR diff");
+  assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("guided-session-diff.json")), "manifest should require guided session PR diff artifact");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("build-review-report.js")), "manifest should require unified PR review report");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("review-report.json")), "manifest should require unified PR review JSON artifact");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("GITHUB_STEP_SUMMARY")), "manifest should require unified PR review step summary");

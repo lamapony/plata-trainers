@@ -99,7 +99,7 @@ function buildProofDigest(options = {}) {
   const demoReadOnly = demo.status === "pass" && demo.totals.storageWrites === 0 && demo.totals.visibleMemoryFacts > 0;
   const quickstartPass = golden.quickstart.status === "pass" && golden.quickstart.artifacts.length >= 7;
   const reviewFixturePass = golden.review.status === "regression"
-    && golden.review.summary.surfaces === 5
+    && golden.review.summary.surfaces === 6
     && golden.review.summary.regressions > 0
     && golden.summary.includes("more in JSON artifact");
   const proofPagePass = hasGate(proofCapability, "check:proof-page") && hasSurface(proofCapability, "proof.html");

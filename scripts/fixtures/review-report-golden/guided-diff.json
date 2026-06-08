@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "status": "regression",
+  "changes": [
+    {
+      "severity": "regression",
+      "scope": "guided.outcome-ledger",
+      "message": "Outcome receipts changed 1 -> 0."
+    },
+    {
+      "severity": "regression",
+      "scope": "guided.completed-route",
+      "message": "Raw-answer guardrail changed present -> missing."
+    },
+    {
+      "severity": "review",
+      "scope": "guided.memory-backed-repair",
+      "message": "Receipt summary changed for review."
+    },
+    {
+      "severity": "improvement",
+      "scope": "guided.report",
+      "message": "Issue removed: stale outcome receipt wording."
+    },
+    {
+      "severity": "info",
+      "scope": "guided.meta",
+      "message": "Outcome ledger metadata added."
+    }
+  ],
+  "regressions": [
+    {
+      "severity": "regression",
+      "scope": "guided.outcome-ledger",
+      "message": "Outcome receipts changed 1 -> 0."
+    },
+    {
+      "severity": "regression",
+      "scope": "guided.completed-route",
+      "message": "Raw-answer guardrail changed present -> missing."
+    }
+  ],
+  "improvements": [
+    {
+      "severity": "improvement",
+      "scope": "guided.report",
+      "message": "Issue removed: stale outcome receipt wording."
+    }
+  ],
+  "summary": {
+    "changes": 5,
+    "regressions": 2,
+    "improvements": 1
+  }
+}

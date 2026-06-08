@@ -70,6 +70,7 @@ const requiredGates = [
   { id: "check:today-program-report", category: "report", contract: "Today program shell states build as a deterministic user-facing contract report." },
   { id: "check:today-program-diff", category: "review", contract: "Today program report changes produce compact review diffs and regression flags." },
   { id: "check:guided-session-report", category: "report", contract: "Guided session states build as a deterministic outcome-loop contract report." },
+  { id: "check:guided-session-diff", category: "review", contract: "Guided session report changes produce compact review diffs and regression flags." },
   { id: "check:dashboard-snapshot", category: "snapshot", contract: "Dashboard recommendation surface matches deterministic fixtures." },
   { id: "check:dashboard-snapshot-mutations", category: "mutation", contract: "Snapshot fixtures prove preferred-entry, repair trace, and evidence drift are caught." },
   { id: "check:dashboard-snapshot-diff", category: "review", contract: "Dashboard snapshot changes produce compact review diffs and regression flags." },
@@ -84,7 +85,7 @@ const requiredGates = [
   { id: "check:quality-report", category: "report", contract: "Public gold lesson quality report builds cleanly." },
   { id: "check:quality-mutations", category: "mutation", contract: "Quality report proves broken gold lesson contracts fail." },
   { id: "check:quality-diff", category: "review", contract: "Quality report diffs fail only on regressions." },
-  { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, demo learner, Today program, and personalization diffs with JSON and Markdown reviewer output." },
+  { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, demo learner, Today program, guided session, and personalization diffs with JSON and Markdown reviewer output." },
   { id: "check:review-report-fixture", category: "review", contract: "Golden PR review fixture proves large reviewer summaries, JSON artifacts, ordering, caps, and fail modes end to end." },
   { id: "check:quickstart-proof", category: "onboarding", contract: "Contributor proof quickstart builds the core local artifacts and links commands to reviewable project claims." },
   { id: "check:proof-digest", category: "report", contract: "Proof digest translates generated project reports into visitor-facing claims, current proof changes, and trust boundaries." },
@@ -243,7 +244,7 @@ function workflowRows(root, issues) {
       id: "qa",
       path: ".github/workflows/qa.yml",
       expectedRun: "npm run check",
-      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "diff-demo-learner-report.js", "diff-today-program-report.js", "build-review-report.js", "review-report.json", "GITHUB_STEP_SUMMARY", "summary-limit", "summary-message-limit", "proof.html"]
+      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "diff-demo-learner-report.js", "diff-today-program-report.js", "diff-guided-session-report.js", "guided-session-diff.json", "build-review-report.js", "review-report.json", "GITHUB_STEP_SUMMARY", "summary-limit", "summary-message-limit", "proof.html"]
     },
     { id: "pages", path: ".github/workflows/pages.yml", expectedRun: "npm run check" }
   ];

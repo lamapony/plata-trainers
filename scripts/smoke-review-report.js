@@ -39,6 +39,7 @@ function unchangedInput() {
     dashboard: diff("unchanged"),
     demo: diff("unchanged"),
     today: diff("unchanged"),
+    guided: diff("unchanged"),
     personalization: diff("unchanged")
   };
 }
@@ -60,6 +61,11 @@ function reviewInput() {
       severity: "review",
       scope: "today.first-session",
       message: "headline changed"
+    }]),
+    guided: diff("changed", [{
+      severity: "review",
+      scope: "guided.memory-backed-repair",
+      message: "receipt summary changed"
     }]),
     personalization: diff("changed", [{
       severity: "info",
@@ -90,6 +96,11 @@ function regressionInput() {
       severity: "regression",
       scope: "today.due-memory-review",
       message: "guardrail removed: Cited memory"
+    }]),
+    guided: diff("regression", [{
+      severity: "regression",
+      scope: "guided.outcome-ledger",
+      message: "outcome receipts changed 1 -> 0"
     }]),
     personalization: diff("regression", [{
       severity: "regression",
@@ -124,6 +135,7 @@ function largeReviewInput() {
       message: "demo regression"
     }]),
     today: diff("unchanged"),
+    guided: diff("unchanged"),
     personalization: diff("unchanged")
   };
 }
@@ -146,20 +158,22 @@ assert(unchanged.summary.changes === 0, "unchanged review report should have no 
 const review = buildReviewReport(reviewInput());
 assert(review.status === "changed", "review-only report should be changed");
 assert(review.summary.regressions === 0, "review-only report should have no regressions");
-assert(review.summary.reviewChanges === 3, "review-only report should count review changes");
+assert(review.summary.reviewChanges === 4, "review-only report should count review changes");
 assert(formatReviewReport(review).includes("Dashboard recommendations"), "formatted report should include surface label");
 assert(formatReviewReport(review).includes("Demo learner"), "formatted report should include demo surface label");
 assert(formatReviewReport(review).includes("Today program"), "formatted report should include Today surface label");
+assert(formatReviewReport(review).includes("Guided session"), "formatted report should include guided surface label");
 assert(formatReviewMarkdown(review).includes("# PR Review Report"), "markdown report should include title");
 assert(formatReviewMarkdown(review).includes("| Demo learner | changed |"), "markdown report should include demo surface row");
 assert(formatReviewMarkdown(review).includes("## Review Changes"), "markdown report should include review section");
 
 const regression = buildReviewReport(regressionInput());
 assert(regression.status === "regression", "regression report should be regression");
-assert(regression.summary.regressions === 4, "regression report should count all regressions");
+assert(regression.summary.regressions === 5, "regression report should count all regressions");
 assert(regression.regressions.some(item => item.label === "Quality"), "regression report should include quality regression");
 assert(regression.regressions.some(item => item.label === "Demo learner"), "regression report should include demo regression");
 assert(regression.regressions.some(item => item.label === "Today program"), "regression report should include Today regression");
+assert(regression.regressions.some(item => item.label === "Guided session"), "regression report should include guided regression");
 assert(regression.regressions.some(item => item.label === "Personalization trajectory"), "regression report should include personalization regression");
 
 const large = buildReviewReport(largeReviewInput());
@@ -176,6 +190,7 @@ try {
   const dashboard = path.join(tmp, "dashboard.json");
   const demo = path.join(tmp, "demo.json");
   const today = path.join(tmp, "today.json");
+  const guided = path.join(tmp, "guided.json");
   const trajectory = path.join(tmp, "trajectory.json");
   const reviewOut = path.join(tmp, "review-report.json");
   const summaryOut = path.join(tmp, "step-summary.md");
@@ -184,38 +199,40 @@ try {
   writeJson(dashboard, reviewInput().dashboard);
   writeJson(demo, reviewInput().demo);
   writeJson(today, reviewInput().today);
+  writeJson(guided, reviewInput().guided);
   writeJson(trajectory, reviewInput().personalization);
-  const passingReview = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--trajectory-diff", trajectory, "--out", reviewOut, "--summary-out", summaryOut, "--fail-on-regression"]);
+  const passingReview = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--guided-diff", guided, "--trajectory-diff", trajectory, "--out", reviewOut, "--summary-out", summaryOut, "--fail-on-regression"]);
   assert(passingReview.status === 0, `CLI should pass review-only changes with fail-on-regression\n${passingReview.stdout}\n${passingReview.stderr}`);
   assert(passingReview.stdout.includes("Review report: changed"), "CLI should print changed review report");
   assert(JSON.parse(fs.readFileSync(reviewOut, "utf8")).status === "changed", "CLI should write review JSON artifact");
   assert(fs.readFileSync(summaryOut, "utf8").includes("## Review Changes"), "CLI should write Markdown step summary");
 
-  const markdownReview = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--trajectory-diff", trajectory, "--markdown", "--summary-limit", "1", "--summary-message-limit", "40"]);
+  const markdownReview = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--guided-diff", guided, "--trajectory-diff", trajectory, "--markdown", "--summary-limit", "1", "--summary-message-limit", "40"]);
   assert(markdownReview.status === 0, `CLI Markdown should render review report\n${markdownReview.stdout}\n${markdownReview.stderr}`);
   assert(markdownReview.stdout.includes("# PR Review Report"), "CLI Markdown should include report title");
-  assert(markdownReview.stdout.includes("+2 more in JSON artifact"), "CLI Markdown should honor summary limits");
+  assert(markdownReview.stdout.includes("+3 more in JSON artifact"), "CLI Markdown should honor summary limits");
 
-  const failingChange = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--trajectory-diff", trajectory, "--fail-on-change"]);
+  const failingChange = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--guided-diff", guided, "--trajectory-diff", trajectory, "--fail-on-change"]);
   assert(failingChange.status === 1, "CLI should fail on any change when requested");
 
   writeJson(quality, regressionInput().quality);
   writeJson(dashboard, regressionInput().dashboard);
   writeJson(demo, regressionInput().demo);
   writeJson(today, regressionInput().today);
+  writeJson(guided, regressionInput().guided);
   writeJson(trajectory, regressionInput().personalization);
-  const jsonRegression = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--trajectory-diff", trajectory, "--json"]);
+  const jsonRegression = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--guided-diff", guided, "--trajectory-diff", trajectory, "--json"]);
   assert(jsonRegression.status === 0, `CLI JSON should render regression report\n${jsonRegression.stdout}\n${jsonRegression.stderr}`);
   assert(JSON.parse(jsonRegression.stdout).status === "regression", "CLI JSON should include regression status");
 
-  const failingRegression = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--trajectory-diff", trajectory, "--fail-on-regression"]);
+  const failingRegression = runCli(["--quality-diff", quality, "--dashboard-diff", dashboard, "--demo-diff", demo, "--today-diff", today, "--guided-diff", guided, "--trajectory-diff", trajectory, "--fail-on-regression"]);
   assert(failingRegression.status === 1, "CLI should fail on regression when requested");
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
 console.log("ok - review report aggregates unchanged, review, and regression surfaces");
-console.log("ok - review report formats quality, dashboard, demo, Today, and personalization summaries");
+console.log("ok - review report formats quality, dashboard, demo, Today, guided session, and personalization summaries");
 console.log("ok - review report writes JSON artifacts and Markdown summaries");
 console.log("ok - review report caps Markdown summaries while preserving full JSON");
 console.log("ok - review report CLI supports JSON, Markdown, summary limits, and fail modes");

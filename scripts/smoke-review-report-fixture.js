@@ -24,6 +24,7 @@ function runCli(extraArgs) {
     "--dashboard-diff", fixture("dashboard-diff.json"),
     "--demo-diff", fixture("demo-diff.json"),
     "--today-diff", fixture("today-diff.json"),
+    "--guided-diff", fixture("guided-diff.json"),
     "--trajectory-diff", fixture("personalization-diff.json"),
     ...extraArgs
   ];
@@ -50,6 +51,7 @@ function surface(report, id) {
   "dashboard-diff.json",
   "demo-diff.json",
   "today-diff.json",
+  "guided-diff.json",
   "personalization-diff.json"
 ].forEach(file => {
   assert(fs.existsSync(fixture(file)), `golden review fixture missing ${file}`);
@@ -72,16 +74,17 @@ try {
 
   const report = JSON.parse(fs.readFileSync(reviewOut, "utf8"));
   assert(report.status === "regression", "golden fixture JSON should be a regression report");
-  assert(report.summary.surfaces === 5, "golden fixture should cover all review surfaces");
-  assert(report.summary.changes === 26, "golden fixture should preserve full change count");
-  assert(report.summary.regressions === 8, "golden fixture should preserve full regression count");
-  assert(report.summary.reviewChanges === 9, "golden fixture should preserve full review count");
-  assert(report.summary.improvements === 4, "golden fixture should preserve full improvement count");
-  assert(report.summary.infoChanges === 5, "golden fixture should preserve full info count");
+  assert(report.summary.surfaces === 6, "golden fixture should cover all review surfaces");
+  assert(report.summary.changes === 31, "golden fixture should preserve full change count");
+  assert(report.summary.regressions === 10, "golden fixture should preserve full regression count");
+  assert(report.summary.reviewChanges === 10, "golden fixture should preserve full review count");
+  assert(report.summary.improvements === 5, "golden fixture should preserve full improvement count");
+  assert(report.summary.infoChanges === 6, "golden fixture should preserve full info count");
   assert(surface(report, "quality").status === "regression", "golden fixture should keep quality status");
   assert(surface(report, "dashboard").status === "regression", "golden fixture should keep dashboard status");
   assert(surface(report, "demo").status === "changed", "golden fixture should keep demo status");
   assert(surface(report, "today").status === "regression", "golden fixture should keep Today status");
+  assert(surface(report, "guided").status === "regression", "golden fixture should keep guided status");
   assert(surface(report, "personalization").status === "regression", "golden fixture should keep personalization status");
   assert(JSON.stringify(report).includes("dashboard.a-ledger"), "full JSON should keep entries hidden from Markdown");
   assert(JSON.stringify(report).includes("very-long-quality-regression-detail very-long-quality-regression-detail very-long-quality-regression-detail"), "full JSON should keep untruncated messages");
@@ -91,18 +94,19 @@ try {
   assert(markdown.includes("Full details stay in `.dist/review-report.json`"), "golden summary should point to full JSON");
   assert(markdown.includes("| Quality | regression | 6 | 2 | 1 |"), "golden summary should include quality row");
   assert(markdown.includes("| Demo learner | changed | 4 | 0 | 1 |"), "golden summary should include demo row");
+  assert(markdown.includes("| Guided session | regression | 5 | 2 | 1 |"), "golden summary should include guided row");
   assertBefore(markdown, "a-quality-contract", "z-quality-contract", "golden regression summary should sort by surface and scope");
-  assertBefore(markdown, "z-quality-contract", "+6 more in JSON artifact", "golden regression summary should cap after visible entries");
+  assertBefore(markdown, "z-quality-contract", "+8 more in JSON artifact", "golden regression summary should cap after visible entries");
   assert(!markdown.includes("dashboard.a-ledger"), "golden Markdown should hide lower-priority regressions past the cap");
   assert(!markdown.includes("very-long-quality-regression-detail very-long-quality-regression-detail very-long-quality-regression-detail"), "golden Markdown should truncate long messages");
-  assert(markdown.includes("+6 more in JSON artifact"), "golden regression summary should disclose hidden regressions");
-  assert(markdown.includes("+7 more in JSON artifact"), "golden review summary should disclose hidden review changes");
-  assert(markdown.includes("+2 more in JSON artifact"), "golden improvement summary should disclose hidden improvements");
-  assert(markdown.includes("+3 more in JSON artifact"), "golden info summary should disclose hidden info changes");
+  assert(markdown.includes("+8 more in JSON artifact"), "golden regression summary should disclose hidden regressions");
+  assert(markdown.includes("+8 more in JSON artifact"), "golden review summary should disclose hidden review changes");
+  assert(markdown.includes("+3 more in JSON artifact"), "golden improvement summary should disclose hidden improvements");
+  assert(markdown.includes("+4 more in JSON artifact"), "golden info summary should disclose hidden info changes");
 
   const markdownOnly = runCli(["--markdown", "--summary-limit", "2", "--summary-message-limit", "72"]);
   assert(markdownOnly.status === 0, `golden fixture Markdown CLI should pass\n${markdownOnly.stdout}\n${markdownOnly.stderr}`);
-  assert(markdownOnly.stdout.includes("+6 more in JSON artifact"), "Markdown CLI should apply golden fixture caps");
+  assert(markdownOnly.stdout.includes("+8 more in JSON artifact"), "Markdown CLI should apply golden fixture caps");
 
   const failingRegression = runCli(["--fail-on-regression"]);
   assert(failingRegression.status === 1, "golden fixture should fail fail-on-regression mode");

@@ -19,7 +19,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add a compact diff for dashboard recommendation snapshot changes.
 - [x] Add a lesson exercise audit gate for pedagogical contradictions and known Danish slips.
 - [x] Add a PR-facing dashboard snapshot diff workflow step.
-- [x] Add a unified PR review report across quality, dashboard recommendations, demo learner, Today program, and personalization trajectory.
+- [x] Add a unified PR review report across quality, dashboard recommendations, demo learner, Today program, guided sessions, and personalization trajectory.
 - [x] Define the local adaptive learner model before adding any account memory.
 - [x] Add an inspectable learner memory fact schema derived from the event log.
 - [x] Build a memory inspector so learners can see, export, and delete personalization facts.
@@ -35,6 +35,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Publish guided session states as a deterministic public report.
 - [x] Persist completed guided practice as portable outcome receipts instead of losing the loop at route return.
 - [x] Include guided outcome receipts in dashboard export/import and the public guided session report.
+- [x] Add PR diffs for guided session and outcome-ledger drift.
 - [x] Publish a product capability map that ties user-facing claims to gates, reports, docs, and source files.
 - [x] Render the capability map as a user-facing public program page.
 - [x] Add a contributor proof quickstart that builds the core local proof artifacts before the full QA suite.
@@ -116,8 +117,8 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Render a `Guided session` dashboard section with one goal, four learner-facing steps, a route action, and an outcome receipt.
 - [x] Cover starter, memory-backed repair, active route, completed route, and due-review context in smoke tests.
 - [x] Publish `reports/guided-session.json` in the Pages artifact.
-- [x] Add `check:guided-session` and `check:guided-session-report` to `npm run check`, project health, proof digest sources, and the product capability map.
-- [ ] Add PR diffing for guided session wording and contract drift if the report starts changing frequently.
+- [x] Add `check:guided-session`, `check:guided-session-report`, and `check:guided-session-diff` to `npm run check`, project health, proof digest sources, and the product capability map.
+- [x] Add PR diffing for guided session wording, route actions, guardrails, citations, and state drift.
 
 ## Guided Outcome Receipt Ledger Sprint
 
@@ -129,7 +130,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Include the outcome ledger in portable dashboard profile export/import, while clearing stale receipts on legacy imports.
 - [x] Publish compact outcome-ledger proof inside `reports/guided-session.json`.
 - [x] Cover runtime receipt creation, lesson completion, dashboard profile transfer, and public report output in smoke tests.
-- [ ] Add PR diffing for guided outcome receipt wording and ledger contract drift if the public report starts changing frequently.
+- [x] Add PR diffing for guided outcome receipt wording, ledger counts, receipt removal, `gdo-` fingerprints, cited facts, and guardrail drift.
 
 ## Project Health Manifest Sprint
 
@@ -162,12 +163,13 @@ This journal tracks technical bets that make the project more valuable as an ope
 
 ## Unified Review Report Sprint
 
-- [x] Add `scripts/build-review-report.js` to combine quality, dashboard recommendation, demo learner, Today program, and personalization trajectory diffs.
+- [x] Add `scripts/build-review-report.js` to combine quality, dashboard recommendation, demo learner, Today program, guided session, and personalization trajectory diffs.
 - [x] Preserve each surface status while grouping regressions, review changes, improvements, and informational drift.
 - [x] Add `check:review-report` to prove unchanged, review-only, regression, JSON, and fail-mode behavior.
 - [x] Make pull-request QA build JSON diff artifacts and fail through the unified report.
 - [x] Include the unified report in project health workflow checks.
 - [x] Add Today program diff artifacts to pull-request review summaries.
+- [x] Add guided session diff artifacts to pull-request review summaries.
 - [x] Write `.dist/review-report.json` and append a Markdown summary to `$GITHUB_STEP_SUMMARY` for pull-request reviewers.
 - [x] Cap PR review Markdown by severity section with stable ordering, truncated messages, and `+N more` pointers to the full JSON artifact.
 - [x] Add a golden PR review fixture that exercises all surfaces, capped Markdown summaries, full JSON output, stable ordering, and fail-on-regression behavior end to end.

@@ -55,7 +55,7 @@ try {
   assert(readJson(healthFile).status === "pass", "quickstart project health artifact should pass");
   assert(readJson(reviewFile).status === "regression", "quickstart review artifact should preserve golden regression status");
   assert(readJson(quickstartJsonFile).status === "pass", "quickstart JSON summary should pass");
-  assert(fs.readFileSync(summaryFile, "utf8").includes("+6 more in JSON artifact"), "quickstart review summary should show capped hidden regressions");
+  assert(fs.readFileSync(summaryFile, "utf8").includes("+8 more in JSON artifact"), "quickstart review summary should show capped hidden regressions");
   assert(fs.readFileSync(quickstartMdFile, "utf8").includes("Contributor Proof Quickstart"), "quickstart markdown should include title");
 
   const cliDir = path.join(tmp, "cli");

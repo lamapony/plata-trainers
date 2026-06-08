@@ -87,6 +87,7 @@ npm run check:demo-learner-diff
 npm run check:today-program-report
 npm run check:guided-session
 npm run check:guided-session-report
+npm run check:guided-session-diff
 npm run check:capability-map
 npm run check:proof-digest
 npm run check:program-page
@@ -107,10 +108,12 @@ node scripts/build-today-program-report.js --json > .dist/today-program.json
 node scripts/build-guided-session-report.js --json > .dist/guided-session.json
 npm run diff:today-program -- --base .dist/today-program.json --head current
 npm run diff:today-program -- --base .dist/today-program.json --head current --json > .dist/today-program-diff.json
+npm run diff:guided-session -- --base .dist/guided-session.json --head current
+npm run diff:guided-session -- --base .dist/guided-session.json --head current --json > .dist/guided-session-diff.json
 node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-trajectory.json
 npm run diff:personalization-trajectory -- --base .dist/personalization-trajectory.json --head current
 npm run diff:personalization-trajectory -- --base .dist/personalization-trajectory.json --head current --json > .dist/personalization-trajectory-diff.json
-npm run diff:review -- --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --out .dist/review-report.json --summary-out .dist/review-summary.md --summary-limit 8 --summary-message-limit 180
+npm run diff:review -- --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --guided-diff .dist/guided-session-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --out .dist/review-report.json --summary-out .dist/review-summary.md --summary-limit 8 --summary-message-limit 180
 npm run check:review-report-fixture
 ```
 
@@ -154,6 +157,9 @@ node scripts/smoke-dashboard-snapshot-diff.js
 node scripts/build-today-program-report.js --out .dist/today-program.json --text
 node scripts/diff-today-program-report.js --base .dist/today-program.json --head current --json > .dist/today-program-diff.json
 node scripts/smoke-today-program-diff.js
+node scripts/build-guided-session-report.js --out .dist/guided-session.json --text
+node scripts/diff-guided-session-report.js --base .dist/guided-session.json --head current --json > .dist/guided-session-diff.json
+node scripts/smoke-guided-session-diff.js
 node scripts/smoke-memory.js
 node scripts/smoke-learner-model.js
 node scripts/smoke-learner-model-alignment.js
@@ -176,8 +182,8 @@ node scripts/diff-personalization-trajectory.js --base .dist/personalization-tra
 node scripts/smoke-personalization-trajectory-diff.js
 node scripts/build-quality-report.js --out .dist/quality-report.json
 node scripts/diff-quality-report.js --base .dist/quality-report.json --head current --json > .dist/quality-diff.json
-node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --out .dist/review-report.json --summary-out .dist/review-summary.md --summary-limit 8 --summary-message-limit 180
-node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --markdown --summary-limit 8 --summary-message-limit 180
+node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --guided-diff .dist/guided-session-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --out .dist/review-report.json --summary-out .dist/review-summary.md --summary-limit 8 --summary-message-limit 180
+node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --guided-diff .dist/guided-session-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --markdown --summary-limit 8 --summary-message-limit 180
 node scripts/smoke-review-report.js
 node scripts/smoke-review-report-fixture.js
 node scripts/smoke-proof-digest.js

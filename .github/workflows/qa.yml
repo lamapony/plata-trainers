@@ -90,6 +90,18 @@ jobs:
           node scripts/build-today-program-report.js --json > .dist/today-program-head.json
           node scripts/diff-today-program-report.js --base .dist/today-program-base.json --head .dist/today-program-head.json --json > .dist/today-program-diff.json
 
+      - name: Compare guided session with base
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          mkdir -p .dist
+          base_dir="$(mktemp -d)"
+          git archive "$BASE_SHA" | tar -x -C "$base_dir"
+          node scripts/build-guided-session-report.js --root "$base_dir" --json > .dist/guided-session-base.json
+          node scripts/build-guided-session-report.js --json > .dist/guided-session-head.json
+          node scripts/diff-guided-session-report.js --base .dist/guided-session-base.json --head .dist/guided-session-head.json --json > .dist/guided-session-diff.json
+
       - name: Summarize review diffs
         if: github.event_name == 'pull_request'
         run: |
@@ -98,6 +110,7 @@ jobs:
             --dashboard-diff .dist/dashboard-recommendations-diff.json \
             --demo-diff .dist/demo-learner-diff.json \
             --today-diff .dist/today-program-diff.json \
+            --guided-diff .dist/guided-session-diff.json \
             --trajectory-diff .dist/personalization-trajectory-diff.json \
             --out .dist/review-report.json \
             --summary-out "$GITHUB_STEP_SUMMARY" \

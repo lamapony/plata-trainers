@@ -17,6 +17,7 @@ const reviewFixtureFiles = {
   dashboard: "scripts/fixtures/review-report-golden/dashboard-diff.json",
   demo: "scripts/fixtures/review-report-golden/demo-diff.json",
   today: "scripts/fixtures/review-report-golden/today-diff.json",
+  guided: "scripts/fixtures/review-report-golden/guided-diff.json",
   personalization: "scripts/fixtures/review-report-golden/personalization-diff.json"
 };
 
@@ -104,9 +105,9 @@ function checkRows(demoLearner, capabilityMap, projectHealth, goldenReview, gold
     {
       id: "golden-review-fixture",
       status: status(goldenReview.status === "regression"
-        && goldenReview.summary.surfaces === 5
-        && goldenReview.summary.regressions === 8
-        && goldenMarkdown.includes("+6 more in JSON artifact")),
+        && goldenReview.summary.surfaces === 6
+        && goldenReview.summary.regressions === 10
+        && goldenMarkdown.includes("+8 more in JSON artifact")),
       detail: `${goldenReview.summary.changes} change(s), ${goldenReview.summary.regressions} regression(s), ${goldenReview.summary.reviewChanges} review change(s)`
     }
   ];

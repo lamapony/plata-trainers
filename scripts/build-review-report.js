@@ -13,6 +13,7 @@ const surfaces = [
   { id: "dashboard", label: "Dashboard recommendations", flag: "--dashboard-diff" },
   { id: "demo", label: "Demo learner", flag: "--demo-diff" },
   { id: "today", label: "Today program", flag: "--today-diff" },
+  { id: "guided", label: "Guided session", flag: "--guided-diff" },
   { id: "personalization", label: "Personalization trajectory", flag: "--trajectory-diff" }
 ];
 
@@ -234,7 +235,7 @@ function readCliInput() {
 }
 
 function usage() {
-  return "usage: node scripts/build-review-report.js --quality-diff <quality.json> --dashboard-diff <dashboard.json> --demo-diff <demo.json> --today-diff <today.json> --trajectory-diff <trajectory.json> [--out <review.json>] [--summary-out <summary.md>] [--summary-limit <n>] [--summary-message-limit <n>] [--json] [--markdown] [--fail-on-change] [--fail-on-regression]";
+  return "usage: node scripts/build-review-report.js --quality-diff <quality.json> --dashboard-diff <dashboard.json> --demo-diff <demo.json> --today-diff <today.json> --guided-diff <guided.json> --trajectory-diff <trajectory.json> [--out <review.json>] [--summary-out <summary.md>] [--summary-limit <n>] [--summary-message-limit <n>] [--json] [--markdown] [--fail-on-change] [--fail-on-regression]";
 }
 
 function main() {
