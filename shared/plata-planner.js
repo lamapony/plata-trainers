@@ -850,6 +850,15 @@
     return { status: "open", statusLabel: "Open", completionReason: "" };
   }
 
+  function actionablePracticePlanStep(plan) {
+    var steps = plan && Array.isArray(plan.steps) ? plan.steps : [];
+    if (!steps.length) return null;
+    return steps.find(function (step) { return step.status === "active"; })
+      || steps.find(function (step) { return step.status === "open"; })
+      || steps.find(function (step) { return !step.completedAt && step.status !== "done"; })
+      || null;
+  }
+
   function planStatus(plan, items) {
     var normalized = normalizePracticePlan(plan);
     if (!normalized) return null;
@@ -867,7 +876,7 @@
     normalized.meta = normalized.completed
       ? "All " + normalized.steps.length + " tracked step" + (normalized.steps.length === 1 ? "" : "s") + " completed."
       : completedCount + "/" + normalized.steps.length + " tracked step" + (normalized.steps.length === 1 ? "" : "s") + " completed.";
-    normalized.primaryStep = normalized.steps[0] || null;
+    normalized.primaryStep = actionablePracticePlanStep(normalized) || normalized.steps[0] || null;
     return normalized;
   }
 
@@ -891,6 +900,7 @@
     savePracticePlan: savePracticePlan,
     clearPracticePlan: clearPracticePlan,
     planStatus: planStatus,
+    actionablePracticePlanStep: actionablePracticePlanStep,
     practicePlanStorageKey: PRACTICE_PLAN_STORAGE_KEY,
     nonDiagnosticTags: NON_DIAGNOSTIC_TAGS
   };

@@ -210,6 +210,9 @@ h3 { font-size: 30px; }
 .practice-plan-head p { margin: 10px 0 0; max-width: 760px; color: var(--muted); line-height: 1.55; }
 .practice-plan-head .btn { margin-top: 14px; min-height: 38px; padding: 0 14px; font-size: 13px; }
 .practice-plan-head > span { padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 11px; white-space: nowrap; }
+.plan-primary-action { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; }
+.plan-primary-action .btn { margin-top: 0; }
+.plan-primary-action span { color: var(--muted); font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
 .plan-progress { height: 7px; margin: -2px 0 18px; overflow: hidden; border: 1px solid var(--line); border-radius: 999px; background: oklch(1 0 0 / 0.04); }
 .plan-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--ember), var(--green)); }
 .plan-steps { display: grid; gap: 10px; }

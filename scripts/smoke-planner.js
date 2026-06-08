@@ -279,6 +279,33 @@ function runDashboardDecisionSmoke(context) {
     { trainer, stats: { total: 1, lastSessionDate: "2026-06-08" }, decision: repair, index: 1 }
   ]);
   assert(completedPlan.completed && completedPlan.steps[0].status === "done", "completed ledger step renders done");
+  const twoStepPlan = planner.savePracticePlan({
+    kind: "continue",
+    title: "Two-step plan",
+    copy: "The first step is already complete.",
+    steps: [
+      {
+        number: 1,
+        kind: "continue",
+        trainerId: trainer.id,
+        trainerName: trainer.name,
+        primaryLabel: "Review",
+        primaryHref: trainer.path,
+        completedAt: "2026-06-08T00:10:00.000Z"
+      },
+      {
+        number: 2,
+        kind: "continue",
+        trainerId: "vocab",
+        trainerName: "Vocab SR",
+        primaryLabel: "Open vocab",
+        primaryHref: "./vocab-sr/"
+      }
+    ]
+  });
+  const twoStepStatus = planner.planStatus(twoStepPlan, []);
+  assert(twoStepStatus.primaryStep.number === 2, "practice plan primary step skips completed steps");
+  assert(planner.actionablePracticePlanStep(twoStepStatus).number === 2, "planner exposes the next actionable plan step");
   planner.savePracticePlan(savedPlan);
   const donePlan = planner.planStatus(savedPlan, [
     { trainer, stats: { total: 2, lastSessionDate: "2026-06-08" }, decision: { ...repair, kind: "continue", signalTag: "", primaryHref: trainer.path }, index: 1 }

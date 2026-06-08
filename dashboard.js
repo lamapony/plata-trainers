@@ -202,6 +202,21 @@ function planStepLedgerHtml(step) {
   return rows.length ? `<div class="plan-step-ledger">${rows.join("")}</div>` : "";
 }
 
+function planPrimaryActionHtml(plan, planner) {
+  if (!plan || plan.completed || !planner) return "";
+  const step = planner.actionablePracticePlanStep ? planner.actionablePracticePlanStep(plan) : plan.primaryStep;
+  if (!step) return "";
+  const href = planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref;
+  const label = step.status === "active" ? "Continue current step" : "Start next step";
+  const meta = `Step ${step.number} of ${plan.steps.length} · ${step.trainerName || "Practice"} · ${step.minutes}`;
+  return `
+    <div class="plan-primary-action">
+      <a class="btn primary" href="${escapeHtml(href)}">${escapeHtml(label)}</a>
+      <span>${escapeHtml(meta)}</span>
+    </div>
+  `;
+}
+
 function renderTrainerCards() {
   const container = $("#trainer-cards");
   if (!container) return;
@@ -284,6 +299,7 @@ function renderPracticePlan(candidates) {
           <p class="eyebrow">${plan.completed ? "Completed plan" : "Active plan"}</p>
           <h3>${escapeHtml(plan.title)}</h3>
           <p>${escapeHtml(plan.copy)}</p>
+          ${planPrimaryActionHtml(plan, planner)}
           ${canCompileNext ? '<button class="btn" id="compile-next-plan" type="button">Compile next plan</button>' : ""}
         </div>
         <span>${escapeHtml(plan.meta || "")}</span>

@@ -175,7 +175,53 @@
     return count + " " + (count === 1 ? "attempt" : "attempts");
   }
 
+  function plannerItems(stats) {
+    return stats.map(function (item) {
+      return {
+        trainer: item.trainer,
+        stats: {
+          total: item.attempts,
+          correct: item.state && item.state.meta ? item.state.meta.totalCorrect || 0 : 0,
+          accuracy: item.accuracy,
+          today: item.today,
+          lastSessionDate: item.lastSessionDate
+        },
+        decision: item.decision,
+        index: item.index
+      };
+    });
+  }
+
+  function activePlanRecommendation(stats) {
+    var planner = window.PlataPlanner;
+    if (!planner || !planner.readPracticePlan) return null;
+    var active = planner.readPracticePlan();
+    if (!active || !active.steps || !active.steps.length) return null;
+    var plan = planner.planStatus ? planner.planStatus(active, plannerItems(stats)) : active;
+    if (!plan || plan.completed) return null;
+    var step = planner.actionablePracticePlanStep ? planner.actionablePracticePlanStep(plan) : plan.primaryStep;
+    if (!step) return null;
+    var trainer = trainerById(step.trainerId) || {
+      id: step.trainerId,
+      name: step.trainerName || "Practice",
+      path: step.primaryHref,
+      type: step.kind || "trainer"
+    };
+    return {
+      mode: "active-plan",
+      trainer: trainer,
+      href: planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref,
+      title: "Continue active plan",
+      copy: step.copy || plan.copy || "Continue the next unfinished step in your tracked practice plan.",
+      cta: step.status === "active" ? "Continue current step" : "Start next step",
+      meta: "Active plan: step " + step.number + " of " + plan.steps.length + " · " + (step.trainerName || trainer.name) + " · " + step.minutes
+    };
+  }
+
   function chooseRecommendation(stats) {
+    var activePlan = activePlanRecommendation(stats);
+    if (activePlan) return activePlan;
+
     var planner = window.PlataPlanner;
     if (planner && planner.rankDashboardDecisions) {
       var activeStats = stats.filter(function (item) { return item.hasProgress; });

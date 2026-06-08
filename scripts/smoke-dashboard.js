@@ -308,6 +308,43 @@ function runStartedPlanSmoke() {
   assert(/Started/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains when a plan step started");
 }
 
+function runPrimaryPlanActionSmoke() {
+  const env = makeContext();
+  loadKernelAndDashboard(env);
+  const planner = env.context.PlataPlanner;
+  planner.savePracticePlan({
+    kind: "continue",
+    title: "Two-step plan",
+    copy: "Continue the first unfinished step.",
+    steps: [
+      {
+        number: 1,
+        kind: "continue",
+        trainerId: "lesson-b2-radiator-register",
+        trainerName: "B2: Register & Particles",
+        primaryLabel: "Review",
+        primaryHref: "./lessons/lesson-b2-radiator/",
+        completedAt: "2026-06-08T00:10:00.000Z"
+      },
+      {
+        number: 2,
+        kind: "continue",
+        trainerId: "vocab",
+        trainerName: "Vocab SR",
+        primaryLabel: "Open vocab",
+        primaryHref: "./vocab-sr/",
+        minutes: "5 min"
+      }
+    ]
+  });
+  invokeDashboardFunction(env, "renderDashboard");
+  const html = env.elements["#practice-plan"].innerHTML;
+  assert(/plan-primary-action/.test(html), "dashboard renders one primary plan action");
+  assert(/Start next step/.test(html), "dashboard primary action starts the next unfinished step");
+  assert(/Step 2 of 2/.test(html), "dashboard primary action identifies the next plan step");
+  assert(html.includes("./vocab-sr/"), "dashboard primary action links to the next unfinished step");
+}
+
 function runClosedMasterySmoke() {
   const env = makeContext();
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
@@ -395,6 +432,7 @@ async function run() {
   runEmptyDashboardSmoke();
   runSeededMasterySmoke();
   runStartedPlanSmoke();
+  runPrimaryPlanActionSmoke();
   runClosedMasterySmoke();
   await runDynamicCatalogSmoke();
   runPortableProfileSmoke();
@@ -405,6 +443,7 @@ async function run() {
   console.log("ok - dashboard renders compiled practice plans");
   console.log("ok - dashboard persists active practice-plan tracking");
   console.log("ok - dashboard renders active practice-plan execution state");
+  console.log("ok - dashboard promotes the next actionable practice-plan step");
   console.log("ok - dashboard explains practice-plan execution evidence");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");

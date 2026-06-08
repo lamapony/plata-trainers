@@ -239,6 +239,45 @@ async function runProgressHomeSmoke() {
   assert(vocabCard.querySelector(".card-link").textContent === "Continue →", "home card CTA changes to continue");
 }
 
+async function runActivePlanHomeSmoke() {
+  const env = makeContext();
+  loadKernelAndCatalog(env);
+  const planner = env.context.PlataPlanner;
+  planner.savePracticePlan({
+    kind: "continue",
+    title: "Two-step plan",
+    copy: "Continue the active plan.",
+    steps: [
+      {
+        number: 1,
+        kind: "continue",
+        trainerId: "lesson-b2-radiator-register",
+        trainerName: "B2: Register & Particles",
+        primaryLabel: "Review",
+        primaryHref: "./lessons/lesson-b2-radiator/",
+        completedAt: "2026-06-08T00:10:00.000Z"
+      },
+      {
+        number: 2,
+        kind: "continue",
+        trainerId: "vocab",
+        trainerName: "Vocab SR",
+        primaryLabel: "Open vocab",
+        primaryHref: "./vocab-sr/",
+        minutes: "5 min"
+      }
+    ]
+  });
+  await runHome(env);
+
+  assert(env.ids["#home-start-title"].textContent === "Continue active plan", "home prioritizes an active practice plan");
+  assert(env.ids["#home-start-link"].textContent === "Start next step", "home active plan CTA starts next unfinished step");
+  assert(env.ids["#home-primary-action"].textContent === "Start next step", "home primary action follows active plan");
+  assert(env.ids["#home-start-link"].href.includes("./vocab-sr/"), "home active plan link points to next unfinished step");
+  assert(env.ids["#home-start-link"].href.includes("plan="), "home active plan link carries plan token");
+  assert(/step 2 of 2/.test(env.ids["#home-start-meta"].textContent), "home active plan meta identifies the step");
+}
+
 async function runWeakMasteryHomeSmoke() {
   const env = makeContext();
   loadKernelAndCatalog(env);
@@ -267,11 +306,13 @@ async function runClosedMasteryHomeSmoke() {
 async function run() {
   await runEmptyHomeSmoke();
   await runProgressHomeSmoke();
+  await runActivePlanHomeSmoke();
   await runWeakMasteryHomeSmoke();
   await runClosedMasteryHomeSmoke();
 
   console.log("ok - home launcher recommends a starter path");
   console.log("ok - home launcher continues existing local progress");
+  console.log("ok - home launcher resumes active practice plans");
   console.log("ok - home launcher promotes planner repair paths");
   console.log("ok - home launcher retires closed repair paths");
 }
