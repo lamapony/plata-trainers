@@ -171,6 +171,7 @@ body {
   display: grid;
   gap: 8px;
 }
+.plan-context-card.completed { border-left-color: var(--good); background: oklch(0.78 0.16 145 / 0.08); }
 .plan-context-card .eyebrow {
   margin: 0;
   font-family: var(--mono-stack);

@@ -454,6 +454,13 @@ function runPlanContextSmoke(lesson) {
   const step = env.context.PlataPlanner.readPracticePlan().steps[0];
   assert(step.completedAt, "correct repair marks active plan step completed");
   assert(step.completionEvidence.reason === "repair-correct", "correct repair stores completion evidence");
+  const completedContext = env.context.PlataNextStep.renderPlanContext({
+    trainerId: lesson.id,
+    dashboardHref: "../../dashboard.html"
+  });
+  assert(/Plan step completed . Step 1 of 1/.test(completedContext), "completed active plan context renders completion status");
+  assert(/See next plan action/.test(completedContext), "completed active plan context links to next dashboard action");
+  assert(/ledger-return=/.test(completedContext), "completed active plan context carries a dashboard return marker");
 }
 
 function runGoldRuntimePathSmoke(lessons) {

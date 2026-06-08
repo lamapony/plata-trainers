@@ -37,6 +37,20 @@
     ].join("");
   }
 
+  function appendDashboardParams(href, params) {
+    var raw = String(href || "dashboard.html");
+    var hashIndex = raw.indexOf("#");
+    var base = hashIndex === -1 ? raw : raw.slice(0, hashIndex);
+    var hash = hashIndex === -1 ? "#due" : raw.slice(hashIndex);
+    var pairs = [];
+    Object.keys(params || {}).forEach(function (key) {
+      if (params[key] === undefined || params[key] === null || params[key] === "") return;
+      pairs.push(encodeURIComponent(key) + "=" + encodeURIComponent(String(params[key])));
+    });
+    if (!pairs.length) return base + hash;
+    return base + (base.indexOf("?") === -1 ? "?" : "&") + pairs.join("&") + hash;
+  }
+
   function planContext(options) {
     var planner = root.PlataPlanner;
     if (!planner) return null;
@@ -49,16 +63,29 @@
     if (!context || !context.step) return "";
     var step = context.step;
     var dashboardHref = context.dashboardHref || "dashboard.html";
+    var completed = !!step.completedAt;
+    var eyebrow = completed ? "Plan step completed" : "Active plan";
+    var copy = completed
+      ? "This step is recorded. Return to the dashboard for the next unfinished plan action."
+      : step.copy || "Complete this step, then return to your dashboard for the next recommendation.";
+    var href = completed
+      ? appendDashboardParams(dashboardHref, {
+        "ledger-return": new Date().getTime(),
+        plan: context.plan && context.plan.planToken || "",
+        step: step.routeId || ""
+      })
+      : appendDashboardParams(dashboardHref, {});
+    var linkLabel = completed ? "See next plan action" : "Back to plan";
     return [
-      "<aside class='plan-context-card' aria-label='Active practice plan step'>",
-      "<p class='eyebrow'>Active plan · Step " + context.stepNumber + " of " + context.totalSteps + "</p>",
+      "<aside class='plan-context-card " + (completed ? "completed" : "active") + "' aria-label='" + (completed ? "Completed practice plan step" : "Active practice plan step") + "'>",
+      "<p class='eyebrow'>" + eyebrow + " · Step " + context.stepNumber + " of " + context.totalSteps + "</p>",
       "<h3>" + escapeHtml(step.title || "Practice step") + "</h3>",
-      "<p>" + escapeHtml(step.copy || "Complete this step, then return to your dashboard for the next recommendation.") + "</p>",
+      "<p>" + escapeHtml(copy) + "</p>",
       "<div class='plan-context-meta'>",
       step.minutes ? "<span>" + escapeHtml(step.minutes) + "</span>" : "",
       step.competency && step.competency.label ? "<span>" + escapeHtml(step.competency.label) + "</span>" : "",
       "</div>",
-      "<a class='plan-context-link' href='" + escapeHtml(dashboardHref) + "#due'>Back to plan</a>",
+      "<a class='plan-context-link' href='" + escapeHtml(href) + "'>" + escapeHtml(linkLabel) + "</a>",
       "</aside>"
     ].join("");
   }

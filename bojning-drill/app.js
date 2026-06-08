@@ -204,6 +204,7 @@
       }
     }
     markPlanStepComplete(total, correct);
+    renderPlanContext();
     renderNextStep();
     renderStats();
   }
@@ -226,11 +227,16 @@
   }
 
   function renderPlanContext() {
-    if (!window.PlataNextStep || !window.PlataNextStep.renderPlanContext || document.querySelector(".plan-context-slot")) return;
+    if (!window.PlataNextStep || !window.PlataNextStep.renderPlanContext) return;
     const html = window.PlataNextStep.renderPlanContext({
       trainerId: TRAINER_ID,
       dashboardHref: "../dashboard.html"
     });
+    const existing = document.querySelector(".plan-context-slot");
+    if (existing) {
+      if (html) existing.innerHTML = html;
+      return;
+    }
     if (!html) return;
     const slot = document.createElement("div");
     slot.className = "plan-context-slot";

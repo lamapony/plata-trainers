@@ -216,21 +216,42 @@
           correct: true
         });
       }
-      if (correct && root.PlataPlanner && root.PlataPlanner.markPracticePlanStepCompleted) {
-        root.PlataPlanner.markPracticePlanStepCompleted({
-          trainerId: ctx.lesson.id,
-          evidence: {
-            reason: "repair-correct",
-            mode: mode,
-            itemId: scene.id,
-            sceneId: scene.id,
-            trainerId: ctx.lesson.id,
-            correct: true
-          }
-        });
-      }
     }
     tracker.save();
+  }
+
+  function markRepairPlanStepComplete(ctx, scene) {
+    if (!ctx || !scene || !ctx.state || !ctx.state.repair || !ctx.state.repair.active) return;
+    if (!root.PlataPlanner || !root.PlataPlanner.markPracticePlanStepCompleted) return;
+    root.PlataPlanner.markPracticePlanStepCompleted({
+      trainerId: ctx.lesson.id,
+      evidence: {
+        reason: "repair-correct",
+        mode: "repair",
+        itemId: scene.id,
+        sceneId: scene.id,
+        trainerId: ctx.lesson.id,
+        correct: true
+      }
+    });
+    refreshPlanContext(ctx);
+  }
+
+  function refreshPlanContext(ctx) {
+    if (!ctx || !ctx.sceneEl || !ctx.sceneEl.querySelector) return;
+    if (!root.PlataNextStep || !root.PlataNextStep.renderPlanContext) return;
+    var card = ctx.sceneEl.querySelector(".plan-context-card");
+    if (!card) return;
+    var html = root.PlataNextStep.renderPlanContext({
+      trainerId: ctx.lesson.id,
+      dashboardHref: "../../dashboard.html"
+    });
+    if (!html) return;
+    if (card.outerHTML !== undefined) {
+      card.outerHTML = html;
+    } else {
+      card.innerHTML = html;
+    }
   }
 
   function repairResolved(ctx) {
@@ -385,7 +406,10 @@
           applyEffects(ctx.state, opt.effects);
           ctx.state.attempts[scene.id + opt.id] = true;
         }
-        if (opt.correct) ctx.state.completed[scene.id] = true;
+        if (opt.correct) {
+          ctx.state.completed[scene.id] = true;
+          markRepairPlanStepComplete(ctx, scene);
+        }
         ctx.renderSidebar();
       });
       body.appendChild(btn);
@@ -403,7 +427,10 @@
       $("#feedback").className = "feedback show " + (ok ? "ok" : "warn");
       $("#feedback").textContent = ok ? scene.success : scene.failure;
       record(ctx, scene, ok, value, scene.placeholder);
-      if (ok) ctx.state.completed[scene.id] = true;
+      if (ok) {
+        ctx.state.completed[scene.id] = true;
+        markRepairPlanStepComplete(ctx, scene);
+      }
       ctx.renderSidebar();
     });
   }
@@ -446,6 +473,7 @@
         }
         if (document.querySelectorAll(".meaning-card.matched").length === scene.pairs.length) {
           ctx.state.completed[scene.id] = true;
+          markRepairPlanStepComplete(ctx, scene);
         }
         ctx.renderSidebar();
         ctx.state.selectedLeft = null;
@@ -488,7 +516,10 @@
         record(ctx, scene, ok, scene.prefix + " " + value, scene.prefix + " + action");
         ctx.state.attempts[scene.id] = ok ? "correct" : "tried";
       }
-      if (ok) ctx.state.completed[scene.id] = true;
+      if (ok) {
+        ctx.state.completed[scene.id] = true;
+        markRepairPlanStepComplete(ctx, scene);
+      }
       ctx.renderSidebar();
     });
   }

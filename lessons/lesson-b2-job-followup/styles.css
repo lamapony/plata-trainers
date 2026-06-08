@@ -63,6 +63,7 @@ h3 { margin: 0 0 14px; font-size: 1rem; }
 .notice strong { font-family: "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .08em; font-size: .72rem; color: var(--ember-deep); }
 .notice span { color: var(--forest); line-height: 1.55; }
 .plan-context-card { margin: 0 0 20px; padding: 18px; max-width: 720px; border: 1px solid var(--line); border-left: 4px solid var(--ember); border-radius: 24px; background: rgba(185,101,69,.10); }
+.plan-context-card.completed { border-left-color: var(--sage); background: rgba(126,155,143,.14); }
 .plan-context-card .eyebrow { margin-bottom: 8px; }
 .plan-context-card h3 { margin: 0 0 8px; font-family: Fraunces, Georgia, serif; font-size: clamp(1.3rem, 2.3vw, 1.75rem); line-height: 1.1; letter-spacing: -0.02em; color: var(--forest); }
 .plan-context-card p { margin: 0; color: var(--muted); line-height: 1.58; }
