@@ -18,6 +18,8 @@ const rootFiles = [
   "dashboard.js",
   "home.js",
   "index.html",
+  "program.html",
+  "program.js",
   "quality.html",
   "quality.js",
   "robots.txt",

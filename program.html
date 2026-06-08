@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Program · Platå</title>
+  <meta name="description" content="User-facing map of Platå Trainers capabilities, checks, reports, and open-source proof surface." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="site-shell">
+    <header class="hero">
+      <nav class="topnav" aria-label="Main navigation">
+        <a class="brand" href="./"><span>⛰</span> platå</a>
+        <div class="navlinks">
+          <a href="./">Trainers</a>
+          <a href="./dashboard.html">Dashboard</a>
+          <a href="#" aria-current="page">Program</a>
+          <a href="./quality.html">Quality</a>
+          <a href="https://github.com/lamapony/plata-trainers">GitHub</a>
+        </div>
+      </nav>
+
+      <section class="hero-grid">
+        <div>
+          <p class="eyebrow">Proof-backed learning program</p>
+          <h1>What Platå can already do.</h1>
+          <p class="lead">This page turns the generated capability map into a readable program view: what a learner gets, what a contributor can trust, and which checks keep each claim honest.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="./dashboard.html">Open dashboard</a>
+            <a id="program-json-link" class="btn" href="#" aria-disabled="true">Open JSON map</a>
+          </div>
+        </div>
+        <aside class="status-card" aria-label="Program status">
+          <h2 id="program-status">Loading</h2>
+          <ul id="program-summary"></ul>
+          <p id="program-generated">Reading generated capability map...</p>
+        </aside>
+      </section>
+    </header>
+
+    <section class="section" aria-labelledby="program-pillars-title">
+      <div class="section-head">
+        <p class="eyebrow">For a normal learner</p>
+        <h2 id="program-pillars-title">The useful shape</h2>
+      </div>
+      <div id="program-pillars" class="program-pillars"></div>
+    </section>
+
+    <section class="section" aria-labelledby="program-capabilities-title">
+      <div class="section-head">
+        <p class="eyebrow">Capabilities</p>
+        <h2 id="program-capabilities-title">What is shipped</h2>
+      </div>
+      <div id="program-capabilities" class="program-capabilities"></div>
+    </section>
+
+    <section class="section split" aria-labelledby="program-proof-title">
+      <div>
+        <p class="eyebrow">Open-source proof</p>
+        <h2 id="program-proof-title">Trust comes from generated checks.</h2>
+        <p class="program-copy">The public page is backed by <code>reports/capabilities.json</code>. If a capability loses its gate, source file, report, or documentation, the map fails before Pages deploys.</p>
+      </div>
+      <div class="program-proof-panel">
+        <div id="program-guarantees" class="program-guarantees"></div>
+        <div id="program-reports" class="program-reports"></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>MIT code · built by <a href="https://dmitrii.dk">Dmitrii Babinov</a> · part of the Platå Danish-learning project.</p>
+    </footer>
+  </main>
+
+  <script src="./program.js"></script>
+</body>
+</html>

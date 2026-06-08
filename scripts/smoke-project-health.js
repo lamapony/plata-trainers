@@ -26,7 +26,7 @@ function copyDir(source, target) {
 }
 
 function copyHealthRoot(root) {
-  ["package.json", "README.md", "CONTRIBUTING.md", "ROADMAP.md", "index.html", "dashboard.html", "quality.html", "dashboard.js"].forEach(file => {
+  ["package.json", "README.md", "CONTRIBUTING.md", "ROADMAP.md", "index.html", "dashboard.html", "program.html", "program.js", "quality.html", "dashboard.js"].forEach(file => {
     fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
   });
   [".github", "docs", "shared", "lessons", "scripts"].forEach(dir => {
@@ -56,6 +56,7 @@ function runBaseSmoke() {
   assert(manifest.gates.some(gate => gate.id === "check:review-report" && gate.requiredInCheck), "manifest should require unified review report");
   assert(manifest.gates.some(gate => gate.id === "check:today-program-report" && gate.requiredInCheck), "manifest should require Today program report");
   assert(manifest.gates.some(gate => gate.id === "check:today-program-diff" && gate.requiredInCheck), "manifest should require Today program diff review");
+  assert(manifest.gates.some(gate => gate.id === "check:program-page" && gate.requiredInCheck), "manifest should require the user-facing program page");
   assert(manifest.gates.some(gate => gate.id === "check:capability-map" && gate.requiredInCheck), "manifest should require the product capability map");
   assert(manifest.publicReports.some(report => report.id === "quality" && report.pagesPath === "reports/quality.json"), "manifest should link the quality report");
   assert(manifest.publicReports.some(report => report.id === "skill-coverage" && report.pagesPath === "reports/skill-coverage.json"), "manifest should link the skill coverage report");

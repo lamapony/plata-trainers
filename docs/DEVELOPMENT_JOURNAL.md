@@ -32,6 +32,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Publish Today shell states as a deterministic public program report.
 - [x] Add PR diffs for Today shell state drift.
 - [x] Publish a product capability map that ties user-facing claims to gates, reports, docs, and source files.
+- [x] Render the capability map as a user-facing public program page.
 - [ ] Evaluate external Hermes/OpenClaw-style integrations as optional explainers, not sources of truth; see [Companion Architecture](./COMPANION_ARCHITECTURE.md).
 
 ## Current Sprint
@@ -120,6 +121,8 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add `check:capability-map` with smoke tests for missing gate and missing Pages publishing regressions.
 - [x] Publish `reports/capabilities.json` in the Pages artifact.
 - [x] Include the capability map in project health so public claims stay checked by `npm run check`.
+- [x] Add `program.html` and `program.js` as a user-facing shell over the generated capability map.
+- [x] Add `check:program-page` so the public program page cannot drift away from `reports/capabilities.json`.
 
 ## Dashboard Snapshot Diff Sprint
 

@@ -6,6 +6,7 @@
 Open-source Danish plateau-breaker for Danish learners who are no longer starting from zero but still feel stuck. Static HTML/JS, no app build step, no backend.
 Live demo: [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/).
 Public quality report: [lamapony.github.io/plata-trainers/quality.html](https://lamapony.github.io/plata-trainers/quality.html).
+Public program map: [lamapony.github.io/plata-trainers/program.html](https://lamapony.github.io/plata-trainers/program.html).
 Public capability map: [lamapony.github.io/plata-trainers/reports/capabilities.json](https://lamapony.github.io/plata-trainers/reports/capabilities.json).
 
 Platå does not try to teach Danish from the beginning. It helps learners overcome the plateau: the point where they know enough Danish to recognize the language, but not enough to act fluently under social pressure.
@@ -67,6 +68,7 @@ npm run check:pages
 npm run check:quality-report
 npm run check:today-program-report
 npm run check:capability-map
+npm run check:program-page
 npm run check:comic-prompts
 node scripts/build-capability-map.js --out .dist/capabilities.json --text
 npm run diff:quality -- --base .dist/quality-report.json --head current
@@ -141,6 +143,7 @@ node scripts/build-quality-report.js --out .dist/quality-report.json
 node scripts/diff-quality-report.js --base .dist/quality-report.json --head current --json > .dist/quality-diff.json
 node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json
 node scripts/smoke-review-report.js
+node scripts/smoke-program-page.js
 node scripts/build-capability-map.js --out .dist/capabilities.json --text
 node scripts/smoke-capability-map.js
 node scripts/build-project-health-manifest.js --out .dist/project-health.json --text

@@ -80,6 +80,7 @@ const requiredGates = [
   { id: "check:quality-diff", category: "review", contract: "Quality report diffs fail only on regressions." },
   { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, Today program, and personalization diffs." },
   { id: "check:quality-page", category: "report", contract: "Quality page renderer consumes generated report data." },
+  { id: "check:program-page", category: "report", contract: "Program page renders the product capability map as a user-facing proof surface." },
   { id: "check:capability-map", category: "report", contract: "Product capability map links user-facing claims to checks, public reports, source files, and docs." },
   { id: "check:health", category: "report", contract: "Project health manifest links gates, reports, workflows, and fixtures." },
   { id: "check:pages", category: "publish", contract: "Pages artifact builds and public files pass static QA." }
