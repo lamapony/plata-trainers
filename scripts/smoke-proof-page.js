@@ -40,6 +40,7 @@ async function run() {
   assert(proofHtml.includes("Proof / Health"), "proof page should have a readable title");
   assert(proofHtml.includes("id=\"proof-health-link\""), "proof page should expose the health link target");
   assert(proofHtml.includes("id=\"proof-digest\""), "proof page should expose the plain-language digest target");
+  assert(proofHtml.includes("id=\"proof-walkthrough\""), "proof page should expose the visitor proof walkthrough target");
   assert(proofHtml.includes("id=\"proof-capability-matrix\""), "proof page should expose the capability proof matrix target");
   assert(!proofHtml.includes("href=\"./reports/"), "proof page should not break root static QA with pre-build report links");
 
@@ -70,6 +71,7 @@ async function run() {
       "#proof-summary",
       "#proof-generated",
       "#proof-digest",
+      "#proof-walkthrough",
       "#proof-artifacts",
       "#proof-surfaces",
       "#proof-capability-matrix",
@@ -124,6 +126,14 @@ async function run() {
     assert(elements["#proof-digest"].innerHTML.includes("What changed"), "proof page did not render digest changes");
     assert(elements["#proof-digest"].innerHTML.includes("Trust boundaries"), "proof page did not render digest trust boundaries");
     assert(elements["#proof-digest"].innerHTML.includes("reports/proof-digest.json"), "proof page did not render digest evidence links");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("One inspectable loop from recommendation to receipt"), "proof page did not render walkthrough summary");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("Open the read-only learner"), "proof page did not render demo walkthrough step");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("Repair Use understatement with agency"), "proof page did not render demo recommendation in walkthrough");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("Open demo dashboard"), "proof page did not link demo dashboard from walkthrough");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("outcome receipt"), "proof page did not render outcome receipt in walkthrough");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("gdo-"), "proof page did not render guided outcome fingerprint in walkthrough");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("check:guided-session-diff"), "proof page did not render guided diff gate in walkthrough");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("shared/plata-guided-session.js") || elements["#proof-walkthrough"].innerHTML.includes("guided source"), "proof page did not link guided source from walkthrough");
     assert(elements["#proof-artifacts"].innerHTML.includes("npm run proof:quickstart"), "proof page did not render quickstart command");
     assert(elements["#proof-artifacts"].innerHTML.includes("review-report.json"), "proof page did not render review artifact link");
     assert(elements["#proof-surfaces"].innerHTML.includes("Demo learner"), "proof page did not render demo learner surface");

@@ -103,6 +103,9 @@ function buildProofDigest(options = {}) {
     && golden.review.summary.regressions > 0
     && golden.summary.includes("more in JSON artifact");
   const proofPagePass = hasGate(proofCapability, "check:proof-page") && hasSurface(proofCapability, "proof.html");
+  const visitorWalkthroughPass = proofPagePass
+    && hasReport(proofCapability, "demo-learner")
+    && hasReport(proofCapability, "guided-session");
   const digestPublished = hasGate(proofCapability, "check:proof-digest")
     && hasSurface(proofCapability, "reports/proof-digest.json")
     && hasReport(proofCapability, "proof-digest");
@@ -116,6 +119,7 @@ function buildProofDigest(options = {}) {
     [quickstartPass, "quickstart proof is not passing"],
     [reviewFixturePass, "golden review fixture is not proving reviewer behavior"],
     [proofPagePass, "proof page is not linked from the public proof capability"],
+    [visitorWalkthroughPass, "proof page walkthrough is not backed by demo and guided reports"],
     [digestPublished, "proof digest is not linked from the public proof capability"],
     [quickstartPublished, "quickstart proof is not linked from the public proof capability"]
   ].forEach(([pass, issue]) => {
@@ -165,6 +169,14 @@ function buildProofDigest(options = {}) {
       ["proof.html", "proof.js", "check:proof-page"],
       proofPagePass,
       "This gives non-maintainers one place to inspect the proof surface before opening raw reports."
+    ),
+    row(
+      "visitor-proof-walkthrough",
+      "A visitor can follow one learner loop before opening raw JSON.",
+      "The proof page now connects the demo learner, Today recommendation, guided session, outcome receipt, and audit trail.",
+      ["dashboard.html?demo=learner", "reports/demo-learner.json", "reports/guided-session.json", "check:proof-page"],
+      visitorWalkthroughPass,
+      "This turns the generated reports into one inspectable product path for first-time evaluators."
     ),
     row(
       "quickstart-proof-published",

@@ -1455,7 +1455,7 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   gap: 16px;
   align-items: start;
 }
-.proof-command-card, .proof-artifact-list, .proof-surface, .proof-capability-summary, .proof-capability-row, .proof-guided-card, .proof-health-card, .proof-review-table, .proof-summary-preview {
+.proof-command-card, .proof-artifact-list, .proof-surface, .proof-walkthrough-summary, .proof-walkthrough-step, .proof-capability-summary, .proof-capability-row, .proof-guided-card, .proof-health-card, .proof-review-table, .proof-summary-preview {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--card);
@@ -1467,7 +1467,7 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   padding: 20px;
 }
 .proof-command-card.fail { border-color: var(--ember); }
-.proof-command-card h3, .proof-surface h3, .proof-capability-summary h3, .proof-guided-card h3, .proof-health-card h3 {
+.proof-command-card h3, .proof-surface h3, .proof-walkthrough-summary h3, .proof-capability-summary h3, .proof-guided-card h3, .proof-health-card h3 {
   font-size: clamp(25px, 3vw, 33px);
   letter-spacing: 0;
   line-height: 1.04;
@@ -1492,6 +1492,66 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   display: grid;
   gap: 0;
   padding: 8px 18px;
+}
+.proof-walkthrough {
+  display: grid;
+  gap: 14px;
+}
+.proof-walkthrough-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: end;
+  padding: 20px;
+}
+.proof-walkthrough-summary.fail {
+  border-color: var(--ember);
+  box-shadow: 0 0 0 1px var(--ember), var(--shadow);
+}
+.proof-walkthrough-summary p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.proof-walkthrough-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+.proof-walkthrough-step {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 12px;
+  min-height: 360px;
+  padding: 16px;
+  border-top: 3px solid oklch(0.72 0.12 205 / 0.58);
+}
+.proof-walkthrough-number {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid oklch(0.72 0.12 205 / 0.42);
+  border-radius: 999px;
+  background: oklch(0.72 0.12 205 / 0.09);
+  color: oklch(0.78 0.1 205);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+}
+.proof-walkthrough-step h3 {
+  font-size: clamp(20px, 2.3vw, 25px);
+  letter-spacing: 0;
+  line-height: 1.08;
+}
+.proof-walkthrough-step p {
+  margin: 10px 0 12px;
+  color: var(--muted);
+  line-height: 1.48;
+}
+.proof-walkthrough-step .program-chip[href] {
+  width: fit-content;
+  margin-top: 10px;
 }
 .proof-surfaces {
   display: grid;
@@ -1677,9 +1737,9 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   .memory-correction-row .memory-delete { justify-self: start; }
   .mastery-list, .competency-list, .memory-grid { grid-template-columns: 1fr; }
   .quality-metrics, .quality-lessons { grid-template-columns: 1fr; }
-  .program-pillars, .program-capabilities, .proof-digest-lead, .proof-digest-grid, .proof-digest-lower, .proof-artifacts, .proof-surfaces, .proof-capability-summary, .proof-capability-row, .proof-guided, .proof-health-panel, .proof-review { grid-template-columns: 1fr; }
+  .program-pillars, .program-capabilities, .proof-digest-lead, .proof-digest-grid, .proof-digest-lower, .proof-artifacts, .proof-walkthrough-summary, .proof-walkthrough-steps, .proof-surfaces, .proof-capability-summary, .proof-capability-row, .proof-guided, .proof-health-panel, .proof-review { grid-template-columns: 1fr; }
   .program-pillar { min-height: auto; }
-  .proof-digest-card, .proof-surface { min-height: auto; }
+  .proof-digest-card, .proof-surface, .proof-walkthrough-step { min-height: auto; }
   .quality-evidence-row { grid-template-columns: 1fr; }
   .quality-evidence-meta { grid-template-columns: 1fr; }
   .quality-evidence-lesson h3 { font-size: 28px; }

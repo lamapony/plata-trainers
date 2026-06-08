@@ -37,6 +37,10 @@
     return "./" + String(file || "").replace(/^\.\//, "");
   }
 
+  function localPageHref(file) {
+    return "./" + String(file || "").replace(/^\.\//, "");
+  }
+
   function shortPath(path) {
     var parts = String(path || "").split("/");
     return parts[parts.length - 1] || path;
@@ -231,6 +235,118 @@
     ].join("");
   }
 
+  function renderProofWalkthrough(data) {
+    var demo = data.demo || {};
+    var demoPlan = demo.plan || {};
+    var demoStep = (demoPlan.steps || [])[0] || demo.actionableStep || {};
+    var companion = demo.companion || {};
+    var guidedScenario = findById(data.guided.scenarios, "memory-backed-repair") || (data.guided.scenarios || [])[0] || {};
+    var session = guidedScenario.session || {};
+    var route = session.route || {};
+    var ledger = data.guided.outcomeLedger || {};
+    var outcome = (ledger.outcomes || [])[0] || {};
+    var receipt = outcome.outcomeReceipt || session.outcomeReceipt || {};
+    var guidedCapability = findById(data.capabilities.capabilities, "guided-session-outcome-loop") || {};
+    var proofCapability = findById(data.capabilities.capabilities, "public-github-proof-surface") || {};
+    var proofGateIds = ["check:demo-learner-report", "check:guided-session-report", "check:guided-session-diff", "check:proof-page"];
+    var seenGates = {};
+    var proofGates = (guidedCapability.proofGates || []).concat(proofCapability.proofGates || []).filter(function (gate) {
+      if (proofGateIds.indexOf(gate.id) === -1 || seenGates[gate.id]) return false;
+      seenGates[gate.id] = true;
+      return true;
+    }).map(function (gate) {
+      return chip(gate.id, gate.status === "pass" ? "pass" : "fail");
+    }).join("");
+    var dashboardHref = localPageHref(demo.url || "dashboard.html?demo=learner");
+    var routeHref = localPageHref(demoStep.primaryHref || route.href || "dashboard.html?demo=learner");
+    var receiptFingerprint = outcome.fingerprint || session.fingerprint || "";
+
+    var steps = [
+      {
+        title: "Open the read-only learner",
+        copy: "The visitor starts from a deterministic B2 profile, so the dashboard can show memory, plan, and companion behavior without touching local progress.",
+        href: dashboardHref,
+        hrefLabel: "Open demo dashboard",
+        chips: [
+          chip(countLabel(demo.totals && demo.totals.visibleMemoryFacts || 0, "memory fact", "memory facts"), "mastery"),
+          chip((demo.totals && demo.totals.storageWrites || 0) + " storage writes", demo.totals && demo.totals.storageWrites ? "fail" : "pass"),
+          linkChip(proofSources.demo, "demo-learner.json", "pass")
+        ]
+      },
+      {
+        title: "See the next useful action",
+        copy: demoStep.title ? "The Today surface chooses `" + demoStep.title + "` from cited learner memory instead of exposing diagnostics first." : "The Today surface chooses one actionable next step from cited learner memory.",
+        href: routeHref,
+        hrefLabel: "Open recommended step",
+        chips: [
+          chip(demoStep.signalTag || demoStep.signal || "memory-backed", "mastery"),
+          chip(countLabel((companion.citedFacts || []).length, "cited fact", "cited facts"), "pass"),
+          chip(companion.fingerprint || "companion receipt", "")
+        ]
+      },
+      {
+        title: "Follow the guided session",
+        copy: session.goal && session.goal.reason || "A guided session turns planner, memory, and advisor signals into four learner-facing steps.",
+        href: localReportHref("reports/guided-session.json"),
+        hrefLabel: "Open guided report",
+        chips: [
+          chip(session.status || "ready", "pass"),
+          chip(countLabel((session.steps || []).length, "guided step", "guided steps"), "mastery"),
+          chip(session.fingerprint || "guided trace", "")
+        ]
+      },
+      {
+        title: "Inspect the outcome receipt",
+        copy: receipt.summary || "A completed route writes a portable receipt with completion evidence, cited facts, and guardrails.",
+        href: localReportHref("reports/guided-session.json"),
+        hrefLabel: "Open receipt JSON",
+        chips: [
+          chip(receiptFingerprint || "receipt fingerprint", "pass"),
+          chip(countLabel((receipt.citedFacts || []).length, "cited fact", "cited facts"), "mastery"),
+          chip(countLabel(ledger.totals && ledger.totals.outcomes || 0, "stored outcome", "stored outcomes"), "pass")
+        ]
+      },
+      {
+        title: "Audit the proof trail",
+        copy: "The same flow is guarded by generated reports, PR drift checks, and source contracts that are published with the static site.",
+        href: proofSources.capabilities,
+        hrefLabel: "Open capability map",
+        chips: [
+          proofGates,
+          linkChip(proofSources.health, "project-health.json", "pass"),
+          sourceChip("shared/plata-guided-session.js", "guided source")
+        ]
+      }
+    ];
+
+    var stepHtml = steps.map(function (item, index) {
+      return "<article class=\"proof-walkthrough-step\">" +
+        "<div class=\"proof-walkthrough-number\">" + escapeHtml(index + 1) + "</div>" +
+        "<div>" +
+          "<h3>" + escapeHtml(item.title) + "</h3>" +
+          "<p>" + escapeHtml(item.copy) + "</p>" +
+          "<div class=\"program-proof-strip\">" + item.chips.join("") + "</div>" +
+          "<a class=\"program-chip mastery\" href=\"" + escapeHtml(item.href) + "\">" + escapeHtml(item.hrefLabel) + "</a>" +
+        "</div>" +
+      "</article>";
+    }).join("");
+
+    $("#proof-walkthrough").innerHTML =
+      "<article class=\"proof-walkthrough-summary " + escapeHtml(data.guided.status === "pass" && demo.status === "pass" ? "pass" : "fail") + "\">" +
+        "<div>" +
+          "<span class=\"quality-key\">visitor path</span>" +
+          "<h3>One inspectable loop from recommendation to receipt</h3>" +
+          "<p>This walkthrough is assembled from generated reports, so it fails with the proof page if the demo profile, guided session, or receipt contract drifts.</p>" +
+        "</div>" +
+        "<div class=\"program-proof-strip\">" +
+          chip(countLabel(demoPlan.steps && demoPlan.steps.length || 0, "plan step", "plan steps"), "mastery") +
+          chip(countLabel(data.guided.totals && data.guided.totals.outcomeReceipts || 0, "outcome receipt", "outcome receipts"), "pass") +
+          chip(countLabel((data.guided.scenarios || []).length, "guided scenario", "guided scenarios"), "") +
+        "</div>" +
+      "</article>" +
+      "<div class=\"proof-walkthrough-steps\">" + stepHtml + "</div>";
+  }
+
   function findById(items, id) {
     return (items || []).filter(function (item) { return item.id === id; })[0] || null;
   }
@@ -383,6 +499,7 @@
     $("#proof-summary").innerHTML = "<li><span>Proof</span><strong>missing</strong></li>";
     $("#proof-generated").textContent = error.message || "Could not load proof reports";
     $("#proof-digest").innerHTML = "<article class=\"proof-digest-card fail\"><h3>Proof digest missing</h3><p>Run npm run build:pages to generate reports/proof-digest.json.</p></article>";
+    $("#proof-walkthrough").innerHTML = "";
     $("#proof-artifacts").innerHTML = "<article class=\"proof-command-card fail\"><h3>Proof artifacts missing</h3><p>Run npm run build:pages to generate reports.</p></article>";
     $("#proof-surfaces").innerHTML = "";
     $("#proof-capability-matrix").innerHTML = "";
@@ -413,6 +530,7 @@
     };
     renderSummary(data);
     renderDigest(data);
+    renderProofWalkthrough(data);
     renderArtifacts(data);
     renderSurfaces(data);
     renderCapabilityMatrix(data);

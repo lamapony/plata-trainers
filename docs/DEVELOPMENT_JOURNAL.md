@@ -186,6 +186,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add `proof.html` and `proof.js` as the readable public surface over demo learner, capability map, project health, quickstart proof, and golden PR review artifacts.
 - [x] Publish quickstart proof artifacts into the GitHub Pages artifact under `reports/quickstart-proof/`.
 - [x] Add `check:proof-page` so report loading, hero links, quickstart commands, health guarantees, and review fixture rendering stay deterministic.
+- [x] Render a 60-second visitor walkthrough on `proof.html` from demo learner to recommended action, guided session, outcome receipt, and audit trail.
 - [x] Render the guided outcome-loop contract on `proof.html` with public report counts, PR review status, gates, and source links.
 - [x] Render a compact capability proof matrix on `proof.html` so user-facing claims are traced to gates, reports, and source without opening raw JSON first.
 - [x] Link the proof page from public navigation, README, sitemap, project health, and the product capability map.
