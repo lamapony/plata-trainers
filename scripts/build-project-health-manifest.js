@@ -28,6 +28,7 @@ const requiredGates = [
   { id: "check:dashboard", category: "runtime", contract: "Dashboard renders diagnostics, plans, ledger, catalog loading, and profile portability." },
   { id: "check:dashboard-snapshot", category: "snapshot", contract: "Dashboard recommendation surface matches deterministic fixtures." },
   { id: "check:dashboard-snapshot-mutations", category: "mutation", contract: "Snapshot fixtures prove preferred-entry, repair trace, and evidence drift are caught." },
+  { id: "check:dashboard-snapshot-diff", category: "review", contract: "Dashboard snapshot changes produce compact review diffs and regression flags." },
   { id: "check:data", category: "content", contract: "Drill data has valid item shapes and coverage." },
   { id: "check:static", category: "static", contract: "Static HTML files satisfy no-dependency page QA." },
   { id: "check:lessons", category: "schema", contract: "Narrative lesson data satisfies the lesson schema." },

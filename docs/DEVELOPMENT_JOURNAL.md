@@ -16,7 +16,8 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add deterministic snapshot tests for the dashboard recommendation surface.
 - [x] Prove dashboard recommendation snapshots catch planner and evidence drift with mutation tests.
 - [x] Publish a project health manifest that links QA gates, public reports, and deterministic fixtures.
-- [ ] Add a compact diff for dashboard recommendation snapshot changes.
+- [x] Add a compact diff for dashboard recommendation snapshot changes.
+- [ ] Add a PR-facing dashboard snapshot diff workflow step.
 
 ## Current Sprint
 
@@ -94,3 +95,11 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Verify deterministic dashboard fixtures are fresh and mutation-backed.
 - [x] Fail on missing gates and stale fixtures in smoke tests.
 - [x] Publish `reports/project-health.json` in the Pages artifact.
+
+## Dashboard Snapshot Diff Sprint
+
+- [x] Add a compact dashboard snapshot diff CLI with text and JSON output.
+- [x] Compare scenario membership, candidate order, due cards, decision traces, practice-plan routes, evidence ledger rows, and root-skill diagnostics.
+- [x] Mark removed open evidence and root-skill diagnostics as regressions.
+- [x] Support `--fail-on-regression` and `--fail-on-change` automation modes.
+- [x] Include dashboard snapshot diff smoke tests in `npm run check`.

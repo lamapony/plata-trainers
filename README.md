@@ -91,6 +91,7 @@ node scripts/debug-profile-replay.js --file plata-backup.json
 node scripts/build-skill-coverage-report.js --out .dist/skill-coverage.json --text
 node scripts/snapshot-dashboard-recommendations.js
 node scripts/mutation-dashboard-snapshot.js
+node scripts/diff-dashboard-snapshot.js --base scripts/fixtures/dashboard-recommendations.snapshot.json --head current
 node scripts/build-project-health-manifest.js --out .dist/project-health.json --text
 node scripts/smoke-gold-scaffold.js
 node scripts/generate-comic-assets-openrouter.js --dry-run --out .dist/comic-prompts.json
