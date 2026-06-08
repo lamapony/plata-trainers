@@ -73,6 +73,7 @@ function runBaseSmoke() {
   assert(report.totals.capabilities >= 9, "capability map should describe the full product surface");
   assert(report.totals.proofGates >= 35, "capability map should cite the substantial QA gate surface");
   assert(report.publicReports.some(row => row.id === "capabilities" && row.pagesPath === "reports/capabilities.json"), "capability report should be part of the public report surface");
+  assert(report.publicReports.some(row => row.id === "demo-learner" && row.pagesPath === "reports/demo-learner.json"), "demo learner report should be part of the public report surface");
   assert(report.guarantees.every(guarantee => guarantee.pass), "capability guarantees should all pass");
 
   const gold = capability(report, "gold-lesson-quality-engine");
@@ -84,7 +85,9 @@ function runBaseSmoke() {
   assert(memory && hasDoc(memory, "docs/LEARNER_MEMORY_AGENT_RFC.md"), "memory capability should cite the learner memory RFC");
 
   const today = capability(report, "today-program-shell");
+  assert(today && hasGate(today, "check:demo-learner-report"), "Today capability should cite the demo learner report gate");
   assert(today && hasGate(today, "check:today-program-report"), "Today capability should cite the Today report gate");
+  assert(today && hasReport(today, "demo-learner"), "Today capability should cite the public demo learner report");
   assert(today && hasGate(today, "check:today-program-diff"), "Today capability should cite the Today diff gate");
   assert(today && hasReport(today, "today-program"), "Today capability should cite the public Today report");
 
@@ -95,6 +98,7 @@ function runBaseSmoke() {
   const proof = capability(report, "public-github-proof-surface");
   assert(proof && hasGate(proof, "check:capability-map"), "proof surface should cite its own gate");
   assert(proof && hasReport(proof, "capabilities"), "proof surface should cite the capability map report");
+  assert(proof && hasReport(proof, "demo-learner"), "proof surface should cite the demo learner report");
 
   const formatted = formatCapabilityMap(report);
   assert(formatted.includes("Product Capability Map"), "formatter should include report title");

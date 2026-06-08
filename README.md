@@ -6,6 +6,7 @@
 Open-source Danish plateau-breaker for Danish learners who are no longer starting from zero but still feel stuck. Static HTML/JS, no app build step, no backend.
 Live demo: [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/).
 Demo learner dashboard: [lamapony.github.io/plata-trainers/dashboard.html?demo=learner](https://lamapony.github.io/plata-trainers/dashboard.html?demo=learner).
+Demo learner report: [lamapony.github.io/plata-trainers/reports/demo-learner.json](https://lamapony.github.io/plata-trainers/reports/demo-learner.json).
 Public quality report: [lamapony.github.io/plata-trainers/quality.html](https://lamapony.github.io/plata-trainers/quality.html).
 Public program map: [lamapony.github.io/plata-trainers/program.html](https://lamapony.github.io/plata-trainers/program.html).
 Public capability map: [lamapony.github.io/plata-trainers/reports/capabilities.json](https://lamapony.github.io/plata-trainers/reports/capabilities.json).
@@ -68,6 +69,7 @@ Production Pages artifact:
 npm run build:pages
 npm run check:pages
 npm run check:quality-report
+npm run check:demo-learner-report
 npm run check:today-program-report
 npm run check:capability-map
 npm run check:program-page
@@ -112,6 +114,7 @@ node scripts/simulate-gold-lessons.js
 node scripts/counterfactual-learner-simulator.js
 node scripts/debug-profile-replay.js --file plata-backup.json
 node scripts/build-skill-coverage-report.js --out .dist/skill-coverage.json --text
+node scripts/build-demo-learner-report.js --out .dist/demo-learner.json --text
 node scripts/snapshot-dashboard-recommendations.js
 node scripts/mutation-dashboard-snapshot.js
 mkdir -p .dist && node scripts/snapshot-dashboard-recommendations.js --json > .dist/dashboard-recommendations.json

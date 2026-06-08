@@ -19,6 +19,12 @@ const publicReportSpecs = {
     checkScript: "check:skill-coverage",
     pagesPath: "reports/skill-coverage.json"
   },
+  "demo-learner": {
+    title: "Demo learner report",
+    builderScript: "scripts/build-demo-learner-report.js",
+    checkScript: "check:demo-learner-report",
+    pagesPath: "reports/demo-learner.json"
+  },
   "today-program": {
     title: "Today program shell report",
     builderScript: "scripts/build-today-program-report.js",
@@ -95,7 +101,7 @@ const capabilitySpecs = [
     userValue: "Personalization is derived locally from redacted learning events, not from raw answer history or opaque analytics.",
     surfaces: ["Dashboard memory inspector", "Profile export/import", "Memory vault payload"],
     proofGates: ["check:events", "check:memory", "check:memory-fixtures", "check:memory-corrections", "check:memory-vault", "check:memory-brief", "check:profile-replay"],
-    publicReports: ["project-health"],
+    publicReports: ["demo-learner", "project-health"],
     docs: ["docs/LEARNER_MEMORY_AGENT_RFC.md", "docs/DEVELOPMENT_JOURNAL.md"],
     sourcePaths: ["shared/plata-events.js", "shared/plata-memory.js", "shared/plata-memory-vault.js", "shared/plata-memory-brief.js", "scripts/debug-profile-replay.js", "scripts/fixtures/learner-memory-profiles.json"],
     contracts: [
@@ -113,7 +119,7 @@ const capabilitySpecs = [
     proofGates: ["check:dashboard", "check:learner-model", "check:learner-model-alignment", "check:learner-model-alignment-mutations", "check:advisor", "check:personalization-eval", "check:personalization-mutations", "check:personalization-trajectory", "check:personalization-trajectory-mutations", "check:personalization-trajectory-diff"],
     publicReports: ["project-health"],
     docs: ["docs/LEARNER_MEMORY_AGENT_RFC.md", "docs/DEVELOPMENT_JOURNAL.md"],
-    sourcePaths: ["dashboard.js", "shared/plata-learner-model.js", "shared/plata-advisor.js", "shared/plata-planner.js", "scripts/smoke-dashboard.js", "scripts/smoke-personalization-eval.js", "scripts/smoke-personalization-trajectory.js", "scripts/diff-personalization-trajectory.js"],
+    sourcePaths: ["dashboard.js", "shared/plata-learner-model.js", "shared/plata-advisor.js", "shared/plata-planner.js", "scripts/build-demo-learner-report.js", "scripts/smoke-demo-learner-report.js", "scripts/smoke-dashboard.js", "scripts/smoke-personalization-eval.js", "scripts/smoke-personalization-trajectory.js", "scripts/diff-personalization-trajectory.js"],
     contracts: [
       "Learner-model focus must stay aligned with planner-selected and advisor-cited facts.",
       "Demo learner mode proves a rich returning profile without writing fixture data into local storage.",
@@ -127,10 +133,10 @@ const capabilitySpecs = [
     stage: "shipped",
     userValue: "The first screen gives a friendly next step for onboarding, active plans, returns, and memory reviews instead of exposing diagnostics first.",
     surfaces: ["Dashboard Today section", "dashboard.html?demo=learner", "reports/today-program.json", "Dashboard recommendation snapshot"],
-    proofGates: ["check:dashboard", "check:today-program-report", "check:today-program-diff", "check:dashboard-snapshot", "check:dashboard-snapshot-mutations", "check:dashboard-snapshot-diff"],
-    publicReports: ["today-program", "project-health"],
+    proofGates: ["check:dashboard", "check:demo-learner-report", "check:today-program-report", "check:today-program-diff", "check:dashboard-snapshot", "check:dashboard-snapshot-mutations", "check:dashboard-snapshot-diff"],
+    publicReports: ["demo-learner", "today-program", "project-health"],
     docs: ["docs/COMPANION_ARCHITECTURE.md", "docs/DEVELOPMENT_JOURNAL.md"],
-    sourcePaths: ["dashboard.js", "dashboard.html", "scripts/smoke-dashboard.js", "scripts/build-today-program-report.js", "scripts/diff-today-program-report.js", "scripts/snapshot-dashboard-recommendations.js", "scripts/fixtures/dashboard-recommendations.snapshot.json"],
+    sourcePaths: ["dashboard.js", "dashboard.html", "scripts/build-demo-learner-report.js", "scripts/smoke-demo-learner-report.js", "scripts/smoke-dashboard.js", "scripts/build-today-program-report.js", "scripts/diff-today-program-report.js", "scripts/snapshot-dashboard-recommendations.js", "scripts/fixtures/dashboard-recommendations.snapshot.json"],
     contracts: [
       "Today state classification is deterministic over planner, URL handoff, active plan, and memory facts.",
       "Demo learner mode renders a companion-backed Today state from in-memory evidence only.",
@@ -175,11 +181,11 @@ const capabilitySpecs = [
     title: "Public GitHub proof surface",
     stage: "shipped",
     userValue: "Visitors can inspect the project's claims as generated JSON reports and reviewers can see focused PR drift instead of trusting prose.",
-    surfaces: ["program.html", "dashboard.html?demo=learner", "reports/capabilities.json", "reports/project-health.json", "Pull-request QA review report", "README"],
-    proofGates: ["check:program-page", "check:capability-map", "check:health", "check:pages", "check:quality-report", "check:today-program-report", "check:review-report"],
-    publicReports: ["capabilities", "project-health", "quality", "skill-coverage", "today-program"],
+    surfaces: ["program.html", "dashboard.html?demo=learner", "reports/demo-learner.json", "reports/capabilities.json", "reports/project-health.json", "Pull-request QA review report", "README"],
+    proofGates: ["check:program-page", "check:capability-map", "check:health", "check:pages", "check:quality-report", "check:demo-learner-report", "check:today-program-report", "check:review-report"],
+    publicReports: ["capabilities", "demo-learner", "project-health", "quality", "skill-coverage", "today-program"],
     docs: ["README.md", "docs/DEVELOPMENT_JOURNAL.md"],
-    sourcePaths: ["program.html", "program.js", "dashboard.html", "dashboard.js", "scripts/smoke-program-page.js", "scripts/smoke-dashboard.js", "scripts/build-capability-map.js", "scripts/build-project-health-manifest.js", "scripts/build-review-report.js", "scripts/build-pages-artifact.js", ".github/workflows/qa.yml"],
+    sourcePaths: ["program.html", "program.js", "dashboard.html", "dashboard.js", "scripts/build-demo-learner-report.js", "scripts/smoke-demo-learner-report.js", "scripts/smoke-program-page.js", "scripts/smoke-dashboard.js", "scripts/build-capability-map.js", "scripts/build-project-health-manifest.js", "scripts/build-review-report.js", "scripts/build-pages-artifact.js", ".github/workflows/qa.yml"],
     contracts: [
       "Every declared capability links to checks, source files, docs, and public reports.",
       "Program and home pages expose the read-only demo learner dashboard for first-time evaluators.",

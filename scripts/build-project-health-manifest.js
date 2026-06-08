@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { buildQualityReport } = require("./build-quality-report.js");
 const { buildSkillCoverageReport } = require("./build-skill-coverage-report.js");
+const { buildDemoLearnerReport } = require("./build-demo-learner-report.js");
 const { buildTodayProgramReport } = require("./build-today-program-report.js");
 const { buildCapabilityMap } = require("./build-capability-map.js");
 const {
@@ -62,6 +63,7 @@ const requiredGates = [
   { id: "check:home", category: "runtime", contract: "Home launcher routes starter, continue, repair, and active-plan flows." },
   { id: "check:lesson-engine", category: "runtime", contract: "Gold simulation paths replay through the real lesson engine." },
   { id: "check:dashboard", category: "runtime", contract: "Dashboard renders diagnostics, plans, ledger, catalog loading, and profile portability." },
+  { id: "check:demo-learner-report", category: "report", contract: "Read-only demo learner profile builds as a deterministic public contract report." },
   { id: "check:today-program-report", category: "report", contract: "Today program shell states build as a deterministic user-facing contract report." },
   { id: "check:today-program-diff", category: "review", contract: "Today program report changes produce compact review diffs and regression flags." },
   { id: "check:dashboard-snapshot", category: "snapshot", contract: "Dashboard recommendation surface matches deterministic fixtures." },
@@ -100,6 +102,13 @@ const publicReportSpecs = [
     builderScript: "scripts/build-skill-coverage-report.js",
     checkScript: "check:skill-coverage",
     pagesPath: "reports/skill-coverage.json"
+  },
+  {
+    id: "demo-learner",
+    title: "Demo learner report",
+    builderScript: "scripts/build-demo-learner-report.js",
+    checkScript: "check:demo-learner-report",
+    pagesPath: "reports/demo-learner.json"
   },
   {
     id: "today-program",
@@ -245,7 +254,7 @@ function workflowRows(root, issues) {
   });
 }
 
-function reportRows(root, quality, skillCoverage, todayProgram, capabilityMap, issues) {
+function reportRows(root, quality, skillCoverage, demoLearner, todayProgram, capabilityMap, issues) {
   const pagesBuild = fileExists(root, "scripts/build-pages-artifact.js")
     ? readText(root, "scripts/build-pages-artifact.js")
     : "";
@@ -267,6 +276,16 @@ function reportRows(root, quality, skillCoverage, todayProgram, capabilityMap, i
         coveredGraphTags: skillCoverage.totals.coveredGraphTags,
         issues: skillCoverage.totals.issues,
         warnings: skillCoverage.totals.warnings
+      }
+    },
+    "demo-learner": {
+      status: demoLearner.status,
+      totals: {
+        attempts: demoLearner.totals.attempts,
+        visibleMemoryFacts: demoLearner.totals.visibleMemoryFacts,
+        planSteps: demoLearner.totals.planSteps,
+        storageWrites: demoLearner.totals.storageWrites,
+        issues: demoLearner.totals.issues
       }
     },
     "today-program": {
@@ -579,10 +598,11 @@ function buildProjectHealthManifest(options = {}) {
   const issues = [];
   const quality = buildQualityReport({ root });
   const skillCoverage = buildSkillCoverageReport({ root });
+  const demoLearner = buildDemoLearnerReport({ root });
   const todayProgram = buildTodayProgramReport({ root });
   const capabilityMap = buildCapabilityMap({ root });
   const gates = gateRows(root, pkg, issues);
-  const reports = reportRows(root, quality, skillCoverage, todayProgram, capabilityMap, issues);
+  const reports = reportRows(root, quality, skillCoverage, demoLearner, todayProgram, capabilityMap, issues);
   const workflows = workflowRows(root, issues);
   const fixtures = fixtureRows(root, issues);
   const gateCategories = gates.reduce((acc, gate) => {
