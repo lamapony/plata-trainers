@@ -70,6 +70,7 @@ const requiredGates = [
   { id: "check:quality-report", category: "report", contract: "Public gold lesson quality report builds cleanly." },
   { id: "check:quality-mutations", category: "mutation", contract: "Quality report proves broken gold lesson contracts fail." },
   { id: "check:quality-diff", category: "review", contract: "Quality report diffs fail only on regressions." },
+  { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, and personalization diffs." },
   { id: "check:quality-page", category: "report", contract: "Quality page renderer consumes generated report data." },
   { id: "check:health", category: "report", contract: "Project health manifest links gates, reports, workflows, and fixtures." },
   { id: "check:pages", category: "publish", contract: "Pages artifact builds and public files pass static QA." }
@@ -194,7 +195,7 @@ function workflowRows(root, issues) {
       id: "qa",
       path: ".github/workflows/qa.yml",
       expectedRun: "npm run check",
-      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js"]
+      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "build-review-report.js"]
     },
     { id: "pages", path: ".github/workflows/pages.yml", expectedRun: "npm run check" }
   ];

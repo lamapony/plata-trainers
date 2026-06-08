@@ -65,10 +65,14 @@ npm run check:pages
 npm run check:quality-report
 npm run check:comic-prompts
 npm run diff:quality -- --base .dist/quality-report.json --head current
+npm run diff:quality -- --base .dist/quality-report.json --head current --json > .dist/quality-diff.json
 node scripts/snapshot-dashboard-recommendations.js --json > .dist/dashboard-recommendations.json
 npm run diff:dashboard-snapshot -- --base .dist/dashboard-recommendations.json --head current
+npm run diff:dashboard-snapshot -- --base .dist/dashboard-recommendations.json --head current --json > .dist/dashboard-recommendations-diff.json
 node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-trajectory.json
 npm run diff:personalization-trajectory -- --base .dist/personalization-trajectory.json --head current
+npm run diff:personalization-trajectory -- --base .dist/personalization-trajectory.json --head current --json > .dist/personalization-trajectory-diff.json
+npm run diff:review -- --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json
 ```
 
 Gold lesson scaffold:
@@ -99,6 +103,7 @@ node scripts/mutation-dashboard-snapshot.js
 mkdir -p .dist && node scripts/snapshot-dashboard-recommendations.js --json > .dist/dashboard-recommendations.json
 node scripts/diff-dashboard-snapshot.js --base scripts/fixtures/dashboard-recommendations.snapshot.json --head current
 node scripts/diff-dashboard-snapshot.js --base .dist/dashboard-recommendations.json --head current
+node scripts/diff-dashboard-snapshot.js --base .dist/dashboard-recommendations.json --head current --json > .dist/dashboard-recommendations-diff.json
 node scripts/smoke-dashboard-snapshot-diff.js
 node scripts/smoke-memory.js
 node scripts/smoke-learner-model.js
@@ -116,7 +121,12 @@ node scripts/smoke-personalization-trajectory.js
 node scripts/mutation-personalization-trajectory.js
 mkdir -p .dist && node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-trajectory.json
 node scripts/diff-personalization-trajectory.js --base .dist/personalization-trajectory.json --head current
+node scripts/diff-personalization-trajectory.js --base .dist/personalization-trajectory.json --head current --json > .dist/personalization-trajectory-diff.json
 node scripts/smoke-personalization-trajectory-diff.js
+node scripts/build-quality-report.js --out .dist/quality-report.json
+node scripts/diff-quality-report.js --base .dist/quality-report.json --head current --json > .dist/quality-diff.json
+node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json
+node scripts/smoke-review-report.js
 node scripts/build-project-health-manifest.js --out .dist/project-health.json --text
 node scripts/smoke-gold-scaffold.js
 node scripts/generate-comic-assets-openrouter.js --dry-run --out .dist/comic-prompts.json

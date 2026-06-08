@@ -40,7 +40,7 @@ jobs:
           git archive "$BASE_SHA" | tar -x -C "$base_dir"
           node scripts/build-quality-report.js --root "$base_dir" --out .dist/quality-report-base.json
           node scripts/build-quality-report.js --out .dist/quality-report-head.json
-          node scripts/diff-quality-report.js --base .dist/quality-report-base.json --head .dist/quality-report-head.json --fail-on-regression
+          node scripts/diff-quality-report.js --base .dist/quality-report-base.json --head .dist/quality-report-head.json --json > .dist/quality-diff.json
 
       - name: Compare personalization trajectory with base
         if: github.event_name == 'pull_request'
@@ -52,7 +52,7 @@ jobs:
           git archive "$BASE_SHA" | tar -x -C "$base_dir"
           node scripts/smoke-personalization-trajectory.js --root "$base_dir" --json > .dist/personalization-trajectory-base.json
           node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-trajectory-head.json
-          node scripts/diff-personalization-trajectory.js --base .dist/personalization-trajectory-base.json --head .dist/personalization-trajectory-head.json --fail-on-regression
+          node scripts/diff-personalization-trajectory.js --base .dist/personalization-trajectory-base.json --head .dist/personalization-trajectory-head.json --json > .dist/personalization-trajectory-diff.json
 
       - name: Compare dashboard recommendations with base
         if: github.event_name == 'pull_request'
@@ -64,7 +64,16 @@ jobs:
           git archive "$BASE_SHA" | tar -x -C "$base_dir"
           node scripts/snapshot-dashboard-recommendations.js --root "$base_dir" --json > .dist/dashboard-recommendations-base.json
           node scripts/snapshot-dashboard-recommendations.js --json > .dist/dashboard-recommendations-head.json
-          node scripts/diff-dashboard-snapshot.js --base .dist/dashboard-recommendations-base.json --head .dist/dashboard-recommendations-head.json --fail-on-regression
+          node scripts/diff-dashboard-snapshot.js --base .dist/dashboard-recommendations-base.json --head .dist/dashboard-recommendations-head.json --json > .dist/dashboard-recommendations-diff.json
+
+      - name: Summarize review diffs
+        if: github.event_name == 'pull_request'
+        run: |
+          node scripts/build-review-report.js \
+            --quality-diff .dist/quality-diff.json \
+            --dashboard-diff .dist/dashboard-recommendations-diff.json \
+            --trajectory-diff .dist/personalization-trajectory-diff.json \
+            --fail-on-regression
 
       - name: Verify public pages map to files
         run: |

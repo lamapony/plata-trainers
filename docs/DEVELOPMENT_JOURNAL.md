@@ -19,6 +19,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add a compact diff for dashboard recommendation snapshot changes.
 - [x] Add a lesson exercise audit gate for pedagogical contradictions and known Danish slips.
 - [x] Add a PR-facing dashboard snapshot diff workflow step.
+- [x] Add a unified PR review report across quality, dashboard recommendations, and personalization trajectory.
 - [x] Define the local adaptive learner model before adding any account memory.
 - [x] Add an inspectable learner memory fact schema derived from the event log.
 - [x] Build a memory inspector so learners can see, export, and delete personalization facts.
@@ -112,6 +113,14 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Support `--fail-on-regression` and `--fail-on-change` automation modes.
 - [x] Include dashboard snapshot diff smoke tests in `npm run check`.
 - [x] Run the dashboard snapshot diff in pull-request QA against base/head snapshots.
+
+## Unified Review Report Sprint
+
+- [x] Add `scripts/build-review-report.js` to combine quality, dashboard recommendation, and personalization trajectory diffs.
+- [x] Preserve each surface status while grouping regressions, review changes, improvements, and informational drift.
+- [x] Add `check:review-report` to prove unchanged, review-only, regression, JSON, and fail-mode behavior.
+- [x] Make pull-request QA build JSON diff artifacts and fail through the unified report.
+- [x] Include the unified report in project health workflow checks.
 
 ## Lesson Exercise Audit Sprint
 

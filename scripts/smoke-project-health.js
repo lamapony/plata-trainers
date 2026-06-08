@@ -52,12 +52,14 @@ function runBaseSmoke() {
   assert(manifest.gates.some(gate => gate.id === "check:personalization-trajectory" && gate.requiredInCheck), "manifest should require personalization trajectory replay");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-trajectory-mutations" && gate.requiredInCheck), "manifest should require personalization trajectory mutation proof");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-trajectory-diff" && gate.requiredInCheck), "manifest should require personalization trajectory diff review");
+  assert(manifest.gates.some(gate => gate.id === "check:review-report" && gate.requiredInCheck), "manifest should require unified review report");
   assert(manifest.publicReports.some(report => report.id === "quality" && report.pagesPath === "reports/quality.json"), "manifest should link the quality report");
   assert(manifest.publicReports.some(report => report.id === "skill-coverage" && report.pagesPath === "reports/skill-coverage.json"), "manifest should link the skill coverage report");
   assert(manifest.publicReports.some(report => report.id === "project-health" && report.pagesPath === "reports/project-health.json"), "manifest should link itself as a public report");
   assert(manifest.workflows.every(workflow => workflow.runsFullCheck && workflow.nodeVersion === "24"), "manifest should link full-check workflows");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("diff-personalization-trajectory.js")), "manifest should require personalization trajectory PR diff");
   assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("diff-dashboard-snapshot.js")), "manifest should require dashboard snapshot PR diff");
+  assert(manifest.workflows.some(workflow => workflow.id === "qa" && workflow.requiredSnippets.includes("build-review-report.js")), "manifest should require unified PR review report");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "dashboard-recommendations" && fixture.fresh), "manifest should link fresh deterministic fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "learner-model-profiles" && fixture.fresh), "manifest should link fresh learner model fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "learner-memory-profiles" && fixture.fresh), "manifest should link fresh learner memory fixtures");
