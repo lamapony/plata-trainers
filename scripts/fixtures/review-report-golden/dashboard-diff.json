@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "status": "regression",
+  "changes": [
+    {
+      "severity": "regression",
+      "scope": "dashboard.a-ledger",
+      "message": "Open evidence ledger row disappeared."
+    },
+    {
+      "severity": "regression",
+      "scope": "dashboard.z-route",
+      "message": "Preferred repair route changed away from weak mastery."
+    },
+    {
+      "severity": "review",
+      "scope": "dashboard.a-trace",
+      "message": "Practice-plan trace fingerprint changed."
+    },
+    {
+      "severity": "review",
+      "scope": "dashboard.b-copy",
+      "message": "Due card explanation copy changed."
+    },
+    {
+      "severity": "info",
+      "scope": "dashboard.snapshot",
+      "message": "Candidate order includes a new optional route."
+    }
+  ],
+  "regressions": [
+    {
+      "severity": "regression",
+      "scope": "dashboard.a-ledger",
+      "message": "Open evidence ledger row disappeared."
+    },
+    {
+      "severity": "regression",
+      "scope": "dashboard.z-route",
+      "message": "Preferred repair route changed away from weak mastery."
+    }
+  ],
+  "improvements": [],
+  "summary": {
+    "changes": 5,
+    "regressions": 2,
+    "improvements": 0
+  }
+}

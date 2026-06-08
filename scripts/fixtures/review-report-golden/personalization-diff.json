@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "status": "regression",
+  "changes": [
+    {
+      "severity": "regression",
+      "scope": "personalization.a-root",
+      "message": "Root competency removed: agency."
+    },
+    {
+      "severity": "regression",
+      "scope": "personalization.z-review",
+      "message": "Review due transition skipped."
+    },
+    {
+      "severity": "review",
+      "scope": "personalization.a-advisor",
+      "message": "Advisor explanation changed for repair path."
+    },
+    {
+      "severity": "review",
+      "scope": "personalization.b-planner",
+      "message": "Planner selected memory fact fingerprint changed."
+    },
+    {
+      "severity": "improvement",
+      "scope": "personalization.maintenance",
+      "message": "Maintenance stage retains repaired signal longer."
+    },
+    {
+      "severity": "info",
+      "scope": "personalization.trace",
+      "message": "Trajectory trace label changed."
+    }
+  ],
+  "regressions": [
+    {
+      "severity": "regression",
+      "scope": "personalization.a-root",
+      "message": "Root competency removed: agency."
+    },
+    {
+      "severity": "regression",
+      "scope": "personalization.z-review",
+      "message": "Review due transition skipped."
+    }
+  ],
+  "improvements": [
+    {
+      "severity": "improvement",
+      "scope": "personalization.maintenance",
+      "message": "Maintenance stage retains repaired signal longer."
+    }
+  ],
+  "summary": {
+    "changes": 6,
+    "regressions": 2,
+    "improvements": 1
+  }
+}

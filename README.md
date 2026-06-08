@@ -91,6 +91,7 @@ node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-
 npm run diff:personalization-trajectory -- --base .dist/personalization-trajectory.json --head current
 npm run diff:personalization-trajectory -- --base .dist/personalization-trajectory.json --head current --json > .dist/personalization-trajectory-diff.json
 npm run diff:review -- --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --out .dist/review-report.json --summary-out .dist/review-summary.md --summary-limit 8 --summary-message-limit 180
+npm run check:review-report-fixture
 ```
 
 Gold lesson scaffold:
@@ -155,6 +156,7 @@ node scripts/diff-quality-report.js --base .dist/quality-report.json --head curr
 node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --out .dist/review-report.json --summary-out .dist/review-summary.md --summary-limit 8 --summary-message-limit 180
 node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json --markdown --summary-limit 8 --summary-message-limit 180
 node scripts/smoke-review-report.js
+node scripts/smoke-review-report-fixture.js
 node scripts/smoke-program-page.js
 node scripts/build-capability-map.js --out .dist/capabilities.json --text
 node scripts/smoke-capability-map.js

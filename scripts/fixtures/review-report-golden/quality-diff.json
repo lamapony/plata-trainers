@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "status": "regression",
+  "changes": [
+    {
+      "severity": "regression",
+      "scope": "a-quality-contract",
+      "message": "Long quality regression: very-long-quality-regression-detail very-long-quality-regression-detail very-long-quality-regression-detail very-long-quality-regression-detail."
+    },
+    {
+      "severity": "regression",
+      "scope": "z-quality-contract",
+      "message": "Quality source coverage dropped for a gold scene."
+    },
+    {
+      "severity": "review",
+      "scope": "a-quality-review",
+      "message": "Quality report evidence wording changed."
+    },
+    {
+      "severity": "review",
+      "scope": "b-quality-review",
+      "message": "Quality simulation path count changed after refactor."
+    },
+    {
+      "severity": "improvement",
+      "scope": "quality-scaffold",
+      "message": "Issue removed: duplicate prompt warning."
+    },
+    {
+      "severity": "info",
+      "scope": "quality-comic",
+      "message": "Comic prompt storyboard metadata changed."
+    }
+  ],
+  "regressions": [
+    {
+      "severity": "regression",
+      "scope": "a-quality-contract",
+      "message": "Long quality regression: very-long-quality-regression-detail very-long-quality-regression-detail very-long-quality-regression-detail very-long-quality-regression-detail."
+    },
+    {
+      "severity": "regression",
+      "scope": "z-quality-contract",
+      "message": "Quality source coverage dropped for a gold scene."
+    }
+  ],
+  "improvements": [
+    {
+      "severity": "improvement",
+      "scope": "quality-scaffold",
+      "message": "Issue removed: duplicate prompt warning."
+    }
+  ],
+  "summary": {
+    "changes": 6,
+    "regressions": 2,
+    "improvements": 1
+  }
+}

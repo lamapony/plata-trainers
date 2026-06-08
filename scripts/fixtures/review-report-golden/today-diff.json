@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "status": "regression",
+  "changes": [
+    {
+      "severity": "regression",
+      "scope": "today.a-citation",
+      "message": "Guardrail removed: cited memory."
+    },
+    {
+      "severity": "regression",
+      "scope": "today.z-action",
+      "message": "Primary action href changed from repair route."
+    },
+    {
+      "severity": "review",
+      "scope": "today.a-headline",
+      "message": "Return state headline changed."
+    },
+    {
+      "severity": "improvement",
+      "scope": "today.empty",
+      "message": "Onboarding empty-state copy clarified."
+    },
+    {
+      "severity": "info",
+      "scope": "today.meta",
+      "message": "Scenario count metadata changed."
+    }
+  ],
+  "regressions": [
+    {
+      "severity": "regression",
+      "scope": "today.a-citation",
+      "message": "Guardrail removed: cited memory."
+    },
+    {
+      "severity": "regression",
+      "scope": "today.z-action",
+      "message": "Primary action href changed from repair route."
+    }
+  ],
+  "improvements": [
+    {
+      "severity": "improvement",
+      "scope": "today.empty",
+      "message": "Onboarding empty-state copy clarified."
+    }
+  ],
+  "summary": {
+    "changes": 5,
+    "regressions": 2,
+    "improvements": 1
+  }
+}

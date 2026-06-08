@@ -82,6 +82,7 @@ const requiredGates = [
   { id: "check:quality-mutations", category: "mutation", contract: "Quality report proves broken gold lesson contracts fail." },
   { id: "check:quality-diff", category: "review", contract: "Quality report diffs fail only on regressions." },
   { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, demo learner, Today program, and personalization diffs with JSON and Markdown reviewer output." },
+  { id: "check:review-report-fixture", category: "review", contract: "Golden PR review fixture proves large reviewer summaries, JSON artifacts, ordering, caps, and fail modes end to end." },
   { id: "check:quality-page", category: "report", contract: "Quality page renderer consumes generated report data." },
   { id: "check:program-page", category: "report", contract: "Program page renders the product capability map as a user-facing proof surface." },
   { id: "check:capability-map", category: "report", contract: "Product capability map links user-facing claims to checks, public reports, source files, and docs." },

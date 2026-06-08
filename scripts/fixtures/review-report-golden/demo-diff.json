@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "status": "changed",
+  "changes": [
+    {
+      "severity": "review",
+      "scope": "demo.a-companion",
+      "message": "Companion fingerprint changed after wording update."
+    },
+    {
+      "severity": "review",
+      "scope": "demo.b-plan",
+      "message": "Demo plan title changed."
+    },
+    {
+      "severity": "improvement",
+      "scope": "demo.export",
+      "message": "Export label is clearer for demo mode."
+    },
+    {
+      "severity": "info",
+      "scope": "demo.profile",
+      "message": "Trainer row added: job followup review."
+    }
+  ],
+  "regressions": [],
+  "improvements": [
+    {
+      "severity": "improvement",
+      "scope": "demo.export",
+      "message": "Export label is clearer for demo mode."
+    }
+  ],
+  "summary": {
+    "changes": 4,
+    "regressions": 0,
+    "improvements": 1
+  }
+}

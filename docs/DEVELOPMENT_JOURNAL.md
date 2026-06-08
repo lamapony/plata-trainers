@@ -135,7 +135,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 
 ## Unified Review Report Sprint
 
-- [x] Add `scripts/build-review-report.js` to combine quality, dashboard recommendation, Today program, and personalization trajectory diffs.
+- [x] Add `scripts/build-review-report.js` to combine quality, dashboard recommendation, demo learner, Today program, and personalization trajectory diffs.
 - [x] Preserve each surface status while grouping regressions, review changes, improvements, and informational drift.
 - [x] Add `check:review-report` to prove unchanged, review-only, regression, JSON, and fail-mode behavior.
 - [x] Make pull-request QA build JSON diff artifacts and fail through the unified report.
@@ -143,6 +143,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add Today program diff artifacts to pull-request review summaries.
 - [x] Write `.dist/review-report.json` and append a Markdown summary to `$GITHUB_STEP_SUMMARY` for pull-request reviewers.
 - [x] Cap PR review Markdown by severity section with stable ordering, truncated messages, and `+N more` pointers to the full JSON artifact.
+- [x] Add a golden PR review fixture that exercises all surfaces, capped Markdown summaries, full JSON output, stable ordering, and fail-on-regression behavior end to end.
 
 ## Companion Architecture Sprint
 
