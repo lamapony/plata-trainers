@@ -40,6 +40,7 @@ async function run() {
   assert(proofHtml.includes("Proof / Health"), "proof page should have a readable title");
   assert(proofHtml.includes("id=\"proof-health-link\""), "proof page should expose the health link target");
   assert(proofHtml.includes("id=\"proof-digest\""), "proof page should expose the plain-language digest target");
+  assert(proofHtml.includes("id=\"proof-capability-matrix\""), "proof page should expose the capability proof matrix target");
   assert(!proofHtml.includes("href=\"./reports/"), "proof page should not break root static QA with pre-build report links");
 
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "plata-proof-page-"));
@@ -71,6 +72,7 @@ async function run() {
       "#proof-digest",
       "#proof-artifacts",
       "#proof-surfaces",
+      "#proof-capability-matrix",
       "#proof-guided",
       "#proof-health",
       "#proof-review",
@@ -127,6 +129,12 @@ async function run() {
     assert(elements["#proof-surfaces"].innerHTML.includes("Demo learner"), "proof page did not render demo learner surface");
     assert(elements["#proof-surfaces"].innerHTML.includes("Capability map"), "proof page did not render capability map surface");
     assert(elements["#proof-surfaces"].innerHTML.includes("Golden review fixture"), "proof page did not render golden review surface");
+    assert(elements["#proof-capability-matrix"].innerHTML.includes("10 capabilities"), "proof page did not render capability matrix summary");
+    assert(elements["#proof-capability-matrix"].innerHTML.includes("Static, forkable trainer runtime"), "proof page did not render capability rows");
+    assert(elements["#proof-capability-matrix"].innerHTML.includes("Public GitHub proof surface"), "proof page did not render public proof capability row");
+    assert(elements["#proof-capability-matrix"].innerHTML.includes("./reports/capabilities.json"), "proof page did not link the capability map report from the matrix");
+    assert(elements["#proof-capability-matrix"].innerHTML.includes("./reports/guided-session.json"), "proof page did not link guided public report from the matrix");
+    assert(elements["#proof-capability-matrix"].innerHTML.includes("proof-page"), "proof page did not render proof-page gate in the matrix");
     assert(elements["#proof-guided"].innerHTML.includes("Generated guided-session report"), "proof page did not render guided report card");
     assert(elements["#proof-guided"].innerHTML.includes("Guided drift is reviewable"), "proof page did not render guided review card");
     assert(elements["#proof-guided"].innerHTML.includes("check:guided-session-diff"), "proof page did not render guided diff gate");

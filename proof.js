@@ -2,6 +2,7 @@
 (function () {
   "use strict";
 
+  var repoBase = "https://github.com/lamapony/plata-trainers/blob/main/";
   var quickstartBase = "./reports/quickstart-proof/";
   var proofSources = {
     digest: "./reports/proof-digest.json",
@@ -30,6 +31,19 @@
 
   function localHref(file) {
     return quickstartBase + String(file || "").replace(/^\.\//, "");
+  }
+
+  function localReportHref(file) {
+    return "./" + String(file || "").replace(/^\.\//, "");
+  }
+
+  function shortPath(path) {
+    var parts = String(path || "").split("/");
+    return parts[parts.length - 1] || path;
+  }
+
+  function gateLabel(id) {
+    return String(id || "").replace(/^check:/, "");
   }
 
   function chip(value, extraClass) {
@@ -222,7 +236,55 @@
   }
 
   function sourceChip(path, label) {
-    return linkChip("https://github.com/lamapony/plata-trainers/blob/main/" + encodeURIComponent(path).replace(/%2F/g, "/"), label || path.split("/").pop(), "");
+    return linkChip(repoBase + encodeURIComponent(path).replace(/%2F/g, "/"), label || shortPath(path), "");
+  }
+
+  function renderCapabilityMatrix(data) {
+    var capabilities = data.capabilities.capabilities || [];
+    var totals = data.capabilities.totals || {};
+    var summary = "<article class=\"proof-capability-summary " + escapeHtml(data.capabilities.status || "fail") + "\">" +
+      "<div>" +
+        "<span class=\"quality-key\">" + escapeHtml(data.capabilities.status || "unknown") + "</span>" +
+        "<h3>" + escapeHtml(countLabel(totals.capabilities || capabilities.length, "capability", "capabilities")) + " traced from product claim to source</h3>" +
+        "<p>The matrix is generated from the same capability map JSON that CI validates and GitHub Pages publishes.</p>" +
+      "</div>" +
+      "<div class=\"program-proof-strip\">" +
+        chip(countLabel(totals.proofGates || 0, "gate", "gates"), "mastery") +
+        chip(countLabel(totals.publicReports || 0, "public report", "public reports"), "") +
+        chip(countLabel(totals.sourcePaths || 0, "source path", "source paths"), "") +
+        linkChip(proofSources.capabilities, "open capabilities.json", "pass") +
+      "</div>" +
+    "</article>";
+    var rows = capabilities.map(function (capability) {
+      var gates = capability.proofGates || [];
+      var reports = capability.publicReports || [];
+      var sources = capability.sourcePaths || [];
+      var statusClass = capability.status === "pass" ? "pass" : "fail";
+      var gateChips = gates.slice(0, 3).map(function (gate) {
+        return chip(gateLabel(gate.id), gate.status === "pass" ? "pass" : "fail");
+      }).join("") + (gates.length > 3 ? chip("+" + (gates.length - 3) + " gates", "") : "");
+      var reportLinks = reports.slice(0, 3).map(function (report) {
+        return linkChip(localReportHref(report.pagesPath), report.id, report.status === "pass" ? "pass" : "fail");
+      }).join("") || chip("no public report", "fail");
+      var sourceLinks = sources.slice(0, 2).map(function (source) {
+        return sourceChip(source.path, shortPath(source.path));
+      }).join("") + (sources.length > 2 ? chip("+" + (sources.length - 2) + " sources", "") : "");
+      var contract = (capability.contracts || [])[0] || capability.userValue || capability.id;
+
+      return "<article class=\"proof-capability-row " + escapeHtml(statusClass) + "\">" +
+        "<div class=\"proof-capability-main\">" +
+          "<div class=\"quality-card-head\"><span class=\"quality-key\">" + escapeHtml(capability.stage || "shipped") + "</span><span class=\"quality-state\">" + escapeHtml(capability.id) + "</span></div>" +
+          "<h3>" + escapeHtml(capability.title || capability.id) + "</h3>" +
+          "<p>" + escapeHtml(capability.userValue || "") + "</p>" +
+          "<p class=\"proof-capability-contract\">" + escapeHtml(contract) + "</p>" +
+        "</div>" +
+        "<div class=\"proof-capability-cell\"><strong>Gates</strong><div class=\"program-proof-strip\">" + gateChips + "</div></div>" +
+        "<div class=\"proof-capability-cell\"><strong>Reports</strong><div class=\"program-proof-strip\">" + reportLinks + "</div></div>" +
+        "<div class=\"proof-capability-cell\"><strong>Source</strong><div class=\"program-proof-strip\">" + sourceLinks + "</div></div>" +
+      "</article>";
+    }).join("");
+
+    $("#proof-capability-matrix").innerHTML = summary + rows;
   }
 
   function renderGuidedContract(data) {
@@ -323,6 +385,7 @@
     $("#proof-digest").innerHTML = "<article class=\"proof-digest-card fail\"><h3>Proof digest missing</h3><p>Run npm run build:pages to generate reports/proof-digest.json.</p></article>";
     $("#proof-artifacts").innerHTML = "<article class=\"proof-command-card fail\"><h3>Proof artifacts missing</h3><p>Run npm run build:pages to generate reports.</p></article>";
     $("#proof-surfaces").innerHTML = "";
+    $("#proof-capability-matrix").innerHTML = "";
     $("#proof-guided").innerHTML = "";
     $("#proof-health").innerHTML = "";
     $("#proof-review").innerHTML = "";
@@ -352,6 +415,7 @@
     renderDigest(data);
     renderArtifacts(data);
     renderSurfaces(data);
+    renderCapabilityMatrix(data);
     renderGuidedContract(data);
     renderHealth(data);
     renderReview(data);

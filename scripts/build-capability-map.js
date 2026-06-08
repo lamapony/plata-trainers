@@ -229,6 +229,7 @@ const capabilitySpecs = [
       "Program and home pages expose the read-only demo learner dashboard for first-time evaluators.",
       "Project health verifies full-check workflows and report publishing.",
       "Proof / Health renders the reports and golden review fixture as one readable public surface.",
+      "Proof / Health renders a compact capability matrix that traces user-facing claims to gates, reports, and source.",
       "Proof / Health explains the guided outcome-loop report, diff gate, and source contracts.",
       "Proof digest translates generated reports into visitor-facing claims and trust boundaries.",
       "PR review output writes a full JSON artifact plus a capped GitHub Step Summary that groups regressions, review changes, improvements, and informational drift.",
