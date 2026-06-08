@@ -13,6 +13,11 @@
     return Number.isFinite(n) ? n : fallback;
   }
 
+  function countLabel(count, singular, plural) {
+    count = numberOr(count, 0);
+    return count + " " + (count === 1 ? singular : plural);
+  }
+
   function diagnosticTags(tags, options) {
     options = options || {};
     var nonDiagnostic = options.nonDiagnosticTags || NON_DIAGNOSTIC_TAGS;
@@ -50,14 +55,14 @@
       var attempt = latestAttemptForTag(state, signal.tag);
       entries.push({
         kind: "open",
-        status: "Open mastery signal",
+        status: "Needs attention",
         title: signal.label || signal.tag,
-        copy: signal.evidence || "This concept-level signal is still weak.",
+        copy: signal.evidence || "This pattern is still shaping the next recommendation.",
         trainer: trainer,
         at: attempt && attempt.at || state.updatedAt || "",
         score: 120 + numberOr(signal.wrong, 0) * 10 + Math.round(numberOr(signal.score, 0) * 20),
         facts: [
-          numberOr(signal.wrong, 0) + " wrong / " + numberOr(signal.total, 0) + " total",
+          countLabel(signal.wrong, "miss", "misses") + " / " + countLabel(signal.total, "try", "tries"),
           signal.competency && signal.competency.label ? "Root skill: " + signal.competency.label : "",
           signal.remediation && signal.remediation.action ? signal.remediation.action : ""
         ].filter(Boolean)
@@ -75,18 +80,18 @@
       var resolved = kernel.isSignalResolved ? kernel.isSignalResolved(state, signal) : true;
       entries.push({
         kind: resolved ? "closed" : "reopened",
-        status: resolved ? "Closed repair" : "Reopened signal",
+        status: resolved ? "Resolved" : "Back in focus",
         title: closure.label || spec && spec.label || signal,
         copy: resolved
-          ? "A correct repair answer retired this signal from recommendations."
-          : "Later evidence appeared after the repair, so this signal is active again.",
+          ? "A successful repair moved this signal out of the active queue."
+          : "A later miss brought this pattern back into the active queue.",
         trainer: trainer,
         at: closure.resolvedAt || state.updatedAt || "",
         score: resolved ? 80 : 130,
         facts: [
           signal,
           closure.action || spec && spec.evidence || "",
-          closure.attemptCount ? "Closed after " + closure.attemptCount + " attempt" + (closure.attemptCount === 1 ? "" : "s") : ""
+          closure.attemptCount ? "Resolved after " + countLabel(closure.attemptCount, "try", "tries") : ""
         ].filter(Boolean)
       });
     });
@@ -102,11 +107,11 @@
       if (!tags.length && attempt.correct) return;
       entries.push({
         kind: attempt.correct ? "correct" : "miss",
-        status: attempt.correct ? "Correct attempt" : "Missed attempt",
+        status: attempt.correct ? "Confirmed" : "Needs review",
         title: attempt.itemId || trainer.name || "Practice",
         copy: attempt.correct
-          ? "This attempt added positive evidence to the trainer state."
-          : "This miss is part of the weak-signal evidence.",
+          ? "This answer added supporting evidence to the profile."
+          : "This miss gives the planner useful evidence for the next step.",
         trainer: trainer,
         at: attempt.at || state.updatedAt || "",
         score: attempt.correct ? 20 : 70,

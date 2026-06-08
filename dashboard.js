@@ -153,6 +153,15 @@ function formatDate(iso) {
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
+function countLabel(count, singular, plural) {
+  count = Number(count || 0);
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
+function missTryText(misses, tries) {
+  return `${countLabel(misses, "miss", "misses")} / ${countLabel(tries, "try", "tries")}`;
+}
+
 function getStreakLabel(streak) {
   if (streak === 0) return "No active streak";
   if (streak === 1) return "1 day";
@@ -265,7 +274,7 @@ function planReturnReceiptHtml(plan, planner) {
     ? `Step ${returnedStep.number} recorded`
     : "Plan updated";
   const returnedCopy = returnedStep
-    ? `${returnedStep.title} is in the plan ledger.`
+    ? `${returnedStep.title} is now in your practice record.`
     : "Your latest practice result is reflected below.";
 
   if (nextStep && !plan.completed) {
@@ -447,7 +456,7 @@ function renderDueCards(candidates) {
         ${topMastery.length ? `
           <div class="mastery-tags">
             <span class="eyebrow">Mastery signal</span>
-            ${topMastery.map(w => `<span class="mastery-chip">${escapeHtml(w.label)} (${w.wrong}/${w.total})</span>`).join("")}
+            ${topMastery.map(w => `<span class="mastery-chip">${escapeHtml(w.label)} · ${escapeHtml(missTryText(w.wrong, w.total))}</span>`).join("")}
           </div>
         ` : ""}
         ${repair ? `
@@ -466,7 +475,7 @@ function renderDueCards(candidates) {
         ${topWeak.length ? `
           <div class="weak-tags">
             <span class="eyebrow">Weak tags</span>
-            ${topWeak.map(w => `<span class="weak-tag">${escapeHtml(w.tag)} (${w.wrong}/${w.total})</span>`).join("")}
+            ${topWeak.map(w => `<span class="weak-tag">${escapeHtml(w.tag)} · ${escapeHtml(missTryText(w.wrong, w.total))}</span>`).join("")}
           </div>
         ` : ""}
         ${decision.meta && !repair ? `<div class="due-reason">${escapeHtml(decision.meta)}</div>` : ""}
@@ -501,7 +510,7 @@ function renderEvidenceLedger() {
   const entries = buildEvidenceLedger();
 
   if (entries.length === 0) {
-    container.innerHTML = '<p class="narrative">No learning evidence yet. Complete a trainer attempt and the ledger will show the signals behind future recommendations.</p>';
+    container.innerHTML = '<p class="narrative">No evidence trail yet. Complete a trainer item and the dashboard will show which signals changed.</p>';
     return;
   }
 
@@ -549,7 +558,7 @@ function renderCompetencyList() {
 
   const competencies = graph.rank(signals, 6);
   if (competencies.length === 0) {
-    container.innerHTML = '<p class="narrative">No weak root skills yet. The graph appears after gold lesson mastery signals produce enough evidence.</p>';
+    container.innerHTML = '<p class="narrative">No root-skill pattern needs attention yet. This map appears once lesson evidence points to a broader skill.</p>';
     return;
   }
 
@@ -565,8 +574,8 @@ function renderCompetencyList() {
         <h3>${escapeHtml(item.label)}</h3>
         <p>${escapeHtml(item.copy)}</p>
         <div class="mastery-meta">
-          <span>${item.wrong} wrong / ${item.total} total · ${Math.round(item.errorRate * 100)}% error rate</span>
-          <span>${item.signals.map(signal => `${escapeHtml(signal.tag)} (${signal.wrong}/${signal.total})`).join(" · ")}</span>
+          <span>${escapeHtml(missTryText(item.wrong, item.total))} · ${Math.round(item.errorRate * 100)}% error rate</span>
+          <span>${item.signals.map(signal => `${escapeHtml(signal.tag)} · ${escapeHtml(missTryText(signal.wrong, signal.total))}`).join(" · ")}</span>
         </div>
         ${repair ? `
           <div class="repair-block">
@@ -621,7 +630,7 @@ function renderMasteryList() {
     .slice(0, 6);
 
   if (signals.length === 0) {
-    container.innerHTML = '<p class="narrative">No weak mastery signals yet. Gold lesson diagnostics will appear here after a missed concept-level attempt.</p>';
+    container.innerHTML = '<p class="narrative">No repair pattern is active yet. When a lesson miss points to a concept, it will appear here with a source scene.</p>';
     return;
   }
 
@@ -634,7 +643,7 @@ function renderMasteryList() {
       <h3>${escapeHtml(signal.label)}</h3>
       <p>${escapeHtml(signal.evidence)}</p>
       <div class="mastery-meta">
-        <span>${signal.wrong} wrong / ${signal.total} total</span>
+        <span>${escapeHtml(missTryText(signal.wrong, signal.total))}</span>
         <span>${signal.trainers.map(t => `${t.icon} ${escapeHtml(t.name)}`).join(" · ")}</span>
       </div>
       ${signal.remediations.length ? signal.remediations.slice(0, 2).map(repair => `
@@ -672,7 +681,7 @@ function renderWeakList() {
     .slice(0, 15);
 
   if (allWeak.length === 0) {
-    container.innerHTML = '<p class="narrative">No raw weak tags detected yet. Do more sessions to see general tag diagnostics.</p>';
+    container.innerHTML = '<p class="narrative">No raw weak tags yet. This developer view fills in after more tagged attempts.</p>';
     return;
   }
 
@@ -683,7 +692,7 @@ function renderWeakList() {
         <span class="weak-trainers">${w.trainers.map(t => `${t.icon} ${escapeHtml(t.name)}`).join(" · ")}</span>
       </div>
       <div class="weak-stats">
-        <span class="wrong">${w.wrong} wrong / ${w.total} total</span>
+        <span class="wrong">${escapeHtml(missTryText(w.wrong, w.total))}</span>
         <span class="score">${Math.round(w.score * 100)}% error rate</span>
       </div>
     </div>

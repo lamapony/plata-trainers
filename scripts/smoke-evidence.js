@@ -88,7 +88,8 @@ function runOpenSignalSmoke(context) {
   const entries = build(context, state, [masterySignal()]);
   assert(entries[0].kind === "open", "evidence ledger prioritizes open mastery signals");
   assert(entries[0].title === "Read passive agency", "open evidence entry uses mastery label");
-  assert(entries[0].facts.includes("1 wrong / 1 total"), "open evidence entry includes signal counts");
+  assert(entries[0].status === "Needs attention", "open evidence entry uses a human status label");
+  assert(entries[0].facts.includes("1 miss / 1 try"), "open evidence entry includes signal counts");
   assert(entries[0].facts.some(fact => fact.includes("Root skill: Agency and responsibility")), "open evidence entry includes root skill");
   assert(entries.some(entry => entry.kind === "miss"), "evidence ledger keeps recent missed attempts");
 }
@@ -116,7 +117,8 @@ function runClosedAndReopenedSmoke(context) {
   const closed = build(context, state, []);
   assert(closed[0].kind === "closed", "resolved repair closure becomes a closed evidence entry");
   assert(closed[0].facts.includes("passive-agency"), "closed evidence entry keeps the signal key");
-  assert(closed[0].facts.some(fact => fact.includes("Closed after 2 attempts")), "closed evidence entry records attempt boundary");
+  assert(closed[0].status === "Resolved", "closed evidence entry uses a human status label");
+  assert(closed[0].facts.some(fact => fact.includes("Resolved after 2 tries")), "closed evidence entry records attempt boundary");
 
   context.PlataKernel.recordAttempt(state, {
     itemId: "official-reply-passive-later",
@@ -128,7 +130,8 @@ function runClosedAndReopenedSmoke(context) {
   });
   const reopened = build(context, state, []);
   assert(reopened[0].kind === "reopened", "later miss after repair closure reopens the evidence entry");
-  assert(reopened[0].copy.includes("Later evidence"), "reopened evidence entry explains why it is active again");
+  assert(reopened[0].status === "Back in focus", "reopened evidence entry uses a human status label");
+  assert(reopened[0].copy.includes("later miss"), "reopened evidence entry explains why it is active again");
 }
 
 function runUtilitySmoke(context) {

@@ -25,9 +25,9 @@
 
       <section class="hero-grid">
         <div>
-          <p class="eyebrow">Your Danish progress — one view</p>
+          <p class="eyebrow">Progress that explains itself</p>
           <h1>Dashboard</h1>
-          <p class="lead">All trainers share the same kernel. This page reads every <code>plata:trainer:*:state:v1</code> key from LocalStorage and shows what you've done, what's weak, and what to do next.</p>
+          <p class="lead">A local, inspectable view of your Danish practice. It shows the next useful step, the evidence behind it, and the signals that changed after each repair.</p>
         </div>
       </section>
     </header>
@@ -42,8 +42,8 @@
 
     <section class="section" id="due" aria-labelledby="due-title">
       <div class="section-head">
-        <p class="eyebrow">Recommendation</p>
-        <h2 id="due-title">What to practice now</h2>
+        <p class="eyebrow">Next step</p>
+        <h2 id="due-title">Practice with context</h2>
       </div>
       <div id="practice-plan" class="practice-plan"></div>
       <div id="due-cards" class="trainer-grid"></div>
@@ -51,16 +51,16 @@
 
     <section class="section" id="evidence" aria-labelledby="evidence-title">
       <div class="section-head">
-        <p class="eyebrow">Evidence</p>
-        <h2 id="evidence-title">Learning ledger</h2>
+        <p class="eyebrow">Evidence trail</p>
+        <h2 id="evidence-title">What changed and why</h2>
       </div>
       <div id="evidence-ledger" class="evidence-ledger"></div>
     </section>
 
     <section class="section" id="mastery" aria-labelledby="mastery-title">
       <div class="section-head">
-        <p class="eyebrow">Diagnostics</p>
-        <h2 id="mastery-title">Mastery signals</h2>
+        <p class="eyebrow">Signals</p>
+        <h2 id="mastery-title">Patterns to repair</h2>
       </div>
       <div id="mastery-list" class="mastery-list"></div>
     </section>
@@ -68,30 +68,30 @@
     <section class="section" id="competencies" aria-labelledby="competencies-title">
       <div class="section-head">
         <p class="eyebrow">Root skills</p>
-        <h2 id="competencies-title">Competency graph</h2>
+        <h2 id="competencies-title">Competency map</h2>
       </div>
       <div id="competency-list" class="mastery-list competency-list"></div>
     </section>
 
     <section class="section" id="raw-weak" aria-labelledby="raw-weak-title">
       <div class="section-head">
-        <p class="eyebrow">Raw diagnostics</p>
-        <h2 id="raw-weak-title">Weak tags across all trainers</h2>
+        <p class="eyebrow">Developer view</p>
+        <h2 id="raw-weak-title">Raw weak tags</h2>
       </div>
       <div id="weak-list" class="weak-list"></div>
     </section>
 
     <section class="section split" id="data-tools" aria-labelledby="data-title">
       <div>
-        <p class="eyebrow">Data control</p>
-        <h2 id="data-title">Export / Import full profile</h2>
-        <p>Download a single JSON with all trainer states. Upload to restore on another browser.</p>
+        <p class="eyebrow">Portable profile</p>
+        <h2 id="data-title">Own your practice data</h2>
+        <p>Export one readable JSON file with your progress, active plan, and local evidence. Import it in another browser when you want to continue there.</p>
       </div>
       <div class="copy-block">
-        <button class="btn primary" id="export-all">Export all progress (JSON)</button>
+        <button class="btn primary" id="export-all">Export profile JSON</button>
         <div style="margin-top: 12px;">
           <input type="file" id="import-file" accept=".json" style="display: none;" />
-          <button class="btn" id="import-trigger">Import profile (JSON)</button>
+          <button class="btn" id="import-trigger">Import profile JSON</button>
         </div>
         <p id="import-status" class="narrative" style="margin-top: 8px; min-height: 1.2em;"></p>
       </div>

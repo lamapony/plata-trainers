@@ -56,6 +56,11 @@
     };
   }
 
+  function countLabel(count, singular, plural) {
+    count = Number(count || 0);
+    return count + " " + (count === 1 ? singular : plural);
+  }
+
   function daysSince(iso) {
     if (!iso) return null;
     var parsed = new Date(iso).getTime();
@@ -488,7 +493,7 @@
     if (decision.competency && decision.competency.label) facts.push("Root skill: " + decision.competency.label);
     if (signal && signal.label) facts.push("Signal: " + signal.label);
     if (signal && (signal.wrong !== undefined || signal.total !== undefined)) {
-      facts.push("Evidence: " + Number(signal.wrong || 0) + " wrong / " + Number(signal.total || 0) + " total");
+      facts.push("Evidence: " + countLabel(signal.wrong, "miss", "misses") + " / " + countLabel(signal.total, "try", "tries"));
     }
     if (decision.meta) facts.push(decision.meta);
     reasons.forEach(function (reason) { facts.push(reason); });

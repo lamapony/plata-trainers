@@ -192,7 +192,7 @@ function runDashboardDecisionSmoke(context) {
   const repairExplanation = planner.explainDecision(repair, { total: 1, correct: 0, accuracy: 0, today: 1 });
   assert(repairExplanation.copy.includes("highest open mastery signal"), "planner explains why repair was chosen");
   assert(repairExplanation.facts.some(fact => fact.includes("Root skill: Agency and responsibility")), "planner explanation includes root skill evidence");
-  assert(repairExplanation.facts.some(fact => fact.includes("Evidence: 1 wrong / 1 total")), "planner explanation includes signal counts");
+  assert(repairExplanation.facts.some(fact => fact.includes("Evidence: 1 miss / 1 try")), "planner explanation includes signal counts");
 
   const mismatchedRoot = planner.dashboardDecision({
     trainer,
