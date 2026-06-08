@@ -593,6 +593,72 @@ h3 { font-size: 30px; }
   gap: 8px;
 }
 .guided-citations .eyebrow { margin: 0; color: oklch(0.72 0.12 205); font-size: 10px; }
+.guided-outcome-ledger {
+  display: grid;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.guided-outcome-ledger-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.guided-outcome-ledger-head .eyebrow { margin: 0; color: oklch(0.72 0.12 205); }
+.guided-outcome-ledger-head span {
+  color: var(--muted);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.guided-outcome-rows { display: grid; gap: 10px; }
+.guided-outcome-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.36fr);
+  gap: 14px;
+  align-items: start;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: oklch(1 0 0 / 0.03);
+}
+.guided-outcome-row .eyebrow { margin: 0 0 7px; color: var(--green); font-size: 10px; }
+.guided-outcome-row h4 {
+  font-size: 19px;
+  line-height: 1.16;
+  letter-spacing: 0;
+}
+.guided-outcome-row p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.guided-outcome-row-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.guided-outcome-row-facts span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-height: 28px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: oklch(1 0 0 / 0.035);
+  color: var(--muted);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.guided-outcome-row-facts strong { color: var(--text); }
 @media (max-width: 520px) {
   .today-main h3 { font-size: 34px; }
   .today-program-card { padding: 20px; }
@@ -604,7 +670,8 @@ h3 { font-size: 30px; }
 }
 @media (max-width: 640px) {
   .guided-session-head,
-  .guided-outcome { grid-template-columns: 1fr; }
+  .guided-outcome,
+  .guided-outcome-row { grid-template-columns: 1fr; }
   .guided-session-receipt { justify-items: start; }
   .guided-session-steps { grid-template-columns: 1fr; }
   .guided-step { min-height: 0; }

@@ -1346,7 +1346,7 @@
 
   function markPracticePlanStepCompleted(options) {
     options = options || {};
-    return updateCurrentPracticePlanStep(options, function (step) {
+    return updateCurrentPracticePlanStep(options, function (step, plan) {
       var now = new Date().toISOString();
       if (!step.startedAt) step.startedAt = now;
       step.lastSeenAt = now;
@@ -1355,6 +1355,16 @@
         step.completionEvidence = evidencePayload(options.evidence || {});
       } else if (!step.completionEvidence) {
         step.completionEvidence = evidencePayload(options.evidence || {});
+      }
+      if (root.PlataGuidedSession && root.PlataGuidedSession.recordOutcome) {
+        root.PlataGuidedSession.recordOutcome({
+          plan: plan,
+          step: step,
+          evidence: step.completionEvidence,
+          completedAt: step.completedAt,
+          recordedAt: now,
+          source: "planner.markPracticePlanStepCompleted"
+        });
       }
     });
   }

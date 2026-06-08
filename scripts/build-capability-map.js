@@ -166,17 +166,19 @@ const capabilitySpecs = [
     id: "guided-session-outcome-loop",
     title: "Guided session outcome loop",
     stage: "shipped",
-    userValue: "Learners get one focused session that turns planner, memory, advisor, and companion signals into a concrete outcome receipt instead of exposing diagnostics first.",
-    surfaces: ["Dashboard Guided session section", "dashboard.html?demo=learner", "reports/guided-session.json", "Practice plan route handoff"],
-    proofGates: ["check:guided-session", "check:dashboard", "check:guided-session-report", "check:health", "check:pages"],
+    userValue: "Learners get one focused session that turns planner, memory, advisor, and companion signals into a concrete, portable outcome receipt instead of exposing diagnostics first.",
+    surfaces: ["Dashboard Guided session section", "Dashboard guided outcome history", "dashboard.html?demo=learner", "reports/guided-session.json", "Practice plan route handoff", "Portable profile export/import"],
+    proofGates: ["check:guided-session", "check:lesson-engine", "check:dashboard", "check:guided-session-report", "check:health", "check:pages"],
     publicReports: ["guided-session", "project-health"],
     docs: ["docs/COMPANION_ARCHITECTURE.md", "docs/DEVELOPMENT_JOURNAL.md"],
-    sourcePaths: ["shared/plata-guided-session.js", "dashboard.js", "dashboard.html", "styles.css", "scripts/smoke-guided-session.js", "scripts/smoke-dashboard.js", "scripts/build-guided-session-report.js", "scripts/smoke-guided-session-report.js", "scripts/build-pages-artifact.js"],
+    sourcePaths: ["shared/plata-guided-session.js", "shared/plata-planner.js", "dashboard.js", "dashboard.html", "styles.css", "scripts/smoke-guided-session.js", "scripts/smoke-lesson-engine.js", "scripts/smoke-dashboard.js", "scripts/build-guided-session-report.js", "scripts/smoke-guided-session-report.js", "scripts/build-pages-artifact.js"],
     contracts: [
       "Every guided session has four learner-facing steps: orient, practice, notice, and receipt.",
       "Ready and active sessions carry planner route handoff ids so the dashboard can continue after lesson return.",
       "Memory-backed sessions cite derived memory facts and reject raw answer history.",
-      "The public report covers first session, repair, active route, due review, and completed-route states."
+      "Completed route handoff writes compact outcome receipts with stable gdo fingerprints.",
+      "Dashboard profile export/import preserves guided outcome receipts without embedding raw answers.",
+      "The public report covers first session, repair, active route, due review, completed-route states, and the outcome ledger."
     ]
   },
   {

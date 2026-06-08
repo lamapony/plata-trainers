@@ -687,11 +687,21 @@ function runPortableProfileSmoke() {
     correct: true
   };
   planner.savePracticePlan(plan);
+  exportEnv.context.PlataGuidedSession.recordOutcome({
+    plan,
+    step: plan.steps[0],
+    evidence: plan.steps[0].completionEvidence,
+    completedAt: plan.steps[0].completedAt,
+    recordedAt: plan.steps[0].completedAt,
+    source: "dashboard-portable-profile-smoke"
+  });
   invokeDashboardFunction(exportEnv, "renderDashboard");
   assert(/plan-progress/.test(exportEnv.elements["#practice-plan"].innerHTML), "dashboard renders practice plan progress");
   assert(/plan-step-ledger/.test(exportEnv.elements["#practice-plan"].innerHTML), "dashboard renders practice plan execution ledger");
   assert(/Completed/.test(exportEnv.elements["#practice-plan"].innerHTML), "dashboard explains when a plan step completed");
   assert(/Successful completion recorded/.test(exportEnv.elements["#practice-plan"].innerHTML), "dashboard explains plan completion evidence");
+  assert(/Outcome history/.test(exportEnv.elements["#guided-session-panel"].innerHTML), "dashboard renders guided outcome receipt history");
+  assert(/gdo-/.test(exportEnv.elements["#guided-session-panel"].innerHTML), "dashboard guided outcome history includes receipt fingerprint");
 
   invokeDashboardFunction(exportEnv, "exportAll");
   const payload = parseLastExport(exportEnv);
@@ -758,6 +768,11 @@ function runPortableProfileSmoke() {
   assert(!Object.prototype.hasOwnProperty.call(payload.hermesBrief, "eventLog"), "Hermes bridge does not embed event log");
   assert(!Object.prototype.hasOwnProperty.call(payload.hermesBrief, "memoryVault"), "Hermes bridge does not embed memory vault");
   assert(!JSON.stringify(payload.hermesBrief).includes("should not leak"), "Hermes bridge excludes raw plan answer text");
+  assert(payload.guidedSessionOutcomes && payload.guidedSessionOutcomes.ledgerType === "plata.guided-session-outcome-ledger.v1", "dashboard export includes guided session outcome ledger");
+  assert(payload.guidedSessionOutcomes.totals.outcomes === 1, "dashboard export includes guided outcome receipt count");
+  assert(payload.guidedSessionOutcomes.outcomes[0].fingerprint.startsWith("gdo-"), "dashboard export includes guided outcome fingerprint");
+  assert(payload.guidedSessionOutcomes.outcomes[0].completionEvidence.reason === "smoke-test", "dashboard export includes guided completion evidence");
+  assert(!JSON.stringify(payload.guidedSessionOutcomes).includes("should not leak"), "dashboard guided outcome ledger excludes raw plan answer text");
 
   const importEnv = makeContext();
   loadKernelAndDashboard(importEnv);
@@ -774,12 +789,14 @@ function runPortableProfileSmoke() {
   const importedPlan = importEnv.context.PlataPlanner.readPracticePlan();
   assert(importedPlan && importedPlan.steps.length, "dashboard import restores active practice plan");
   assert(importedPlan.steps[0].completedAt === correctedPayload.practicePlan.steps[0].completedAt, "dashboard import restores plan execution ledger");
+  assert((importEnv.storage[importEnv.context.PlataGuidedSession.outcomeStorageKey] || "").includes("plata.guided-session-outcome-ledger.v1"), "dashboard import restores guided outcome ledger");
   assert(!importEnv.storage["plata:learner-memory:deleted-facts:v1"], "dashboard import restores empty memory deletion set");
   assert((importEnv.storage["plata:learner-memory:corrections:v1"] || "").includes(portableFact.id), "dashboard import restores memory correction records");
   assert((importEnv.storage["plata:learner-memory:vault:v1"] || "").includes("plata.memory-vault"), "dashboard import stores merged memory vault");
   invokeDashboardFunction(importEnv, "renderDashboard");
   assert(/Corrected assumptions/.test(importEnv.elements["#memory-facts"].innerHTML), "dashboard import renders memory correction audit trail");
   assert(importEnv.elements["#memory-facts"].innerHTML.includes(portableFact.id), "dashboard import audit trail includes corrected fact id");
+  assert(/Outcome history/.test(importEnv.elements["#guided-session-panel"].innerHTML), "dashboard import renders guided outcome history");
 
   const vaultOnlyEnv = makeContext();
   loadKernelAndDashboard(vaultOnlyEnv);
@@ -802,6 +819,7 @@ function runPortableProfileSmoke() {
   assert(legacyEnv.context.PlataPlanner.readPracticePlan(), "dashboard starts with a plan before legacy import");
   legacyEnv.storage["plata:learner-memory:corrections:v1"] = JSON.stringify([{ factId: "legacy-corrected" }]);
   legacyEnv.storage["plata:learner-memory:vault:v1"] = JSON.stringify(correctedPayload.memoryVault);
+  legacyEnv.storage[legacyEnv.context.PlataGuidedSession.outcomeStorageKey] = JSON.stringify(correctedPayload.guidedSessionOutcomes);
   invokeDashboardFunction(legacyEnv, "importAll");
   legacyEnv.elements["#import-file"].files = [{ content: JSON.stringify({ schemaVersion: 2, trainers: {} }) }];
   legacyEnv.elements["#import-file"].onchange();
@@ -809,6 +827,7 @@ function runPortableProfileSmoke() {
   assert(!legacyEnv.storage["plata:learner-memory:deleted-facts:v1"], "legacy dashboard import clears stale hidden memory facts");
   assert(!legacyEnv.storage["plata:learner-memory:corrections:v1"], "legacy dashboard import clears stale corrected memory facts");
   assert(!legacyEnv.storage["plata:learner-memory:vault:v1"], "legacy dashboard import clears stale account memory vault");
+  assert(!JSON.parse(legacyEnv.storage[legacyEnv.context.PlataGuidedSession.outcomeStorageKey] || "{}").outcomes.length, "legacy dashboard import clears stale guided outcome receipts");
 }
 
 async function run() {

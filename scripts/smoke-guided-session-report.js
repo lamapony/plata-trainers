@@ -32,6 +32,13 @@ function runBaseSmoke() {
   });
   assert(report.totals.steps === report.totals.scenarios * 4, "each guided session should have four steps");
   assert(report.totals.citedFacts >= 4, "memory-backed guided sessions should cite facts");
+  assert(report.totals.outcomeReceipts === 1, "guided session report should include one portable outcome receipt");
+  assert(report.outcomeLedger && report.outcomeLedger.ledgerType === "plata.guided-session-outcome-ledger.v1", "guided session report should expose the outcome ledger type");
+  assert(report.outcomeLedger.totals.outcomes === 1, "guided session report should include one stored outcome");
+  assert(report.outcomeLedger.totals.issues === 0, "guided session report outcome ledger should validate cleanly");
+  assert(report.outcomeLedger.outcomes[0].fingerprint.startsWith("gdo-"), "guided outcome receipt should have a gdo fingerprint");
+  assert(report.outcomeLedger.outcomes[0].completionEvidence.reason === "repair-correct", "guided outcome receipt should preserve completion evidence");
+  assert(report.outcomeLedger.outcomes[0].outcomeReceipt.citedFacts.length === 1, "guided outcome receipt should cite memory");
 
   const first = report.scenarios.find(item => item.id === "first-session");
   assert(first && first.session.goal.kind === "onboarding", "first session should use onboarding goal");
@@ -57,6 +64,7 @@ function runBaseSmoke() {
 
   const formatted = formatGuidedSessionReport(report);
   assert(formatted.includes("Guided Session Report"), "formatter should include report title");
+  assert(formatted.includes("outcome receipts: 1"), "formatter should include outcome receipt count");
   assert(formatted.includes("Issues:\nnone"), "formatter should show empty issues");
 }
 

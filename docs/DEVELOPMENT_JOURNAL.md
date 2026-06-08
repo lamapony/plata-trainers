@@ -33,6 +33,8 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add PR diffs for Today shell state drift.
 - [x] Add a guided session outcome loop that turns the planner, memory, advisor, and companion into one focused learner session.
 - [x] Publish guided session states as a deterministic public report.
+- [x] Persist completed guided practice as portable outcome receipts instead of losing the loop at route return.
+- [x] Include guided outcome receipts in dashboard export/import and the public guided session report.
 - [x] Publish a product capability map that ties user-facing claims to gates, reports, docs, and source files.
 - [x] Render the capability map as a user-facing public program page.
 - [x] Add a contributor proof quickstart that builds the core local proof artifacts before the full QA suite.
@@ -116,6 +118,18 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Publish `reports/guided-session.json` in the Pages artifact.
 - [x] Add `check:guided-session` and `check:guided-session-report` to `npm run check`, project health, proof digest sources, and the product capability map.
 - [ ] Add PR diffing for guided session wording and contract drift if the report starts changing frequently.
+
+## Guided Outcome Receipt Ledger Sprint
+
+- [x] Add `plata.guided-session-outcome.v1` and `plata.guided-session-outcome-ledger.v1` as compact completion contracts.
+- [x] Record an outcome receipt from `markPracticePlanStepCompleted` so lesson route return creates durable evidence.
+- [x] Preserve plan token, route id, completion evidence, cited memory facts, guardrails, and a stable `gdo-` fingerprint.
+- [x] Exclude raw answer text, trainer state, event logs, full practice plans, and memory vault payloads from outcome receipts.
+- [x] Render recent outcome receipts inside the dashboard guided session card.
+- [x] Include the outcome ledger in portable dashboard profile export/import, while clearing stale receipts on legacy imports.
+- [x] Publish compact outcome-ledger proof inside `reports/guided-session.json`.
+- [x] Cover runtime receipt creation, lesson completion, dashboard profile transfer, and public report output in smoke tests.
+- [ ] Add PR diffing for guided outcome receipt wording and ledger contract drift if the public report starts changing frequently.
 
 ## Project Health Manifest Sprint
 

@@ -8,6 +8,9 @@
 
   var GUIDED_SESSION_SCHEMA_VERSION = 1;
   var GUIDED_SESSION_TYPE = "plata.guided-session.v1";
+  var GUIDED_OUTCOME_TYPE = "plata.guided-session-outcome.v1";
+  var GUIDED_OUTCOME_LEDGER_TYPE = "plata.guided-session-outcome-ledger.v1";
+  var GUIDED_OUTCOME_STORAGE_KEY = "plata:guided-session-outcomes:v1";
   var rawAnswerKey = /^(answer|expected|given|input|learnerText|prompt|text)$/i;
   var forbiddenHistoryKey = /^(eventLog|trainers|practicePlan|memoryVault|sourceEventIds)$/i;
   var forbiddenRawText = [
@@ -61,6 +64,18 @@
       sourceFingerprint: stringOr(fact.sourceFingerprint, ""),
       role: stringOr(role || fact.role, "supporting")
     };
+  }
+
+  function compactEvidence(evidence) {
+    evidence = evidence || {};
+    var out = {};
+    ["reason", "mode", "itemId", "sceneId", "trainerId", "correct", "total", "accuracy"].forEach(function (key) {
+      if (evidence[key] === undefined || evidence[key] === null || evidence[key] === "") return;
+      if (typeof evidence[key] === "number") out[key] = Number(evidence[key]);
+      else if (typeof evidence[key] === "boolean") out[key] = !!evidence[key];
+      else out[key] = stringOr(evidence[key], "").slice(0, 160);
+    });
+    return out;
   }
 
   function addFact(rows, seen, fact, role) {
@@ -300,6 +315,21 @@
     return "gds-" + stableHash(stableJson(fingerprintSource(session))).slice(0, 12);
   }
 
+  function outcomeFingerprint(outcome) {
+    return "gdo-" + stableHash(stableJson({
+      schemaVersion: outcome && outcome.schemaVersion,
+      outcomeType: outcome && outcome.outcomeType,
+      planToken: outcome && outcome.planToken,
+      stepRouteId: outcome && outcome.stepRouteId,
+      completedAt: outcome && outcome.completedAt,
+      goal: outcome && outcome.goal,
+      outcomeReceipt: outcome && outcome.outcomeReceipt,
+      completionEvidence: outcome && outcome.completionEvidence,
+      guardrails: outcome && outcome.guardrails,
+      trace: outcome && outcome.trace
+    })).slice(0, 12);
+  }
+
   function scanNoRawPayload(value, path, issues) {
     if (value === null || value === undefined) return;
     if (Array.isArray(value)) {
@@ -360,6 +390,259 @@
     };
   }
 
+  function validateOutcome(outcome) {
+    var issues = [];
+    if (!outcome) issues.push("outcome missing");
+    if (outcome && outcome.schemaVersion !== GUIDED_SESSION_SCHEMA_VERSION) issues.push("schemaVersion mismatch");
+    if (outcome && outcome.outcomeType !== GUIDED_OUTCOME_TYPE) issues.push("outcomeType mismatch");
+    if (outcome && !outcome.planToken) issues.push("planToken missing");
+    if (outcome && !outcome.stepRouteId) issues.push("stepRouteId missing");
+    if (outcome && !outcome.completedAt) issues.push("completedAt missing");
+    if (outcome && !outcome.fingerprint) issues.push("fingerprint missing");
+    if (outcome && outcome.fingerprint && outcomeFingerprint(outcome) !== outcome.fingerprint) issues.push("fingerprint mismatch");
+    if (outcome && !(outcome.guardrails && outcome.guardrails.deterministic)) issues.push("guardrail failed: deterministic");
+    if (outcome && !(outcome.guardrails && outcome.guardrails.requiresModel === false)) issues.push("guardrail failed: model-free");
+    if (outcome && !(outcome.guardrails && outcome.guardrails.containsRawAnswerText === false)) issues.push("guardrail failed: no raw answers");
+    scanNoRawPayload(outcome, "outcome", issues);
+    return {
+      status: issues.length ? "fail" : "pass",
+      issues: issues
+    };
+  }
+
+  function safeReadStorage(key) {
+    try {
+      if (!root.localStorage || !root.localStorage.getItem) return "";
+      return root.localStorage.getItem(key) || "";
+    } catch (err) {
+      return "";
+    }
+  }
+
+  function safeWriteStorage(key, value) {
+    try {
+      if (!root.localStorage || !root.localStorage.setItem) return false;
+      root.localStorage.setItem(key, value);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function emptyOutcomeLedger() {
+    return {
+      schemaVersion: GUIDED_SESSION_SCHEMA_VERSION,
+      ledgerType: GUIDED_OUTCOME_LEDGER_TYPE,
+      storageKey: GUIDED_OUTCOME_STORAGE_KEY,
+      updatedAt: "",
+      outcomes: [],
+      totals: {
+        outcomes: 0,
+        citedFacts: 0,
+        issues: 0
+      }
+    };
+  }
+
+  function normalizeOutcome(outcome) {
+    if (!outcome || typeof outcome !== "object") return null;
+    var normalized = {
+      schemaVersion: GUIDED_SESSION_SCHEMA_VERSION,
+      outcomeType: GUIDED_OUTCOME_TYPE,
+      recordedAt: stringOr(outcome.recordedAt, ""),
+      completedAt: stringOr(outcome.completedAt, ""),
+      planToken: stringOr(outcome.planToken, ""),
+      planFingerprint: stringOr(outcome.planFingerprint, ""),
+      stepRouteId: stringOr(outcome.stepRouteId, ""),
+      stepNumber: Number(outcome.stepNumber || 0),
+      trainerId: stringOr(outcome.trainerId, ""),
+      trainerName: stringOr(outcome.trainerName, ""),
+      goal: outcome.goal || {},
+      route: outcome.route || {},
+      completionEvidence: compactEvidence(outcome.completionEvidence),
+      outcomeReceipt: outcome.outcomeReceipt || {},
+      guardrails: {
+        deterministic: true,
+        requiresModel: false,
+        usesOnlyCitedFacts: true,
+        containsRawAnswerText: false
+      },
+      trace: outcome.trace || {}
+    };
+    normalized.fingerprint = outcome.fingerprint || outcomeFingerprint(normalized);
+    normalized.validation = validateOutcome(normalized);
+    return normalized;
+  }
+
+  function readOutcomeLedger() {
+    var raw = safeReadStorage(GUIDED_OUTCOME_STORAGE_KEY);
+    if (!raw) return emptyOutcomeLedger();
+    try {
+      var parsed = JSON.parse(raw);
+      var rows = Array.isArray(parsed && parsed.outcomes) ? parsed.outcomes : [];
+      var normalizedRows = rows.map(normalizeOutcome).filter(Boolean);
+      var issues = normalizedRows.reduce(function (out, item) {
+        return out.concat(item.validation && item.validation.issues || []);
+      }, []);
+      var normalized = normalizedRows.filter(function (item) {
+        return item.validation && item.validation.status === "pass";
+      });
+      return {
+        schemaVersion: GUIDED_SESSION_SCHEMA_VERSION,
+        ledgerType: GUIDED_OUTCOME_LEDGER_TYPE,
+        storageKey: GUIDED_OUTCOME_STORAGE_KEY,
+        updatedAt: stringOr(parsed.updatedAt, ""),
+        outcomes: normalized,
+        totals: {
+          outcomes: normalized.length,
+          citedFacts: normalized.reduce(function (sum, item) {
+            return sum + (((item.outcomeReceipt || {}).citedFacts || []).length);
+          }, 0),
+          issues: issues.length
+        }
+      };
+    } catch (err) {
+      return emptyOutcomeLedger();
+    }
+  }
+
+  function saveOutcomeLedger(ledger) {
+    var rows = Array.isArray(ledger && ledger.outcomes) ? ledger.outcomes : [];
+    var normalizedRows = rows.map(normalizeOutcome).filter(Boolean);
+    var issues = normalizedRows.reduce(function (out, item) {
+      return out.concat(item.validation && item.validation.issues || []);
+    }, []);
+    var normalized = normalizedRows.filter(function (item) {
+      return item.validation && item.validation.status === "pass";
+    })
+      .sort(function (a, b) {
+        return String(b.completedAt || b.recordedAt || "").localeCompare(String(a.completedAt || a.recordedAt || ""))
+          || String(a.fingerprint || "").localeCompare(String(b.fingerprint || ""));
+      })
+      .slice(0, 50);
+    var updatedAt = stringOr(ledger && ledger.updatedAt || new Date().toISOString(), "");
+    var payload = {
+      schemaVersion: GUIDED_SESSION_SCHEMA_VERSION,
+      ledgerType: GUIDED_OUTCOME_LEDGER_TYPE,
+      storageKey: GUIDED_OUTCOME_STORAGE_KEY,
+      updatedAt: updatedAt,
+      outcomes: normalized,
+      totals: {
+        outcomes: normalized.length,
+        citedFacts: normalized.reduce(function (sum, item) {
+          return sum + (((item.outcomeReceipt || {}).citedFacts || []).length);
+        }, 0),
+        issues: issues.length
+      }
+    };
+    safeWriteStorage(GUIDED_OUTCOME_STORAGE_KEY, JSON.stringify(payload));
+    return payload;
+  }
+
+  function factsFromStep(step, memoryFacts) {
+    var rows = [];
+    var seen = {};
+    var inputs = step && step.trace && step.trace.inputs || {};
+    (inputs.selectedMemoryFacts || []).forEach(function (fact) { addFact(rows, seen, fact, "planner"); });
+    (memoryFacts || []).forEach(function (fact) { addFact(rows, seen, fact, "memory"); });
+    return rows.slice(0, 8);
+  }
+
+  function buildOutcome(options) {
+    options = options || {};
+    var plan = options.plan || {};
+    var step = options.step || {};
+    var facts = factsFromStep(step, options.memoryFacts || options.visibleFacts || []);
+    var signal = signalFrom(step, facts, plan);
+    var competency = competencyFrom(step, facts);
+    var evidence = compactEvidence(options.evidence || step.completionEvidence || {});
+    var completedAt = stringOr(options.completedAt || step.completedAt || new Date().toISOString(), "");
+    var recordedAt = stringOr(options.recordedAt || options.now || completedAt || new Date().toISOString(), "");
+    var outcome = {
+      schemaVersion: GUIDED_SESSION_SCHEMA_VERSION,
+      outcomeType: GUIDED_OUTCOME_TYPE,
+      recordedAt: recordedAt,
+      completedAt: completedAt,
+      planToken: stringOr(plan.planToken, ""),
+      planFingerprint: stringOr(plan.fingerprint, ""),
+      stepRouteId: stringOr(step.routeId, ""),
+      stepNumber: Number(step.number || 0),
+      trainerId: stringOr(step.trainerId, ""),
+      trainerName: stringOr(step.trainerName, ""),
+      goal: {
+        kind: stringOr(step.kind || plan.kind, "continue"),
+        title: stringOr(step.title, "Practice step"),
+        signal: signal,
+        trainerId: stringOr(step.trainerId, ""),
+        rootCompetency: competency.label || competency.id || "",
+        reason: stringOr(step.copy || plan.copy, "The step was selected by the deterministic practice planner.")
+      },
+      route: {
+        label: "Return to dashboard",
+        href: "",
+        trainerId: stringOr(step.trainerId, ""),
+        planToken: stringOr(plan.planToken, ""),
+        stepRouteId: stringOr(step.routeId, "")
+      },
+      completionEvidence: evidence,
+      outcomeReceipt: {
+        title: "Step outcome recorded",
+        summary: evidence.reason
+          ? "The step completed with " + evidence.reason + " evidence and can now be reviewed from the dashboard."
+          : "The step completed and can now be reviewed from the dashboard.",
+        trainedSignals: [signal].filter(Boolean),
+        rootCompetency: competency.label || competency.id || "",
+        citedFacts: facts.slice(0, 6),
+        completionCriteria: [
+          "The completed step keeps its plan token and step route id.",
+          "Completion evidence is stored without raw answer text.",
+          facts.length ? "Cited memory facts remain linked to the outcome." : "The outcome stays explicit even when no memory fact exists yet."
+        ],
+        trustBoundaries: [
+          "Deterministic local receipt.",
+          "No model call required.",
+          "Derived memory facts only.",
+          "No raw answer history."
+        ]
+      },
+      guardrails: {
+        deterministic: true,
+        requiresModel: false,
+        usesOnlyCitedFacts: true,
+        containsRawAnswerText: false
+      },
+      trace: {
+        source: stringOr(options.source, "guided-session-outcome-v1"),
+        plannerFingerprint: stringOr(plan.fingerprint, ""),
+        stepTraceFingerprint: stringOr(step.trace && step.trace.fingerprint, ""),
+        citedFactCount: facts.length
+      }
+    };
+    outcome.fingerprint = outcomeFingerprint(outcome);
+    outcome.validation = validateOutcome(outcome);
+    return outcome;
+  }
+
+  function recordOutcome(options) {
+    var outcome = buildOutcome(options || {});
+    if (outcome.validation.status !== "pass") return outcome;
+    var ledger = readOutcomeLedger();
+    var rows = Array.isArray(ledger.outcomes) ? ledger.outcomes.slice() : [];
+    var key = outcome.planToken + ":" + outcome.stepRouteId;
+    var replaced = false;
+    rows = rows.map(function (row) {
+      var rowKey = row.planToken + ":" + row.stepRouteId;
+      if (rowKey === key) {
+        replaced = true;
+        return outcome;
+      }
+      return row;
+    });
+    if (!replaced) rows.unshift(outcome);
+    saveOutcomeLedger({ updatedAt: outcome.recordedAt, outcomes: rows });
+    return outcome;
+  }
+
   function buildSession(options) {
     options = options || {};
     var plan = options.plan || null;
@@ -408,8 +691,16 @@
   root.PlataGuidedSession = {
     schemaVersion: GUIDED_SESSION_SCHEMA_VERSION,
     sessionType: GUIDED_SESSION_TYPE,
+    outcomeType: GUIDED_OUTCOME_TYPE,
+    outcomeLedgerType: GUIDED_OUTCOME_LEDGER_TYPE,
+    outcomeStorageKey: GUIDED_OUTCOME_STORAGE_KEY,
     buildSession: buildSession,
     validateSession: validateSession,
-    sessionFingerprint: sessionFingerprint
+    sessionFingerprint: sessionFingerprint,
+    buildOutcome: buildOutcome,
+    recordOutcome: recordOutcome,
+    validateOutcome: validateOutcome,
+    readOutcomeLedger: readOutcomeLedger,
+    saveOutcomeLedger: saveOutcomeLedger
   };
 })(typeof window !== "undefined" ? window : globalThis);

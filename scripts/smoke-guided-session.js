@@ -13,11 +13,33 @@ function assert(condition, message) {
 }
 
 function loadApi() {
-  const context = { console, Date, JSON, Object, Math, String, Array, encodeURIComponent };
+  const storage = {};
+  const context = {
+    console,
+    Date,
+    JSON,
+    Object,
+    Math,
+    String,
+    Array,
+    encodeURIComponent,
+    localStorage: {
+      getItem(key) {
+        return Object.prototype.hasOwnProperty.call(storage, key) ? storage[key] : null;
+      },
+      setItem(key, value) {
+        storage[key] = String(value);
+      },
+      removeItem(key) {
+        delete storage[key];
+      }
+    }
+  };
   context.window = context;
   context.globalThis = context;
   vm.createContext(context);
   vm.runInContext(source, context, { filename: "shared/plata-guided-session.js" });
+  context.PlataGuidedSession.__storage = storage;
   return context.PlataGuidedSession;
 }
 
@@ -163,6 +185,64 @@ function runRawLeakSmoke(api) {
   assert(textValidation.status === "fail", "validator should reject fixture-like raw answer text");
 }
 
+function runOutcomeLedgerSmoke(api) {
+  const fact = memoryFact();
+  const plan = repairPlan({
+    completedAt: "2026-06-08T08:50:00.000Z",
+    completionEvidence: {
+      reason: "repair-correct",
+      mode: "repair",
+      trainerId: "lesson-b2-radiator-register",
+      itemId: "official-reply-passive",
+      sceneId: "official-reply-passive",
+      correct: true
+    },
+    trace: {
+      fingerprint: "ptr-passive",
+      inputs: { selectedMemoryFacts: [fact] }
+    }
+  });
+  const outcome = api.recordOutcome({
+    plan,
+    step: plan.steps[0],
+    evidence: plan.steps[0].completionEvidence,
+    completedAt: plan.steps[0].completedAt,
+    recordedAt: "2026-06-08T08:50:00.000Z",
+    source: "smoke"
+  });
+  assert(outcome.outcomeType === api.outcomeType, "recorded outcome should use guided outcome type");
+  assert(outcome.fingerprint.startsWith("gdo-"), "recorded outcome should have an outcome fingerprint");
+  assert(outcome.validation.status === "pass", `recorded outcome should validate: ${outcome.validation.issues.join(", ")}`);
+  assert(outcome.outcomeReceipt.citedFacts.length === 1, "recorded outcome should cite planner-selected memory facts");
+  assert(outcome.completionEvidence.reason === "repair-correct", "recorded outcome should preserve sanitized completion evidence");
+
+  const ledger = api.readOutcomeLedger();
+  assert(ledger.ledgerType === api.outcomeLedgerType, "outcome ledger should expose its type");
+  assert(ledger.totals.outcomes === 1, "outcome ledger should store one receipt");
+  assert(ledger.totals.citedFacts === 1, "outcome ledger should count cited facts");
+  assert(ledger.outcomes[0].fingerprint === outcome.fingerprint, "outcome ledger should store the same receipt fingerprint");
+
+  api.recordOutcome({
+    plan,
+    step: plan.steps[0],
+    evidence: plan.steps[0].completionEvidence,
+    completedAt: plan.steps[0].completedAt,
+    recordedAt: "2026-06-08T08:50:00.000Z",
+    source: "smoke"
+  });
+  assert(api.readOutcomeLedger().totals.outcomes === 1, "outcome ledger should dedupe repeated completion writes");
+
+  const mutated = JSON.parse(JSON.stringify(outcome));
+  mutated.completionEvidence.expected = "secret expected text";
+  const validation = api.validateOutcome(mutated);
+  assert(validation.status === "fail", "outcome validator should reject raw answer-like evidence keys");
+  mutated.outcomeReceipt.summary = "raw weak expected";
+  const sanitizedLedger = api.saveOutcomeLedger({ updatedAt: "2026-06-08T08:51:00.000Z", outcomes: [mutated] });
+  assert(sanitizedLedger.totals.issues >= 1, "outcome ledger should report rejected invalid receipts");
+  assert(sanitizedLedger.totals.outcomes === 0, "outcome ledger should not persist invalid receipts");
+  assert(api.readOutcomeLedger().totals.outcomes === 0, "outcome ledger read should hide invalid receipts");
+}
+
 function run() {
   const api = loadApi();
   assert(api && api.buildSession, "PlataGuidedSession API should load");
@@ -170,8 +250,10 @@ function run() {
   runActiveAndCompleteSmoke(api);
   runEmptySmoke(api);
   runRawLeakSmoke(api);
+  runOutcomeLedgerSmoke(api);
   console.log("ok - guided session builds deterministic learner-facing sessions");
   console.log("ok - guided session tracks ready, active, complete, and empty states");
+  console.log("ok - guided session records portable outcome receipts");
   console.log("ok - guided session rejects raw learner answer leaks");
 }
 

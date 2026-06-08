@@ -32,6 +32,18 @@ function displayRel(file, root = repoRoot) {
 
 function loadGuidedSessionApi(root) {
   const context = { console, Date, JSON, Object, Math, String, Array };
+  const storage = {};
+  context.localStorage = {
+    getItem(key) {
+      return Object.prototype.hasOwnProperty.call(storage, key) ? storage[key] : null;
+    },
+    setItem(key, value) {
+      storage[key] = String(value);
+    },
+    removeItem(key) {
+      delete storage[key];
+    }
+  };
   context.window = context;
   context.globalThis = context;
   vm.createContext(context);
@@ -194,6 +206,32 @@ function compactSession(session) {
   };
 }
 
+function compactOutcome(outcome) {
+  return {
+    schemaVersion: outcome.schemaVersion,
+    outcomeType: outcome.outcomeType,
+    fingerprint: outcome.fingerprint,
+    completedAt: outcome.completedAt,
+    planToken: outcome.planToken,
+    stepRouteId: outcome.stepRouteId,
+    trainerId: outcome.trainerId,
+    goal: outcome.goal,
+    completionEvidence: outcome.completionEvidence,
+    outcomeReceipt: {
+      title: outcome.outcomeReceipt.title,
+      summary: outcome.outcomeReceipt.summary,
+      trainedSignals: outcome.outcomeReceipt.trainedSignals,
+      rootCompetency: outcome.outcomeReceipt.rootCompetency,
+      citedFacts: (outcome.outcomeReceipt.citedFacts || []).map(compactFact),
+      completionCriteria: outcome.outcomeReceipt.completionCriteria,
+      trustBoundaries: outcome.outcomeReceipt.trustBoundaries
+    },
+    guardrails: outcome.guardrails,
+    trace: outcome.trace,
+    validation: outcome.validation
+  };
+}
+
 function forbiddenLeaks() {
   return [
     "raw weak expected",
@@ -244,6 +282,19 @@ function buildGuidedSessionReport(options = {}) {
   const openPlan = plan();
   const activePlan = plan({}, { status: "active", statusLabel: "In progress", startedAt: "2026-06-08T08:30:00.000Z" });
   const completePlan = plan({ completed: true, completedCount: 1, openCount: 0 }, { status: "done", statusLabel: "Done", completedAt: "2026-06-08T08:50:00.000Z" });
+  const outcomePlan = plan(
+    { completed: true, completedCount: 1, openCount: 0 },
+    {
+      status: "done",
+      statusLabel: "Done",
+      completedAt: "2026-06-08T08:50:00.000Z",
+      completionEvidence: { reason: "repair-correct", mode: "repair", trainerId: "lesson-b2-radiator-register", correct: 1, total: 1 },
+      trace: {
+        fingerprint: "step-trace-passive",
+        inputs: { selectedMemoryFacts: [weakFact] }
+      }
+    }
+  );
   const specs = [
     {
       id: "first-session",
@@ -327,7 +378,36 @@ function buildGuidedSessionReport(options = {}) {
     }
   ];
   const scenarios = specs.map(spec => scenario(api, spec));
-  const issues = scenarios.flatMap(item => item.issues.map(issue => `${item.id}: ${issue}`));
+  const recordedOutcome = api.recordOutcome({
+    plan: outcomePlan,
+    step: outcomePlan.steps[0],
+    evidence: outcomePlan.steps[0].completionEvidence,
+    completedAt: outcomePlan.steps[0].completedAt,
+    recordedAt: fixedNow,
+    source: "guided-session-report"
+  });
+  const rawOutcomeLedger = api.readOutcomeLedger();
+  const outcomeLedger = {
+    schemaVersion: rawOutcomeLedger.schemaVersion,
+    ledgerType: rawOutcomeLedger.ledgerType,
+    storageKey: rawOutcomeLedger.storageKey,
+    updatedAt: rawOutcomeLedger.updatedAt,
+    totals: rawOutcomeLedger.totals,
+    outcomes: rawOutcomeLedger.outcomes.map(compactOutcome)
+  };
+  const outcomeIssues = [];
+  if (recordedOutcome.validation.status !== "pass") outcomeIssues.push(...recordedOutcome.validation.issues);
+  if (rawOutcomeLedger.ledgerType !== api.outcomeLedgerType) outcomeIssues.push("outcome ledger type mismatch");
+  if (rawOutcomeLedger.totals.outcomes !== 1) outcomeIssues.push(`expected one outcome receipt, got ${rawOutcomeLedger.totals.outcomes}`);
+  if (rawOutcomeLedger.totals.issues !== 0) outcomeIssues.push(`outcome ledger has ${rawOutcomeLedger.totals.issues} validation issue(s)`);
+  if (!recordedOutcome.fingerprint.startsWith("gdo-")) outcomeIssues.push("outcome receipt fingerprint missing gdo prefix");
+  if (!(recordedOutcome.outcomeReceipt.citedFacts || []).length) outcomeIssues.push("outcome receipt lacks cited memory facts");
+  const outcomeLeaks = forbiddenLeaks().filter(value => JSON.stringify(outcomeLedger).includes(value));
+  if (outcomeLeaks.length) outcomeIssues.push(`outcome ledger leaked raw learner text: ${outcomeLeaks.join(", ")}`);
+  const issues = [
+    ...scenarios.flatMap(item => item.issues.map(issue => `${item.id}: ${issue}`)),
+    ...outcomeIssues.map(issue => `outcome-ledger: ${issue}`)
+  ];
   const statuses = Array.from(new Set(scenarios.map(item => item.session.status))).sort();
   const stepCount = scenarios.reduce((sum, item) => sum + item.session.steps.length, 0);
   const citedFacts = scenarios.reduce((sum, item) => sum + item.session.outcomeReceipt.citedFacts.length, 0);
@@ -343,6 +423,7 @@ function buildGuidedSessionReport(options = {}) {
       statuses: statuses.length,
       steps: stepCount,
       citedFacts,
+      outcomeReceipts: outcomeLedger.totals.outcomes,
       issues: issues.length
     },
     statuses,
@@ -350,10 +431,12 @@ function buildGuidedSessionReport(options = {}) {
       "Every guided session has four learner-facing steps.",
       "Ready and active sessions include a route action.",
       "Memory-backed sessions cite derived memory facts.",
-      "Sessions are deterministic, model-free, and exclude raw learner answers."
+      "Completed practice steps write portable outcome receipts.",
+      "Sessions and outcome receipts are deterministic, model-free, and exclude raw learner answers."
     ],
     issues,
-    scenarios
+    scenarios,
+    outcomeLedger
   };
 }
 
@@ -362,6 +445,7 @@ function formatGuidedSessionReport(report) {
     "Guided Session Report",
     `status: ${report.status}`,
     `scenarios: ${report.totals.scenarios}`,
+    `outcome receipts: ${report.totals.outcomeReceipts}`,
     `statuses: ${report.statuses.join(", ")}`,
     "",
     "Scenarios:"

@@ -946,7 +946,49 @@ function guidedSessionStepHtml(step, index) {
   `;
 }
 
-function guidedSessionPanelHtml(session) {
+function guidedOutcomeLedgerHtml(ledger) {
+  const outcomes = ledger && Array.isArray(ledger.outcomes) ? ledger.outcomes.slice(0, 3) : [];
+  if (!outcomes.length) return "";
+  return `
+    <div class="guided-outcome-ledger" aria-label="Guided session outcome history">
+      <div class="guided-outcome-ledger-head">
+        <p class="eyebrow">Outcome history</p>
+        <span>${escapeHtml(outcomes.length)} recent</span>
+      </div>
+      <div class="guided-outcome-rows">
+        ${outcomes.map(item => {
+          const receipt = item.outcomeReceipt || {};
+          const goal = item.goal || {};
+          const evidence = item.completionEvidence || {};
+          const facts = Array.isArray(receipt.citedFacts) ? receipt.citedFacts.slice(0, 2) : [];
+          const meta = [
+            formatPlanDateTime(item.completedAt),
+            evidence.reason || "",
+            item.stepRouteId || ""
+          ].filter(Boolean).join(" · ");
+          return `
+            <article class="guided-outcome-row">
+              <div>
+                <span class="eyebrow">${escapeHtml(goal.kind || "session")} outcome</span>
+                <h4>${escapeHtml(goal.title || receipt.title || "Completed step")}</h4>
+                <p>${escapeHtml(receipt.summary || "A guided session step was recorded.")}</p>
+                <div class="guided-session-tags">
+                  ${goal.signal ? `<span><strong>Signal</strong>${escapeHtml(goal.signal)}</span>` : ""}
+                  ${goal.rootCompetency ? `<span><strong>Root skill</strong>${escapeHtml(goal.rootCompetency)}</span>` : ""}
+                  ${meta ? `<span><strong>Evidence</strong>${escapeHtml(meta)}</span>` : ""}
+                  ${item.fingerprint ? `<span><strong>Receipt</strong>${escapeHtml(item.fingerprint)}</span>` : ""}
+                </div>
+              </div>
+              ${facts.length ? `<div class="guided-outcome-row-facts">${facts.map(guidedSessionFactHtml).join("")}</div>` : ""}
+            </article>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function guidedSessionPanelHtml(session, outcomeLedger) {
   if (!session) return '<p class="narrative">Start any trainer to build a guided session.</p>';
   const goal = session.goal || {};
   const route = session.route || {};
@@ -1001,6 +1043,7 @@ function guidedSessionPanelHtml(session) {
           </div>
         ` : ""}
       </div>
+      ${guidedOutcomeLedgerHtml(outcomeLedger)}
     </article>
   `;
 }
@@ -1010,7 +1053,10 @@ function renderGuidedSession(candidates, context) {
   if (!container) return;
   const resolved = context || resolvePracticePlan(candidates);
   const session = guidedSessionForPlan(resolved.plan, resolved.planner);
-  container.innerHTML = guidedSessionPanelHtml(session);
+  const outcomeLedger = window.PlataGuidedSession && window.PlataGuidedSession.readOutcomeLedger
+    ? window.PlataGuidedSession.readOutcomeLedger()
+    : null;
+  container.innerHTML = guidedSessionPanelHtml(session, outcomeLedger);
 }
 
 function advisorAdviceForPracticePlan(plan, memoryFacts, step) {
@@ -1662,6 +1708,9 @@ function exportAll() {
   const hermesBrief = window.PlataCompanion && window.PlataCompanion.buildHermesBrief && companion
     ? window.PlataCompanion.buildHermesBrief(companion, agentHandoff, { generatedAt: exportedAt })
     : null;
+  const guidedSessionOutcomes = window.PlataGuidedSession && window.PlataGuidedSession.readOutcomeLedger
+    ? window.PlataGuidedSession.readOutcomeLedger()
+    : null;
   const payload = {
     exportedAt,
     demoProfile: isDemoMode() ? "learner" : null,
@@ -1683,7 +1732,8 @@ function exportAll() {
     memoryBrief,
     agentHandoff,
     companion,
-    hermesBrief
+    hermesBrief,
+    guidedSessionOutcomes
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -1754,6 +1804,15 @@ function importAll() {
           writeDeletedMemoryFactIds([]);
           writeMemoryCorrections([]);
           writeStoredMemoryVault(null);
+        }
+
+        const hasGuidedOutcomes = Object.prototype.hasOwnProperty.call(payload, "guidedSessionOutcomes");
+        if (!standaloneVaultImport && window.PlataGuidedSession && window.PlataGuidedSession.saveOutcomeLedger) {
+          if (hasGuidedOutcomes && payload.guidedSessionOutcomes) {
+            window.PlataGuidedSession.saveOutcomeLedger(payload.guidedSessionOutcomes);
+          } else {
+            window.PlataGuidedSession.saveOutcomeLedger({ updatedAt: new Date().toISOString(), outcomes: [] });
+          }
         }
 
         const mergedVault = vaultPayload ? mergeImportedMemoryVault(vaultPayload, collectTrainerStates(), currentPracticePlan()) : null;

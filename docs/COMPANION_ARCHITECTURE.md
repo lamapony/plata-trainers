@@ -24,6 +24,7 @@ The generated product capability map publishes this decision as `lightweight-com
 | `PlataCompanion` | Friendly program shell | A learner-facing card with one next action, citations, guardrails, and fingerprint. |
 | `Today program report` | Inspectable program shell states | Public JSON proving onboarding, active-route, return, and memory-review states stay evidence-backed. |
 | `PlataGuidedSession` | One focused outcome | A four-step learner session with route action, outcome receipt, cited facts, guardrails, and a stable `gds-` fingerprint. |
+| `PlataGuidedSession outcome ledger` | What was completed | A compact local ledger of completed guided steps with completion evidence, cited facts, guardrails, and stable `gdo-` fingerprints. |
 | `plata.hermes-bridge-brief` | Optional external bridge | Read-only brief for Hermes-style tools; no raw history, no memory writes, no planner override. |
 
 ## Companion Contract
@@ -52,6 +53,21 @@ Every card must include:
 - `guardrails.externalAgentOptional === true`;
 - a stable `cmp-` fingerprint.
 
+## Guided Outcome Ledger
+
+The guided session is not considered complete when the dashboard merely shows a recommendation. A completed route writes a portable outcome receipt through `PlataPlanner.markPracticePlanStepCompleted`.
+
+Each outcome receipt keeps:
+
+- `outcomeType: "plata.guided-session-outcome.v1"`;
+- plan token and step route id;
+- sanitized completion evidence;
+- cited derived memory facts when available;
+- model-free guardrails;
+- a stable `gdo-` fingerprint.
+
+The outcome ledger can be exported and imported with the dashboard profile. It is intentionally smaller than planner state: it records what was completed, not the full active plan, trainer history, event log, memory vault, prompts, expected answers, or learner answer text.
+
 ## Hermes Bridge
 
 The bridge brief is intentionally smaller than an agent handoff. It is for an external assistant that already exists in the learner's workflow.
@@ -70,4 +86,4 @@ Hermes cannot:
 - request raw answer history;
 - write Plata memory or planner state.
 
-`scripts/smoke-companion.js` proves the card and bridge remain deterministic, cited, read-only, and free of raw learner answer text across fixed learner profiles. `scripts/smoke-today-program-report.js` proves the user-facing Today shell keeps its four core states deterministic and free of raw learner answer leaks. `scripts/smoke-guided-session.js` and `scripts/smoke-guided-session-report.js` prove the outcome-loop session stays cited, model-free, and publishable as `reports/guided-session.json`. `scripts/smoke-today-program-diff.js` makes user-facing Today state drift reviewable in pull requests. `scripts/smoke-capability-map.js` keeps this companion/bridge claim linked to the public product proof surface.
+`scripts/smoke-companion.js` proves the card and bridge remain deterministic, cited, read-only, and free of raw learner answer text across fixed learner profiles. `scripts/smoke-today-program-report.js` proves the user-facing Today shell keeps its four core states deterministic and free of raw learner answer leaks. `scripts/smoke-guided-session.js`, `scripts/smoke-lesson-engine.js`, `scripts/smoke-dashboard.js`, and `scripts/smoke-guided-session-report.js` prove the outcome-loop session and outcome ledger stay cited, model-free, portable, and publishable as `reports/guided-session.json`. `scripts/smoke-today-program-diff.js` makes user-facing Today state drift reviewable in pull requests. `scripts/smoke-capability-map.js` keeps this companion/bridge claim linked to the public product proof surface.

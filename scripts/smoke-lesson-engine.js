@@ -9,6 +9,7 @@ const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
 const competencySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-competencies.js"), "utf8");
 const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
+const guidedSessionSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-guided-session.js"), "utf8");
 const nextStepSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-next-step.js"), "utf8");
 const engineSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-lesson-engine.js"), "utf8");
 
@@ -251,6 +252,7 @@ function loadRuntime(lesson, locationOverrides, beforeRun) {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
+  vm.runInContext(guidedSessionSource, env.context, { filename: "shared/plata-guided-session.js" });
   vm.runInContext(nextStepSource, env.context, { filename: "shared/plata-next-step.js" });
   vm.runInContext(engineSource, env.context, { filename: "shared/plata-lesson-engine.js" });
   env.lesson = lesson;
@@ -454,6 +456,11 @@ function runPlanContextSmoke(lesson) {
   const step = env.context.PlataPlanner.readPracticePlan().steps[0];
   assert(step.completedAt, "correct repair marks active plan step completed");
   assert(step.completionEvidence.reason === "repair-correct", "correct repair stores completion evidence");
+  const outcomeLedger = env.context.PlataGuidedSession.readOutcomeLedger();
+  assert(outcomeLedger.totals.outcomes === 1, "correct repair records a guided outcome receipt");
+  assert(outcomeLedger.outcomes[0].outcomeReceipt.citedFacts.length === 0, "uncited lesson test receipt stays explicit without fake memory");
+  assert(outcomeLedger.outcomes[0].completionEvidence.reason === "repair-correct", "guided outcome receipt stores completion evidence");
+  assert(outcomeLedger.outcomes[0].fingerprint.startsWith("gdo-"), "guided outcome receipt carries a stable fingerprint");
   const completedContext = env.context.PlataNextStep.renderPlanContext({
     trainerId: lesson.id,
     dashboardHref: "../../dashboard.html"
