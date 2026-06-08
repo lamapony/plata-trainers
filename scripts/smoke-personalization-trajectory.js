@@ -214,6 +214,37 @@ function ids(rows) {
   return new Set((rows || []).map(row => row && (row.id || row.factId)).filter(Boolean));
 }
 
+function sorted(values) {
+  return (values || []).filter(Boolean).slice().sort();
+}
+
+function stageReport(trajectory, stage, compiled) {
+  const factById = factsById(compiled.facts);
+  const focusFactIds = modelFocusFacts(compiled.learnerModel);
+  const plannerFacts = plannerSelectedFacts(compiled.plannerDecision);
+  const advisorFacts = compiled.advice.citedFacts || [];
+  return {
+    trajectoryId: trajectory.id,
+    stageId: stage.id,
+    eventCount: compiled.eventCount,
+    memoryFingerprint: compiled.memoryFingerprint,
+    memoryKinds: sorted([...factKinds(compiled.facts)]),
+    modelKind: compiled.learnerModel.recommendedFocus.kind,
+    modelRule: compiled.learnerModel.recommendedFocus.rule,
+    modelFocusFactIds: sorted(focusFactIds),
+    modelFocusKinds: sorted(focusFactIds.map(factId => factById.get(factId) && factById.get(factId).kind)),
+    plannerKind: compiled.plannerDecision.kind,
+    plannerRule: plannerRule(compiled.plannerDecision),
+    plannerSelectedFactIds: sorted(plannerFacts.map(fact => fact.id)),
+    plannerSelectedKinds: sorted(plannerFacts.map(fact => fact.kind)),
+    advisorKind: compiled.advice.kind,
+    advisorRule: advisorRule(compiled.advice),
+    advisorCitedFactIds: sorted(advisorFacts.map(fact => fact.id)),
+    advisorCitedKinds: sorted(advisorFacts.map(fact => fact.kind)),
+    rootCompetencies: sorted((compiled.learnerModel.rootCompetencies || []).map(row => row.competencyId))
+  };
+}
+
 function containsEvery(source, expected) {
   return (expected || []).every(item => source.has(item));
 }
@@ -507,15 +538,7 @@ function evaluatePersonalizationTrajectories(options = {}) {
     trajectory.stages.forEach(stage => {
       const compiled = compileStage(context, trajectory, stage);
       assertStage(trajectory, stage, compiled, previous);
-      rows.push({
-        trajectoryId: trajectory.id,
-        stageId: stage.id,
-        eventCount: compiled.eventCount,
-        memoryFingerprint: compiled.memoryFingerprint,
-        modelRule: compiled.learnerModel.recommendedFocus.rule,
-        plannerRule: plannerRule(compiled.plannerDecision),
-        advisorRule: advisorRule(compiled.advice)
-      });
+      rows.push(stageReport(trajectory, stage, compiled));
       previous = compiled;
     });
   });
@@ -532,6 +555,10 @@ function runCli() {
   try {
     const root = argValue("--root") || repoRoot;
     const result = evaluatePersonalizationTrajectories({ root });
+    if (process.argv.includes("--json")) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
     result.stages.forEach(stage => {
       console.log(`ok - personalization trajectory ${stage.trajectoryId}/${stage.stageId} -> ${stage.modelRule} / ${stage.advisorRule}`);
     });

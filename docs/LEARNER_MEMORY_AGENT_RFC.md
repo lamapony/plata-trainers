@@ -81,7 +81,7 @@ If account sync is added later, the target should be a memory vault, not a gener
 
 7. Agent evaluation harness
 
-   Fixed learner profiles should test whether the agent gives stable, useful, evidence-backed advice. Bad advice should fail CI in the same spirit as dashboard snapshot diffs. The first version is deterministic: `PlataAdvisor` emits local advice from cited memory facts and planner decisions, `check:advisor` snapshots the result, `check:personalization-eval` removes memory facts to prove planner/advisor drift stays explainable, and `check:personalization-trajectory` replays repair, review, reopen, and cross-lesson root-skill transitions before any model call is allowed into the loop.
+   Fixed learner profiles should test whether the agent gives stable, useful, evidence-backed advice. Bad advice should fail CI in the same spirit as dashboard snapshot diffs. The first version is deterministic: `PlataAdvisor` emits local advice from cited memory facts and planner decisions, `check:advisor` snapshots the result, `check:personalization-eval` removes memory facts to prove planner/advisor drift stays explainable, and `check:personalization-trajectory` replays repair, review, reopen, and cross-lesson root-skill transitions before any model call is allowed into the loop. Pull-request QA also compares base/head trajectory reports so protected rule or root-skill drift is reviewable before merge.
 
 ## Open Questions
 

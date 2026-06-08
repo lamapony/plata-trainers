@@ -48,6 +48,7 @@ const requiredGates = [
   { id: "check:personalization-mutations", category: "mutation", contract: "Bad personalization advisor/planner contracts fail the cross-layer evaluation harness." },
   { id: "check:personalization-trajectory", category: "replay", contract: "Personalization trajectories prove repair, review, reopen, and root-skill transitions over time." },
   { id: "check:personalization-trajectory-mutations", category: "mutation", contract: "Broken personalization replay transitions fail CI." },
+  { id: "check:personalization-trajectory-diff", category: "review", contract: "Personalization trajectory changes produce compact review diffs and regression flags." },
   { id: "check:profile-replay", category: "debug", contract: "Dashboard JSON exports can be replay-debugged by maintainers." },
   { id: "check:planner", category: "planner", contract: "Planner decisions and practice plans preserve traces and explanations." },
   { id: "check:planner-mutations", category: "mutation", contract: "Bad mastery/remediation planner contracts fail CI." },
@@ -189,7 +190,12 @@ function gateRows(root, pkg, issues) {
 
 function workflowRows(root, issues) {
   const specs = [
-    { id: "qa", path: ".github/workflows/qa.yml", expectedRun: "npm run check" },
+    {
+      id: "qa",
+      path: ".github/workflows/qa.yml",
+      expectedRun: "npm run check",
+      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js"]
+    },
     { id: "pages", path: ".github/workflows/pages.yml", expectedRun: "npm run check" }
   ];
   return specs.map(spec => {
@@ -198,12 +204,16 @@ function workflowRows(root, issues) {
     if (!source) rowIssues.push("workflow file missing");
     if (source && !source.includes(spec.expectedRun)) rowIssues.push(`workflow does not run ${spec.expectedRun}`);
     if (source && !/node-version:\s*["']?24["']?/.test(source)) rowIssues.push("workflow does not pin Node 24");
+    (spec.requiredSnippets || []).forEach(snippet => {
+      if (source && !source.includes(snippet)) rowIssues.push(`workflow does not include ${snippet}`);
+    });
     rowIssues.forEach(issue => issues.push(`${spec.path}: ${issue}`));
     return {
       id: spec.id,
       path: spec.path,
       runsFullCheck: source.includes(spec.expectedRun),
       nodeVersion: /node-version:\s*["']?24["']?/.test(source) ? "24" : "",
+      requiredSnippets: spec.requiredSnippets || [],
       status: rowIssues.length ? "fail" : "pass",
       issues: rowIssues
     };

@@ -42,6 +42,18 @@ jobs:
           node scripts/build-quality-report.js --out .dist/quality-report-head.json
           node scripts/diff-quality-report.js --base .dist/quality-report-base.json --head .dist/quality-report-head.json --fail-on-regression
 
+      - name: Compare personalization trajectory with base
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          mkdir -p .dist
+          base_dir="$(mktemp -d)"
+          git archive "$BASE_SHA" | tar -x -C "$base_dir"
+          node scripts/smoke-personalization-trajectory.js --root "$base_dir" --json > .dist/personalization-trajectory-base.json
+          node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-trajectory-head.json
+          node scripts/diff-personalization-trajectory.js --base .dist/personalization-trajectory-base.json --head .dist/personalization-trajectory-head.json --fail-on-regression
+
       - name: Verify public pages map to files
         run: |
           test -f index.html

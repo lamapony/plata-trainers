@@ -253,6 +253,9 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Require learner-model focus facts to stay advisor-cited and planner-selected at each trajectory stage.
 - [x] Mutation-test dropped `signal.reopened` handling, review boundary drift, root learner-model priority drift, and broken planner root-memory selection.
 - [x] Include `check:personalization-trajectory` and `check:personalization-trajectory-mutations` in `npm run check` and project health.
+- [x] Add a PR-facing trajectory diff that compares base/head stage rules, fact kinds, citations, root competencies, and fingerprints.
+- [x] Mark lost stages, protected memory fact kinds, root competencies, and protected model/planner/advisor rule downgrades as regressions.
+- [x] Run the trajectory diff in pull-request QA with `--fail-on-regression`.
 
 ## Cross-Lesson Memory Sprint
 

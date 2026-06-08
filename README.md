@@ -65,6 +65,8 @@ npm run check:pages
 npm run check:quality-report
 npm run check:comic-prompts
 npm run diff:quality -- --base .dist/quality-report.json --head current
+node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-trajectory.json
+npm run diff:personalization-trajectory -- --base .dist/personalization-trajectory.json --head current
 ```
 
 Gold lesson scaffold:
@@ -107,6 +109,9 @@ node scripts/smoke-personalization-eval.js
 node scripts/mutation-personalization-eval.js
 node scripts/smoke-personalization-trajectory.js
 node scripts/mutation-personalization-trajectory.js
+mkdir -p .dist && node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-trajectory.json
+node scripts/diff-personalization-trajectory.js --base .dist/personalization-trajectory.json --head current
+node scripts/smoke-personalization-trajectory-diff.js
 node scripts/build-project-health-manifest.js --out .dist/project-health.json --text
 node scripts/smoke-gold-scaffold.js
 node scripts/generate-comic-assets-openrouter.js --dry-run --out .dist/comic-prompts.json
