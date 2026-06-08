@@ -181,16 +181,17 @@ const capabilitySpecs = [
     title: "Public GitHub proof surface",
     stage: "shipped",
     userValue: "Visitors can inspect the project's claims as generated JSON reports and reviewers can see focused PR drift instead of trusting prose.",
-    surfaces: ["program.html", "dashboard.html?demo=learner", "reports/demo-learner.json", "reports/capabilities.json", "reports/project-health.json", "Pull-request QA review report", "GitHub Step Summary", "README"],
-    proofGates: ["check:program-page", "check:capability-map", "check:health", "check:pages", "check:quality-report", "check:demo-learner-report", "check:demo-learner-diff", "check:today-program-report", "check:review-report", "check:review-report-fixture"],
+    surfaces: ["program.html", "dashboard.html?demo=learner", "reports/demo-learner.json", "reports/capabilities.json", "reports/project-health.json", "Pull-request QA review report", "GitHub Step Summary", "Contributor proof quickstart", "README"],
+    proofGates: ["check:program-page", "check:capability-map", "check:health", "check:pages", "check:quality-report", "check:demo-learner-report", "check:demo-learner-diff", "check:today-program-report", "check:review-report", "check:review-report-fixture", "check:quickstart-proof"],
     publicReports: ["capabilities", "demo-learner", "project-health", "quality", "skill-coverage", "today-program"],
     docs: ["README.md", "docs/DEVELOPMENT_JOURNAL.md"],
-    sourcePaths: ["program.html", "program.js", "dashboard.html", "dashboard.js", "scripts/build-demo-learner-report.js", "scripts/diff-demo-learner-report.js", "scripts/smoke-demo-learner-report.js", "scripts/smoke-demo-learner-diff.js", "scripts/smoke-program-page.js", "scripts/smoke-dashboard.js", "scripts/build-capability-map.js", "scripts/build-project-health-manifest.js", "scripts/build-review-report.js", "scripts/smoke-review-report-fixture.js", "scripts/fixtures/review-report-golden/quality-diff.json", "scripts/build-pages-artifact.js", ".github/workflows/qa.yml"],
+    sourcePaths: ["program.html", "program.js", "dashboard.html", "dashboard.js", "scripts/build-demo-learner-report.js", "scripts/diff-demo-learner-report.js", "scripts/smoke-demo-learner-report.js", "scripts/smoke-demo-learner-diff.js", "scripts/smoke-program-page.js", "scripts/smoke-dashboard.js", "scripts/build-capability-map.js", "scripts/build-project-health-manifest.js", "scripts/build-review-report.js", "scripts/smoke-review-report-fixture.js", "scripts/build-quickstart-proof.js", "scripts/smoke-quickstart-proof.js", "scripts/fixtures/review-report-golden/quality-diff.json", "scripts/build-pages-artifact.js", ".github/workflows/qa.yml"],
     contracts: [
       "Every declared capability links to checks, source files, docs, and public reports.",
       "Program and home pages expose the read-only demo learner dashboard for first-time evaluators.",
       "Project health verifies full-check workflows and report publishing.",
-      "PR review output writes a full JSON artifact plus a capped GitHub Step Summary that groups regressions, review changes, improvements, and informational drift."
+      "PR review output writes a full JSON artifact plus a capped GitHub Step Summary that groups regressions, review changes, improvements, and informational drift.",
+      "The contributor proof quickstart builds the core local proof artifacts with one command."
     ]
   }
 ];

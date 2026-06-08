@@ -33,6 +33,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add PR diffs for Today shell state drift.
 - [x] Publish a product capability map that ties user-facing claims to gates, reports, docs, and source files.
 - [x] Render the capability map as a user-facing public program page.
+- [x] Add a contributor proof quickstart that builds the core local proof artifacts before the full QA suite.
 - [ ] Evaluate external Hermes/OpenClaw-style integrations as optional explainers, not sources of truth; see [Companion Architecture](./COMPANION_ARCHITECTURE.md).
 
 ## Current Sprint
@@ -144,6 +145,13 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Write `.dist/review-report.json` and append a Markdown summary to `$GITHUB_STEP_SUMMARY` for pull-request reviewers.
 - [x] Cap PR review Markdown by severity section with stable ordering, truncated messages, and `+N more` pointers to the full JSON artifact.
 - [x] Add a golden PR review fixture that exercises all surfaces, capped Markdown summaries, full JSON output, stable ordering, and fail-on-regression behavior end to end.
+
+## Contributor Proof Quickstart Sprint
+
+- [x] Add `scripts/build-quickstart-proof.js` to build demo learner, capability map, project health, and golden PR review artifacts into `.dist/quickstart-proof/`.
+- [x] Add `check:quickstart-proof` so the quickstart command, artifacts, Markdown summary, and golden review links stay healthy.
+- [x] Document the proof-first contributor path in README and CONTRIBUTING.
+- [x] Link the quickstart gate and source files from the public GitHub proof capability.
 
 ## Companion Architecture Sprint
 

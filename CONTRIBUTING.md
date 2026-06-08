@@ -24,6 +24,15 @@ Good MVP contributions are concrete and verifiable:
 
 ## Local QA
 
+For a fast proof-first orientation, build the core local proof artifacts before the full suite:
+
+```bash
+npm run proof:quickstart
+npm run check:quickstart-proof
+```
+
+That writes `.dist/quickstart-proof/` with demo learner, capability map, project health, and golden PR review artifacts.
+
 Run the full no-dependency QA suite:
 
 ```bash

@@ -57,6 +57,16 @@ python3 -m http.server 8000
 
 No build, no dependencies, no server required. You can also open any trainer's `index.html` directly in a browser.
 
+## Contributor proof quickstart
+
+```bash
+npm run proof:quickstart
+npm run check:quickstart-proof
+npm run check
+```
+
+The quickstart writes inspectable proof artifacts to `.dist/quickstart-proof/`: demo learner, capability map, project health, golden PR review JSON, capped review Markdown, and a short `quickstart.md` summary.
+
 ## Checks
 
 ```bash
@@ -75,6 +85,8 @@ npm run check:today-program-report
 npm run check:capability-map
 npm run check:program-page
 npm run check:comic-prompts
+npm run proof:quickstart
+npm run check:quickstart-proof
 node scripts/build-capability-map.js --out .dist/capabilities.json --text
 npm run diff:quality -- --base .dist/quality-report.json --head current
 npm run diff:quality -- --base .dist/quality-report.json --head current --json > .dist/quality-diff.json
