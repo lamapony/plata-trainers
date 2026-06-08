@@ -356,6 +356,13 @@ function restoreMemoryCorrections() {
   renderDashboard();
 }
 
+function restoreMemoryCorrection(factId) {
+  const target = String(factId || "");
+  if (!target) return;
+  writeMemoryCorrections(readMemoryCorrections().filter(record => record.factId !== target));
+  renderDashboard();
+}
+
 function ledgerDate(iso) {
   return formatPlanDateTime(iso) || "Recorded";
 }
@@ -789,6 +796,33 @@ function memoryEvidenceHtml(fact) {
   `;
 }
 
+function memoryCorrectionRowsHtml(records) {
+  records = Array.isArray(records) ? records.slice(0, 10) : [];
+  if (!records.length) return "";
+  return `
+    <div class="memory-corrections" aria-label="Corrected learner memory facts">
+      <div class="memory-corrections-head">
+        <span class="eyebrow">Corrected assumptions</span>
+        <span>${records.length} record${records.length === 1 ? "" : "s"}</span>
+      </div>
+      ${records.map(record => `
+        <article class="memory-correction-row">
+          <div>
+            <strong>${escapeHtml(record.factId)}</strong>
+            <p>Marked incorrect${record.correctedAt ? ` · ${escapeHtml(formatPlanDateTime(record.correctedAt) || record.correctedAt)}` : ""}</p>
+            <div class="memory-meta">
+              ${record.kind ? `<span>${escapeHtml(record.kind)}</span>` : ""}
+              ${record.signal ? `<span>${escapeHtml(record.signal)}</span>` : ""}
+              ${record.sourceFingerprint ? `<span>${escapeHtml(record.sourceFingerprint)}</span>` : ""}
+            </div>
+          </div>
+          <button class="memory-delete correction" type="button" data-memory-correction-restore="${escapeHtml(record.factId)}">Restore fact</button>
+        </article>
+      `).join("")}
+    </div>
+  `;
+}
+
 function renderMemoryFacts() {
   const container = $("#memory-facts");
   if (!container) return;
@@ -803,7 +837,7 @@ function renderMemoryFacts() {
     return;
   }
 
-  if (bundle.facts.length === 0) {
+  if (bundle.facts.length === 0 && bundle.corrections.length === 0) {
     container.innerHTML = '<p class="narrative">No learner memory facts yet. Complete a trainer or tracked practice step and this view will show what the system believes.</p>';
     return;
   }
@@ -842,6 +876,7 @@ function renderMemoryFacts() {
         `).join("")}
       </div>
     ` : '<p class="narrative">All current memory facts are hidden or corrected. Restore them if the planner needs them again.</p>'}
+    ${memoryCorrectionRowsHtml(bundle.corrections)}
   `;
 
   $("#restore-memory-facts")?.addEventListener("click", restoreDeletedMemoryFacts);
@@ -851,6 +886,9 @@ function renderMemoryFacts() {
   });
   $$("[data-memory-correct]").forEach(button => {
     button.addEventListener("click", () => correctMemoryFact(button.getAttribute("data-memory-correct")));
+  });
+  $$("[data-memory-correction-restore]").forEach(button => {
+    button.addEventListener("click", () => restoreMemoryCorrection(button.getAttribute("data-memory-correction-restore")));
   });
 }
 

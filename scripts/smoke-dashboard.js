@@ -331,12 +331,21 @@ function runSeededMasterySmoke() {
   assert(correctionRecords.some(record => record.sourceFingerprint === weakFact.sourceFingerprint), "dashboard correction records preserve source fingerprints");
   assert(/corrected facts/.test(env.elements["#memory-facts"].innerHTML), "dashboard shows corrected memory fact count");
   assert(/Restore 1 corrected/.test(env.elements["#memory-facts"].innerHTML), "dashboard offers corrected fact restore");
+  assert(/Corrected assumptions/.test(env.elements["#memory-facts"].innerHTML), "dashboard renders corrected memory audit trail");
+  assert(env.elements["#memory-facts"].innerHTML.includes(weakFact.id), "dashboard audit trail includes corrected fact id");
+  assert(env.elements["#memory-facts"].innerHTML.includes(weakFact.sourceFingerprint), "dashboard audit trail includes corrected source fingerprint");
+  assert(/Restore fact/.test(env.elements["#memory-facts"].innerHTML), "dashboard audit trail restores one corrected fact");
   assert(!/Weak signal: passive-agency/.test(env.elements["#memory-facts"].innerHTML), "dashboard removes corrected facts from visible memory");
   const correctedCandidates = invokeDashboardFunction(env, "dashboardCandidates");
   const correctedRepairCandidate = correctedCandidates.find(item => item.trainer.id === "lesson-b2-radiator-register");
   assert(!(correctedRepairCandidate.decision.trace.inputs.selectedMemoryFacts || []).some(fact => fact.id === weakFact.id), "dashboard planner ignores corrected memory facts");
   assert(!correctedRepairCandidate.decision.trace.scoreBreakdown.some(part => part.label === "memory weak_signal boost"), "dashboard planner removes corrected memory score boosts");
   assert(!/Local advisor/.test(env.elements["#practice-plan"].innerHTML), "dashboard advisor receipt disappears when no cited memory fact remains");
+  vm.runInContext(`restoreMemoryCorrection(${JSON.stringify(weakFact.id)})`, env.context, { filename: "dashboard.js" });
+  assert(!env.storage["plata:learner-memory:corrections:v1"], "dashboard restores a single corrected memory fact");
+  assert(/Weak signal: passive-agency/.test(env.elements["#memory-facts"].innerHTML), "dashboard returns individually restored memory facts");
+  assert(!/Corrected assumptions/.test(env.elements["#memory-facts"].innerHTML), "dashboard removes empty correction audit trail");
+  vm.runInContext(`correctMemoryFact(${JSON.stringify(weakFact.id)})`, env.context, { filename: "dashboard.js" });
   invokeDashboardFunction(env, "restoreMemoryCorrections");
   assert(!env.storage["plata:learner-memory:corrections:v1"], "dashboard clears memory correction records");
   assert(/Weak signal: passive-agency/.test(env.elements["#memory-facts"].innerHTML), "dashboard restores corrected memory facts");
@@ -574,6 +583,9 @@ function runPortableProfileSmoke() {
   assert(importedPlan.steps[0].completedAt === correctedPayload.practicePlan.steps[0].completedAt, "dashboard import restores plan execution ledger");
   assert(!importEnv.storage["plata:learner-memory:deleted-facts:v1"], "dashboard import restores empty memory deletion set");
   assert((importEnv.storage["plata:learner-memory:corrections:v1"] || "").includes(portableFact.id), "dashboard import restores memory correction records");
+  invokeDashboardFunction(importEnv, "renderDashboard");
+  assert(/Corrected assumptions/.test(importEnv.elements["#memory-facts"].innerHTML), "dashboard import renders memory correction audit trail");
+  assert(importEnv.elements["#memory-facts"].innerHTML.includes(portableFact.id), "dashboard import audit trail includes corrected fact id");
 
   const legacyEnv = makeContext();
   loadKernelAndDashboard(legacyEnv);

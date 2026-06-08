@@ -191,3 +191,11 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Export and import correction records in portable profile JSON.
 - [x] Clear stale correction records on legacy imports.
 - [x] Cover correction, restore, planner rebuild, advisor rebuild, and profile portability in dashboard smoke tests.
+
+## Memory Correction Audit Sprint
+
+- [x] Render corrected memory records as an inspectable audit trail.
+- [x] Show corrected fact id, kind, signal, source fingerprint, and correction timestamp.
+- [x] Let learners restore one corrected fact without clearing every correction.
+- [x] Keep restore-all for quick profile recovery.
+- [x] Cover visible audit rows, individual restore, imported corrections, and empty audit cleanup in dashboard smoke tests.
