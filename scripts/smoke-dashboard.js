@@ -10,6 +10,7 @@ const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel
 const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catalog.js"), "utf8");
 const competencySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-competencies.js"), "utf8");
 const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
+const evidenceSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-evidence.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
@@ -158,6 +159,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
+  vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
 
@@ -255,6 +257,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
+  vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   assert(env.context.PlataCatalog.trainers.length === 6, "dashboard reads trainer catalog");
@@ -294,6 +297,7 @@ function runStartedPlanSmoke() {
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
+  vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
 
   const planner = env.context.PlataPlanner;
   const plan = planner.savePracticePlan({
@@ -367,6 +371,7 @@ function runPlanReturnReceiptSmoke() {
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
+  vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   const planner = env.context.PlataPlanner;
   const plan = planner.savePracticePlan({
     kind: "continue",
@@ -416,6 +421,7 @@ function runClosedMasterySmoke() {
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
+  vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   const dueHtml = env.elements["#due-cards"].children.map(child => child.innerHTML).join("\n");
@@ -438,6 +444,7 @@ async function runDynamicCatalogSmoke() {
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
+  vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
   await Promise.resolve();
   await Promise.resolve();

@@ -184,19 +184,6 @@ function formatPlanDateTime(iso) {
   return d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 }
 
-function latestAttemptForTag(state, tag) {
-  const attempts = state && Array.isArray(state.attempts) ? state.attempts : [];
-  for (let i = attempts.length - 1; i >= 0; i--) {
-    const attempt = attempts[i] || {};
-    if ((attempt.tags || []).includes(tag)) return attempt;
-  }
-  return null;
-}
-
-function diagnosticTags(tags = []) {
-  return tags.filter(tag => tag && !NON_DIAGNOSTIC_TAGS.has(tag)).slice(0, 3);
-}
-
 function ledgerDate(iso) {
   return formatPlanDateTime(iso) || "Recorded";
 }
@@ -493,84 +480,19 @@ function renderDueCards(candidates) {
 }
 
 function buildEvidenceLedger() {
-  const kernel = window.PlataKernel;
-  if (!kernel) return [];
-  const entries = [];
-
-  trainers().forEach(trainer => {
+  const evidence = window.PlataEvidence;
+  if (!evidence || !evidence.buildLedger) return [];
+  const inputs = trainers().map(trainer => {
     const state = loadTrainerState(trainer.id);
     const stats = computeStats(state, trainer);
-    if (!state || !stats) return;
-
-    stats.weakMastery.forEach(signal => {
-      const attempt = latestAttemptForTag(state, signal.tag);
-      entries.push({
-        kind: "open",
-        status: "Open mastery signal",
-        title: signal.label || signal.tag,
-        copy: signal.evidence || "This concept-level signal is still weak.",
-        trainer,
-        at: attempt && attempt.at || state.updatedAt || "",
-        score: 120 + Number(signal.wrong || 0) * 10 + Math.round(Number(signal.score || 0) * 20),
-        facts: [
-          `${signal.wrong} wrong / ${signal.total} total`,
-          signal.competency && signal.competency.label ? `Root skill: ${signal.competency.label}` : "",
-          signal.remediation && signal.remediation.action ? signal.remediation.action : ""
-        ].filter(Boolean)
-      });
-    });
-
-    const closures = state.meta && state.meta.repairClosures && typeof state.meta.repairClosures === "object"
-      ? Object.values(state.meta.repairClosures)
-      : [];
-    closures.forEach(closure => {
-      const signal = closure.signal || "";
-      const spec = masterySpec(signal);
-      const resolved = kernel.isSignalResolved ? kernel.isSignalResolved(state, signal) : true;
-      entries.push({
-        kind: resolved ? "closed" : "reopened",
-        status: resolved ? "Closed repair" : "Reopened signal",
-        title: closure.label || spec && spec.label || signal,
-        copy: resolved
-          ? "A correct repair answer retired this signal from recommendations."
-          : "Later evidence appeared after the repair, so this signal is active again.",
-        trainer,
-        at: closure.resolvedAt || state.updatedAt || "",
-        score: resolved ? 80 : 130,
-        facts: [
-          signal,
-          closure.action || spec && spec.evidence || "",
-          closure.attemptCount ? `Closed after ${closure.attemptCount} attempt${closure.attemptCount === 1 ? "" : "s"}` : ""
-        ].filter(Boolean)
-      });
-    });
-
-    const attempts = Array.isArray(state.attempts) ? state.attempts.slice(-4).reverse() : [];
-    attempts.forEach(attempt => {
-      const tags = diagnosticTags(attempt.tags || []);
-      if (!tags.length && attempt.correct) return;
-      entries.push({
-        kind: attempt.correct ? "correct" : "miss",
-        status: attempt.correct ? "Correct attempt" : "Missed attempt",
-        title: attempt.itemId || trainer.name,
-        copy: attempt.correct
-          ? "This attempt added positive evidence to the trainer state."
-          : "This miss is part of the weak-signal evidence.",
-        trainer,
-        at: attempt.at || state.updatedAt || "",
-        score: attempt.correct ? 20 : 70,
-        facts: [
-          attempt.mode || "practice",
-          tags.join(" · "),
-          attempt.correct ? "correct" : "wrong"
-        ].filter(Boolean)
-      });
-    });
+    return { trainer, state, stats };
   });
-
-  return entries
-    .sort((a, b) => b.score - a.score || new Date(b.at || 0).getTime() - new Date(a.at || 0).getTime())
-    .slice(0, 10);
+  return evidence.buildLedger(inputs, {
+    kernel: window.PlataKernel,
+    masterySpec,
+    limit: 10,
+    attemptLimit: 4
+  });
 }
 
 function renderEvidenceLedger() {

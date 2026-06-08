@@ -29,4 +29,6 @@ Repair closure records retire lesson-owned weak signals after a correct repair a
 
 `plata-competencies.js` exposes `window.PlataCompetencies`, the competency graph that groups gold lesson mastery signals into root skills such as agency, register control, stance reading, process control, and consequence awareness. Dashboard and planner code use it to explain why several weak signals point to the same underlying capability.
 
+`plata-evidence.js` exposes `window.PlataEvidence`, the shared evidence ledger contract. It turns trainer state, enriched weak mastery stats, recent attempts, and repair closures into ranked ledger entries such as open mastery signals, closed repairs, reopened signals, missed attempts, and correct attempts. UI layers should render these entries instead of interpreting raw attempts directly.
+
 `plata-catalog.js` is the static trainer registry used by the dashboard. Gold lesson entries can declare `lessonGlobal` and `lessonDataPath`; the dashboard loads those data files on demand to build mastery/remediation recommendations without hardcoding individual lesson globals.
