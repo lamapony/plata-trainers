@@ -8,7 +8,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add an event-sourced learning log that can be derived from existing local trainer state.
 - [x] Make exported profiles replay-ready so a bug report can include an auditable local learning timeline.
 - [x] Add deterministic replay checks that rebuild progress facts from events.
-- [ ] Add a planner decision trace so every recommendation can explain its inputs and score.
+- [x] Add a planner decision trace so every recommendation can explain its inputs and score.
 - [ ] Add mutation-style pedagogy tests that prove bad mastery/remediation contracts fail CI.
 - [ ] Build a counterfactual learner simulator for checking whether lesson edits improve or harm repair paths.
 - [ ] Add a profile replay debugger for maintainers, starting from JSON exports rather than user screenshots.
@@ -22,3 +22,11 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Keep event payloads privacy-conscious by excluding raw expected/given answer text.
 - [x] Include an event-log payload in dashboard profile export.
 - [x] Cover the event contract with smoke tests and the full project check.
+
+## Planner Trace Sprint
+
+- [x] Attach a machine-readable `trace` to lesson, drill, and dashboard planner decisions.
+- [x] Record the rule, selected target, input facts, score breakdown, reasons, and stable fingerprint.
+- [x] Preserve planner traces inside saved practice-plan steps and exported profile JSON.
+- [x] Keep trace payloads privacy-conscious by stripping raw answer/prompt-style text keys.
+- [x] Cover planner traces in planner and dashboard smoke tests.

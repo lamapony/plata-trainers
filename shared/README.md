@@ -27,6 +27,8 @@ Repair closure records retire lesson-owned weak signals after a correct repair a
 
 `plata-planner.js` exposes `window.PlataPlanner`, the shared next-action contract used by the dashboard and post-session recommendations. It ranks repair, repeat, continue, start, stale-review, and enough-for-today decisions from the same local progress state. It also compiles ranked dashboard decisions into a short `practicePlan(...)` so UI layers can show an ordered session route without duplicating planner rules.
 
+Planner decisions carry two explanation layers. `explainDecision(...)` and `explainPracticePlanStep(...)` produce learner-facing copy. `traceDecision(...)` and `tracePracticePlanStep(...)` produce a machine-readable trace with the rule, selected target, input facts, score breakdown, reasons, and stable fingerprint; saved practice-plan steps preserve that trace for profile exports and bug reports.
+
 `plata-competencies.js` exposes `window.PlataCompetencies`, the competency graph that groups gold lesson mastery signals into root skills such as agency, register control, stance reading, process control, and consequence awareness. Dashboard and planner code use it to explain why several weak signals point to the same underlying capability.
 
 `plata-evidence.js` exposes `window.PlataEvidence`, the shared evidence ledger contract. It turns trainer state, enriched weak mastery stats, recent attempts, and repair closures into ranked ledger entries such as open mastery signals, closed repairs, reopened signals, missed attempts, and correct attempts. UI layers should render these entries instead of interpreting raw attempts directly.

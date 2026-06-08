@@ -78,6 +78,10 @@ function runLessonDecisionSmoke(context) {
   assert(decision.primaryHref.includes("signal=passive-agency"), "repair decision should carry signal");
   assert(decision.primaryHref.includes("#official-reply-passive"), "repair decision should carry source scene");
   assert(decision.competency.id === "agency", "lesson repair carries root competency");
+  assert(decision.trace.rule === "lesson.repair.weak-mastery", "lesson repair carries a planner trace rule");
+  assert(decision.trace.inputs.selectedSignal.tag === "passive-agency", "lesson repair trace records the selected signal");
+  assert(decision.trace.score === decision.score, "lesson repair trace records the decision score");
+  assert(decision.trace.scoreBreakdown.some(part => part.label === "missed attempts"), "lesson repair trace records score parts");
 
   kernel.recordAttempt(state, {
     itemId: "official-reply-passive",
@@ -134,6 +138,9 @@ function runDrillDecisionSmoke(context) {
   });
   assert(repeat.kind === "repeat", "drill with mistakes should recommend repeat");
   assert(repeat.primaryHref === "#again-btn", "repeat decision should target another session");
+  assert(repeat.trace.rule === "drill.repeat.session-mistakes", "drill repeat carries a planner trace rule");
+  assert(repeat.trace.inputs.session.mistakes === 1, "drill repeat trace records session mistakes");
+  assert(repeat.trace.scoreBreakdown.some(part => part.label === "mistake pressure" && part.value === 5), "drill repeat trace explains mistake score pressure");
 
   const clean = planner.drillDecision({
     trainerId: "bojning",
@@ -143,6 +150,7 @@ function runDrillDecisionSmoke(context) {
   });
   assert(clean.kind === "continue", "clean drill should continue the chain");
   assert(clean.primaryHref === "../ordstilling-drill/", "bojning chain should move to ordstilling");
+  assert(clean.trace.rule === "drill.continue.clean-session", "clean drill carries a continuation trace");
 
   state.meta.dailyAttempts[new Date().toISOString().slice(0, 10)] = 20;
   const enough = planner.drillDecision({
@@ -153,6 +161,8 @@ function runDrillDecisionSmoke(context) {
   });
   assert(enough.kind === "enough", "daily threshold should recommend stopping");
   assert(enough.primaryHref === "../dashboard.html", "enough decision should send to dashboard");
+  assert(enough.trace.rule === "daily-threshold", "enough decision carries threshold trace");
+  assert(enough.trace.inputs.threshold === 20, "enough trace records the threshold");
 }
 
 function runDashboardDecisionSmoke(context) {
@@ -189,6 +199,10 @@ function runDashboardDecisionSmoke(context) {
   assert(repair.title.includes("Read passive agency"), "dashboard repair should use mastery label");
   assert(repair.primaryHref.includes("mode=repair"), "dashboard repair should link repair mode");
   assert(repair.competency.id === "agency", "dashboard repair exposes root competency");
+  assert(repair.trace.rule === "dashboard.repair.highest-open-mastery", "dashboard repair carries a trace rule");
+  assert(repair.trace.inputs.trainer.id === trainer.id, "dashboard repair trace records trainer input");
+  assert(repair.trace.inputs.selectedSignal.tag === "passive-agency", "dashboard repair trace records selected signal");
+  assert(repair.trace.scoreBreakdown.some(part => part.label === "root competency boost"), "dashboard repair trace records competency score boost");
   const repairExplanation = planner.explainDecision(repair, { total: 1, correct: 0, accuracy: 0, today: 1 });
   assert(repairExplanation.copy.includes("highest open mastery signal"), "planner explains why repair was chosen");
   assert(repairExplanation.facts.some(fact => fact.includes("Root skill: Agency and responsibility")), "planner explanation includes root skill evidence");
@@ -217,6 +231,7 @@ function runDashboardDecisionSmoke(context) {
     index: 0
   });
   assert(start.kind === "start", "empty trainer should produce a start decision");
+  assert(start.trace.rule === "dashboard.start.empty-profile", "empty trainer start carries a trace rule");
 
   const lessonStart = planner.dashboardDecision({
     trainer: { id: "lesson-01-arrival", name: "Lesson 01: First Morning", type: "lesson", path: "./lessons/lesson-01/", description: "Story onboarding" },
@@ -227,6 +242,7 @@ function runDashboardDecisionSmoke(context) {
     index: 3
   });
   assert(lessonStart.score > start.score, "Lesson 01 should be the preferred empty-profile starter");
+  assert(lessonStart.trace.rule === "dashboard.start.preferred-entry", "preferred starter carries a trace rule");
 
   const ranked = planner.rankDashboardDecisions([
     { trainer, decision: start, index: 0 },
@@ -245,6 +261,9 @@ function runDashboardDecisionSmoke(context) {
   assert(plan.steps[0].primaryHref.includes("mode=repair"), "practice plan repair step links to repair mode");
   assert(plan.steps[0].explanation.copy.includes("highest open mastery signal"), "practice plan stores planner explanation on repair step");
   assert(plan.steps[0].explanation.facts.some(fact => fact.includes("Root skill: Agency and responsibility")), "practice plan explanation stores root evidence");
+  assert(plan.steps[0].trace.rule === "dashboard.repair.highest-open-mastery", "practice plan stores planner trace on repair step");
+  assert(plan.steps[0].trace.fingerprint, "practice plan step trace has a stable fingerprint");
+  assert(planner.tracePracticePlanStep(plan.steps[0]).fingerprint === plan.steps[0].trace.fingerprint, "planner exposes normalized step trace");
   assert(planner.explainPracticePlanStep(plan.steps[0]).copy.includes("highest open mastery signal"), "planner exposes a normalized step explanation");
 
   const trackedPlan = planner.practicePlan([
@@ -255,6 +274,7 @@ function runDashboardDecisionSmoke(context) {
   assert(savedPlan.fingerprint === planner.planFingerprint(trackedPlan), "saved practice plan stores a stable fingerprint");
   assert(savedPlan.planToken && savedPlan.steps[0].routeId, "saved practice plan stores route identifiers");
   assert(savedPlan.steps[0].explanation.copy.includes("highest open mastery signal"), "saved practice plan preserves step explanation");
+  assert(savedPlan.steps[0].trace.fingerprint === trackedPlan.steps[0].trace.fingerprint, "saved practice plan preserves step trace");
   const routeHref = planner.planStepHref(savedPlan, savedPlan.steps[0]);
   assert(routeHref.includes("plan=" + encodeURIComponent(savedPlan.planToken)), "practice plan route href carries plan token");
   assert(routeHref.includes("step=" + encodeURIComponent(savedPlan.steps[0].routeId)), "practice plan route href carries step id");

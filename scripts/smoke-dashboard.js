@@ -487,6 +487,7 @@ function runPortableProfileSmoke() {
   assert(payload.profileSchemaVersion === 1, "dashboard export marks profile schema version");
   assert(payload.practicePlan && payload.practicePlan.steps.length, "dashboard export includes active practice plan");
   assert(payload.practicePlan.steps[0].completedAt === plan.steps[0].completedAt, "dashboard export includes plan execution ledger");
+  assert(payload.practicePlan.steps[0].trace && payload.practicePlan.steps[0].trace.fingerprint, "dashboard export includes practice-plan trace");
   assert(payload.eventLog && payload.eventLog.schemaVersion === 1, "dashboard export includes an event-log payload");
   assert(payload.eventLog.events.some(event => event.type === "plan.step.completed"), "dashboard export event log includes plan completion events");
   assert(payload.eventLog.replay.plans[payload.practicePlan.planToken].completedSteps === 1, "dashboard export event log includes replayed plan facts");

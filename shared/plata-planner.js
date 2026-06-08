@@ -9,6 +9,7 @@
   var NON_DIAGNOSTIC_TAGS = { A0: true, A1: true, A2: true, B1: true, B2: true, lesson: true, repair: true };
   var DEFAULT_ENOUGH_THRESHOLD = 20;
   var PLAN_SCHEMA_VERSION = 1;
+  var TRACE_SCHEMA_VERSION = 1;
   var PRACTICE_PLAN_STORAGE_KEY = "plata:practice-plan:v1";
 
   function todayKey() {
@@ -135,24 +136,193 @@
     return Math.round(100 + Number(stats.wrong || 0) * 8 + Number(stats.score || 0) * 30);
   }
 
-  function enoughDecision(state, rootPrefix, options) {
-    var today = todayAttempts(state);
-    var threshold = Number((options && options.enoughThreshold) || DEFAULT_ENOUGH_THRESHOLD);
-    if (today < threshold) return null;
+  function weakScoreBreakdown(signal) {
+    var stats = signal && (signal.stats || signal) || {};
+    return [
+      { label: "base weak-signal priority", value: 100 },
+      { label: "missed attempts", value: Number(stats.wrong || 0) * 8 },
+      { label: "error-rate pressure", value: Math.round(Number(stats.score || 0) * 30) }
+    ];
+  }
+
+  function compactStats(stats) {
+    stats = stats || {};
     return {
+      total: Number(stats.total || 0),
+      correct: Number(stats.correct || 0),
+      accuracy: stats.accuracy === undefined ? null : stats.accuracy,
+      today: Number(stats.today || 0),
+      lastSessionDate: stats.lastSessionDate || ""
+    };
+  }
+
+  function traceSignal(signal) {
+    if (!signal) return null;
+    var stats = signal.stats || signal;
+    return {
+      tag: signal.tag || stats.tag || "",
+      label: signal.label || signal.spec && signal.spec.label || "",
+      wrong: Number(stats.wrong || 0),
+      correct: Number(stats.correct || 0),
+      total: Number(stats.total || 0),
+      score: Number(stats.score || 0),
+      competencyId: signal.competencyId || signal.spec && signal.spec.competencyId || signal.competency && signal.competency.id || ""
+    };
+  }
+
+  function traceCompetency(competency) {
+    if (!competency) return null;
+    return {
+      id: competency.id || "",
+      label: competency.label || "",
+      score: Number(competency.score || 0),
+      signalCount: Number(competency.signalCount || 0)
+    };
+  }
+
+  function traceTrainer(trainer, index) {
+    trainer = trainer || {};
+    return {
+      id: trainer.id || "",
+      name: trainer.name || "",
+      type: trainer.type || "",
+      index: Number(index || 0)
+    };
+  }
+
+  function stableJson(value) {
+    if (value === null || value === undefined) return "null";
+    if (Array.isArray(value)) return "[" + value.map(stableJson).join(",") + "]";
+    if (typeof value === "object") {
+      return "{" + Object.keys(value).sort().map(function (key) {
+        return JSON.stringify(key) + ":" + stableJson(value[key]);
+      }).join(",") + "}";
+    }
+    return JSON.stringify(value);
+  }
+
+  function cleanTraceValue(value, depth) {
+    depth = Number(depth || 0);
+    if (depth > 4) return null;
+    if (value === undefined || value === null) return null;
+    if (Array.isArray(value)) {
+      return value.map(function (item) { return cleanTraceValue(item, depth + 1); }).filter(function (item) { return item !== null; }).slice(0, 20);
+    }
+    if (typeof value === "object") {
+      var out = {};
+      Object.keys(value).sort().forEach(function (key) {
+        if (/^(answer|expected|given|input|learnerText|prompt|response|text)$/i.test(key)) return;
+        var cleaned = cleanTraceValue(value[key], depth + 1);
+        if (cleaned !== null) out[key] = cleaned;
+      });
+      return out;
+    }
+    if (typeof value === "number") return Number.isFinite(value) ? value : null;
+    if (typeof value === "boolean") return value;
+    return String(value).slice(0, 240);
+  }
+
+  function normalizeScoreBreakdown(parts) {
+    var out = [];
+    (parts || []).forEach(function (part) {
+      if (!part || typeof part !== "object") return;
+      var value = Number(part.value || 0);
+      if (!Number.isFinite(value)) return;
+      var normalized = {
+        label: part.label || "score",
+        value: value
+      };
+      if (part.note) normalized.note = String(part.note).slice(0, 160);
+      out.push(normalized);
+    });
+    return out.slice(0, 8);
+  }
+
+  function normalizeTrace(trace) {
+    if (!trace || typeof trace !== "object") return null;
+    var selected = trace.selected || {};
+    var reasons = Array.isArray(trace.reasons) ? trace.reasons : [];
+    var normalized = {
+      schemaVersion: TRACE_SCHEMA_VERSION,
+      source: trace.source || "planner",
+      rule: trace.rule || selected.kind || "continue",
+      selected: {
+        kind: selected.kind || trace.kind || "",
+        targetKind: selected.targetKind || trace.targetKind || selected.kind || trace.kind || "",
+        trainerId: selected.trainerId || trace.trainerId || "",
+        signalTag: selected.signalTag || trace.signalTag || "",
+        primaryHref: selected.primaryHref || trace.primaryHref || ""
+      },
+      score: Number(trace.score || 0),
+      scoreBreakdown: normalizeScoreBreakdown(trace.scoreBreakdown),
+      inputs: cleanTraceValue(trace.inputs || {}),
+      reasons: reasons.filter(Boolean).map(String).slice(0, 8)
+    };
+    normalized.fingerprint = trace.fingerprint || "ptr-" + stableHash(stableJson({
+      rule: normalized.rule,
+      selected: normalized.selected,
+      score: normalized.score,
+      scoreBreakdown: normalized.scoreBreakdown,
+      inputs: normalized.inputs,
+      reasons: normalized.reasons
+    })).slice(0, 12);
+    return normalized;
+  }
+
+  function traceDecision(decision, trace) {
+    decision = decision || {};
+    trace = trace || {};
+    return normalizeTrace({
+      source: trace.source || "planner",
+      rule: trace.rule || decision.kind || "continue",
+      selected: Object.assign({
+        kind: decision.kind || "",
+        targetKind: decision.targetKind || decision.kind || "",
+        trainerId: decision.trainerId || "",
+        signalTag: decision.signalTag || "",
+        primaryHref: decision.primaryHref || ""
+      }, trace.selected || {}),
+      score: decision.score,
+      scoreBreakdown: trace.scoreBreakdown || [{ label: "decision score", value: Number(decision.score || 0) }],
+      inputs: trace.inputs || {},
+      reasons: trace.reasons || decision.reasons || []
+    });
+  }
+
+  function withTrace(decision, trace) {
+    decision.trace = traceDecision(decision, trace);
+    return decision;
+  }
+
+  function enoughDecision(state, rootPrefix, options) {
+    options = options || {};
+    var today = todayAttempts(state);
+    var threshold = Number(options.enoughThreshold || DEFAULT_ENOUGH_THRESHOLD);
+    if (today < threshold) return null;
+    return withTrace({
       kind: "enough",
       targetKind: "rest",
+      trainerId: options.trainerId || "",
       score: 5,
       eyebrow: "Next step",
       title: "Enough for today",
       copy: "You have done " + today + " attempts today. Let the correct answers settle.",
       primaryLabel: "Open dashboard",
       primaryHref: link(rootPrefix, "dashboard.html"),
-      secondaryLabel: options && options.secondaryLabel || "",
-      secondaryHref: options && options.secondaryHref || "",
+      secondaryLabel: options.secondaryLabel || "",
+      secondaryHref: options.secondaryHref || "",
       meta: "Spacing beats cramming.",
       reasons: ["Daily practice threshold reached"]
-    };
+    }, {
+      source: options.source || "planner",
+      rule: "daily-threshold",
+      inputs: {
+        trainerId: options.trainerId || "",
+        today: today,
+        threshold: threshold
+      },
+      scoreBreakdown: [{ label: "rest recommendation", value: 5 }]
+    });
   }
 
   function lessonDecision(options) {
@@ -162,17 +332,19 @@
     var rootPrefix = options.rootPrefix || "../../";
     var dashboardHref = link(rootPrefix, "dashboard.html");
     var weak = weakMasteryForLesson(lessonData, state);
+    var lessonStats = statsFromState(state);
 
     if (weak) {
       var repair = weak.remediation || {};
       var href = sceneHref("", repair.sceneId || "", weak.tag).replace(/^\?/, "?");
       var competency = weak.competency || null;
-      return {
+      var repairScore = weakScore(weak);
+      return withTrace({
         kind: "repair",
         targetKind: "repair",
         trainerId: lessonData.id || "",
         signalTag: weak.tag,
-        score: weakScore(weak),
+        score: repairScore,
         eyebrow: "Next step",
         title: "Repair one weak signal",
         copy: "You missed " + (weak.spec.label || weak.tag) + ". Replay the source scene while that signal is still fresh.",
@@ -183,18 +355,30 @@
         meta: repair.action || "",
         competency: competency,
         reasons: (competency ? ["Root competency: " + competency.label] : []).concat(["Weak mastery signal: " + (weak.spec.label || weak.tag)])
-      };
+      }, {
+        source: "lessonDecision",
+        rule: "lesson.repair.weak-mastery",
+        inputs: {
+          lessonId: lessonData.id || "",
+          stats: compactStats(lessonStats),
+          selectedSignal: traceSignal(weak),
+          selectedCompetency: traceCompetency(competency)
+        },
+        scoreBreakdown: weakScoreBreakdown(weak)
+      });
     }
 
     var enough = enoughDecision(state, rootPrefix, {
       enoughThreshold: options.enoughThreshold,
       secondaryLabel: "Run again",
-      secondaryHref: "#again"
+      secondaryHref: "#again",
+      trainerId: lessonData.id || "",
+      source: "lessonDecision"
     });
     if (enough) return enough;
 
     var next = nextLessonTarget(lessonData.id, rootPrefix);
-    return {
+    return withTrace({
       kind: "continue",
       targetKind: "continue",
       trainerId: lessonData.id || "",
@@ -208,7 +392,16 @@
       secondaryHref: dashboardHref,
       meta: "Keep it small: one more short session is enough.",
       reasons: ["Current lesson chain has a useful next block"]
-    };
+    }, {
+      source: "lessonDecision",
+      rule: "lesson.continue.chain",
+      inputs: {
+        lessonId: lessonData.id || "",
+        stats: compactStats(lessonStats),
+        nextTarget: { href: next.href, label: next.label }
+      },
+      scoreBreakdown: [{ label: "lesson chain continuation", value: 30 }]
+    });
   }
 
   function drillDecision(options) {
@@ -221,9 +414,10 @@
     var correct = results.filter(function (item) { return item.correct; }).length;
     var mistakes = Math.max(0, total - correct);
     var accuracy = total ? Math.round(correct / total * 100) : 0;
+    var drillStats = statsFromState(state);
 
     if (mistakes > 0) {
-      return {
+      return withTrace({
         kind: "repeat",
         targetKind: "repeat",
         trainerId: trainerId,
@@ -237,18 +431,32 @@
         secondaryHref: link(rootPrefix, "dashboard.html"),
         meta: "Accuracy this session: " + accuracy + "%.",
         reasons: ["Session still has mistakes"]
-      };
+      }, {
+        source: "drillDecision",
+        rule: "drill.repeat.session-mistakes",
+        inputs: {
+          trainerId: trainerId,
+          session: { total: total, correct: correct, mistakes: mistakes, accuracy: accuracy },
+          stats: compactStats(drillStats)
+        },
+        scoreBreakdown: [
+          { label: "repeat base", value: 80 },
+          { label: "mistake pressure", value: mistakes * 5 }
+        ]
+      });
     }
 
     var enough = enoughDecision(state, rootPrefix, {
       enoughThreshold: options.enoughThreshold,
       secondaryLabel: "Run another session",
-      secondaryHref: "#again-btn"
+      secondaryHref: "#again-btn",
+      trainerId: trainerId,
+      source: "drillDecision"
     });
     if (enough) return enough;
 
     var next = nextDrillTarget(trainerId);
-    return {
+    return withTrace({
       kind: "continue",
       targetKind: "continue",
       trainerId: trainerId,
@@ -262,7 +470,17 @@
       secondaryHref: "#again-btn",
       meta: "Accuracy this session: " + accuracy + "%.",
       reasons: ["Clean session unlocks the next block"]
-    };
+    }, {
+      source: "drillDecision",
+      rule: "drill.continue.clean-session",
+      inputs: {
+        trainerId: trainerId,
+        session: { total: total, correct: correct, mistakes: mistakes, accuracy: accuracy },
+        stats: compactStats(drillStats),
+        nextTarget: next
+      },
+      scoreBreakdown: [{ label: "clean-session continuation", value: 30 }]
+    });
   }
 
   function rawWeakTag(weakTags) {
@@ -297,16 +515,24 @@
     var weakCompetencies = options.weakCompetencies || (graph && graph.rank ? graph.rank(weakMastery) : []);
     var topMastery = weakMastery.find(function (item) { return item.remediation && item.remediation.href; });
     var index = Number(options.index || 0);
+    var traceInputs = {
+      trainer: traceTrainer(trainer, index),
+      stats: compactStats(stats),
+      weakMasteryCount: weakMastery.length,
+      weakTagCount: weakTags.length,
+      weakCompetencyCount: weakCompetencies.length
+    };
 
     if (topMastery) {
       var repairCompetency = competencyForSignal(weakCompetencies, topMastery);
       var competencyBoost = repairCompetency ? Math.min(30, Math.round(Number(repairCompetency.score || 0) / 4)) : 0;
-      return {
+      var repairScore = weakScore(topMastery) + competencyBoost;
+      return withTrace({
         kind: "repair",
         targetKind: "repair",
         trainerId: trainer.id || "",
         signalTag: topMastery.tag,
-        score: weakScore(topMastery) + competencyBoost,
+        score: repairScore,
         badge: "Repair now",
         title: "Repair " + (topMastery.label || topMastery.tag),
         copy: topMastery.evidence || "A gold lesson mastery signal is currently weak.",
@@ -317,17 +543,28 @@
         competency: repairCompetency,
         repair: topMastery.remediation,
         reasons: (repairCompetency ? ["Root competency: " + repairCompetency.label] : []).concat(["Highest weak mastery signal"])
-      };
+      }, {
+        source: "dashboardDecision",
+        rule: "dashboard.repair.highest-open-mastery",
+        inputs: Object.assign({}, traceInputs, {
+          selectedSignal: traceSignal(topMastery),
+          selectedCompetency: traceCompetency(repairCompetency)
+        }),
+        scoreBreakdown: weakScoreBreakdown(topMastery).concat([
+          { label: "root competency boost", value: competencyBoost }
+        ])
+      });
     }
 
     var rawWeak = rawWeakTag(weakTags);
     if (rawWeak) {
-      return {
+      var rawScore = 70 + Number(rawWeak.wrong || 0) * 5 + Math.round(Number(rawWeak.score || 0) * 20);
+      return withTrace({
         kind: "weak",
         targetKind: "practice",
         trainerId: trainer.id || "",
         signalTag: rawWeak.tag,
-        score: 70 + Number(rawWeak.wrong || 0) * 5 + Math.round(Number(rawWeak.score || 0) * 20),
+        score: rawScore,
         badge: "Practice now",
         title: "Repair " + rawWeak.tag,
         copy: "This trainer has a repeated weak tag. A short focused session is the fastest fix.",
@@ -335,11 +572,22 @@
         primaryHref: trainerPath,
         signals: [rawWeak],
         reasons: ["Weak tag: " + rawWeak.tag]
-      };
+      }, {
+        source: "dashboardDecision",
+        rule: "dashboard.practice.raw-weak-tag",
+        inputs: Object.assign({}, traceInputs, {
+          selectedSignal: traceSignal(rawWeak)
+        }),
+        scoreBreakdown: [
+          { label: "raw weak-tag base", value: 70 },
+          { label: "missed attempts", value: Number(rawWeak.wrong || 0) * 5 },
+          { label: "error-rate pressure", value: Math.round(Number(rawWeak.score || 0) * 20) }
+        ]
+      });
     }
 
     if (stats.today >= DEFAULT_ENOUGH_THRESHOLD) {
-      return {
+      return withTrace({
         kind: "enough",
         targetKind: "rest",
         trainerId: trainer.id || "",
@@ -350,12 +598,19 @@
         primaryLabel: "Inspect progress",
         primaryHref: trainerPath,
         reasons: ["Daily practice threshold reached"]
-      };
+      }, {
+        source: "dashboardDecision",
+        rule: "dashboard.rest.daily-threshold",
+        inputs: Object.assign({}, traceInputs, {
+          threshold: DEFAULT_ENOUGH_THRESHOLD
+        }),
+        scoreBreakdown: [{ label: "dashboard rest recommendation", value: 6 }]
+      });
     }
 
     if (stats.total === 0) {
       var startScore = trainer.id === "lesson-01-arrival" ? 48 : 35 - index;
-      return {
+      return withTrace({
         kind: "start",
         targetKind: "start",
         trainerId: trainer.id || "",
@@ -366,41 +621,71 @@
         primaryLabel: "Start " + (trainer.type || "trainer"),
         primaryHref: trainerPath,
         reasons: ["No local progress yet"]
-      };
+      }, {
+        source: "dashboardDecision",
+        rule: trainer.id === "lesson-01-arrival" ? "dashboard.start.preferred-entry" : "dashboard.start.empty-profile",
+        inputs: traceInputs,
+        scoreBreakdown: [
+          { label: "empty-profile start priority", value: trainer.id === "lesson-01-arrival" ? 48 : 35 },
+          { label: "catalog order adjustment", value: trainer.id === "lesson-01-arrival" ? 0 : -index }
+        ]
+      });
     }
 
     if (stats.accuracy !== null && stats.accuracy < 70) {
-      return {
+      var accuracyScore = 62 + (70 - stats.accuracy);
+      return withTrace({
         kind: "accuracy",
         targetKind: "practice",
         trainerId: trainer.id || "",
-        score: 62 + (70 - stats.accuracy),
+        score: accuracyScore,
         badge: "Practice now",
         title: "Stabilize " + (trainer.name || "trainer"),
         copy: "Accuracy is " + stats.accuracy + "%. Keep the next block short and focused.",
         primaryLabel: "Open trainer",
         primaryHref: trainerPath,
         reasons: ["Accuracy below comfort zone"]
-      };
+      }, {
+        source: "dashboardDecision",
+        rule: "dashboard.practice.low-accuracy",
+        inputs: Object.assign({}, traceInputs, {
+          threshold: 70
+        }),
+        scoreBreakdown: [
+          { label: "accuracy repair base", value: 62 },
+          { label: "accuracy gap", value: 70 - stats.accuracy }
+        ]
+      });
     }
 
     var gap = daysSince(stats.lastSessionDate);
     if (gap !== null && gap >= 7) {
-      return {
+      var staleScore = 45 + Math.min(20, gap);
+      return withTrace({
         kind: "stale",
         targetKind: "review",
         trainerId: trainer.id || "",
-        score: 45 + Math.min(20, gap),
+        score: staleScore,
         badge: "Review",
         title: "Refresh " + (trainer.name || "trainer"),
         copy: gap + " days since the last session. A short review keeps it available.",
         primaryLabel: "Open trainer",
         primaryHref: trainerPath,
         reasons: ["Long gap since last session"]
-      };
+      }, {
+        source: "dashboardDecision",
+        rule: "dashboard.review.stale-session",
+        inputs: Object.assign({}, traceInputs, {
+          daysSinceLastSession: gap
+        }),
+        scoreBreakdown: [
+          { label: "stale review base", value: 45 },
+          { label: "staleness pressure", value: Math.min(20, gap) }
+        ]
+      });
     }
 
-    return {
+    return withTrace({
       kind: "continue",
       targetKind: "continue",
       trainerId: trainer.id || "",
@@ -411,7 +696,15 @@
       primaryLabel: "Continue",
       primaryHref: trainerPath,
       reasons: ["Healthy progress"]
-    };
+    }, {
+      source: "dashboardDecision",
+      rule: "dashboard.continue.healthy-progress",
+      inputs: traceInputs,
+      scoreBreakdown: [
+        { label: "healthy progress base", value: 22 },
+        { label: "catalog order adjustment", value: -index / 10 }
+      ]
+    });
   }
 
   function rankDashboardDecisions(items, limit) {
@@ -539,11 +832,32 @@
     });
   }
 
+  function tracePracticePlanStep(step) {
+    step = step || {};
+    return normalizeTrace(step.trace) || traceDecision(step, {
+      source: "practicePlan",
+      rule: "practice-plan.step",
+      inputs: {
+        trainerId: step.trainerId || "",
+        attemptsAtStart: Number(step.attemptsAtStart || 0),
+        lastSessionDateAtStart: step.lastSessionDateAtStart || ""
+      }
+    });
+  }
+
   function planStep(item, number) {
     var decision = item.decision || {};
     var trainer = item.trainer || {};
     var stats = item.stats || {};
     var competency = decision.competency || null;
+    var trace = normalizeTrace(decision.trace) || traceDecision(decision, {
+      source: "practicePlan",
+      rule: "practice-plan.step",
+      inputs: {
+        trainer: traceTrainer(trainer, item.index),
+        stats: compactStats(stats)
+      }
+    });
     return {
       number: number,
       kind: decision.kind || "continue",
@@ -563,7 +877,8 @@
       lastSessionDateAtStart: stats.lastSessionDate || "",
       competency: normalizeCompetency(competency),
       reasons: decision.reasons || [],
-      explanation: explainDecision(decision, stats)
+      explanation: explainDecision(decision, stats),
+      trace: trace
     };
   }
 
@@ -692,6 +1007,15 @@
       competency: normalizeCompetency(step.competency),
       reasons: Array.isArray(step.reasons) ? step.reasons.slice(0, 6) : [],
       explanation: normalizeExplanation(step.explanation),
+      trace: normalizeTrace(step.trace) || traceDecision(step, {
+        source: "practicePlan",
+        rule: "practice-plan.legacy-step",
+        inputs: {
+          trainerId: step.trainerId || "",
+          attemptsAtStart: Number(step.attemptsAtStart || 0),
+          lastSessionDateAtStart: step.lastSessionDateAtStart || ""
+        }
+      }),
       startedAt: step.startedAt || "",
       completedAt: step.completedAt || "",
       lastSeenAt: step.lastSeenAt || "",
@@ -967,6 +1291,8 @@
     dashboardDecision: dashboardDecision,
     explainDecision: explainDecision,
     explainPracticePlanStep: explainPracticePlanStep,
+    traceDecision: traceDecision,
+    tracePracticePlanStep: tracePracticePlanStep,
     rankDashboardDecisions: rankDashboardDecisions,
     practicePlan: practicePlan,
     planFingerprint: planFingerprint,
@@ -979,6 +1305,7 @@
     clearPracticePlan: clearPracticePlan,
     planStatus: planStatus,
     actionablePracticePlanStep: actionablePracticePlanStep,
+    traceSchemaVersion: TRACE_SCHEMA_VERSION,
     practicePlanStorageKey: PRACTICE_PLAN_STORAGE_KEY,
     nonDiagnosticTags: NON_DIAGNOSTIC_TAGS
   };
