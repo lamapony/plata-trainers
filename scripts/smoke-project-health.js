@@ -42,6 +42,7 @@ function runBaseSmoke() {
   assert(manifest.gates.some(gate => gate.id === "check:memory-corrections" && gate.requiredInCheck), "manifest should require learner memory correction contracts");
   assert(manifest.gates.some(gate => gate.id === "check:memory-vault" && gate.requiredInCheck), "manifest should require learner memory vault contracts");
   assert(manifest.gates.some(gate => gate.id === "check:memory-brief" && gate.requiredInCheck), "manifest should require learner memory brief contracts");
+  assert(manifest.gates.some(gate => gate.id === "check:agent-handoff" && gate.requiredInCheck), "manifest should require agent handoff contracts");
   assert(manifest.gates.some(gate => gate.id === "check:advisor" && gate.requiredInCheck), "manifest should require advisor fixtures");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-eval" && gate.requiredInCheck), "manifest should require personalization evaluation");
   assert(manifest.gates.some(gate => gate.id === "check:personalization-mutations" && gate.requiredInCheck), "manifest should require personalization mutation proof");
@@ -52,6 +53,7 @@ function runBaseSmoke() {
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "dashboard-recommendations" && fixture.fresh), "manifest should link fresh deterministic fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "learner-memory-profiles" && fixture.fresh), "manifest should link fresh learner memory fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "agent-advice-profiles" && fixture.fresh), "manifest should link fresh agent advice fixtures");
+  assert(manifest.deterministicFixtures.some(fixture => fixture.id === "agent-handoff-profiles" && fixture.fresh), "manifest should link fresh agent handoff fixtures");
   assert(manifest.guarantees.every(guarantee => guarantee.pass), "manifest guarantees should all pass");
 
   const formatted = formatProjectHealthManifest(manifest);

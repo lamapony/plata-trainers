@@ -1137,6 +1137,9 @@ function exportAll() {
     catalog: window.PlataCatalog,
     competencyGraph: window.PlataCompetencies
   }) : null;
+  const agentHandoff = window.PlataAgentHandoff && memoryBrief ? window.PlataAgentHandoff.buildHandoff(memoryBrief, {
+    generatedAt: exportedAt
+  }) : null;
   const payload = {
     exportedAt,
     profileSchemaVersion: 1,
@@ -1153,7 +1156,8 @@ function exportAll() {
       correctionRecords: memoryBundle.corrections
     } : null,
     memoryVault,
-    memoryBrief
+    memoryBrief,
+    agentHandoff
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);

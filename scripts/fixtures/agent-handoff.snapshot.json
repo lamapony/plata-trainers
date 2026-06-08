@@ -1,0 +1,494 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-08T12:00:00.000Z",
+  "profiles": {
+    "returning-learner-context": {
+      "fingerprint": "handoff-19lp558",
+      "sourceBriefFingerprint": "brief-if4b4a",
+      "sourceVaultFingerprint": "vault-lm78l",
+      "task": {
+        "kind": "continue-practice",
+        "priority": "low",
+        "title": "Continue from stable context",
+        "objective": "The strongest portable memory fact supports continuing practice without a repair detour.",
+        "focusRule": "brief.focus.continue-context",
+        "focusKind": "continue",
+        "focusCompetencyId": "register-control",
+        "focusSignal": "formal-register-control",
+        "requiredCitationCount": 3
+      },
+      "requiredCitations": [
+        {
+          "factId": "mem-75qg4m",
+          "sourceFingerprint": "memsrc-b95chg",
+          "role": "focus",
+          "kind": "continue",
+          "signal": "formal-register-control"
+        },
+        {
+          "factId": "mem-s7pdax",
+          "sourceFingerprint": "memsrc-1xaipal",
+          "role": "supporting",
+          "kind": "preferred_context",
+          "signal": "repair"
+        },
+        {
+          "factId": "mem-dpmj6k",
+          "sourceFingerprint": "memsrc-1seovqg",
+          "role": "supporting",
+          "kind": "preferred_context",
+          "signal": "review"
+        }
+      ],
+      "topFacts": [
+        {
+          "factId": "mem-75qg4m",
+          "kind": "stable_strength",
+          "signal": "formal-register-control",
+          "competencyId": "register-control",
+          "sourceFingerprint": "memsrc-b95chg"
+        },
+        {
+          "factId": "mem-s7pdax",
+          "kind": "preferred_context",
+          "signal": "repair",
+          "competencyId": "",
+          "sourceFingerprint": "memsrc-1xaipal"
+        },
+        {
+          "factId": "mem-dpmj6k",
+          "kind": "preferred_context",
+          "signal": "review",
+          "competencyId": "",
+          "sourceFingerprint": "memsrc-1seovqg"
+        }
+      ],
+      "rootSkillRisks": [],
+      "allowedActions": [
+        "summarize cited learner memory",
+        "recommend one next practice action",
+        "prepare a repair or review session outline",
+        "ask learner to confirm if evidence is insufficient"
+      ],
+      "blockedActions": [
+        "read or request raw trainer history",
+        "invent uncited learner traits",
+        "change canonical memory without a learner-visible event",
+        "ignore hidden or corrected assumptions"
+      ],
+      "responseContract": {
+        "mustCiteFactIds": true,
+        "mustCiteSourceFingerprints": true,
+        "maxRecommendations": 1,
+        "allowedOutputs": [
+          "nextAction",
+          "shortRationale",
+          "citedFactIds",
+          "sourceFingerprints",
+          "uncertainty"
+        ]
+      },
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "derivedFactsOnly": true,
+        "usesOnlyCitedFacts": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      },
+      "trace": {
+        "briefRule": "brief.focus.continue-context",
+        "citationCount": 3,
+        "topFactCount": 3,
+        "rootSkillRiskCount": 0,
+        "dueReviewCount": 0,
+        "handoffFingerprint": "handoff-19lp558"
+      }
+    },
+    "stale-skill-review": {
+      "fingerprint": "handoff-abr8lg",
+      "sourceBriefFingerprint": "brief-kad1oh",
+      "sourceVaultFingerprint": "vault-1f2zm63",
+      "task": {
+        "kind": "prepare-review",
+        "priority": "medium",
+        "title": "Review due signal: formal-register-control",
+        "objective": "Spacing says this signal should be checked before it goes cold.",
+        "focusRule": "brief.focus.due-review",
+        "focusKind": "review",
+        "focusCompetencyId": "register-control",
+        "focusSignal": "formal-register-control",
+        "requiredCitationCount": 2
+      },
+      "requiredCitations": [
+        {
+          "factId": "mem-tabm00",
+          "sourceFingerprint": "memsrc-1uxszyk",
+          "role": "focus",
+          "kind": "review",
+          "signal": "formal-register-control"
+        },
+        {
+          "factId": "mem-1vg51vs",
+          "sourceFingerprint": "memsrc-1uxszyk",
+          "role": "supporting",
+          "kind": "stale_skill",
+          "signal": "formal-register-control"
+        }
+      ],
+      "topFacts": [
+        {
+          "factId": "mem-tabm00",
+          "kind": "next_review_due",
+          "signal": "formal-register-control",
+          "competencyId": "register-control",
+          "sourceFingerprint": "memsrc-1uxszyk"
+        },
+        {
+          "factId": "mem-1vg51vs",
+          "kind": "stale_skill",
+          "signal": "formal-register-control",
+          "competencyId": "register-control",
+          "sourceFingerprint": "memsrc-1uxszyk"
+        }
+      ],
+      "rootSkillRisks": [],
+      "allowedActions": [
+        "summarize cited learner memory",
+        "recommend one next practice action",
+        "prepare a repair or review session outline",
+        "ask learner to confirm if evidence is insufficient"
+      ],
+      "blockedActions": [
+        "read or request raw trainer history",
+        "invent uncited learner traits",
+        "change canonical memory without a learner-visible event",
+        "ignore hidden or corrected assumptions"
+      ],
+      "responseContract": {
+        "mustCiteFactIds": true,
+        "mustCiteSourceFingerprints": true,
+        "maxRecommendations": 1,
+        "allowedOutputs": [
+          "nextAction",
+          "shortRationale",
+          "citedFactIds",
+          "sourceFingerprints",
+          "uncertainty"
+        ]
+      },
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "derivedFactsOnly": true,
+        "usesOnlyCitedFacts": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      },
+      "trace": {
+        "briefRule": "brief.focus.due-review",
+        "citationCount": 2,
+        "topFactCount": 2,
+        "rootSkillRiskCount": 0,
+        "dueReviewCount": 2,
+        "handoffFingerprint": "handoff-abr8lg"
+      }
+    },
+    "repaired-signal-retained": {
+      "fingerprint": "handoff-x0i11a",
+      "sourceBriefFingerprint": "brief-d0v2ls",
+      "sourceVaultFingerprint": "vault-27g0i6",
+      "task": {
+        "kind": "maintain-repaired-signal",
+        "priority": "low",
+        "title": "Maintain repaired signal: modal-particle-stance",
+        "objective": "The agent should avoid reopening this repair unless new evidence appears.",
+        "focusRule": "brief.focus.resolved-signal",
+        "focusKind": "maintain",
+        "focusCompetencyId": "stance-reading",
+        "focusSignal": "modal-particle-stance",
+        "requiredCitationCount": 1
+      },
+      "requiredCitations": [
+        {
+          "factId": "mem-16omq3k",
+          "sourceFingerprint": "memsrc-rze77g",
+          "role": "focus",
+          "kind": "maintain",
+          "signal": "modal-particle-stance"
+        }
+      ],
+      "topFacts": [
+        {
+          "factId": "mem-16omq3k",
+          "kind": "repaired_signal",
+          "signal": "modal-particle-stance",
+          "competencyId": "stance-reading",
+          "sourceFingerprint": "memsrc-rze77g"
+        }
+      ],
+      "rootSkillRisks": [],
+      "allowedActions": [
+        "summarize cited learner memory",
+        "recommend one next practice action",
+        "prepare a repair or review session outline",
+        "ask learner to confirm if evidence is insufficient"
+      ],
+      "blockedActions": [
+        "read or request raw trainer history",
+        "invent uncited learner traits",
+        "change canonical memory without a learner-visible event",
+        "ignore hidden or corrected assumptions"
+      ],
+      "responseContract": {
+        "mustCiteFactIds": true,
+        "mustCiteSourceFingerprints": true,
+        "maxRecommendations": 1,
+        "allowedOutputs": [
+          "nextAction",
+          "shortRationale",
+          "citedFactIds",
+          "sourceFingerprints",
+          "uncertainty"
+        ]
+      },
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "derivedFactsOnly": true,
+        "usesOnlyCitedFacts": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      },
+      "trace": {
+        "briefRule": "brief.focus.resolved-signal",
+        "citationCount": 1,
+        "topFactCount": 1,
+        "rootSkillRiskCount": 0,
+        "dueReviewCount": 0,
+        "handoffFingerprint": "handoff-x0i11a"
+      }
+    },
+    "recurring-trap-repair": {
+      "fingerprint": "handoff-ezmula",
+      "sourceBriefFingerprint": "brief-1ic557",
+      "sourceVaultFingerprint": "vault-7m2b06",
+      "task": {
+        "kind": "prepare-repair",
+        "priority": "high",
+        "title": "Repair recurring trap: passive-agency",
+        "objective": "Learner memory marks this signal as a repeated trap.",
+        "focusRule": "brief.focus.recurring-trap",
+        "focusKind": "repair",
+        "focusCompetencyId": "agency",
+        "focusSignal": "passive-agency",
+        "requiredCitationCount": 2
+      },
+      "requiredCitations": [
+        {
+          "factId": "mem-1b3dbr7",
+          "sourceFingerprint": "memsrc-1ncgzt7",
+          "role": "focus",
+          "kind": "repair",
+          "signal": "passive-agency"
+        },
+        {
+          "factId": "mem-13rq6s3",
+          "sourceFingerprint": "memsrc-1ncgzt7",
+          "role": "supporting",
+          "kind": "weak_signal",
+          "signal": "passive-agency"
+        }
+      ],
+      "topFacts": [
+        {
+          "factId": "mem-1b3dbr7",
+          "kind": "recurring_trap",
+          "signal": "passive-agency",
+          "competencyId": "agency",
+          "sourceFingerprint": "memsrc-1ncgzt7"
+        },
+        {
+          "factId": "mem-13rq6s3",
+          "kind": "weak_signal",
+          "signal": "passive-agency",
+          "competencyId": "agency",
+          "sourceFingerprint": "memsrc-1ncgzt7"
+        }
+      ],
+      "rootSkillRisks": [],
+      "allowedActions": [
+        "summarize cited learner memory",
+        "recommend one next practice action",
+        "prepare a repair or review session outline",
+        "ask learner to confirm if evidence is insufficient"
+      ],
+      "blockedActions": [
+        "read or request raw trainer history",
+        "invent uncited learner traits",
+        "change canonical memory without a learner-visible event",
+        "ignore hidden or corrected assumptions"
+      ],
+      "responseContract": {
+        "mustCiteFactIds": true,
+        "mustCiteSourceFingerprints": true,
+        "maxRecommendations": 1,
+        "allowedOutputs": [
+          "nextAction",
+          "shortRationale",
+          "citedFactIds",
+          "sourceFingerprints",
+          "uncertainty"
+        ]
+      },
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "derivedFactsOnly": true,
+        "usesOnlyCitedFacts": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      },
+      "trace": {
+        "briefRule": "brief.focus.recurring-trap",
+        "citationCount": 2,
+        "topFactCount": 2,
+        "rootSkillRiskCount": 0,
+        "dueReviewCount": 0,
+        "handoffFingerprint": "handoff-ezmula"
+      }
+    },
+    "cross-lesson-agency-trap": {
+      "fingerprint": "handoff-15atzjv",
+      "sourceBriefFingerprint": "brief-44dmrk",
+      "sourceVaultFingerprint": "vault-12rvrh5",
+      "task": {
+        "kind": "prepare-repair",
+        "priority": "high",
+        "title": "Repair root skill: Agency and responsibility",
+        "objective": "Different lessons point to the same root skill, so the agent should prepare one transfer-focused repair.",
+        "focusRule": "brief.focus.root-competency",
+        "focusKind": "repair",
+        "focusCompetencyId": "agency",
+        "focusSignal": "agency",
+        "requiredCitationCount": 3
+      },
+      "requiredCitations": [
+        {
+          "factId": "mem-1m60lop",
+          "sourceFingerprint": "memsrc-41qsvm",
+          "role": "focus",
+          "kind": "repair",
+          "signal": "agency"
+        },
+        {
+          "factId": "mem-12h0wzo",
+          "sourceFingerprint": "memsrc-1k2nir0",
+          "role": "supporting",
+          "kind": "recurring_trap",
+          "signal": "passive-agency"
+        },
+        {
+          "factId": "mem-n5mrys",
+          "sourceFingerprint": "memsrc-1k2nir0",
+          "role": "supporting",
+          "kind": "weak_signal",
+          "signal": "passive-agency"
+        },
+        {
+          "factId": "mem-1mnzr7o",
+          "sourceFingerprint": "memsrc-1jkm1e9",
+          "role": "supporting",
+          "kind": "weak_signal",
+          "signal": "professional-email-agency"
+        }
+      ],
+      "topFacts": [
+        {
+          "factId": "mem-1m60lop",
+          "kind": "root_competency_trap",
+          "signal": "agency",
+          "competencyId": "agency",
+          "sourceFingerprint": "memsrc-41qsvm"
+        },
+        {
+          "factId": "mem-12h0wzo",
+          "kind": "recurring_trap",
+          "signal": "passive-agency",
+          "competencyId": "agency",
+          "sourceFingerprint": "memsrc-1k2nir0"
+        },
+        {
+          "factId": "mem-n5mrys",
+          "kind": "weak_signal",
+          "signal": "passive-agency",
+          "competencyId": "agency",
+          "sourceFingerprint": "memsrc-1k2nir0"
+        },
+        {
+          "factId": "mem-1mnzr7o",
+          "kind": "weak_signal",
+          "signal": "professional-email-agency",
+          "competencyId": "agency",
+          "sourceFingerprint": "memsrc-1jkm1e9"
+        }
+      ],
+      "rootSkillRisks": [
+        {
+          "competencyId": "agency",
+          "signals": [
+            "passive-agency",
+            "professional-email-agency"
+          ],
+          "trainerIds": [
+            "lesson-b2-job-followup",
+            "lesson-b2-radiator-register"
+          ],
+          "citedFactIds": [
+            "mem-1m60lop"
+          ]
+        }
+      ],
+      "allowedActions": [
+        "summarize cited learner memory",
+        "recommend one next practice action",
+        "prepare a repair or review session outline",
+        "ask learner to confirm if evidence is insufficient"
+      ],
+      "blockedActions": [
+        "read or request raw trainer history",
+        "invent uncited learner traits",
+        "change canonical memory without a learner-visible event",
+        "ignore hidden or corrected assumptions"
+      ],
+      "responseContract": {
+        "mustCiteFactIds": true,
+        "mustCiteSourceFingerprints": true,
+        "maxRecommendations": 1,
+        "allowedOutputs": [
+          "nextAction",
+          "shortRationale",
+          "citedFactIds",
+          "sourceFingerprints",
+          "uncertainty"
+        ]
+      },
+      "guardrails": {
+        "deterministic": true,
+        "requiresModel": false,
+        "derivedFactsOnly": true,
+        "usesOnlyCitedFacts": true,
+        "excludesRawHistory": true,
+        "containsRawAnswerText": false
+      },
+      "trace": {
+        "briefRule": "brief.focus.root-competency",
+        "citationCount": 4,
+        "topFactCount": 4,
+        "rootSkillRiskCount": 1,
+        "dueReviewCount": 0,
+        "handoffFingerprint": "handoff-15atzjv"
+      }
+    }
+  }
+}

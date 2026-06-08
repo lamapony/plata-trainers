@@ -23,6 +23,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add an inspectable learner memory fact schema derived from the event log.
 - [x] Build a memory inspector so learners can see, export, and delete personalization facts.
 - [x] Prototype optional account memory as a vault for derived learning facts, not raw answer history.
+- [x] Add a strict agent handoff packet so a future account-resident helper receives cited tasks instead of raw learner history.
 - [ ] Evaluate a small account-resident `OpenClaw` agent against deterministic learner profiles; see [Learner Memory Agent RFC](./LEARNER_MEMORY_AGENT_RFC.md).
 
 ## Current Sprint
@@ -251,3 +252,12 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Snapshot-test briefs for fixed learner profiles, including root competency and due-review focus.
 - [x] Mutation-test raw-text leaks, missing focus citations, source-fingerprint drift, and lost root competency focus.
 - [x] Include `check:memory-brief` in `npm run check` and project health.
+
+## Agent Handoff Sprint
+
+- [x] Add `PlataAgentHandoff` as the model-facing packet built only from `PlataMemoryBrief`.
+- [x] Include one task, required citations, allowed actions, blocked actions, response contract, guardrails, trace, and stable fingerprint.
+- [x] Export `agentHandoff` beside `memoryBrief` in dashboard profile JSON.
+- [x] Snapshot-test handoff packets for fixed learner profiles, including due-review and root-competency repair paths.
+- [x] Mutation-test raw-text leaks, missing citations, disabled citation requirements, missing action constraints, lost root-skill focus, and fingerprint drift.
+- [x] Include `check:agent-handoff` in `npm run check` and project health deterministic fixture reporting.

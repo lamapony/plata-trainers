@@ -15,6 +15,7 @@ const eventsSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-events
 const memorySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory.js"), "utf8");
 const memoryVaultSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory-vault.js"), "utf8");
 const memoryBriefSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-memory-brief.js"), "utf8");
+const agentHandoffSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-agent-handoff.js"), "utf8");
 const advisorSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-advisor.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
@@ -170,6 +171,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
   vm.runInContext(memoryVaultSource, env.context, { filename: "shared/plata-memory-vault.js" });
   vm.runInContext(memoryBriefSource, env.context, { filename: "shared/plata-memory-brief.js" });
+  vm.runInContext(agentHandoffSource, env.context, { filename: "shared/plata-agent-handoff.js" });
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
@@ -583,6 +585,17 @@ function runPortableProfileSmoke() {
   assert(payload.memoryBrief.guardrails && payload.memoryBrief.guardrails.containsRawAnswerText === false, "dashboard memory brief excludes raw answer text");
   assert(payload.memoryBrief.focus.kind === "inspect" || payload.memoryBrief.focus.citedFactIds.length > 0, "dashboard memory brief focus cites facts");
   assert(!JSON.stringify(payload.memoryBrief).includes("should not leak"), "dashboard memory brief excludes raw plan answer text");
+  assert(payload.agentHandoff && payload.agentHandoff.handoffType === "plata.agent-handoff", "dashboard export includes agent handoff packet");
+  assert(payload.agentHandoff.sourceBriefFingerprint === payload.memoryBrief.fingerprint, "dashboard agent handoff cites exported memory brief fingerprint");
+  assert(payload.agentHandoff.sourceVaultFingerprint === payload.memoryVault.fingerprint, "dashboard agent handoff cites exported vault fingerprint");
+  assert(payload.agentHandoff.guardrails && payload.agentHandoff.guardrails.usesOnlyCitedFacts === true, "dashboard agent handoff declares cited-fact guardrail");
+  assert(payload.agentHandoff.guardrails && payload.agentHandoff.guardrails.containsRawAnswerText === false, "dashboard agent handoff excludes raw answer text");
+  assert(payload.agentHandoff.responseContract && payload.agentHandoff.responseContract.maxRecommendations === 1, "dashboard agent handoff limits recommendations");
+  assert(payload.agentHandoff.task.kind === "inspect-memory" || payload.agentHandoff.requiredCitations.length >= payload.agentHandoff.task.requiredCitationCount, "dashboard agent handoff includes required citations");
+  assert(!Object.prototype.hasOwnProperty.call(payload.agentHandoff, "memoryVault"), "dashboard agent handoff does not embed memory vault");
+  assert(!Object.prototype.hasOwnProperty.call(payload.agentHandoff, "eventLog"), "dashboard agent handoff does not embed event log");
+  assert(!Object.prototype.hasOwnProperty.call(payload.agentHandoff, "practicePlan"), "dashboard agent handoff does not embed practice plan");
+  assert(!JSON.stringify(payload.agentHandoff).includes("should not leak"), "dashboard agent handoff excludes raw plan answer text");
 
   const importEnv = makeContext();
   loadKernelAndDashboard(importEnv);

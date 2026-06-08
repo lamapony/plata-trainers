@@ -16,6 +16,9 @@ const {
   evaluateAdvisorFixtures
 } = require("./smoke-advisor-fixtures.js");
 const {
+  evaluateAgentHandoffFixtures
+} = require("./smoke-agent-handoff.js");
+const {
   evaluatePersonalizationProfiles
 } = require("./smoke-personalization-eval.js");
 
@@ -33,6 +36,7 @@ const requiredGates = [
   { id: "check:memory-corrections", category: "personalization", contract: "Learner-corrected memory facts keep a strict schema, source fingerprints, and no raw answers." },
   { id: "check:memory-vault", category: "personalization", contract: "Optional account memory vaults contain derived facts only, reject raw answer history, and merge imports without resurrecting hidden/corrected facts." },
   { id: "check:memory-brief", category: "personalization", contract: "Agent-readable memory briefs cite vault facts, preserve root-skill focus, and exclude raw history." },
+  { id: "check:agent-handoff", category: "personalization", contract: "Agent handoff packets cite memory-brief facts, constrain allowed actions, and reject raw history." },
   { id: "check:advisor", category: "personalization", contract: "Deterministic advisor advice cites learner memory facts and rejects privacy leaks." },
   { id: "check:personalization-eval", category: "personalization", contract: "Fixed learner profiles prove memory, planner, advisor, and counterfactual drift stay aligned." },
   { id: "check:personalization-mutations", category: "mutation", contract: "Bad personalization advisor/planner contracts fail the cross-layer evaluation harness." },
@@ -351,6 +355,39 @@ function fixtureRows(root, issues) {
     fresh: advisorIssues.length === 0 && !!advisorEvaluation,
     status: advisorIssues.length ? "fail" : "pass",
     issues: advisorIssues
+  });
+
+  const agentHandoffFixturePath = "scripts/fixtures/agent-handoff.snapshot.json";
+  const agentHandoffScript = "scripts/smoke-agent-handoff.js";
+  const agentHandoffIssues = [];
+  let agentHandoffFixture = null;
+  let agentHandoffEvaluation = null;
+  if (!fileExists(root, agentHandoffFixturePath)) {
+    agentHandoffIssues.push("fixture file missing");
+  } else {
+    agentHandoffFixture = readJson(root, agentHandoffFixturePath);
+    try {
+      agentHandoffEvaluation = evaluateAgentHandoffFixtures({ root });
+    } catch (err) {
+      agentHandoffIssues.push(`fixture is stale: ${err.message.split(/\r?\n/)[0]}`);
+    }
+  }
+  if (!fileExists(root, agentHandoffScript)) agentHandoffIssues.push(`missing checker ${agentHandoffScript}`);
+  agentHandoffIssues.forEach(issue => issues.push(`agent-handoff-profiles fixture: ${issue}`));
+  rows.push({
+    id: "agent-handoff-profiles",
+    title: "Agent handoff profile fixtures",
+    fixturePath: agentHandoffFixturePath,
+    builderScript: agentHandoffScript,
+    checkScript: "check:agent-handoff",
+    updateCommand: "node scripts/smoke-agent-handoff.js --update",
+    schemaVersion: agentHandoffFixture && agentHandoffFixture.schemaVersion || null,
+    fixedNow: agentHandoffFixture && agentHandoffFixture.generatedAt || "",
+    scenarios: agentHandoffEvaluation ? agentHandoffEvaluation.profiles.map(item => item.id) : [],
+    lineCount: lineCount(root, agentHandoffFixturePath),
+    fresh: agentHandoffIssues.length === 0 && !!agentHandoffEvaluation,
+    status: agentHandoffIssues.length ? "fail" : "pass",
+    issues: agentHandoffIssues
   });
 
   const personalizationScript = "scripts/smoke-personalization-eval.js";
