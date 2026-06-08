@@ -49,6 +49,7 @@ function makeContext(initialStorage, options) {
     "#trainer-cards": makeElement("div"),
     "#due-cards": makeElement("div"),
     "#practice-plan": makeElement("div"),
+    "#evidence-ledger": makeElement("div"),
     "#competency-list": makeElement("div"),
     "#mastery-list": makeElement("div"),
     "#weak-list": makeElement("div"),
@@ -239,6 +240,7 @@ function runEmptyDashboardSmoke() {
   assert(/Why this step/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders planner explanations in the practice plan");
   assert(/no local progress yet/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains starter plan evidence");
   assert(env.storage[env.context.PlataPlanner.practicePlanStorageKey], "dashboard persists active practice plan");
+  assert(/No learning evidence yet/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard renders empty evidence ledger state");
   assert(/No weak root skills/.test(env.elements["#competency-list"].innerHTML), "dashboard renders empty competency graph state");
   assert(/No weak mastery signals/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders empty mastery state");
   assert(/No raw weak tags detected/.test(env.elements["#weak-list"].innerHTML), "dashboard renders empty raw weak-tag state");
@@ -278,6 +280,9 @@ function runSeededMasterySmoke() {
   assert(env.storage[env.context.PlataPlanner.practicePlanStorageKey], "dashboard stores repair plan tracker state");
   assert(/Read passive agency/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation highlights weak mastery");
   assert(/Open repair scene/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation opens the repair scene");
+  assert(/Open mastery signal/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger shows open mastery signals");
+  assert(/Read passive agency/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger names the open signal");
+  assert(/1 wrong \/ 1 total/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger includes signal counts");
 }
 
 function runStartedPlanSmoke() {
@@ -421,6 +426,9 @@ function runClosedMasterySmoke() {
   assert(!/signal=passive-agency/.test(dueHtml), "dashboard closed due cards have no repair link");
   assert(!/signal=passive-agency/.test(planHtml), "dashboard closed practice plan has no repair link");
   assert(!/Open repair scene/.test(dueHtml), "dashboard closed due cards do not use repair CTA");
+  assert(/Closed repair/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger shows closed repairs");
+  assert(/Read passive agency/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger names the closed signal");
+  assert(/Name the missing actor/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger shows repair closure action");
 }
 
 async function runDynamicCatalogSmoke() {
@@ -505,6 +513,7 @@ async function run() {
   console.log("ok - dashboard confirms plan-step returns from trainer routes");
   console.log("ok - dashboard explains why planner steps were selected");
   console.log("ok - dashboard explains practice-plan execution evidence");
+  console.log("ok - dashboard renders the learning evidence ledger");
   console.log("ok - dashboard renders mastery repair paths");
   console.log("ok - dashboard retires closed mastery repairs");
   console.log("ok - dashboard loads lesson data from catalog");

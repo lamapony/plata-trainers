@@ -337,6 +337,54 @@ h3 { font-size: 30px; }
   text-underline-offset: 4px;
 }
 
+.evidence-ledger { display: grid; gap: 10px; }
+.ledger-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.34fr) minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--green);
+  border-radius: 8px;
+  background: linear-gradient(145deg, oklch(0.27 0.026 150 / 0.86), oklch(0.22 0.024 150 / 0.9));
+  box-shadow: 0 12px 28px oklch(0 0 0 / 0.14);
+}
+.ledger-row.open, .ledger-row.reopened { border-left-color: var(--ember); }
+.ledger-row.miss { border-left-color: oklch(0.66 0.18 26); }
+.ledger-row.correct { border-left-color: oklch(0.72 0.12 205); }
+.ledger-status { display: grid; align-content: start; gap: 8px; }
+.ledger-status span {
+  width: fit-content;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: oklch(1 0 0 / 0.04);
+  color: var(--text);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.ledger-status time { color: var(--muted); font-size: 12px; }
+.ledger-main h3 { margin: 0 0 6px; color: var(--text); font-size: 22px; line-height: 1.12; }
+.ledger-main p { margin: 0; color: var(--muted); line-height: 1.45; }
+.ledger-facts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; }
+.ledger-facts span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: oklch(1 0 0 / 0.035);
+  color: var(--muted);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .mastery-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .competency-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .mastery-card {
@@ -487,6 +535,7 @@ h3 { font-size: 30px; }
 @media (max-width: 820px) {
   .practice-plan-head { grid-template-columns: 1fr; }
   .practice-plan-head > span { justify-self: start; white-space: normal; }
+  .ledger-row { grid-template-columns: 1fr; gap: 10px; }
   .mastery-list, .competency-list { grid-template-columns: 1fr; }
   .quality-metrics, .quality-lessons { grid-template-columns: 1fr; }
   .quality-evidence-row { grid-template-columns: 1fr; }
