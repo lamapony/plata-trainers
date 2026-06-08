@@ -224,3 +224,4 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Remove relevant memory facts and prove recommendations drift predictably.
 - [x] Split memory-backed repair advice from current-evidence repair advice when no memory facts are cited.
 - [x] Include the evaluation harness in `npm run check` and project health.
+- [x] Add `check:personalization-mutations` to prove broken advisor/planner personalization contracts fail CI.

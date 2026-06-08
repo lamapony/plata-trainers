@@ -59,6 +59,8 @@ The dashboard memory inspector renders those facts for the learner, supports hid
 
 `scripts/smoke-personalization-eval.js` is the cross-layer personalization harness. It runs the fixed learner profiles through memory, planner, and advisor together, then removes relevant memory facts to prove recommendations drift predictably. This catches advice that claims learner-memory evidence without cited facts.
 
+`scripts/mutation-personalization-eval.js` proves that harness is not decorative. It mutates temporary copies of the advisor and planner to catch memory-backed repair drift, dropped fallback facts, corrupted planner-selected citations, ignored review-due facts, and raw-text guardrail regressions.
+
 `scripts/debug-profile-replay.js --file plata-backup.json` is the maintainer-facing replay debugger for dashboard exports. It reads the exported `eventLog` when present, derives one from legacy `trainers` + `practicePlan` exports when needed, and prints trainer, signal, item, plan, memory-correction, fingerprint, and warning summaries without raw learner answer text.
 
 `plata-catalog.js` is the static trainer registry used by the dashboard. Gold lesson entries can declare `lessonGlobal` and `lessonDataPath`; the dashboard loads those data files on demand to build mastery/remediation recommendations without hardcoding individual lesson globals.

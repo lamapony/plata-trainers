@@ -33,6 +33,7 @@ const requiredGates = [
   { id: "check:memory-corrections", category: "personalization", contract: "Learner-corrected memory facts keep a strict schema, source fingerprints, and no raw answers." },
   { id: "check:advisor", category: "personalization", contract: "Deterministic advisor advice cites learner memory facts and rejects privacy leaks." },
   { id: "check:personalization-eval", category: "personalization", contract: "Fixed learner profiles prove memory, planner, advisor, and counterfactual drift stay aligned." },
+  { id: "check:personalization-mutations", category: "mutation", contract: "Bad personalization advisor/planner contracts fail the cross-layer evaluation harness." },
   { id: "check:profile-replay", category: "debug", contract: "Dashboard JSON exports can be replay-debugged by maintainers." },
   { id: "check:planner", category: "planner", contract: "Planner decisions and practice plans preserve traces and explanations." },
   { id: "check:planner-mutations", category: "mutation", contract: "Bad mastery/remediation planner contracts fail CI." },
@@ -351,6 +352,7 @@ function fixtureRows(root, issues) {
   });
 
   const personalizationScript = "scripts/smoke-personalization-eval.js";
+  const personalizationMutationScript = "scripts/mutation-personalization-eval.js";
   const personalizationIssues = [];
   let personalizationEvaluation = null;
   if (!fileExists(root, memoryFixturePath)) {
@@ -363,6 +365,7 @@ function fixtureRows(root, issues) {
     }
   }
   if (!fileExists(root, personalizationScript)) personalizationIssues.push(`missing checker ${personalizationScript}`);
+  if (!fileExists(root, personalizationMutationScript)) personalizationIssues.push(`missing mutation proof ${personalizationMutationScript}`);
   personalizationIssues.forEach(issue => issues.push(`personalization-evaluation fixture: ${issue}`));
   rows.push({
     id: "personalization-evaluation",
@@ -370,6 +373,8 @@ function fixtureRows(root, issues) {
     fixturePath: memoryFixturePath,
     builderScript: personalizationScript,
     checkScript: "check:personalization-eval",
+    mutationScript: personalizationMutationScript,
+    mutationCheckScript: "check:personalization-mutations",
     schemaVersion: memoryFixture && memoryFixture.schemaVersion || null,
     fixedNow: memoryFixture && memoryFixture.fixedNow || "",
     scenarios: personalizationEvaluation ? personalizationEvaluation.profiles.map(item => item.id) : [],
