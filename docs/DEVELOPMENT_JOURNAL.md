@@ -27,6 +27,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add a strict agent handoff packet so a future account-resident helper receives cited tasks instead of raw learner history.
 - [x] Reject embedded heavy agent runtime scope in favor of a lightweight companion and read-only Hermes bridge.
 - [x] Add deterministic companion cards and Hermes bridge briefs over advisor/handoff packets.
+- [x] Promote the companion/planner route into a user-facing Today program shell.
 - [ ] Evaluate external Hermes/OpenClaw-style integrations as optional explainers, not sources of truth; see [Companion Architecture](./COMPANION_ARCHITECTURE.md).
 
 ## Current Sprint
@@ -132,6 +133,14 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Export `plata.hermes-bridge-brief` as a read-only packet for external Hermes/OpenClaw-style tools.
 - [x] Render the dashboard recommendation as a Study companion card while preserving planner/advisor traces.
 - [x] Add `check:companion` and project-health coverage for deterministic, cited, read-only bridge behavior.
+
+## Program Shell Sprint
+
+- [x] Add a top-level `Today` dashboard section so the next practice step is visible before diagnostics.
+- [x] Reuse the same resolved planner route for Today and the detailed practice plan.
+- [x] Show companion headline, rationale, progress, memory facts, guardrails, and citations in one user-facing shell.
+- [x] Fall back to a planner-route shell when no cited memory facts exist yet.
+- [x] Cover starter and memory-backed Today states in dashboard smoke tests.
 
 ## Lesson Exercise Audit Sprint
 

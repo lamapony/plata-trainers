@@ -56,6 +56,7 @@ function makeContext(initialStorage, options) {
   options = options || {};
   const elements = {
     "#trainer-cards": makeElement("div"),
+    "#today-program": makeElement("div"),
     "#due-cards": makeElement("div"),
     "#practice-plan": makeElement("div"),
     "#evidence-ledger": makeElement("div"),
@@ -249,6 +250,10 @@ function runEmptyDashboardSmoke() {
   loadKernelAndDashboard(env);
 
   assert(env.elements["#trainer-cards"].children.length === 6, "dashboard renders all trainer cards");
+  assert(/Planner route/.test(env.elements["#today-program"].innerHTML), "dashboard renders Today program shell for starter routes");
+  assert(/Start Lesson 01/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes the starter step");
+  assert(/0%/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell shows route progress");
+  assert(/Local progress/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell labels local-progress recommendations");
   assert(env.elements["#due-cards"].children.length === 3, "dashboard renders practice recommendations");
   assert(/Starter plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders starter practice plan");
   assert(/Active plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard labels the current tracked plan");
@@ -300,6 +305,12 @@ function runSeededMasterySmoke() {
   assert(/highest open mastery signal/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains why the repair step is first");
   assert(/Evidence: 1 miss \/ 1 try/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders repair evidence counts");
   assert(/Memory: weak_signal passive-agency memsrc-/.test(env.elements["#practice-plan"].innerHTML), "dashboard practice plan cites planner memory facts");
+  assert(/Study companion/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell renders a companion-backed step");
+  assert(/Repair passive-agency/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes companion repair focus");
+  assert(/Cited memory/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell exposes cited memory");
+  assert(/Hermes optional/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell keeps Hermes optional");
+  assert(/cmp-/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell includes companion fingerprint");
+  assert(!/De lover, at radiatoren bliver fikset hurtigt/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell does not leak raw learner answers");
   assert(/Study companion/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders companion receipt for memory-backed plans");
   assert(/Cited memory/.test(env.elements["#practice-plan"].innerHTML), "dashboard companion receipt exposes cited memory facts");
   assert(/No model call/.test(env.elements["#practice-plan"].innerHTML), "dashboard companion receipt renders model guardrail");
@@ -701,6 +712,7 @@ async function run() {
   console.log("ok - dashboard renders compiled practice plans");
   console.log("ok - dashboard persists active practice-plan tracking");
   console.log("ok - dashboard renders active practice-plan execution state");
+  console.log("ok - dashboard renders Today program shell");
   console.log("ok - dashboard promotes the next actionable practice-plan step");
   console.log("ok - dashboard confirms plan-step returns from trainer routes");
   console.log("ok - dashboard explains why planner steps were selected");

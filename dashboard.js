@@ -493,6 +493,20 @@ function planPrimaryActionHtml(plan, planner) {
   `;
 }
 
+function resolvePracticePlan(candidates) {
+  const planner = window.PlataPlanner;
+  const compiled = planner && planner.practicePlan ? planner.practicePlan(candidates, { limit: 3 }) : null;
+  const active = planner && planner.readPracticePlan ? planner.readPracticePlan() : null;
+  let plan = active && active.steps && active.steps.length ? active : compiled;
+  if ((!active || !active.steps || active.steps.length === 0) && planner && planner.savePracticePlan && compiled && compiled.steps && compiled.steps.length) {
+    plan = planner.savePracticePlan(compiled);
+  }
+  if (planner && planner.planStatus && plan) {
+    plan = planner.planStatus(plan, candidates);
+  }
+  return { planner, plan, compiled };
+}
+
 function advisorReceiptForPlan(plan) {
   const advisor = window.PlataAdvisor;
   const companionApi = window.PlataCompanion;
@@ -511,6 +525,104 @@ function advisorReceiptForPlan(plan) {
     step,
     actionHref: planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref
   };
+}
+
+function todayMetricHtml(label, value) {
+  return `<span><strong>${escapeHtml(value)}</strong>${escapeHtml(label)}</span>`;
+}
+
+function todayFactHtml(fact) {
+  const labels = [
+    fact.kind || "",
+    fact.signal || "",
+    fact.sourceFingerprint || ""
+  ].filter(Boolean);
+  return `
+    <span>
+      <strong>${escapeHtml(fact.factId || fact.id || "fact")}</strong>
+      ${escapeHtml(labels.join(" · "))}
+    </span>
+  `;
+}
+
+function renderTodayProgram(candidates, context) {
+  const container = $("#today-program");
+  if (!container) return;
+  const resolved = context || resolvePracticePlan(candidates);
+  const planner = resolved.planner;
+  const plan = resolved.plan;
+  if (!planner || !plan || !plan.steps || plan.steps.length === 0) {
+    container.innerHTML = '<p class="narrative">Start any trainer to compile a short practice route.</p>';
+    return;
+  }
+
+  const step = plan.completed ? null : (planner.actionablePracticePlanStep ? planner.actionablePracticePlanStep(plan) : plan.primaryStep);
+  const actionHref = step ? (planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref) : "";
+  const receipt = advisorReceiptForPlan(plan);
+  const companion = receipt && receipt.companion || null;
+  const advice = receipt && receipt.advice || null;
+  const memoryBundle = buildMemoryFacts(null, plan);
+  const visibleFacts = memoryBundle.visibleFacts || [];
+  const progress = plan.steps.length ? Math.min(100, Math.max(0, Math.round(((plan.completedCount || 0) / plan.steps.length) * 100))) : 0;
+  const headline = companion && companion.headline || step && step.title || plan.title || "Practice route";
+  const message = companion && companion.message || step && step.copy || plan.copy || "Continue the current practice route.";
+  const why = companion && companion.why || "This route comes from the deterministic planner and the current practice record.";
+  const actionLabel = step ? (step.status === "active" ? "Continue current step" : step.primaryLabel || "Start next step") : "Review completed plan";
+  const routeMeta = step
+    ? [`Step ${step.number} of ${plan.steps.length}`, step.trainerName || "Practice", step.minutes].filter(Boolean).join(" · ")
+    : `${plan.steps.length} step${plan.steps.length === 1 ? "" : "s"} complete`;
+  const citedFacts = companion && companion.citedFacts || [];
+  const guardrailLabels = [
+    companion ? "Study companion" : "Planner route",
+    companion && companion.guardrails && companion.guardrails.externalAgentOptional ? "Hermes optional" : "",
+    advice && advice.guardrails && advice.guardrails.requiresModel === false ? "No model call" : "",
+    citedFacts.length ? "Cited memory" : "Local progress"
+  ].filter(Boolean);
+
+  container.innerHTML = `
+    <article class="today-program-card ${escapeHtml(companion && companion.kind || plan.kind || "continue")}">
+      <div class="today-main">
+        <div>
+          <p class="eyebrow">${escapeHtml(companion ? "Study companion" : plan.completed ? "Plan complete" : "Planner route")}</p>
+          <h3>${escapeHtml(headline)}</h3>
+          <p>${escapeHtml(message)}</p>
+          ${step && actionHref ? `
+            <div class="today-action">
+              <a class="btn primary" href="${escapeHtml(actionHref)}">${escapeHtml(actionLabel)}</a>
+              <span>${escapeHtml(routeMeta)}</span>
+            </div>
+          ` : ""}
+        </div>
+        <div class="today-progress" aria-label="${progress}% complete">
+          <strong>${progress}%</strong>
+          <span>route complete</span>
+          <div><span style="width: ${progress}%"></span></div>
+        </div>
+      </div>
+      <div class="today-context">
+        <div class="today-why">
+          <span class="eyebrow">Why this</span>
+          <p>${escapeHtml(why)}</p>
+          <div class="today-tags">
+            ${guardrailLabels.map(label => `<span>${escapeHtml(label)}</span>`).join("")}
+            ${companion && companion.fingerprint ? `<span>${escapeHtml(companion.fingerprint)}</span>` : ""}
+          </div>
+        </div>
+        <div class="today-facts">
+          ${todayMetricHtml("visible memory facts", visibleFacts.length)}
+          ${todayMetricHtml("open step", step ? step.number : "done")}
+          ${todayMetricHtml("plan steps", plan.steps.length)}
+          ${companion && companion.confidence ? todayMetricHtml("confidence", companion.confidence) : ""}
+        </div>
+      </div>
+      ${citedFacts.length ? `
+        <div class="today-citations" aria-label="Cited companion memory">
+          <span class="eyebrow">Cited memory</span>
+          <div>${citedFacts.slice(0, 4).map(todayFactHtml).join("")}</div>
+        </div>
+      ` : ""}
+    </article>
+  `;
 }
 
 function advisorAdviceForPracticePlan(plan, memoryFacts, step) {
@@ -679,20 +791,11 @@ function dashboardCandidates() {
   }).filter(x => x !== null && x.decision);
 }
 
-function renderPracticePlan(candidates) {
+function renderPracticePlan(candidates, context) {
   const container = $("#practice-plan");
   if (!container) return;
   container.innerHTML = "";
-  const planner = window.PlataPlanner;
-  const compiled = planner && planner.practicePlan ? planner.practicePlan(candidates, { limit: 3 }) : null;
-  const active = planner && planner.readPracticePlan ? planner.readPracticePlan() : null;
-  let plan = active && active.steps && active.steps.length ? active : compiled;
-  if ((!active || !active.steps || active.steps.length === 0) && planner && planner.savePracticePlan && compiled && compiled.steps && compiled.steps.length) {
-    plan = planner.savePracticePlan(compiled);
-  }
-  if (planner && planner.planStatus && plan) {
-    plan = planner.planStatus(plan, candidates);
-  }
+  const { planner, plan, compiled } = context || resolvePracticePlan(candidates);
   if (!plan || !plan.steps || plan.steps.length === 0) {
     container.innerHTML = '<p class="narrative">Start any trainer to compile a short practice plan.</p>';
     return;
@@ -1276,8 +1379,10 @@ function importAll() {
 function renderDashboard() {
   masteryCatalogCache = null;
   const candidates = dashboardCandidates();
+  const planContext = resolvePracticePlan(candidates);
   renderTrainerCards();
-  renderPracticePlan(candidates);
+  renderTodayProgram(candidates, planContext);
+  renderPracticePlan(candidates, planContext);
   renderDueCards(candidates);
   renderEvidenceLedger();
   renderMemoryFacts();
