@@ -144,7 +144,62 @@
             "confidence": 0.58,
             "sourceFingerprint": "memsrc-1seovqg"
           }
-        ]
+        ],
+        "advisor": {
+          "advisorId": "openclaw-local-advisor-v1",
+          "kind": "continue",
+          "title": "Continue from the strongest local pattern",
+          "advice": "Use the next small practice block and preserve the context that has already worked.",
+          "nextAction": {
+            "label": "Continue",
+            "href": "",
+            "trainerId": "",
+            "signalTag": ""
+          },
+          "citedFacts": [
+            {
+              "id": "mem-75qg4m",
+              "kind": "stable_strength",
+              "status": "stable",
+              "trainerId": "lesson-b2-radiator-register",
+              "signal": "formal-register-control",
+              "confidence": 0.725,
+              "sourceFingerprint": "memsrc-b95chg"
+            },
+            {
+              "id": "mem-s7pdax",
+              "kind": "preferred_context",
+              "status": "observed",
+              "trainerId": "profile",
+              "signal": "repair",
+              "confidence": 0.66,
+              "sourceFingerprint": "memsrc-1xaipal"
+            },
+            {
+              "id": "mem-dpmj6k",
+              "kind": "preferred_context",
+              "status": "observed",
+              "trainerId": "profile",
+              "signal": "review",
+              "confidence": 0.58,
+              "sourceFingerprint": "memsrc-1seovqg"
+            }
+          ],
+          "evidenceSummary": [
+            "stable_strength:formal-register-control:memsrc-b95chg",
+            "preferred_context:repair:memsrc-1xaipal",
+            "preferred_context:review:memsrc-1seovqg"
+          ],
+          "guardrails": {
+            "deterministic": true,
+            "requiresModel": false,
+            "usesOnlyCitedFacts": true,
+            "containsRawAnswerText": false
+          },
+          "traceRule": "advisor.continue.returning-learner",
+          "traceFingerprint": "adv-1r9kmh1",
+          "plannerRule": ""
+        }
       }
     },
     {
@@ -274,6 +329,41 @@
           "memoryExplanationFacts": [
             "Memory: next_review_due formal-register-control memsrc-1uxszyk"
           ]
+        },
+        "advisor": {
+          "advisorId": "openclaw-local-advisor-v1",
+          "kind": "review",
+          "title": "Review formal-register-control",
+          "advice": "Do a short review because learner memory says this signal is due before it goes cold.",
+          "nextAction": {
+            "label": "Open trainer",
+            "href": "./lessons/lesson-b2-radiator/",
+            "trainerId": "lesson-b2-radiator-register",
+            "signalTag": "formal-register-control"
+          },
+          "citedFacts": [
+            {
+              "id": "mem-tabm00",
+              "kind": "next_review_due",
+              "status": "due",
+              "trainerId": "lesson-b2-radiator-register",
+              "signal": "formal-register-control",
+              "confidence": 0.7,
+              "sourceFingerprint": "memsrc-1uxszyk"
+            }
+          ],
+          "evidenceSummary": [
+            "next_review_due:formal-register-control:memsrc-1uxszyk"
+          ],
+          "guardrails": {
+            "deterministic": true,
+            "requiresModel": false,
+            "usesOnlyCitedFacts": true,
+            "containsRawAnswerText": false
+          },
+          "traceRule": "advisor.review.memory-due",
+          "traceFingerprint": "adv-9q49t0",
+          "plannerRule": "dashboard.review.memory-due"
         }
       }
     },
@@ -383,6 +473,41 @@
           "selectedMemoryFacts": [],
           "memoryScoreLabels": [],
           "memoryExplanationFacts": []
+        },
+        "advisor": {
+          "advisorId": "openclaw-local-advisor-v1",
+          "kind": "maintain",
+          "title": "Keep moving after repairing modal-particle-stance",
+          "advice": "Do not reopen this repair unless a new miss appears; learner memory marks it as resolved.",
+          "nextAction": {
+            "label": "Continue",
+            "href": "./lessons/lesson-b2-radiator/",
+            "trainerId": "lesson-b2-radiator-register",
+            "signalTag": ""
+          },
+          "citedFacts": [
+            {
+              "id": "mem-16omq3k",
+              "kind": "repaired_signal",
+              "status": "resolved",
+              "trainerId": "lesson-b2-radiator-register",
+              "signal": "modal-particle-stance",
+              "confidence": 0.835,
+              "sourceFingerprint": "memsrc-rze77g"
+            }
+          ],
+          "evidenceSummary": [
+            "repaired_signal:modal-particle-stance:memsrc-rze77g"
+          ],
+          "guardrails": {
+            "deterministic": true,
+            "requiresModel": false,
+            "usesOnlyCitedFacts": true,
+            "containsRawAnswerText": false
+          },
+          "traceRule": "advisor.maintain.repaired-signal",
+          "traceFingerprint": "adv-1rgqy79",
+          "plannerRule": "dashboard.continue.healthy-progress"
         }
       }
     },
@@ -585,6 +710,51 @@
             "Memory: recurring_trap passive-agency memsrc-1ncgzt7",
             "Memory: weak_signal passive-agency memsrc-1ncgzt7"
           ]
+        },
+        "advisor": {
+          "advisorId": "openclaw-local-advisor-v1",
+          "kind": "repair",
+          "title": "Repair passive-agency",
+          "advice": "Start with one repair scene because this signal is a recurring trap in learner memory.",
+          "nextAction": {
+            "label": "Open repair scene",
+            "href": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive",
+            "trainerId": "lesson-b2-radiator-register",
+            "signalTag": "passive-agency"
+          },
+          "citedFacts": [
+            {
+              "id": "mem-1b3dbr7",
+              "kind": "recurring_trap",
+              "status": "open",
+              "trainerId": "lesson-b2-radiator-register",
+              "signal": "passive-agency",
+              "confidence": 0.935,
+              "sourceFingerprint": "memsrc-1ncgzt7"
+            },
+            {
+              "id": "mem-13rq6s3",
+              "kind": "weak_signal",
+              "status": "open",
+              "trainerId": "lesson-b2-radiator-register",
+              "signal": "passive-agency",
+              "confidence": 0.855,
+              "sourceFingerprint": "memsrc-1ncgzt7"
+            }
+          ],
+          "evidenceSummary": [
+            "recurring_trap:passive-agency:memsrc-1ncgzt7",
+            "weak_signal:passive-agency:memsrc-1ncgzt7"
+          ],
+          "guardrails": {
+            "deterministic": true,
+            "requiresModel": false,
+            "usesOnlyCitedFacts": true,
+            "containsRawAnswerText": false
+          },
+          "traceRule": "advisor.repair.memory-backed",
+          "traceFingerprint": "adv-rstyc4",
+          "plannerRule": "dashboard.repair.highest-open-mastery"
         }
       }
     }

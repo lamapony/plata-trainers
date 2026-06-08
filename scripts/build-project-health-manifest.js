@@ -12,6 +12,9 @@ const {
 const {
   evaluateLearnerMemoryFixtures
 } = require("./smoke-memory-fixtures.js");
+const {
+  evaluateAdvisorFixtures
+} = require("./smoke-advisor-fixtures.js");
 
 const repoRoot = path.resolve(__dirname, "..");
 
@@ -24,6 +27,7 @@ const requiredGates = [
   { id: "check:events", category: "replay", contract: "Privacy-conscious learning events replay deterministic profile facts." },
   { id: "check:memory", category: "personalization", contract: "Local learner memory facts compile from redacted events with source fingerprints and no raw answers." },
   { id: "check:memory-fixtures", category: "personalization", contract: "Returning, stale, repaired, and recurring-trap learner memory fixtures remain deterministic and planner-cited." },
+  { id: "check:advisor", category: "personalization", contract: "Deterministic advisor advice cites learner memory facts and rejects privacy leaks." },
   { id: "check:profile-replay", category: "debug", contract: "Dashboard JSON exports can be replay-debugged by maintainers." },
   { id: "check:planner", category: "planner", contract: "Planner decisions and practice plans preserve traces and explanations." },
   { id: "check:planner-mutations", category: "mutation", contract: "Bad mastery/remediation planner contracts fail CI." },
@@ -309,6 +313,36 @@ function fixtureRows(root, issues) {
     fresh: memoryIssues.length === 0 && !!memoryEvaluation,
     status: memoryIssues.length ? "fail" : "pass",
     issues: memoryIssues
+  });
+
+  const advisorScript = "scripts/smoke-advisor-fixtures.js";
+  const advisorIssues = [];
+  let advisorEvaluation = null;
+  if (!fileExists(root, memoryFixturePath)) {
+    advisorIssues.push("fixture file missing");
+  } else {
+    try {
+      advisorEvaluation = evaluateAdvisorFixtures({ root });
+    } catch (err) {
+      advisorIssues.push(`fixture is stale: ${err.message.split(/\r?\n/)[0]}`);
+    }
+  }
+  if (!fileExists(root, advisorScript)) advisorIssues.push(`missing checker ${advisorScript}`);
+  advisorIssues.forEach(issue => issues.push(`agent-advice-profiles fixture: ${issue}`));
+  rows.push({
+    id: "agent-advice-profiles",
+    title: "Agent advice profile fixtures",
+    fixturePath: memoryFixturePath,
+    builderScript: advisorScript,
+    checkScript: "check:advisor",
+    updateCommand: "node scripts/smoke-advisor-fixtures.js --update",
+    schemaVersion: memoryFixture && memoryFixture.schemaVersion || null,
+    fixedNow: memoryFixture && memoryFixture.fixedNow || "",
+    scenarios: advisorEvaluation ? advisorEvaluation.profiles.map(item => item.id) : [],
+    lineCount: lineCount(root, memoryFixturePath),
+    fresh: advisorIssues.length === 0 && !!advisorEvaluation,
+    status: advisorIssues.length ? "fail" : "pass",
+    issues: advisorIssues
   });
 
   return rows;

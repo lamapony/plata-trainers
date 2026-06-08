@@ -81,7 +81,7 @@ If account sync is added later, the target should be a memory vault, not a gener
 
 7. Agent evaluation harness
 
-   Fixed learner profiles should test whether the agent gives stable, useful, evidence-backed advice. Bad advice should fail CI in the same spirit as dashboard snapshot diffs.
+   Fixed learner profiles should test whether the agent gives stable, useful, evidence-backed advice. Bad advice should fail CI in the same spirit as dashboard snapshot diffs. The first version is deterministic: `PlataAdvisor` emits local advice from cited memory facts and planner decisions, then `check:advisor` snapshots the result before any model call is allowed into the loop.
 
 ## Open Questions
 

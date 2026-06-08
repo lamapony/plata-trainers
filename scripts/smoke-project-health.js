@@ -39,12 +39,14 @@ function runBaseSmoke() {
   assert(manifest.status === "pass", `project health manifest should pass:\n${manifest.issues.join("\n")}`);
   assert(manifest.totals.gates >= 28, "manifest should enumerate the full QA gate set");
   assert(manifest.gates.some(gate => gate.id === "check:memory-fixtures" && gate.requiredInCheck), "manifest should require learner memory fixtures");
+  assert(manifest.gates.some(gate => gate.id === "check:advisor" && gate.requiredInCheck), "manifest should require advisor fixtures");
   assert(manifest.publicReports.some(report => report.id === "quality" && report.pagesPath === "reports/quality.json"), "manifest should link the quality report");
   assert(manifest.publicReports.some(report => report.id === "skill-coverage" && report.pagesPath === "reports/skill-coverage.json"), "manifest should link the skill coverage report");
   assert(manifest.publicReports.some(report => report.id === "project-health" && report.pagesPath === "reports/project-health.json"), "manifest should link itself as a public report");
   assert(manifest.workflows.every(workflow => workflow.runsFullCheck && workflow.nodeVersion === "24"), "manifest should link full-check workflows");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "dashboard-recommendations" && fixture.fresh), "manifest should link fresh deterministic fixtures");
   assert(manifest.deterministicFixtures.some(fixture => fixture.id === "learner-memory-profiles" && fixture.fresh), "manifest should link fresh learner memory fixtures");
+  assert(manifest.deterministicFixtures.some(fixture => fixture.id === "agent-advice-profiles" && fixture.fresh), "manifest should link fresh agent advice fixtures");
   assert(manifest.guarantees.every(guarantee => guarantee.pass), "manifest guarantees should all pass");
 
   const formatted = formatProjectHealthManifest(manifest);
@@ -106,11 +108,29 @@ function runStaleMemoryFixtureSmoke() {
   }
 }
 
+function runStaleAdvisorFixtureSmoke() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "plata-health-"));
+  try {
+    copyHealthRoot(root);
+    const fixturePath = path.join(root, "scripts", "fixtures", "learner-memory-profiles.json");
+    const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
+    fixture.profiles[0].expected.advisor.traceFingerprint = "adv-mutated";
+    fs.writeFileSync(fixturePath, JSON.stringify(fixture, null, 2) + "\n");
+
+    const manifest = buildProjectHealthManifest({ root });
+    assert(manifest.status === "fail", "manifest should fail when advisor fixtures are stale");
+    assert(manifest.issues.some(issue => issue.includes("agent-advice-profiles fixture: fixture is stale")), "manifest should report stale advisor fixtures");
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+}
+
 function run() {
   runBaseSmoke();
   runMissingGateSmoke();
   runStaleFixtureSmoke();
   runStaleMemoryFixtureSmoke();
+  runStaleAdvisorFixtureSmoke();
   console.log("ok - project health manifest links gates, reports, workflows, and fixtures");
   console.log("ok - project health manifest catches missing QA gates");
   console.log("ok - project health manifest catches stale deterministic fixtures");

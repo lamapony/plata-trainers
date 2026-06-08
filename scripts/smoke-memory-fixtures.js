@@ -238,6 +238,7 @@ function evaluateLearnerMemoryFixtures(options = {}) {
     const compiled = compileProfile(context, profile, fixture.fixedNow);
     const expected = expectedForProfile(profile, compiled);
     if (update) {
+      if (profile.expected && profile.expected.advisor) expected.advisor = profile.expected.advisor;
       profile.expected = expected;
     } else {
       assertProfile(profile, compiled, profile.expected);

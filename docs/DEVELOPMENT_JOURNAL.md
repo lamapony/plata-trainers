@@ -127,7 +127,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Add a dashboard memory inspector before any account sync.
 - [ ] Keep basic practice local-first and account-free.
 - [ ] Prototype optional account sync only after local memory improves recommendations.
-- [ ] Gate any AI agent advice through replayable profiles and privacy-leak tests.
+- [x] Gate any AI agent advice through replayable profiles and privacy-leak tests.
 
 ## Local Learner Memory Sprint
 
@@ -165,3 +165,12 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Prove private raw answer text in fixture events does not leak into memory facts or planner traces.
 - [x] Add an update path for intentional fixture drift: `node scripts/smoke-memory-fixtures.js --update`.
 - [x] Include learner memory fixtures in `npm run check` and project health deterministic fixture reporting.
+
+## Agent Advice Gate Sprint
+
+- [x] Add `PlataAdvisor` as a deterministic local advice layer underneath any future OpenClaw model call.
+- [x] Generate advice only from planner decisions and cited learner memory facts.
+- [x] Require every advice object to include cited fact ids, source fingerprints, next action, guardrails, and a trace fingerprint.
+- [x] Add advisor snapshots for returning context, stale review, repaired signal, and recurring trap learner profiles.
+- [x] Prove advisor output does not include raw answer text from fixture events.
+- [x] Include advisor fixtures in `npm run check` and project health deterministic fixture reporting.

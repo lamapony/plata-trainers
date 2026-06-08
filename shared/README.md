@@ -53,6 +53,8 @@ The dashboard memory inspector renders those facts for the learner, supports hid
 
 `scripts/smoke-memory-fixtures.js` checks deterministic learner memory profiles in `scripts/fixtures/learner-memory-profiles.json`: returning learner context, stale review, repaired signal retention, and recurring trap repair. Use `--update` only when intentional memory/planner drift should become the new baseline.
 
+`plata-advisor.js` exposes `window.PlataAdvisor`, a deterministic advice layer underneath any future OpenClaw-style agent. It turns planner decisions and cited memory facts into a short advice object with fact ids, source fingerprints, next action, guardrails, and a trace fingerprint. `scripts/smoke-advisor-fixtures.js` locks those advice objects to the learner memory fixtures and proves raw answer text does not leak into advice.
+
 `scripts/debug-profile-replay.js --file plata-backup.json` is the maintainer-facing replay debugger for dashboard exports. It reads the exported `eventLog` when present, derives one from legacy `trainers` + `practicePlan` exports when needed, and prints trainer, signal, item, plan, fingerprint, and warning summaries without raw learner answer text.
 
 `plata-catalog.js` is the static trainer registry used by the dashboard. Gold lesson entries can declare `lessonGlobal` and `lessonDataPath`; the dashboard loads those data files on demand to build mastery/remediation recommendations without hardcoding individual lesson globals.
