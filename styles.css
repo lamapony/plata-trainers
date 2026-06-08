@@ -1455,7 +1455,7 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   gap: 16px;
   align-items: start;
 }
-.proof-command-card, .proof-artifact-list, .proof-surface, .proof-health-card, .proof-review-table, .proof-summary-preview {
+.proof-command-card, .proof-artifact-list, .proof-surface, .proof-guided-card, .proof-health-card, .proof-review-table, .proof-summary-preview {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--card);
@@ -1467,7 +1467,7 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   padding: 20px;
 }
 .proof-command-card.fail { border-color: var(--ember); }
-.proof-command-card h3, .proof-surface h3, .proof-health-card h3 {
+.proof-command-card h3, .proof-surface h3, .proof-guided-card h3, .proof-health-card h3 {
   font-size: clamp(25px, 3vw, 33px);
   letter-spacing: 0;
   line-height: 1.04;
@@ -1498,6 +1498,12 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 }
+.proof-guided {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
 .proof-surface {
   display: flex;
   min-height: 295px;
@@ -1505,11 +1511,21 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   gap: 14px;
   padding: 20px;
 }
+.proof-guided-card {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 20px;
+}
 .proof-surface.fail {
   border-color: var(--ember);
   box-shadow: 0 0 0 1px var(--ember), var(--shadow);
 }
-.proof-surface p {
+.proof-guided-card.fail {
+  border-color: var(--ember);
+  box-shadow: 0 0 0 1px var(--ember), var(--shadow);
+}
+.proof-surface p, .proof-guided-card p {
   margin: 0;
   color: var(--muted);
   line-height: 1.55;
@@ -1597,7 +1613,7 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   .memory-correction-row .memory-delete { justify-self: start; }
   .mastery-list, .competency-list, .memory-grid { grid-template-columns: 1fr; }
   .quality-metrics, .quality-lessons { grid-template-columns: 1fr; }
-  .program-pillars, .program-capabilities, .proof-digest-lead, .proof-digest-grid, .proof-digest-lower, .proof-artifacts, .proof-surfaces, .proof-health-panel, .proof-review { grid-template-columns: 1fr; }
+  .program-pillars, .program-capabilities, .proof-digest-lead, .proof-digest-grid, .proof-digest-lower, .proof-artifacts, .proof-surfaces, .proof-guided, .proof-health-panel, .proof-review { grid-template-columns: 1fr; }
   .program-pillar { min-height: auto; }
   .proof-digest-card, .proof-surface { min-height: auto; }
   .quality-evidence-row { grid-template-columns: 1fr; }

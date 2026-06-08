@@ -8,6 +8,7 @@ const vm = require("node:vm");
 const { buildDemoLearnerReport } = require("./build-demo-learner-report.js");
 const { buildCapabilityMap } = require("./build-capability-map.js");
 const { buildProjectHealthManifest } = require("./build-project-health-manifest.js");
+const { buildGuidedSessionReport } = require("./build-guided-session-report.js");
 const { writeQuickstartProof } = require("./build-quickstart-proof.js");
 const { buildProofDigest } = require("./build-proof-digest.js");
 
@@ -44,6 +45,7 @@ async function run() {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "plata-proof-page-"));
   try {
     const demo = buildDemoLearnerReport();
+    const guided = buildGuidedSessionReport();
     const capabilities = buildCapabilityMap();
     const health = buildProjectHealthManifest();
     const digest = buildProofDigest();
@@ -53,6 +55,7 @@ async function run() {
     const responses = {
       "./reports/proof-digest.json": { json: digest },
       "./reports/demo-learner.json": { json: demo },
+      "./reports/guided-session.json": { json: guided },
       "./reports/capabilities.json": { json: capabilities },
       "./reports/project-health.json": { json: health },
       "./reports/quickstart-proof/quickstart.json": { json: quickstart },
@@ -68,16 +71,18 @@ async function run() {
       "#proof-digest",
       "#proof-artifacts",
       "#proof-surfaces",
+      "#proof-guided",
       "#proof-health",
       "#proof-review",
       "#proof-digest-link",
       "#proof-health-link",
       "#proof-capabilities-link",
+      "#proof-guided-link",
       "#proof-quickstart-link"
     ].forEach(selector => {
       elements[selector] = makeElement(selector);
     });
-    ["#proof-digest-link", "#proof-health-link", "#proof-capabilities-link", "#proof-quickstart-link"].forEach(selector => {
+    ["#proof-digest-link", "#proof-health-link", "#proof-capabilities-link", "#proof-guided-link", "#proof-quickstart-link"].forEach(selector => {
       elements[selector].attributes["aria-disabled"] = "true";
     });
 
@@ -122,6 +127,11 @@ async function run() {
     assert(elements["#proof-surfaces"].innerHTML.includes("Demo learner"), "proof page did not render demo learner surface");
     assert(elements["#proof-surfaces"].innerHTML.includes("Capability map"), "proof page did not render capability map surface");
     assert(elements["#proof-surfaces"].innerHTML.includes("Golden review fixture"), "proof page did not render golden review surface");
+    assert(elements["#proof-guided"].innerHTML.includes("Generated guided-session report"), "proof page did not render guided report card");
+    assert(elements["#proof-guided"].innerHTML.includes("Guided drift is reviewable"), "proof page did not render guided review card");
+    assert(elements["#proof-guided"].innerHTML.includes("check:guided-session-diff"), "proof page did not render guided diff gate");
+    assert(elements["#proof-guided"].innerHTML.includes("scripts/diff-guided-session-report.js") || elements["#proof-guided"].innerHTML.includes("PR diff"), "proof page did not render guided diff source");
+    assert(elements["#proof-guided"].innerHTML.includes("outcome receipt"), "proof page did not render guided outcome receipt proof");
     assert(elements["#proof-health"].innerHTML.includes("Gate categories"), "proof page did not render gate categories");
     assert(elements["#proof-health"].innerHTML.includes("all-required-gates-in-check"), "proof page did not render health guarantees");
     assert(elements["#proof-review"].innerHTML.includes("Quality"), "proof page did not render review surface rows");
@@ -129,10 +139,12 @@ async function run() {
     assert(elements["#proof-digest-link"].href === "./reports/proof-digest.json", "proof digest link was not enabled");
     assert(elements["#proof-health-link"].href === "./reports/project-health.json", "proof health link was not enabled");
     assert(elements["#proof-capabilities-link"].href === "./reports/capabilities.json", "proof capability link was not enabled");
+    assert(elements["#proof-guided-link"].href === "./reports/guided-session.json", "proof guided link was not enabled");
     assert(elements["#proof-quickstart-link"].href === "./reports/quickstart-proof/quickstart.md", "proof quickstart link was not enabled");
     assert(!Object.prototype.hasOwnProperty.call(elements["#proof-digest-link"].attributes, "aria-disabled"), "proof digest link remains disabled");
     assert(!Object.prototype.hasOwnProperty.call(elements["#proof-health-link"].attributes, "aria-disabled"), "proof health link remains disabled");
     assert(!Object.prototype.hasOwnProperty.call(elements["#proof-capabilities-link"].attributes, "aria-disabled"), "proof capability link remains disabled");
+    assert(!Object.prototype.hasOwnProperty.call(elements["#proof-guided-link"].attributes, "aria-disabled"), "proof guided link remains disabled");
     assert(!Object.prototype.hasOwnProperty.call(elements["#proof-quickstart-link"].attributes, "aria-disabled"), "proof quickstart link remains disabled");
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });

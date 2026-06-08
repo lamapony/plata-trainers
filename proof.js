@@ -6,6 +6,7 @@
   var proofSources = {
     digest: "./reports/proof-digest.json",
     demo: "./reports/demo-learner.json",
+    guided: "./reports/guided-session.json",
     capabilities: "./reports/capabilities.json",
     health: "./reports/project-health.json",
     quickstart: quickstartBase + "quickstart.json",
@@ -64,6 +65,7 @@
     enableLink("#proof-digest-link", proofSources.digest);
     enableLink("#proof-health-link", proofSources.health);
     enableLink("#proof-capabilities-link", proofSources.capabilities);
+    enableLink("#proof-guided-link", proofSources.guided);
     enableLink("#proof-quickstart-link", quickstartBase + "quickstart.md");
     var passing = data.demo.status === "pass" &&
       data.capabilities.status === "pass" &&
@@ -215,6 +217,65 @@
     ].join("");
   }
 
+  function findById(items, id) {
+    return (items || []).filter(function (item) { return item.id === id; })[0] || null;
+  }
+
+  function sourceChip(path, label) {
+    return linkChip("https://github.com/lamapony/plata-trainers/blob/main/" + encodeURIComponent(path).replace(/%2F/g, "/"), label || path.split("/").pop(), "");
+  }
+
+  function renderGuidedContract(data) {
+    var capability = findById(data.capabilities.capabilities, "guided-session-outcome-loop") || {};
+    var reviewSurface = findById(data.review.surfaces, "guided") || {};
+    var guided = data.guided || {};
+    var totals = guided.totals || {};
+    var ledgerTotals = guided.outcomeLedger && guided.outcomeLedger.totals || {};
+    var gates = (capability.proofGates || []).filter(function (gate) {
+      return ["check:guided-session", "check:guided-session-report", "check:guided-session-diff"].indexOf(gate.id) !== -1;
+    }).map(function (gate) {
+      return chip(gate.id, gate.status === "pass" ? "pass" : "fail");
+    }).join("");
+    var sourceLinks = [
+      sourceChip("shared/plata-guided-session.js", "runtime contract"),
+      sourceChip("scripts/build-guided-session-report.js", "public report"),
+      sourceChip("scripts/diff-guided-session-report.js", "PR diff"),
+      sourceChip("scripts/smoke-guided-session-diff.js", "diff smoke")
+    ].join("");
+    var contractList = (capability.contracts || []).slice(0, 4).map(function (contract) {
+      return "<li>" + escapeHtml(contract) + "</li>";
+    }).join("");
+
+    $("#proof-guided").innerHTML =
+      "<article class=\"proof-guided-card " + escapeHtml(guided.status === "pass" ? "pass" : "fail") + "\">" +
+        "<div class=\"quality-card-head\"><span class=\"quality-key\">" + escapeHtml(guided.status || "unknown") + "</span><a class=\"quality-state\" href=\"" + escapeHtml(proofSources.guided) + "\">report</a></div>" +
+        "<h3>Generated guided-session report</h3>" +
+        "<p>The public JSON proves the guided session states and the portable outcome receipt ledger.</p>" +
+        "<div class=\"program-proof-strip\">" +
+          chip(countLabel(totals.scenarios || 0, "scenario", "scenarios"), "mastery") +
+          chip(countLabel(totals.outcomeReceipts || 0, "outcome receipt", "outcome receipts"), ledgerTotals.outcomes ? "pass" : "fail") +
+          chip(countLabel(totals.issues || 0, "issue", "issues"), totals.issues ? "fail" : "pass") +
+        "</div>" +
+      "</article>" +
+      "<article class=\"proof-guided-card " + escapeHtml(reviewSurface.status === "regression" || reviewSurface.status === "changed" || reviewSurface.status === "unchanged" ? "pass" : "fail") + "\">" +
+        "<div class=\"quality-card-head\"><span class=\"quality-key\">" + escapeHtml(reviewSurface.status || "unknown") + "</span><span class=\"quality-state\">PR review</span></div>" +
+        "<h3>Guided drift is reviewable</h3>" +
+        "<p>Pull-request QA compares base and head guided reports, then adds guided regressions and review changes to the unified reviewer summary.</p>" +
+        "<div class=\"program-proof-strip\">" +
+          chip(countLabel(reviewSurface.summary && reviewSurface.summary.changes || 0, "change", "changes"), "mastery") +
+          chip(countLabel(reviewSurface.summary && reviewSurface.summary.regressions || 0, "regression", "regressions"), reviewSurface.summary && reviewSurface.summary.regressions ? "fail" : "pass") +
+          chip("guided-session-diff.json", "") +
+        "</div>" +
+      "</article>" +
+      "<article class=\"proof-guided-card pass\">" +
+        "<div class=\"quality-card-head\"><span class=\"quality-key\">contract</span><span class=\"quality-state\">guarded</span></div>" +
+        "<h3>What cannot silently drift</h3>" +
+        "<ul class=\"program-contracts\">" + contractList + "</ul>" +
+        "<div class=\"program-proof-block\"><strong>Gates</strong><div>" + gates + "</div></div>" +
+        "<div class=\"program-proof-block\"><strong>Source</strong><div>" + sourceLinks + "</div></div>" +
+      "</article>";
+  }
+
   function renderHealth(data) {
     var categories = Object.keys(data.health.totals.gateCategories || {}).sort().map(function (category) {
       return "<div class=\"proof-health-row\">" +
@@ -262,6 +323,7 @@
     $("#proof-digest").innerHTML = "<article class=\"proof-digest-card fail\"><h3>Proof digest missing</h3><p>Run npm run build:pages to generate reports/proof-digest.json.</p></article>";
     $("#proof-artifacts").innerHTML = "<article class=\"proof-command-card fail\"><h3>Proof artifacts missing</h3><p>Run npm run build:pages to generate reports.</p></article>";
     $("#proof-surfaces").innerHTML = "";
+    $("#proof-guided").innerHTML = "";
     $("#proof-health").innerHTML = "";
     $("#proof-review").innerHTML = "";
   }
@@ -269,6 +331,7 @@
   Promise.all([
     loadJson(proofSources.digest),
     loadJson(proofSources.demo),
+    loadJson(proofSources.guided),
     loadJson(proofSources.capabilities),
     loadJson(proofSources.health),
     loadJson(proofSources.quickstart),
@@ -278,16 +341,18 @@
     var data = {
       digest: values[0],
       demo: values[1],
-      capabilities: values[2],
-      health: values[3],
-      quickstart: values[4],
-      review: values[5],
-      summary: values[6]
+      guided: values[2],
+      capabilities: values[3],
+      health: values[4],
+      quickstart: values[5],
+      review: values[6],
+      summary: values[7]
     };
     renderSummary(data);
     renderDigest(data);
     renderArtifacts(data);
     renderSurfaces(data);
+    renderGuidedContract(data);
     renderHealth(data);
     renderReview(data);
   }).catch(renderError);
