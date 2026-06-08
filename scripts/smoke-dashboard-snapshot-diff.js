@@ -56,6 +56,13 @@ function runCli(args) {
   });
 }
 
+function runSnapshot(args) {
+  return spawnSync(process.execPath, [path.join(repoRoot, "scripts", "snapshot-dashboard-recommendations.js"), ...args], {
+    cwd: repoRoot,
+    encoding: "utf8"
+  });
+}
+
 const base = buildDashboardRecommendationSnapshot();
 const same = compareDashboardSnapshots(base, clone(base));
 assert(same.status === "unchanged", "unchanged snapshots should have unchanged status");
@@ -81,6 +88,10 @@ try {
   const headFile = path.join(tmp, "head.json");
   writeJson(baseFile, base);
   writeJson(headFile, regressionSnapshot);
+
+  const jsonSnapshot = runSnapshot(["--json"]);
+  assert(jsonSnapshot.status === 0, `snapshot --json should render current snapshot\n${jsonSnapshot.stdout}\n${jsonSnapshot.stderr}`);
+  assert(JSON.parse(jsonSnapshot.stdout).scenarios.length === base.scenarios.length, "snapshot --json should include scenarios");
 
   const unchanged = runCli(["--base", baseFile, "--head", baseFile, "--fail-on-change"]);
   assert(unchanged.status === 0, `CLI should pass unchanged snapshots\n${unchanged.stdout}\n${unchanged.stderr}`);

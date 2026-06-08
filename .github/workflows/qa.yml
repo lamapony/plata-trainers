@@ -54,6 +54,18 @@ jobs:
           node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-trajectory-head.json
           node scripts/diff-personalization-trajectory.js --base .dist/personalization-trajectory-base.json --head .dist/personalization-trajectory-head.json --fail-on-regression
 
+      - name: Compare dashboard recommendations with base
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          mkdir -p .dist
+          base_dir="$(mktemp -d)"
+          git archive "$BASE_SHA" | tar -x -C "$base_dir"
+          node scripts/snapshot-dashboard-recommendations.js --root "$base_dir" --json > .dist/dashboard-recommendations-base.json
+          node scripts/snapshot-dashboard-recommendations.js --json > .dist/dashboard-recommendations-head.json
+          node scripts/diff-dashboard-snapshot.js --base .dist/dashboard-recommendations-base.json --head .dist/dashboard-recommendations-head.json --fail-on-regression
+
       - name: Verify public pages map to files
         run: |
           test -f index.html

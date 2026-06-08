@@ -10,6 +10,7 @@
     "build:skill-coverage": "node scripts/build-skill-coverage-report.js",
     "build:health": "node scripts/build-project-health-manifest.js",
     "diff:quality": "node scripts/diff-quality-report.js",
+    "diff:dashboard-snapshot": "node scripts/diff-dashboard-snapshot.js",
     "diff:personalization-trajectory": "node scripts/diff-personalization-trajectory.js",
     "generate:comics": "node scripts/generate-comic-assets-openrouter.js",
     "scaffold:gold": "node scripts/scaffold-gold-lesson.js",

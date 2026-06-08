@@ -39,7 +39,7 @@ Planner decisions carry two explanation layers. `explainDecision(...)` and `expl
 
 `scripts/mutation-dashboard-snapshot.js` mutates temporary copies of the planner and evidence ledger to prove the dashboard snapshot is not decorative. It catches preferred-entry drift, repair trace-rule drift, and missing open-mastery ledger rows without touching the working tree.
 
-`scripts/diff-dashboard-snapshot.js` compares two dashboard recommendation snapshots and prints a compact review summary for due-card order, decision kind/score/href/trace changes, practice-plan routes, evidence ledger rows, and root-skill diagnostics. Use `--fail-on-regression` for removed repair evidence and `--fail-on-change` when any snapshot drift should block automation.
+`scripts/diff-dashboard-snapshot.js` compares two dashboard recommendation snapshots and prints a compact review summary for due-card order, decision kind/score/href/trace changes, practice-plan routes, evidence ledger rows, and root-skill diagnostics. Use `--fail-on-regression` for removed repair evidence and `--fail-on-change` when any snapshot drift should block automation. Pull-request QA builds base/head snapshots with `scripts/snapshot-dashboard-recommendations.js --json` and runs this diff before merge.
 
 `scripts/build-project-health-manifest.js` publishes `reports/project-health.json`, a maintainer-facing map of QA gates, public reports, GitHub workflows, and deterministic fixtures. It fails when a required gate drops out of `npm run check`, a public report is no longer written by the Pages artifact, a workflow stops running the full check, or a deterministic fixture goes stale.
 

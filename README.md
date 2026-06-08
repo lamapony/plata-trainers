@@ -65,6 +65,8 @@ npm run check:pages
 npm run check:quality-report
 npm run check:comic-prompts
 npm run diff:quality -- --base .dist/quality-report.json --head current
+node scripts/snapshot-dashboard-recommendations.js --json > .dist/dashboard-recommendations.json
+npm run diff:dashboard-snapshot -- --base .dist/dashboard-recommendations.json --head current
 node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-trajectory.json
 npm run diff:personalization-trajectory -- --base .dist/personalization-trajectory.json --head current
 ```
@@ -94,7 +96,10 @@ node scripts/debug-profile-replay.js --file plata-backup.json
 node scripts/build-skill-coverage-report.js --out .dist/skill-coverage.json --text
 node scripts/snapshot-dashboard-recommendations.js
 node scripts/mutation-dashboard-snapshot.js
+mkdir -p .dist && node scripts/snapshot-dashboard-recommendations.js --json > .dist/dashboard-recommendations.json
 node scripts/diff-dashboard-snapshot.js --base scripts/fixtures/dashboard-recommendations.snapshot.json --head current
+node scripts/diff-dashboard-snapshot.js --base .dist/dashboard-recommendations.json --head current
+node scripts/smoke-dashboard-snapshot-diff.js
 node scripts/smoke-memory.js
 node scripts/smoke-learner-model.js
 node scripts/smoke-learner-model-alignment.js

@@ -496,6 +496,10 @@ function writeSnapshot(outPath, snapshot) {
 
 function run() {
   const snapshot = buildDashboardRecommendationSnapshot({ root: argValue("--root") || repoRoot });
+  if (hasFlag("--json")) {
+    process.stdout.write(snapshotText(snapshot));
+    return;
+  }
   const out = argValue("--out");
   if (out) writeSnapshot(path.resolve(repoRoot, out), snapshot);
 

@@ -18,7 +18,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Publish a project health manifest that links QA gates, public reports, and deterministic fixtures.
 - [x] Add a compact diff for dashboard recommendation snapshot changes.
 - [x] Add a lesson exercise audit gate for pedagogical contradictions and known Danish slips.
-- [ ] Add a PR-facing dashboard snapshot diff workflow step.
+- [x] Add a PR-facing dashboard snapshot diff workflow step.
 - [x] Define the local adaptive learner model before adding any account memory.
 - [x] Add an inspectable learner memory fact schema derived from the event log.
 - [x] Build a memory inspector so learners can see, export, and delete personalization facts.
@@ -111,6 +111,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Mark removed open evidence and root-skill diagnostics as regressions.
 - [x] Support `--fail-on-regression` and `--fail-on-change` automation modes.
 - [x] Include dashboard snapshot diff smoke tests in `npm run check`.
+- [x] Run the dashboard snapshot diff in pull-request QA against base/head snapshots.
 
 ## Lesson Exercise Audit Sprint
 

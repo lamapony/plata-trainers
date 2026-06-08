@@ -194,7 +194,7 @@ function workflowRows(root, issues) {
       id: "qa",
       path: ".github/workflows/qa.yml",
       expectedRun: "npm run check",
-      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js"]
+      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js"]
     },
     { id: "pages", path: ".github/workflows/pages.yml", expectedRun: "npm run check" }
   ];
