@@ -66,6 +66,18 @@ jobs:
           node scripts/snapshot-dashboard-recommendations.js --json > .dist/dashboard-recommendations-head.json
           node scripts/diff-dashboard-snapshot.js --base .dist/dashboard-recommendations-base.json --head .dist/dashboard-recommendations-head.json --json > .dist/dashboard-recommendations-diff.json
 
+      - name: Compare demo learner with base
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          mkdir -p .dist
+          base_dir="$(mktemp -d)"
+          git archive "$BASE_SHA" | tar -x -C "$base_dir"
+          node scripts/build-demo-learner-report.js --root "$base_dir" --json > .dist/demo-learner-base.json
+          node scripts/build-demo-learner-report.js --json > .dist/demo-learner-head.json
+          node scripts/diff-demo-learner-report.js --base .dist/demo-learner-base.json --head .dist/demo-learner-head.json --json > .dist/demo-learner-diff.json
+
       - name: Compare Today program with base
         if: github.event_name == 'pull_request'
         env:
@@ -84,6 +96,7 @@ jobs:
           node scripts/build-review-report.js \
             --quality-diff .dist/quality-diff.json \
             --dashboard-diff .dist/dashboard-recommendations-diff.json \
+            --demo-diff .dist/demo-learner-diff.json \
             --today-diff .dist/today-program-diff.json \
             --trajectory-diff .dist/personalization-trajectory-diff.json \
             --fail-on-regression

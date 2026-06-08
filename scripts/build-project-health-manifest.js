@@ -64,6 +64,7 @@ const requiredGates = [
   { id: "check:lesson-engine", category: "runtime", contract: "Gold simulation paths replay through the real lesson engine." },
   { id: "check:dashboard", category: "runtime", contract: "Dashboard renders diagnostics, plans, ledger, catalog loading, and profile portability." },
   { id: "check:demo-learner-report", category: "report", contract: "Read-only demo learner profile builds as a deterministic public contract report." },
+  { id: "check:demo-learner-diff", category: "review", contract: "Demo learner report changes produce compact review diffs and regression flags." },
   { id: "check:today-program-report", category: "report", contract: "Today program shell states build as a deterministic user-facing contract report." },
   { id: "check:today-program-diff", category: "review", contract: "Today program report changes produce compact review diffs and regression flags." },
   { id: "check:dashboard-snapshot", category: "snapshot", contract: "Dashboard recommendation surface matches deterministic fixtures." },
@@ -80,7 +81,7 @@ const requiredGates = [
   { id: "check:quality-report", category: "report", contract: "Public gold lesson quality report builds cleanly." },
   { id: "check:quality-mutations", category: "mutation", contract: "Quality report proves broken gold lesson contracts fail." },
   { id: "check:quality-diff", category: "review", contract: "Quality report diffs fail only on regressions." },
-  { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, Today program, and personalization diffs." },
+  { id: "check:review-report", category: "review", contract: "Unified PR review report combines quality, dashboard, demo learner, Today program, and personalization diffs." },
   { id: "check:quality-page", category: "report", contract: "Quality page renderer consumes generated report data." },
   { id: "check:program-page", category: "report", contract: "Program page renders the product capability map as a user-facing proof surface." },
   { id: "check:capability-map", category: "report", contract: "Product capability map links user-facing claims to checks, public reports, source files, and docs." },
@@ -228,7 +229,7 @@ function workflowRows(root, issues) {
       id: "qa",
       path: ".github/workflows/qa.yml",
       expectedRun: "npm run check",
-      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "diff-today-program-report.js", "build-review-report.js"]
+      requiredSnippets: ["diff-quality-report.js", "diff-personalization-trajectory.js", "diff-dashboard-snapshot.js", "diff-demo-learner-report.js", "diff-today-program-report.js", "build-review-report.js"]
     },
     { id: "pages", path: ".github/workflows/pages.yml", expectedRun: "npm run check" }
   ];

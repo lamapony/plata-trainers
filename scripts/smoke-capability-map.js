@@ -86,6 +86,7 @@ function runBaseSmoke() {
 
   const today = capability(report, "today-program-shell");
   assert(today && hasGate(today, "check:demo-learner-report"), "Today capability should cite the demo learner report gate");
+  assert(today && hasGate(today, "check:demo-learner-diff"), "Today capability should cite the demo learner diff gate");
   assert(today && hasGate(today, "check:today-program-report"), "Today capability should cite the Today report gate");
   assert(today && hasReport(today, "demo-learner"), "Today capability should cite the public demo learner report");
   assert(today && hasGate(today, "check:today-program-diff"), "Today capability should cite the Today diff gate");
@@ -97,6 +98,7 @@ function runBaseSmoke() {
 
   const proof = capability(report, "public-github-proof-surface");
   assert(proof && hasGate(proof, "check:capability-map"), "proof surface should cite its own gate");
+  assert(proof && hasGate(proof, "check:demo-learner-diff"), "proof surface should cite the demo learner diff gate");
   assert(proof && hasReport(proof, "capabilities"), "proof surface should cite the capability map report");
   assert(proof && hasReport(proof, "demo-learner"), "proof surface should cite the demo learner report");
 

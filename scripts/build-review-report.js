@@ -8,6 +8,7 @@ const repoRoot = path.resolve(__dirname, "..");
 const surfaces = [
   { id: "quality", label: "Quality", flag: "--quality-diff" },
   { id: "dashboard", label: "Dashboard recommendations", flag: "--dashboard-diff" },
+  { id: "demo", label: "Demo learner", flag: "--demo-diff" },
   { id: "today", label: "Today program", flag: "--today-diff" },
   { id: "personalization", label: "Personalization trajectory", flag: "--trajectory-diff" }
 ];
@@ -128,7 +129,7 @@ function readCliInput() {
 }
 
 function usage() {
-  return "usage: node scripts/build-review-report.js --quality-diff <quality.json> --dashboard-diff <dashboard.json> --today-diff <today.json> --trajectory-diff <trajectory.json> [--json] [--fail-on-change] [--fail-on-regression]";
+  return "usage: node scripts/build-review-report.js --quality-diff <quality.json> --dashboard-diff <dashboard.json> --demo-diff <demo.json> --today-diff <today.json> --trajectory-diff <trajectory.json> [--json] [--fail-on-change] [--fail-on-regression]";
 }
 
 function main() {

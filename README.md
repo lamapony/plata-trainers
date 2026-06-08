@@ -70,6 +70,7 @@ npm run build:pages
 npm run check:pages
 npm run check:quality-report
 npm run check:demo-learner-report
+npm run check:demo-learner-diff
 npm run check:today-program-report
 npm run check:capability-map
 npm run check:program-page
@@ -80,13 +81,16 @@ npm run diff:quality -- --base .dist/quality-report.json --head current --json >
 node scripts/snapshot-dashboard-recommendations.js --json > .dist/dashboard-recommendations.json
 npm run diff:dashboard-snapshot -- --base .dist/dashboard-recommendations.json --head current
 npm run diff:dashboard-snapshot -- --base .dist/dashboard-recommendations.json --head current --json > .dist/dashboard-recommendations-diff.json
+node scripts/build-demo-learner-report.js --json > .dist/demo-learner.json
+npm run diff:demo-learner -- --base .dist/demo-learner.json --head current
+npm run diff:demo-learner -- --base .dist/demo-learner.json --head current --json > .dist/demo-learner-diff.json
 node scripts/build-today-program-report.js --json > .dist/today-program.json
 npm run diff:today-program -- --base .dist/today-program.json --head current
 npm run diff:today-program -- --base .dist/today-program.json --head current --json > .dist/today-program-diff.json
 node scripts/smoke-personalization-trajectory.js --json > .dist/personalization-trajectory.json
 npm run diff:personalization-trajectory -- --base .dist/personalization-trajectory.json --head current
 npm run diff:personalization-trajectory -- --base .dist/personalization-trajectory.json --head current --json > .dist/personalization-trajectory-diff.json
-npm run diff:review -- --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json
+npm run diff:review -- --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json
 ```
 
 Gold lesson scaffold:
@@ -115,6 +119,8 @@ node scripts/counterfactual-learner-simulator.js
 node scripts/debug-profile-replay.js --file plata-backup.json
 node scripts/build-skill-coverage-report.js --out .dist/skill-coverage.json --text
 node scripts/build-demo-learner-report.js --out .dist/demo-learner.json --text
+node scripts/diff-demo-learner-report.js --base .dist/demo-learner.json --head current --json > .dist/demo-learner-diff.json
+node scripts/smoke-demo-learner-diff.js
 node scripts/snapshot-dashboard-recommendations.js
 node scripts/mutation-dashboard-snapshot.js
 mkdir -p .dist && node scripts/snapshot-dashboard-recommendations.js --json > .dist/dashboard-recommendations.json
@@ -146,7 +152,7 @@ node scripts/diff-personalization-trajectory.js --base .dist/personalization-tra
 node scripts/smoke-personalization-trajectory-diff.js
 node scripts/build-quality-report.js --out .dist/quality-report.json
 node scripts/diff-quality-report.js --base .dist/quality-report.json --head current --json > .dist/quality-diff.json
-node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json
+node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --dashboard-diff .dist/dashboard-recommendations-diff.json --demo-diff .dist/demo-learner-diff.json --today-diff .dist/today-program-diff.json --trajectory-diff .dist/personalization-trajectory-diff.json
 node scripts/smoke-review-report.js
 node scripts/smoke-program-page.js
 node scripts/build-capability-map.js --out .dist/capabilities.json --text

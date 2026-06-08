@@ -355,4 +355,5 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Cover the mode in dashboard smoke tests, including companion-backed Today, memory citations, evidence ledger rows, and no storage writes.
 - [x] Add `reports/demo-learner.json` as a generated public demo snapshot report with read-only, privacy, companion, and rich-profile guarantees.
 - [x] Include `check:demo-learner-report` in `npm run check`, Pages publishing, project health, and the product capability map.
-- [ ] Add a PR diff for `reports/demo-learner.json` if demo learner drift needs separate review labels.
+- [x] Add a PR diff for `reports/demo-learner.json` so read-only, memory, companion, and profile drift gets separate review labels.
+- [x] Include demo learner drift in the unified PR review report, GitHub Actions QA, project health, and the product capability map.
