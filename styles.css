@@ -205,6 +205,10 @@ h3 { font-size: 30px; }
 }
 .today-program-card.repair { border-left-color: var(--ember); }
 .today-program-card.review { border-left-color: var(--green); }
+.today-program-card.memory-review { border-left-color: oklch(0.72 0.12 205); }
+.today-program-card.active-plan { border-left-color: var(--ember); }
+.today-program-card.return { border-left-color: oklch(0.78 0.13 92); }
+.today-program-card.onboarding { border-left-color: var(--green); }
 .today-main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(160px, 0.26fr);
@@ -299,6 +303,57 @@ h3 { font-size: 30px; }
 }
 .today-facts { align-content: start; justify-content: flex-start; }
 .today-facts strong, .today-citations strong { color: var(--text); }
+.today-stage-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.today-stage-strip span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  min-height: 58px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: oklch(1 0 0 / 0.03);
+  color: var(--muted);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.today-stage-strip strong {
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1.2;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.today-stage-strip span.active {
+  border-color: oklch(0.74 0.12 145 / 0.62);
+  background: oklch(0.74 0.12 145 / 0.1);
+  color: var(--text);
+}
+.today-program-card.repair .today-stage-strip span.active,
+.today-program-card.active-plan .today-stage-strip span.active {
+  border-color: oklch(0.72 0.16 55 / 0.62);
+  background: var(--ember-soft);
+}
+.today-program-card.return .today-stage-strip span.active {
+  border-color: oklch(0.78 0.13 92 / 0.62);
+  background: oklch(0.78 0.13 92 / 0.1);
+}
+.today-program-card.memory-review .today-stage-strip span.active {
+  border-color: oklch(0.72 0.12 205 / 0.62);
+  background: oklch(0.72 0.12 205 / 0.1);
+}
 .today-citations {
   display: grid;
   gap: 8px;
@@ -307,6 +362,7 @@ h3 { font-size: 30px; }
 @media (max-width: 520px) {
   .today-main h3 { font-size: 34px; }
   .today-program-card { padding: 20px; }
+  .today-stage-strip { grid-template-columns: 1fr 1fr; }
 }
 
 .stats-mini { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 16px 0; font-size: 14px; color: var(--muted); }

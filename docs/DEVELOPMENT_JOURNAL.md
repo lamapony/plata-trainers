@@ -28,6 +28,7 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Reject embedded heavy agent runtime scope in favor of a lightweight companion and read-only Hermes bridge.
 - [x] Add deterministic companion cards and Hermes bridge briefs over advisor/handoff packets.
 - [x] Promote the companion/planner route into a user-facing Today program shell.
+- [x] Make the Today shell stateful across onboarding, active-route, return, and memory-review scenarios.
 - [ ] Evaluate external Hermes/OpenClaw-style integrations as optional explainers, not sources of truth; see [Companion Architecture](./COMPANION_ARCHITECTURE.md).
 
 ## Current Sprint
@@ -141,6 +142,9 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Show companion headline, rationale, progress, memory facts, guardrails, and citations in one user-facing shell.
 - [x] Fall back to a planner-route shell when no cited memory facts exist yet.
 - [x] Cover starter and memory-backed Today states in dashboard smoke tests.
+- [x] Add explicit Today program states for first session, active saved route, lesson return, and due memory review.
+- [x] Keep the state classifier deterministic over existing planner, URL handoff, and memory facts.
+- [x] Smoke-test each state so product wording stays aligned with planner evidence.
 
 ## Lesson Exercise Audit Sprint
 

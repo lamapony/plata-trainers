@@ -545,6 +545,124 @@ function todayFactHtml(fact) {
   `;
 }
 
+function todayStageStripHtml(activeKind) {
+  const currentKind = ["repair", "continue", "review"].includes(activeKind) ? "active-plan" : activeKind;
+  const stages = [
+    { kind: "onboarding", label: "First run", copy: "entry point" },
+    { kind: "active-plan", label: "Active route", copy: "open step" },
+    { kind: "return", label: "Return", copy: "recorded step" },
+    { kind: "memory-review", label: "Review due", copy: "spaced check" }
+  ];
+  return `
+    <div class="today-stage-strip" aria-label="Program state">
+      ${stages.map(stage => `
+        <span class="${stage.kind === currentKind ? "active" : ""}">
+          <strong>${escapeHtml(stage.label)}</strong>
+          ${escapeHtml(stage.copy)}
+        </span>
+      `).join("")}
+    </div>
+  `;
+}
+
+function selectedMemoryFactsForStep(step) {
+  const facts = step && step.trace && step.trace.inputs && step.trace.inputs.selectedMemoryFacts;
+  return Array.isArray(facts) ? facts : [];
+}
+
+function todayReturnContext(plan) {
+  if (!routeParam("ledger-return") || !plan || !Array.isArray(plan.steps)) return null;
+  const returnedStepId = routeParam("step");
+  const returnedStep = plan.steps.find(item => item.routeId === returnedStepId) || null;
+  return { returnedStepId, returnedStep };
+}
+
+function resolveTodayProgramState(options) {
+  options = options || {};
+  const plan = options.plan || {};
+  const step = options.step || null;
+  const companion = options.companion || null;
+  const advice = options.advice || null;
+  const candidates = options.candidates || [];
+  const visibleFacts = options.visibleFacts || [];
+  const totalAttempts = candidates.reduce((sum, item) => sum + Number(item && item.stats && item.stats.total || 0), 0);
+  const selectedFacts = selectedMemoryFactsForStep(step);
+  const selectedReviewFact = selectedFacts.find(fact => fact.kind === "next_review_due" || fact.kind === "stale_skill") || null;
+  const dueReviewFact = selectedReviewFact || visibleFacts.find(fact => fact.kind === "next_review_due") || visibleFacts.find(fact => fact.kind === "stale_skill") || null;
+  const returnContext = todayReturnContext(plan);
+  const base = {
+    kind: companion && companion.kind || plan.kind || "continue",
+    eyebrow: companion ? "Study companion" : plan.completed ? "Plan complete" : "Planner route",
+    headline: companion && companion.headline || step && step.title || plan.title || "Practice route",
+    message: companion && companion.message || step && step.copy || plan.copy || "Continue the current practice route.",
+    why: companion && companion.why || "This route comes from the deterministic planner and the current practice record.",
+    actionLabel: step ? (step.status === "active" ? "Continue current step" : step.primaryLabel || "Start next step") : "Review completed plan",
+    routeMeta: step
+      ? [`Step ${step.number} of ${plan.steps.length}`, step.trainerName || "Practice", step.minutes].filter(Boolean).join(" · ")
+      : `${plan.steps.length} step${plan.steps.length === 1 ? "" : "s"} complete`,
+    tags: []
+  };
+
+  if (returnContext) {
+    const returned = returnContext.returnedStep;
+    return Object.assign(base, {
+      kind: "return",
+      eyebrow: "Progress recorded",
+      headline: step ? "Step recorded. Continue the route." : "Practice route updated.",
+      message: returned
+        ? `${returned.title || "The finished step"} is now in the saved practice record.`
+        : "Your latest practice result is reflected in the saved route.",
+      why: "The lesson returned with plan and step ids, so the dashboard can continue from the next open step instead of asking the learner to re-orient.",
+      actionLabel: step ? "Continue next step" : "Review completed route",
+      routeMeta: step
+        ? [`Returned from step ${returned && returned.number || "?"}`, `next step ${step.number} of ${plan.steps.length}`, step.trainerName || "Practice"].filter(Boolean).join(" · ")
+        : `${plan.steps.length} tracked step${plan.steps.length === 1 ? "" : "s"} complete`,
+      tags: ["Return recorded", "Saved route"]
+    });
+  }
+
+  if (dueReviewFact && (selectedReviewFact || base.kind === "review" || step && step.kind === "review")) {
+    return Object.assign(base, {
+      kind: "memory-review",
+      eyebrow: "Memory review",
+      headline: `Review ${dueReviewFact.signal || step && step.title || "a saved signal"}`,
+      message: dueReviewFact.copy || "Spacing says this signal is old enough to be checked again.",
+      why: "A cited memory fact is due for review, so the route promotes a small check before adding new material.",
+      actionLabel: step ? "Start review" : base.actionLabel,
+      routeMeta: [dueReviewFact.kind, dueReviewFact.signal, dueReviewFact.sourceFingerprint].filter(Boolean).join(" · "),
+      tags: ["Review due", "Cited memory"]
+    });
+  }
+
+  if (step && step.status === "active") {
+    return Object.assign(base, {
+      kind: "active-plan",
+      eyebrow: "Active route",
+      headline: `Resume ${step.title || "the current step"}`,
+      message: step.copy || "This step is already in progress, so continuing it is more useful than starting a new route.",
+      why: "The saved plan shows an unfinished step that has already been opened; the dashboard keeps continuity ahead of fresh recommendations.",
+      actionLabel: "Resume step",
+      routeMeta: [`Started ${formatPlanDateTime(step.startedAt) || "earlier"}`, `Step ${step.number} of ${plan.steps.length}`, step.trainerName || "Practice"].filter(Boolean).join(" · "),
+      tags: ["In progress", "Saved route"]
+    });
+  }
+
+  if (totalAttempts === 0 && visibleFacts.length === 0) {
+    return Object.assign(base, {
+      kind: "onboarding",
+      eyebrow: "First session",
+      headline: step && step.title || "Start Lesson 01",
+      message: step && step.copy || "Begin with the first short story lesson so the system can build an evidence trail.",
+      why: "There is no local progress yet, so the planner starts with the smallest useful entry point and avoids pretending to personalize.",
+      actionLabel: step ? "Start first session" : base.actionLabel,
+      routeMeta: "No local history yet",
+      tags: ["Onboarding", "Planner route"]
+    });
+  }
+
+  return base;
+}
+
 function renderTodayProgram(candidates, context) {
   const container = $("#today-program");
   if (!container) return;
@@ -564,32 +682,26 @@ function renderTodayProgram(candidates, context) {
   const memoryBundle = buildMemoryFacts(null, plan);
   const visibleFacts = memoryBundle.visibleFacts || [];
   const progress = plan.steps.length ? Math.min(100, Math.max(0, Math.round(((plan.completedCount || 0) / plan.steps.length) * 100))) : 0;
-  const headline = companion && companion.headline || step && step.title || plan.title || "Practice route";
-  const message = companion && companion.message || step && step.copy || plan.copy || "Continue the current practice route.";
-  const why = companion && companion.why || "This route comes from the deterministic planner and the current practice record.";
-  const actionLabel = step ? (step.status === "active" ? "Continue current step" : step.primaryLabel || "Start next step") : "Review completed plan";
-  const routeMeta = step
-    ? [`Step ${step.number} of ${plan.steps.length}`, step.trainerName || "Practice", step.minutes].filter(Boolean).join(" · ")
-    : `${plan.steps.length} step${plan.steps.length === 1 ? "" : "s"} complete`;
+  const program = resolveTodayProgramState({ plan, step, companion, advice, candidates, visibleFacts });
   const citedFacts = companion && companion.citedFacts || [];
   const guardrailLabels = [
     companion ? "Study companion" : "Planner route",
     companion && companion.guardrails && companion.guardrails.externalAgentOptional ? "Hermes optional" : "",
     advice && advice.guardrails && advice.guardrails.requiresModel === false ? "No model call" : "",
     citedFacts.length ? "Cited memory" : "Local progress"
-  ].filter(Boolean);
+  ].concat(program.tags || []).filter(Boolean);
 
   container.innerHTML = `
-    <article class="today-program-card ${escapeHtml(companion && companion.kind || plan.kind || "continue")}">
+    <article class="today-program-card ${escapeHtml(program.kind)}">
       <div class="today-main">
         <div>
-          <p class="eyebrow">${escapeHtml(companion ? "Study companion" : plan.completed ? "Plan complete" : "Planner route")}</p>
-          <h3>${escapeHtml(headline)}</h3>
-          <p>${escapeHtml(message)}</p>
+          <p class="eyebrow">${escapeHtml(program.eyebrow)}</p>
+          <h3>${escapeHtml(program.headline)}</h3>
+          <p>${escapeHtml(program.message)}</p>
           ${step && actionHref ? `
             <div class="today-action">
-              <a class="btn primary" href="${escapeHtml(actionHref)}">${escapeHtml(actionLabel)}</a>
-              <span>${escapeHtml(routeMeta)}</span>
+              <a class="btn primary" href="${escapeHtml(actionHref)}">${escapeHtml(program.actionLabel)}</a>
+              <span>${escapeHtml(program.routeMeta)}</span>
             </div>
           ` : ""}
         </div>
@@ -602,19 +714,21 @@ function renderTodayProgram(candidates, context) {
       <div class="today-context">
         <div class="today-why">
           <span class="eyebrow">Why this</span>
-          <p>${escapeHtml(why)}</p>
+          <p>${escapeHtml(program.why)}</p>
           <div class="today-tags">
-            ${guardrailLabels.map(label => `<span>${escapeHtml(label)}</span>`).join("")}
+            ${Array.from(new Set(guardrailLabels)).map(label => `<span>${escapeHtml(label)}</span>`).join("")}
             ${companion && companion.fingerprint ? `<span>${escapeHtml(companion.fingerprint)}</span>` : ""}
           </div>
         </div>
         <div class="today-facts">
+          ${todayMetricHtml("program state", program.kind)}
           ${todayMetricHtml("visible memory facts", visibleFacts.length)}
           ${todayMetricHtml("open step", step ? step.number : "done")}
           ${todayMetricHtml("plan steps", plan.steps.length)}
           ${companion && companion.confidence ? todayMetricHtml("confidence", companion.confidence) : ""}
         </div>
       </div>
+      ${todayStageStripHtml(program.kind)}
       ${citedFacts.length ? `
         <div class="today-citations" aria-label="Cited companion memory">
           <span class="eyebrow">Cited memory</span>

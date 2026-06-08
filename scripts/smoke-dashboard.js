@@ -214,6 +214,31 @@ function seedWeakMasteryState(env) {
   env.storage[kernel.stateKey("lesson-b2-radiator-register")] = JSON.stringify(state);
 }
 
+function setAttemptAt(state, index, at) {
+  const attempt = state.attempts && state.attempts[index];
+  if (!attempt) return;
+  attempt.at = at;
+  const item = state.byItemId && state.byItemId[attempt.itemId];
+  if (item) item.lastSeen = at;
+  state.meta.lastSessionDate = at.slice(0, 10);
+  state.updatedAt = at;
+}
+
+function seedDueReviewState(env) {
+  const kernel = env.context.PlataKernel;
+  const state = kernel.freshState("lesson-b2-job-followup");
+  kernel.recordAttempt(state, {
+    itemId: "linkedin-choice",
+    correct: true,
+    tags: ["B2", "lesson", "formal-register-control"],
+    mode: "lesson",
+    expected: "raw due-review expected",
+    given: "raw due-review given"
+  });
+  setAttemptAt(state, 0, "2026-05-01T08:00:00.000Z");
+  env.storage[kernel.stateKey("lesson-b2-job-followup")] = JSON.stringify(state);
+}
+
 function seedClosedMasteryState(env) {
   const kernel = env.context.PlataKernel;
   const state = kernel.freshState("lesson-b2-radiator-register");
@@ -251,8 +276,11 @@ function runEmptyDashboardSmoke() {
 
   assert(env.elements["#trainer-cards"].children.length === 6, "dashboard renders all trainer cards");
   assert(/Planner route/.test(env.elements["#today-program"].innerHTML), "dashboard renders Today program shell for starter routes");
+  assert(/First session/.test(env.elements["#today-program"].innerHTML), "dashboard labels the empty profile as a first session");
   assert(/Start Lesson 01/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes the starter step");
   assert(/0%/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell shows route progress");
+  assert(/onboarding/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell exposes the onboarding state");
+  assert(/First run/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell shows the program state strip");
   assert(/Local progress/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell labels local-progress recommendations");
   assert(env.elements["#due-cards"].children.length === 3, "dashboard renders practice recommendations");
   assert(/Starter plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders starter practice plan");
@@ -414,6 +442,10 @@ function runStartedPlanSmoke() {
   assert(/In progress/.test(env.elements["#practice-plan"].innerHTML), "dashboard labels started plan step in progress");
   assert(/plan-step-ledger/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders started plan ledger");
   assert(/Started/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains when a plan step started");
+  assert(/Active route/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell labels an active saved route");
+  assert(/Resume Repair Read passive agency/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes the active step");
+  assert(/active-plan/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell exposes the active-plan state");
+  assert(/Resume step/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell resumes the active step");
 }
 
 function runPrimaryPlanActionSmoke() {
@@ -504,6 +536,39 @@ function runPlanReturnReceiptSmoke() {
   assert(/Step 2 of 2/.test(html), "dashboard return receipt identifies the next step");
   assert(/Chosen from the saved practice plan/.test(html), "dashboard return receipt explains the next saved step");
   assert(html.includes("./vocab-sr/"), "dashboard return receipt links to the next unfinished step");
+  const todayHtml = env.elements["#today-program"].innerHTML;
+  assert(/Progress recorded/.test(todayHtml), "dashboard Today shell labels a plan-step return");
+  assert(/Step recorded\. Continue the route\./.test(todayHtml), "dashboard Today shell confirms the return before continuing");
+  assert(/return/.test(todayHtml), "dashboard Today shell exposes the return state");
+  assert(/Returned from step 1/.test(todayHtml), "dashboard Today shell identifies the returned step");
+  assert(/Continue next step/.test(todayHtml), "dashboard Today shell promotes the next post-return step");
+}
+
+function runDueReviewProgramSmoke() {
+  const env = makeContext();
+  vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
+  seedDueReviewState(env);
+  vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
+  vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
+  vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
+  vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
+  vm.runInContext(eventsSource, env.context, { filename: "shared/plata-events.js" });
+  vm.runInContext(memorySource, env.context, { filename: "shared/plata-memory.js" });
+  vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
+  vm.runInContext(companionSource, env.context, { filename: "shared/plata-companion.js" });
+  vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
+
+  const todayHtml = env.elements["#today-program"].innerHTML;
+  assert(/Memory review/.test(todayHtml), "dashboard Today shell labels due memory review");
+  assert(/Review formal-register-control/.test(todayHtml), "dashboard Today shell names the due signal");
+  assert(/memory-review/.test(todayHtml), "dashboard Today shell exposes the memory-review state");
+  assert(/Review due/.test(todayHtml), "dashboard Today shell shows the due-review stage");
+  assert(/next_review_due/.test(todayHtml), "dashboard Today shell cites the due-review memory kind");
+  assert(/Cited memory/.test(todayHtml), "dashboard Today shell keeps due reviews cited");
+  assert(!/raw due-review/.test(todayHtml), "dashboard Today shell does not leak raw due-review answers");
+  assert(/Memory: next_review_due formal-register-control memsrc-/.test(env.elements["#practice-plan"].innerHTML), "dashboard practice plan cites the due-review fact");
 }
 
 function runClosedMasterySmoke() {
@@ -702,6 +767,7 @@ async function run() {
   runStartedPlanSmoke();
   runPrimaryPlanActionSmoke();
   runPlanReturnReceiptSmoke();
+  runDueReviewProgramSmoke();
   runClosedMasterySmoke();
   await runDynamicCatalogSmoke();
   runPortableProfileSmoke();
@@ -713,6 +779,7 @@ async function run() {
   console.log("ok - dashboard persists active practice-plan tracking");
   console.log("ok - dashboard renders active practice-plan execution state");
   console.log("ok - dashboard renders Today program shell");
+  console.log("ok - dashboard renders Today program shell states");
   console.log("ok - dashboard promotes the next actionable practice-plan step");
   console.log("ok - dashboard confirms plan-step returns from trainer routes");
   console.log("ok - dashboard explains why planner steps were selected");
