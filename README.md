@@ -8,11 +8,14 @@ Live demo: [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-
 Demo learner dashboard: [lamapony.github.io/plata-trainers/dashboard.html?demo=learner](https://lamapony.github.io/plata-trainers/dashboard.html?demo=learner).
 Demo learner report: [lamapony.github.io/plata-trainers/reports/demo-learner.json](https://lamapony.github.io/plata-trainers/reports/demo-learner.json).
 Guided session report: [lamapony.github.io/plata-trainers/reports/guided-session.json](https://lamapony.github.io/plata-trainers/reports/guided-session.json).
+Profile portability report: [lamapony.github.io/plata-trainers/reports/profile-portability.json](https://lamapony.github.io/plata-trainers/reports/profile-portability.json).
+Exercise value report: [lamapony.github.io/plata-trainers/reports/exercise-value.json](https://lamapony.github.io/plata-trainers/reports/exercise-value.json).
 Public quality report: [lamapony.github.io/plata-trainers/quality.html](https://lamapony.github.io/plata-trainers/quality.html).
 Public program map: [lamapony.github.io/plata-trainers/program.html](https://lamapony.github.io/plata-trainers/program.html).
 Public proof / health page: [lamapony.github.io/plata-trainers/proof.html](https://lamapony.github.io/plata-trainers/proof.html).
 Public proof digest: [lamapony.github.io/plata-trainers/reports/proof-digest.json](https://lamapony.github.io/plata-trainers/reports/proof-digest.json).
 Public capability map: [lamapony.github.io/plata-trainers/reports/capabilities.json](https://lamapony.github.io/plata-trainers/reports/capabilities.json).
+Production release runbook: [docs/PRODUCTION_RELEASE.md](./docs/PRODUCTION_RELEASE.md).
 
 Platå does not try to teach Danish from the beginning. It helps learners overcome the plateau: the point where they know enough Danish to recognize the language, but not enough to act fluently under social pressure.
 
@@ -28,7 +31,9 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Private by default:** browser LocalStorage only; no accounts, backend, analytics, or tracking.
 - **Contributor-friendly data:** exercises are plain JavaScript data files with validation scripts and narrative lesson schemas.
 - **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals, deterministic simulation, remediation, and comic storyboard prompts.
-- **Public proof reports:** Pages publishes generated JSON for quality, skill coverage, Today shell states, guided sessions, project health, quickstart proof, and a capability map that links product claims to checks, source files, and docs.
+- **Public proof reports:** Pages publishes generated JSON for quality, exercise value, skill coverage, Today shell states, guided sessions, profile portability, project health, quickstart proof, and a capability map that links product claims to checks, source files, and docs.
+- **Flagship exercise chains:** B2 gold lessons can prove consequence feedback, grammatical near-misses, repair ladders, channel transfer, memory recurrence, and reason evidence instead of relying on flat right/wrong quizzes.
+- **Portable learner profile proof:** a generated acceptance trace exports a real local profile, imports it into a clean session, replays both timelines, and checks plan execution, memory corrections, guided outcomes, and privacy guardrails.
 - **Lightweight companion:** the dashboard opens with a deterministic Today shell, a guided outcome session, and a read-only Hermes bridge brief without embedding a heavy agent runtime.
 - **Inspectable demo learner:** `dashboard.html?demo=learner` shows a rich B2 profile in memory only, so visitors can inspect personalization without overwriting their local progress.
 - **Static and forkable:** every trainer can run from `index.html`; GitHub Pages deploys a checked static artifact.
@@ -90,9 +95,19 @@ npm run check:guided-session-report
 npm run check:guided-session-diff
 npm run check:capability-map
 npm run check:proof-digest
+npm run check:evaluator-path
+npm run build:evaluator-path -- --text
+npm run check:evaluator-journey
+npm run build:evaluator-journey -- --text
+npm run check:profile-portability
+npm run build:profile-portability -- --text
+npm run check:exercise-value-report
+npm run build:exercise-value -- --text
 npm run check:program-page
 npm run check:proof-page
 npm run check:comic-prompts
+npm run check:public-runtime
+npm run check:public-runtime-mutations
 npm run proof:quickstart
 npm run check:quickstart-proof
 node scripts/build-capability-map.js --out .dist/capabilities.json --text
@@ -140,9 +155,11 @@ node scripts/static-qa.js
 node scripts/check-syntax.js
 node scripts/validate-lesson.js
 node scripts/audit-lesson-exercises.js
+node scripts/smoke-exercise-value-report.js
 node scripts/simulate-gold-lessons.js
 node scripts/counterfactual-learner-simulator.js
 node scripts/debug-profile-replay.js --file plata-backup.json
+node scripts/smoke-profile-portability.js
 node scripts/build-skill-coverage-report.js --out .dist/skill-coverage.json --text
 node scripts/build-demo-learner-report.js --out .dist/demo-learner.json --text
 node scripts/diff-demo-learner-report.js --base .dist/demo-learner.json --head current --json > .dist/demo-learner-diff.json
@@ -187,8 +204,12 @@ node scripts/build-review-report.js --quality-diff .dist/quality-diff.json --das
 node scripts/smoke-review-report.js
 node scripts/smoke-review-report-fixture.js
 node scripts/smoke-proof-digest.js
+node scripts/smoke-evaluator-path.js
+node scripts/smoke-evaluator-journey.js
 node scripts/smoke-program-page.js
 node scripts/smoke-proof-page.js
+node scripts/smoke-public-runtime.js
+node scripts/mutation-public-runtime.js
 node scripts/build-capability-map.js --out .dist/capabilities.json --text
 node scripts/smoke-capability-map.js
 node scripts/build-project-health-manifest.js --out .dist/project-health.json --text

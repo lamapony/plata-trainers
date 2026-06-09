@@ -128,7 +128,22 @@ It has:
 
 The two wrong options are not random. One imports private-chat force into formal writing; the other removes pressure through over-softening.
 
-### Scene 4 — Arbejdspladsen
+### Scene 4 — Kanalvalg
+
+**Learning goal:** Transfer one complaint across private chat, formal email, workplace talk, and public profile contexts without losing agency or social fit.
+
+This is the flagship exercise chain. It is intentionally not a flat multiple-choice quiz:
+
+- consequence feedback explains what the sentence does socially;
+- near-miss answers are grammatical Danish but pragmatically wrong for the channel;
+- repair ladders move from raw intent to safer Danish to workplace-ready Danish;
+- the same intent is shown across Slack, landlord email, workplace coffee, and public profile contexts;
+- the memory cue returns to `passive-agency`, so the learner avoids recreating the landlord's own vagueness;
+- the correct answer still requires choosing the reason that names actor/date pressure plus formal channel fit.
+
+`reports/exercise-value.json` proves these archetypes and mutation-tests the scene against flat-quiz drift.
+
+### Scene 5 — Arbejdspladsen
 
 **Learning goal:** Use understatement without losing agency when discussing a private problem at work.
 
@@ -139,7 +154,7 @@ This scene uses grouped completion validation. A passing answer needs both:
 
 This prevents weak answers such as only `varme` from passing as B2.
 
-### Scene 5 — Konsekvens
+### Scene 6 — Konsekvens
 
 **Learning goal:** Name the B2 principle: clarity and relationship control can coexist.
 

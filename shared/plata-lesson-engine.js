@@ -524,6 +524,126 @@
     });
   }
 
+  /* ---- flagship chain renderer ---- */
+  function renderRepairLadder(steps) {
+    if (!steps || !steps.length) return "";
+    var html = "<ol class='flagship-ladder'>";
+    steps.forEach(function (step) {
+      html += "<li><span>" + escapeHtml(step.stage || "step") + "</span><strong lang='da'>" + escapeHtml(step.text || "") + "</strong></li>";
+    });
+    html += "</ol>";
+    return html;
+  }
+
+  function renderChannelVersions(scene) {
+    if (!scene.channelVersions || !scene.channelVersions.length) return "";
+    var html = "<div class='flagship-channel-grid' aria-label='Same intent across channels'>";
+    scene.channelVersions.forEach(function (channel) {
+      html += "<article class='flagship-channel'>" +
+        "<span>" + escapeHtml(channel.label || channel.id || "channel") + "</span>" +
+        "<strong lang='da'>" + escapeHtml(channel.sample || "") + "</strong>" +
+        "<p>" + escapeHtml(channel.risk || "") + "</p>" +
+      "</article>";
+    });
+    html += "</div>";
+    return html;
+  }
+
+  function renderReasonOptions(ctx, scene, option, panel) {
+    if (!option.reasonOptions || !option.reasonOptions.length) return;
+    var reasonWrap = document.createElement("div");
+    reasonWrap.className = "flagship-reasons";
+    reasonWrap.innerHTML = "<p class='eyebrow'>" + escapeHtml(option.reasonPrompt || "Explain your choice") + "</p>";
+    option.reasonOptions.forEach(function (reason) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "flagship-reason";
+      btn.textContent = reason.label;
+      btn.addEventListener("click", function () {
+        var ok = option.correct === true && reason.correct === true;
+        $("#feedback").className = "feedback show " + (ok ? "ok" : "warn");
+        $("#feedback").textContent = ok ? option.feedback : "Diagnostic: the phrase is promising, but the explanation must name the channel logic: actor/date pressure plus formal tone.";
+        if (!ctx.state.attempts[scene.id + option.id + reason.id] || ok) {
+          record(ctx, scene, ok, option.label + " / " + reason.label, option.label + " / " + (option.reasonPrompt || "reason"));
+          ctx.state.attempts[scene.id + option.id + reason.id] = ok ? "correct" : "tried";
+        }
+        if (ok) {
+          applyEffects(ctx.state, option.effects);
+          ctx.state.completed[scene.id] = true;
+          btn.classList.add("correct");
+          markRepairPlanStepComplete(ctx, scene);
+        } else {
+          btn.classList.add("wrong");
+        }
+        ctx.renderSidebar();
+      });
+      reasonWrap.appendChild(btn);
+    });
+    panel.appendChild(reasonWrap);
+  }
+
+  function renderFlagshipChain(ctx, scene) {
+    var body = $("#exercise-body");
+    body.className = "flagship-chain";
+    if (scene.intent || scene.memoryCue) {
+      var proof = document.createElement("div");
+      proof.className = "flagship-proof";
+      proof.innerHTML =
+        (scene.intent ? "<p><strong>Intent</strong><span>" + escapeHtml(scene.intent) + "</span></p>" : "") +
+        (scene.memoryCue ? "<p><strong>Memory cue</strong><span>" + escapeHtml(scene.memoryCue.copy || scene.memoryCue.signal || "") + "</span></p>" : "");
+      body.appendChild(proof);
+    }
+    var channels = document.createElement("div");
+    channels.innerHTML = renderChannelVersions(scene);
+    body.appendChild(channels);
+
+    var choices = document.createElement("div");
+    choices.className = "flagship-options";
+    (scene.options || []).forEach(function (opt) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "choice-card flagship-option";
+      btn.innerHTML =
+        "<span class='flagship-channel-label'>" + escapeHtml(opt.channel || "channel") + "</span>" +
+        "<strong lang='da'>" + escapeHtml(opt.label) + "</strong>" +
+        "<small>" + escapeHtml(opt.detail || "") + "</small>";
+      btn.addEventListener("click", function () {
+        var panel = document.createElement("aside");
+        panel.className = "flagship-consequence " + (opt.correct ? "ok" : "warn");
+        panel.innerHTML =
+          "<p class='eyebrow'>" + escapeHtml(opt.nearMiss ? "Near miss · consequence" : "Consequence") + "</p>" +
+          "<h4>" + escapeHtml(opt.pragmaticStatus || opt.channel || "channel fit") + "</h4>" +
+          "<p>" + escapeHtml(opt.consequence || opt.feedback || "") + "</p>" +
+          renderRepairLadder(opt.repairLadder || []);
+        var oldPanel = body.querySelector && body.querySelector(".flagship-consequence");
+        if (oldPanel && oldPanel.remove) oldPanel.remove();
+        body.appendChild(panel);
+
+        if (opt.correct && opt.reasonOptions && opt.reasonOptions.length) {
+          $("#feedback").className = "feedback show ok";
+          $("#feedback").textContent = "Good candidate. Now prove the channel logic before the scene counts as solved.";
+          renderReasonOptions(ctx, scene, opt, panel);
+          return;
+        }
+
+        $("#feedback").className = "feedback show " + (opt.correct ? "ok" : "warn");
+        $("#feedback").textContent = opt.feedback;
+        if (!ctx.state.attempts[scene.id + opt.id]) {
+          record(ctx, scene, !!opt.correct, opt.label, correctLabel(scene.options || []));
+          applyEffects(ctx.state, opt.effects);
+          ctx.state.attempts[scene.id + opt.id] = true;
+        }
+        if (opt.correct) {
+          ctx.state.completed[scene.id] = true;
+          markRepairPlanStepComplete(ctx, scene);
+        }
+        ctx.renderSidebar();
+      });
+      choices.appendChild(btn);
+    });
+    body.appendChild(choices);
+  }
+
   /* ---- epilogue renderer ---- */
   function renderComplete(ctx) {
     var lesson = ctx.lesson;
@@ -728,6 +848,7 @@
   registerRenderer("input", renderInput);
   registerRenderer("match", renderMatch);
   registerRenderer("completion", renderCompletion);
+  registerRenderer("flagship-chain", renderFlagshipChain);
 
   root.PlataLessonEngine = {
     run: run,

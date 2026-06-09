@@ -28,15 +28,21 @@ function runBaseSmoke() {
   const digest = buildProofDigest();
   assert(digest.status === "pass", `proof digest should pass:\n${digest.issues.join("\n")}`);
   assert(digest.headline.includes("coherent"), "proof digest should produce a visitor-facing headline");
-  assert(digest.whatThisProves.length === 4, "proof digest should explain the main proof claims");
+  assert(digest.whatThisProves.length === 6, "proof digest should explain the main proof claims");
   assert(digest.whatChanged.length === 4, "proof digest should explain the current public proof changes");
   assert(digest.trustBoundaries.length >= 4, "proof digest should state trust boundaries");
   assert(digest.sourceReports.includes("reports/project-health.json"), "proof digest should cite project health");
+  assert(digest.sourceReports.includes("reports/evaluator-path.json"), "proof digest should cite the evaluator path report");
+  assert(digest.sourceReports.includes("reports/evaluator-journey.json"), "proof digest should cite the evaluator journey report");
+  assert(digest.sourceReports.includes("reports/profile-portability.json"), "proof digest should cite profile portability proof");
+  assert(digest.sourceReports.includes("reports/exercise-value.json"), "proof digest should cite exercise value proof");
   assert(digest.sourceReports.includes("reports/guided-session.json"), "proof digest should cite guided session proof");
   assert(digest.sourceReports.includes("reports/quickstart-proof/review-report.json"), "proof digest should cite golden review JSON");
   assert(digest.whatThisProves.some(item => item.id === "private-personalization" && item.status === "pass" && item.takeaway.includes("storage writes")), "proof digest should explain read-only personalization");
+  assert(digest.whatThisProves.some(item => item.id === "profile-portability" && item.status === "pass" && item.takeaway.includes("profileport-") && item.evidence.includes("check:profile-portability")), "proof digest should explain real profile portability");
+  assert(digest.whatThisProves.some(item => item.id === "flagship-exercise-value" && item.status === "pass" && item.evidence.includes("check:exercise-value-report") && item.takeaway.includes("radical archetypes")), "proof digest should explain flagship exercise value");
   assert(digest.whatThisProves.some(item => item.id === "reviewer-output-contract" && item.evidence.includes("check:review-report-fixture")), "proof digest should cite reviewer fixture proof");
-  assert(digest.whatChanged.some(item => item.id === "visitor-proof-walkthrough" && item.evidence.includes("reports/guided-session.json")), "proof digest should describe the visitor proof walkthrough");
+  assert(digest.whatChanged.some(item => item.id === "visitor-proof-walkthrough" && item.evidence.includes("reports/evaluator-path.json") && item.evidence.includes("reports/evaluator-journey.json") && item.evidence.includes("check:evaluator-journey") && item.takeaway.includes("evaljourney-")), "proof digest should describe the deterministic evaluator journey");
   assert(digest.whatChanged.some(item => item.id === "plain-language-digest" && item.evidence.includes("check:proof-digest")), "proof digest should describe itself as a checked artifact");
 
   const formatted = formatProofDigest(digest);

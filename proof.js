@@ -7,6 +7,10 @@
   var proofSources = {
     digest: "./reports/proof-digest.json",
     demo: "./reports/demo-learner.json",
+    evaluator: "./reports/evaluator-path.json",
+    journey: "./reports/evaluator-journey.json",
+    portability: "./reports/profile-portability.json",
+    exerciseValue: "./reports/exercise-value.json",
     guided: "./reports/guided-session.json",
     capabilities: "./reports/capabilities.json",
     health: "./reports/project-health.json",
@@ -83,9 +87,17 @@
     enableLink("#proof-digest-link", proofSources.digest);
     enableLink("#proof-health-link", proofSources.health);
     enableLink("#proof-capabilities-link", proofSources.capabilities);
+    enableLink("#proof-evaluator-link", proofSources.evaluator);
+    enableLink("#proof-journey-link", proofSources.journey);
+    enableLink("#proof-portability-link", proofSources.portability);
+    enableLink("#proof-exercise-link", proofSources.exerciseValue);
     enableLink("#proof-guided-link", proofSources.guided);
     enableLink("#proof-quickstart-link", quickstartBase + "quickstart.md");
     var passing = data.demo.status === "pass" &&
+      data.evaluator.status === "pass" &&
+      data.journey.status === "pass" &&
+      data.portability.status === "pass" &&
+      data.exerciseValue.status === "pass" &&
       data.capabilities.status === "pass" &&
       data.health.status === "pass" &&
       data.quickstart.status === "pass";
@@ -94,6 +106,10 @@
     $("#proof-summary").innerHTML = [
       ["Health gates", data.health.totals.gates],
       ["Proof gates", data.capabilities.totals.proofGates],
+      ["Evaluator targets", data.evaluator.routeTargets.length],
+      ["Journey stages", data.journey.totals.stages],
+      ["Portable stages", data.portability.totals.stages],
+      ["Exercise chains", data.exerciseValue.totals.flagshipChains],
       ["Artifacts", data.quickstart.artifacts.length],
       ["Review regressions", data.review.summary.regressions],
       ["Issues", data.health.totals.issues + data.capabilities.totals.issues]
@@ -200,6 +216,31 @@
         proofSources.demo
       ),
       surfaceCard(
+        "Profile portability",
+        data.portability.status,
+        "Export/import/replay trace for a real local profile with plan, correction, and outcome evidence.",
+        [
+          chip(data.portability.traceId || "profile trace", "pass"),
+          chip(countLabel(data.portability.totals.eventCount, "event", "events"), "mastery"),
+          chip(countLabel(data.portability.totals.memoryCorrections, "correction", "corrections"), "pass"),
+          chip(countLabel(data.portability.totals.flagshipExerciseOutcomes || 0, "flagship outcome", "flagship outcomes"), data.portability.totals.flagshipExerciseOutcomes ? "pass" : "fail")
+        ],
+        proofSources.portability
+      ),
+      surfaceCard(
+        "Exercise value",
+        data.exerciseValue.status,
+        "Flagship exercise proof for consequence, near-miss, repair ladder, channel transfer, memory recurrence, and reason evidence.",
+        [
+          chip(countLabel(data.exerciseValue.totals.flagshipChains, "flagship chain", "flagship chains"), "mastery"),
+          chip(data.exerciseValue.totals.archetypesCovered + "/" + data.exerciseValue.requiredArchetypes.length + " archetypes", "pass"),
+          chip(countLabel(data.exerciseValue.totals.nearMisses, "near miss", "near misses"), ""),
+          chip(data.guided.flagshipExerciseOutcomeProof && data.guided.flagshipExerciseOutcomeProof.status === "pass" ? "guided outcome proof" : "guided proof missing", data.guided.flagshipExerciseOutcomeProof && data.guided.flagshipExerciseOutcomeProof.status === "pass" ? "pass" : "fail"),
+          chip(data.portability.totals.flagshipExerciseOutcomes ? "profile outcome portable" : "profile outcome missing", data.portability.totals.flagshipExerciseOutcomes ? "pass" : "fail")
+        ],
+        proofSources.exerciseValue
+      ),
+      surfaceCard(
         "Capability map",
         data.capabilities.status,
         "Product claims mapped to checks, reports, docs, and source files.",
@@ -243,6 +284,9 @@
     var guidedScenario = findById(data.guided.scenarios, "memory-backed-repair") || (data.guided.scenarios || [])[0] || {};
     var session = guidedScenario.session || {};
     var route = session.route || {};
+    var journey = data.journey || {};
+    var returnStage = findById(journey.stages || [], "dashboard-return") || {};
+    var returnRendered = returnStage.evidence && returnStage.evidence.rendered || {};
     var ledger = data.guided.outcomeLedger || {};
     var outcome = (ledger.outcomes || [])[0] || {};
     var receipt = outcome.outcomeReceipt || session.outcomeReceipt || {};
@@ -287,12 +331,23 @@
       {
         title: "Follow the guided session",
         copy: session.goal && session.goal.reason || "A guided session turns planner, memory, and advisor signals into four learner-facing steps.",
-        href: localReportHref("reports/guided-session.json"),
-        hrefLabel: "Open guided report",
+        href: localPageHref(route.href || "dashboard.html?demo=learner"),
+        hrefLabel: "Open guided route",
         chips: [
           chip(session.status || "ready", "pass"),
           chip(countLabel((session.steps || []).length, "guided step", "guided steps"), "mastery"),
           chip(session.fingerprint || "guided trace", "")
+        ]
+      },
+      {
+        title: "Return with route evidence",
+        copy: returnRendered.returnReceipt || "The dashboard receives plan and step ids, confirms the returned step, and continues the route without writing demo progress.",
+        href: localPageHref(journey.exit || "dashboard.html?demo=learner#due"),
+        hrefLabel: "Open return route",
+        chips: [
+          chip(journey.traceId || "journey trace", "pass"),
+          chip((journey.totals && journey.totals.storageWrites || 0) + " storage writes", journey.totals && journey.totals.storageWrites ? "fail" : "pass"),
+          linkChip(proofSources.journey, "evaluator-journey.json", "pass")
         ]
       },
       {
@@ -308,11 +363,12 @@
       },
       {
         title: "Audit the proof trail",
-        copy: "The same flow is guarded by generated reports, PR drift checks, and source contracts that are published with the static site.",
+        copy: "The same flow is guarded by generated reports, the deterministic evaluator journey, PR drift checks, and source contracts that are published with the static site.",
         href: proofSources.capabilities,
         hrefLabel: "Open capability map",
         chips: [
           proofGates,
+          chip("check:evaluator-journey", "pass"),
           linkChip(proofSources.health, "project-health.json", "pass"),
           sourceChip("shared/plata-guided-session.js", "guided source")
         ]
@@ -332,19 +388,84 @@
     }).join("");
 
     $("#proof-walkthrough").innerHTML =
-      "<article class=\"proof-walkthrough-summary " + escapeHtml(data.guided.status === "pass" && demo.status === "pass" ? "pass" : "fail") + "\">" +
+      "<article class=\"proof-walkthrough-summary " + escapeHtml(data.guided.status === "pass" && demo.status === "pass" && journey.status === "pass" ? "pass" : "fail") + "\">" +
         "<div>" +
           "<span class=\"quality-key\">visitor path</span>" +
           "<h3>One inspectable loop from recommendation to receipt</h3>" +
-          "<p>This walkthrough is assembled from generated reports, so it fails with the proof page if the demo profile, guided session, or receipt contract drifts.</p>" +
+          "<p>This walkthrough is assembled from generated reports and a deterministic journey trace, so it fails with the proof page if the demo profile, guided route, return receipt, or outcome contract drifts.</p>" +
         "</div>" +
         "<div class=\"program-proof-strip\">" +
           chip(countLabel(demoPlan.steps && demoPlan.steps.length || 0, "plan step", "plan steps"), "mastery") +
+          chip(journey.traceId || "journey trace", "pass") +
+          chip(countLabel(journey.totals && journey.totals.stages || 0, "journey stage", "journey stages"), "pass") +
           chip(countLabel(data.guided.totals && data.guided.totals.outcomeReceipts || 0, "outcome receipt", "outcome receipts"), "pass") +
           chip(countLabel((data.guided.scenarios || []).length, "guided scenario", "guided scenarios"), "") +
         "</div>" +
       "</article>" +
       "<div class=\"proof-walkthrough-steps\">" + stepHtml + "</div>";
+  }
+
+  function renderEvaluatorPath(data) {
+    var evaluator = data.evaluator || {};
+    var entry = evaluator.entry || {};
+    var links = entry.links || [];
+    var routes = evaluator.routeTargets || [];
+    var reports = evaluator.backingReports || {};
+    var demo = reports.demoLearner || {};
+    var guided = reports.guidedSession || {};
+    var capability = reports.capabilityMap || {};
+    var issues = evaluator.issues || [];
+    var gates = capability.proofSurfaceGates || [];
+    var reportIds = capability.proofSurfaceReports || [];
+    var routeLinks = routes.map(function (route) {
+      var label = route.targetHash ? route.targetFile + route.targetHash : route.href;
+      return linkChip(localPageHref(route.href), label, route.targetExists && route.hashTargetExists ? "pass" : "fail");
+    }).join("");
+    var gateChips = [
+      chip(gates.indexOf("check:evaluator-path") !== -1 ? "check:evaluator-path" : "missing evaluator gate", gates.indexOf("check:evaluator-path") !== -1 ? "pass" : "fail"),
+      chip(gates.indexOf("check:proof-page") !== -1 ? "check:proof-page" : "missing proof-page gate", gates.indexOf("check:proof-page") !== -1 ? "pass" : "fail"),
+      chip(reportIds.indexOf("evaluator-path") !== -1 ? "public report cited" : "report citation missing", reportIds.indexOf("evaluator-path") !== -1 ? "pass" : "fail")
+    ].join("");
+
+    $("#proof-evaluator").innerHTML =
+      "<article class=\"proof-guided-card " + escapeHtml(evaluator.status === "pass" ? "pass" : "fail") + "\">" +
+        "<div class=\"quality-card-head\"><span class=\"quality-key\">" + escapeHtml(evaluator.status || "unknown") + "</span><a class=\"quality-state\" href=\"" + escapeHtml(proofSources.evaluator) + "\">report</a></div>" +
+        "<h3>First-visit evaluator path</h3>" +
+        "<p>The home CTA is checked as a real route: evaluator section, read-only demo learner, proof walkthrough, and guided proof target.</p>" +
+        "<div class=\"program-proof-strip\">" +
+          chip(countLabel(links.length, "link", "links"), "mastery") +
+          chip(countLabel(routes.length, "route target", "route targets"), "pass") +
+          chip(countLabel(issues.length, "issue", "issues"), issues.length ? "fail" : "pass") +
+          linkChip(proofSources.evaluator, "evaluator-path.json", "pass") +
+        "</div>" +
+      "</article>" +
+      "<article class=\"proof-guided-card " + escapeHtml(demo.status === "pass" && demo.storageWrites === 0 ? "pass" : "fail") + "\">" +
+        "<div class=\"quality-card-head\"><span class=\"quality-key\">" + escapeHtml(demo.status || "unknown") + "</span><a class=\"quality-state\" href=\"" + escapeHtml(localPageHref(demo.url || "dashboard.html?demo=learner")) + "\">demo</a></div>" +
+        "<h3>Read-only demo entry</h3>" +
+        "<p>The evaluator can inspect personalization without writing visitor progress or requiring an account.</p>" +
+        "<div class=\"program-proof-strip\">" +
+          chip((demo.storageWrites || 0) + " storage writes", demo.storageWrites ? "fail" : "pass") +
+          chip(countLabel(demo.visibleMemoryFacts || 0, "memory fact", "memory facts"), "mastery") +
+          chip(demo.planKind || "plan", "") +
+        "</div>" +
+      "</article>" +
+      "<article class=\"proof-guided-card " + escapeHtml(guided.status === "pass" ? "pass" : "fail") + "\">" +
+        "<div class=\"quality-card-head\"><span class=\"quality-key\">" + escapeHtml(guided.status || "unknown") + "</span><a class=\"quality-state\" href=\"" + escapeHtml(proofSources.guided) + "\">guided proof</a></div>" +
+        "<h3>Guided proof backing</h3>" +
+        "<p>The route is backed by the memory-based guided scenario and at least one portable outcome receipt.</p>" +
+        "<div class=\"program-proof-strip\">" +
+          chip(guided.memoryBackedStatus || "memory-backed", guided.memoryBackedStatus === "pass" ? "pass" : "") +
+          chip(countLabel(guided.outcomeReceipts || 0, "outcome receipt", "outcome receipts"), guided.outcomeReceipts ? "pass" : "fail") +
+          chip(guided.memoryBackedFingerprint || "guided fingerprint", "") +
+        "</div>" +
+      "</article>" +
+      "<article class=\"proof-guided-card " + escapeHtml(capability.status === "pass" ? "pass" : "fail") + "\">" +
+        "<div class=\"quality-card-head\"><span class=\"quality-key\">" + escapeHtml(capability.status || "unknown") + "</span><a class=\"quality-state\" href=\"" + escapeHtml(proofSources.capabilities) + "\">capability</a></div>" +
+        "<h3>Route targets and backing gates</h3>" +
+        "<p>The public proof capability must cite the evaluator gate and the published report before this page passes.</p>" +
+        "<div class=\"program-proof-block\"><strong>Targets</strong><div>" + routeLinks + "</div></div>" +
+        "<div class=\"program-proof-block\"><strong>Proof</strong><div>" + gateChips + "</div></div>" +
+      "</article>";
   }
 
   function findById(items, id) {
@@ -493,6 +614,38 @@
       "</div>";
   }
 
+  function scrollToHashTarget() {
+    var hash = window.location && window.location.hash;
+    if (!hash) return;
+    try {
+      var target = $(hash);
+      if (target && typeof target.scrollIntoView === "function") {
+        target.scrollIntoView({ block: "start", behavior: "auto" });
+      }
+      if (target && typeof window.scrollTo === "function" && typeof target.getBoundingClientRect === "function") {
+        var top = target.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0);
+        window.scrollTo({ top: top, left: 0, behavior: "auto" });
+      }
+    } catch (error) {
+      // Invalid external hashes should not break the proof page render.
+    }
+  }
+
+  function restoreHashScroll() {
+    scrollToHashTarget();
+    if (typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(scrollToHashTarget);
+    }
+    if (typeof window.setTimeout === "function") {
+      window.setTimeout(scrollToHashTarget, 0);
+      window.setTimeout(scrollToHashTarget, 120);
+    }
+  }
+
+  if (typeof window.addEventListener === "function") {
+    window.addEventListener("hashchange", restoreHashScroll);
+  }
+
   function renderError(error) {
     $("#proof-status").textContent = "Unavailable";
     $("#proof-status").className = "quality-fail";
@@ -500,6 +653,7 @@
     $("#proof-generated").textContent = error.message || "Could not load proof reports";
     $("#proof-digest").innerHTML = "<article class=\"proof-digest-card fail\"><h3>Proof digest missing</h3><p>Run npm run build:pages to generate reports/proof-digest.json.</p></article>";
     $("#proof-walkthrough").innerHTML = "";
+    $("#proof-evaluator").innerHTML = "";
     $("#proof-artifacts").innerHTML = "<article class=\"proof-command-card fail\"><h3>Proof artifacts missing</h3><p>Run npm run build:pages to generate reports.</p></article>";
     $("#proof-surfaces").innerHTML = "";
     $("#proof-capability-matrix").innerHTML = "";
@@ -511,6 +665,10 @@
   Promise.all([
     loadJson(proofSources.digest),
     loadJson(proofSources.demo),
+    loadJson(proofSources.evaluator),
+    loadJson(proofSources.journey),
+    loadJson(proofSources.portability),
+    loadJson(proofSources.exerciseValue),
     loadJson(proofSources.guided),
     loadJson(proofSources.capabilities),
     loadJson(proofSources.health),
@@ -521,21 +679,27 @@
     var data = {
       digest: values[0],
       demo: values[1],
-      guided: values[2],
-      capabilities: values[3],
-      health: values[4],
-      quickstart: values[5],
-      review: values[6],
-      summary: values[7]
+      evaluator: values[2],
+      journey: values[3],
+      portability: values[4],
+      exerciseValue: values[5],
+      guided: values[6],
+      capabilities: values[7],
+      health: values[8],
+      quickstart: values[9],
+      review: values[10],
+      summary: values[11]
     };
     renderSummary(data);
     renderDigest(data);
     renderProofWalkthrough(data);
+    renderEvaluatorPath(data);
     renderArtifacts(data);
     renderSurfaces(data);
     renderCapabilityMatrix(data);
     renderGuidedContract(data);
     renderHealth(data);
     renderReview(data);
+    restoreHashScroll();
   }).catch(renderError);
 })();

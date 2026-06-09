@@ -316,6 +316,29 @@ function runCompletion(env, scene, action) {
   assert(hasClass(env.elements["#feedback"], ok ? "ok" : "warn"), `${scene.id}: completion feedback class mismatch`);
 }
 
+function runFlagshipChain(env, scene, action) {
+  const option = scene.options.find(candidate => candidate.id === action.optionId);
+  assert(option, `${scene.id}: unknown option ${action.optionId}`);
+  const optionGroup = env.elements["#exercise-body"].children.find(child => hasClass(child, "flagship-options"));
+  assert(optionGroup, `${scene.id}: flagship options did not render`);
+  const button = findChildByText(optionGroup.children, option.label, scene.id);
+  button.click();
+  assert(env.elements["#feedback"].textContent.includes(option.correct ? "Good candidate" : "Diagnostic:"), `${scene.id}: flagship feedback did not render`);
+
+  if (option.correct && option.reasonOptions && option.reasonOptions.length) {
+    const panel = env.elements["#exercise-body"].children.find(child => hasClass(child, "flagship-consequence"));
+    assert(panel, `${scene.id}: flagship consequence did not render`);
+    const reason = option.reasonOptions.find(candidate => candidate.id === action.reasonId);
+    assert(reason, `${scene.id}: unknown reason ${action.reasonId}`);
+    const reasonGroup = panel.children.find(child => hasClass(child, "flagship-reasons"));
+    assert(reasonGroup, `${scene.id}: reason options did not render`);
+    const reasonButton = findChildByText(reasonGroup.children, reason.label, `${scene.id}.reason`);
+    reasonButton.click();
+  }
+
+  assert(hasClass(env.elements["#feedback"], action.expectCorrect ? "ok" : "warn"), `${scene.id}: flagship feedback class mismatch`);
+}
+
 function runSceneAction(env, action) {
   const scene = env.lesson.scenes.find(candidate => candidate.id === action.sceneId);
   assert(scene, `unknown scene ${action.sceneId}`);
@@ -330,6 +353,10 @@ function runSceneAction(env, action) {
   }
   if (scene.type === "completion") {
     runCompletion(env, scene, action);
+    return;
+  }
+  if (scene.type === "flagship-chain") {
+    runFlagshipChain(env, scene, action);
     return;
   }
   throw new Error(`${scene.id}: unsupported runtime scene type ${scene.type}`);
@@ -379,7 +406,7 @@ function runRepairAttemptSmoke(lesson) {
   assert(/repair-focus/.test(env.elements["#scene"].innerHTML), "repair URL renders repair focus");
   assert(/scene-comic/.test(env.elements["#scene"].innerHTML), "repair URL renders scene comic panel");
   assert(/assets\/comic\/official-reply-passive\.png/.test(env.elements["#scene"].innerHTML), "repair URL renders generated comic asset");
-  assert(env.elements["#scene-count"].textContent === "1 / 5", "repair URL opens the target scene");
+  assert(env.elements["#scene-count"].textContent === "1 / 6", "repair URL opens the target scene");
   assert(env.elements["#exercise-body"].children.length === 3, "choice scene renders options");
 
   env.elements["#exercise-body"].children[1].click();
@@ -405,20 +432,20 @@ function runHashNavigationSmoke(lesson) {
     hash: "#official-reply-passive"
   });
 
-  assert(env.elements["#scene-count"].textContent === "1 / 5", "hash navigation opens initial deep-linked scene");
+  assert(env.elements["#scene-count"].textContent === "1 / 6", "hash navigation opens initial deep-linked scene");
   assert(/The landlord answers politely/.test(env.elements["#scene"].innerHTML), "hash navigation rendered the initial scene");
 
   env.context.location.hash = "#workplace-understatement";
   env.context.dispatchEvent({ type: "hashchange" });
 
-  assert(env.elements["#scene-count"].textContent === "4 / 5", "hashchange navigates to the requested scene");
+  assert(env.elements["#scene-count"].textContent === "5 / 6", "hashchange navigates to the requested scene");
   assert(/Honesty is not the same sentence/.test(env.elements["#scene"].innerHTML), "hashchange rendered the new scene");
   assert(/assets\/comic\/workplace-understatement\.png/.test(env.elements["#scene"].innerHTML), "hashchange rendered the new scene comic contract");
 
   env.context.location.hash = "#missing-scene";
   env.context.dispatchEvent({ type: "hashchange" });
 
-  assert(env.elements["#scene-count"].textContent === "1 / 5", "unknown hash falls back to the first scene");
+  assert(env.elements["#scene-count"].textContent === "1 / 6", "unknown hash falls back to the first scene");
   assert(env.context.location.hash === "#official-reply-passive", "unknown hash is normalized to the rendered scene");
 }
 

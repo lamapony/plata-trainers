@@ -130,6 +130,20 @@ function diagnosticSummary(lesson, scene) {
       simulationRejects: answerSpec ? asArray(answerSpec.reject).length : 0
     };
   }
+  if (scene.type === "flagship-chain") {
+    const options = asArray(scene.options);
+    return {
+      kind: "flagship-chain",
+      archetypes: asArray(scene.archetypes),
+      channelVersions: asArray(scene.channelVersions).map(channel => channel.id || channel.label).filter(Boolean),
+      optionCount: options.length,
+      nearMisses: options.filter(option => option.nearMiss === true).length,
+      consequences: options.filter(option => option.consequence).length,
+      repairLadders: options.filter(option => asArray(option.repairLadder).length >= 3).length,
+      explainOptions: options.filter(option => asArray(option.reasonOptions).length >= 2).length,
+      memorySignal: scene.memoryCue && scene.memoryCue.signal || ""
+    };
+  }
   return { kind: scene.type || "unknown" };
 }
 
@@ -182,6 +196,45 @@ function sceneChecks(lesson, scene, sourceTitles, masteryMap, simulationPaths) {
       label: "Answer Spec",
       pass: asArray(scene.acceptKeywordGroups).length >= 2 && Boolean(answerSpec && answerSpec.accept)
     });
+  }
+  if (scene.type === "flagship-chain") {
+    const requiredArchetypes = [
+      "consequence-exercise",
+      "near-miss",
+      "repair-ladder",
+      "same-intent-different-channel",
+      "memory-backed-recurrence",
+      "explain-your-choice"
+    ];
+    const archetypes = asArray(scene.archetypes);
+    const options = asArray(scene.options);
+    checks.push(
+      {
+        key: "flagship-archetypes",
+        label: "Archetypes",
+        pass: requiredArchetypes.every(archetype => archetypes.includes(archetype))
+      },
+      {
+        key: "near-miss",
+        label: "Near miss",
+        pass: options.some(option => option.nearMiss === true && option.correct === false && option.grammarStatus === "grammatical")
+      },
+      {
+        key: "repair-ladder",
+        label: "Repair ladder",
+        pass: options.length > 0 && options.every(option => asArray(option.repairLadder).length >= 3)
+      },
+      {
+        key: "channel-transfer",
+        label: "Channels",
+        pass: asArray(scene.channelVersions).length >= 3
+      },
+      {
+        key: "explain-choice",
+        label: "Explain",
+        pass: options.some(option => option.correct === true && asArray(option.reasonOptions).filter(reason => reason.correct === true).length === 1)
+      }
+    );
   }
 
   return checks;

@@ -191,6 +191,17 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Render a compact capability proof matrix on `proof.html` so user-facing claims are traced to gates, reports, and source without opening raw JSON first.
 - [x] Link the proof page from public navigation, README, sitemap, project health, and the product capability map.
 - [x] Add `reports/proof-digest.json` and `check:proof-digest` so the page can explain what the reports prove, what changed, and where the trust boundaries are.
+- [x] Expose a root-safe one-click evaluator path on `index.html` that links the read-only demo learner, guided proof, and proof walkthrough without depending on Pages-only report URLs.
+- [x] Restore home and proof-page hash scrolling after async rendering so evaluator links land on the intended section, not just the correct URL.
+- [x] Add `check:evaluator-path` with mutation smoke coverage for first-visit route links, read-only demo guarantees, guided proof backing, and capability-map drift.
+- [x] Publish `reports/evaluator-path.json` and render it on `proof.html` so first-visit route drift is visible without opening internal test output.
+- [x] Move evaluator path report build/format logic out of the smoke harness so production reports do not import test files.
+- [x] Add `check:public-runtime` to build the Pages artifact, serve it over local HTTP, execute public home/program/proof JS against generated reports, and protect evaluator, demo read-only, report-link, and responsive contracts.
+- [x] Add `check:public-runtime-mutations` so broken evaluator links, proof hash targets, demo read-only guarantees, and responsive chip contracts are proven to fail the public runtime gate.
+- [x] Add `reports/evaluator-journey.json` and `check:evaluator-journey` as a deterministic acceptance trace from `index.html#evaluate` through demo learner, proof walkthrough, guided route tokens, and dashboard return receipt.
+- [x] Add `reports/profile-portability.json` and `check:profile-portability` as a real-profile export/import/replay acceptance trace preserving active plans, correction audit, guided outcomes, and derived privacy guardrails.
+- [x] Prove profile portability fail modes with mutation smoke coverage for lost event logs, lost memory corrections, lost guided outcomes, and raw learner-text leaks.
+- [x] Link profile portability through `npm run check`, project health, the product capability map, proof digest, proof page, public runtime QA, and the Pages artifact.
 
 ## Companion Architecture Sprint
 
@@ -221,6 +232,15 @@ This journal tracks technical bets that make the project more valuable as an ope
 - [x] Fix incidental Danish slips in the B2 job-followup distractors and endings.
 - [x] Add an exercise audit for contradictory completion gates, duplicate exercise answers, simulation accept/reject drift, and a small editorial phrase watchlist.
 - [x] Include the exercise audit in `npm run check` and project health.
+
+## Flagship Exercise Value Sprint
+
+- [x] Add a `flagship-chain` scene archetype for B2 gold lessons that combines consequence feedback, grammatical near-miss, repair ladder, same-intent channel transfer, memory-backed recurrence, and explain-your-choice evidence.
+- [x] Add the B2 Radiator `channel-transfer-lab` scene: one workplace complaint translated across Slack, landlord email, workplace coffee, and public profile contexts.
+- [x] Require correct flagship choices to explain the channel logic before the scene is counted as solved.
+- [x] Extend lesson validation, gold simulation, lesson-engine smoke, quality reporting, and exercise audit coverage for `flagship-chain`.
+- [x] Add `reports/exercise-value.json` and `check:exercise-value-report` with mutation coverage for flat-quiz drift.
+- [x] Publish exercise value through Pages, project health, capability map, proof digest, proof page, public runtime QA, README, and the lesson schema docs.
 
 ## Learner Memory Agent Track
 

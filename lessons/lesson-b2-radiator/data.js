@@ -56,6 +56,17 @@ window.PLATA_LESSON_B2_RADIATOR = {
         avoid: ["melodrama", "readable labels", "romantic office scene"]
       },
       {
+        id: "channel-transfer-lab",
+        sceneId: "channel-transfer-lab",
+        assetPath: "./assets/comic/channel-transfer-lab.png",
+        alt: "The tenant compares the same radiator complaint across email, chat, meeting, and public profile contexts.",
+        prompt: "A single comic panel showing the tenant at a small desk with four communication channels represented visually: a formal laptop email, a private phone chat, a quiet workplace coffee conversation, and a minimal professional profile card. The same radiator problem is being translated into different social channels. Show careful comparison and restraint, not confusion. No readable text, no logos, no speech bubbles.",
+        sourceRefs: ["Lex: passiv", "Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
+        masteryTags: ["formal-register-control", "passive-agency", "consequence-aware-tone"],
+        mustInclude: ["four communication channels", "same problem translated", "calm comparison"],
+        avoid: ["readable messages", "generic app logos", "chaotic notification storm"]
+      },
+      {
         id: "epilogue-consequence",
         sceneId: "epilogue-consequence",
         assetPath: "./assets/comic/epilogue-consequence.png",
@@ -137,13 +148,14 @@ window.PLATA_LESSON_B2_RADIATOR = {
       {
         id: "diplomatic",
         expectedEndingId: "diplomatic",
-        expectedVariables: { landlordTension: -1, sofiaTrust: 0, emilEscalation: 0, workplaceTrust: 3 },
-        expectedCorrect: 8,
+        expectedVariables: { landlordTension: -2, sofiaTrust: 0, emilEscalation: 0, workplaceTrust: 3 },
+        expectedCorrect: 9,
         expectedWeakMastery: [],
         actions: [
           { sceneId: "official-reply-passive", optionId: "accurate", expectCorrect: true },
           { sceneId: "group-chat-particles", matchAll: true },
           { sceneId: "two-registers", optionId: "formal-clear", expectCorrect: true },
+          { sceneId: "channel-transfer-lab", optionId: "email-clear-agency", reasonId: "actor-date-channel", expectCorrect: true },
           { sceneId: "workplace-understatement", answer: "jeg har bedt udlejeren om en konkret dato", expectCorrect: true },
           { sceneId: "epilogue-consequence", optionId: "balanced", expectCorrect: true }
         ]
@@ -151,13 +163,14 @@ window.PLATA_LESSON_B2_RADIATOR = {
       {
         id: "aggressive",
         expectedEndingId: "aggressive",
-        expectedVariables: { landlordTension: 3, sofiaTrust: -1, emilEscalation: 0, workplaceTrust: 1 },
+        expectedVariables: { landlordTension: 5, sofiaTrust: -2, emilEscalation: 0, workplaceTrust: 1 },
         expectedCorrect: 5,
         expectedWeakMastery: ["passive-agency", "formal-register-control", "modal-particle-stance", "consequence-aware-tone"],
         actions: [
           { sceneId: "official-reply-passive", optionId: "too-aggressive", expectCorrect: false },
           { sceneId: "group-chat-particles", matchAll: true },
           { sceneId: "two-registers", optionId: "formal-aggressive", expectCorrect: false },
+          { sceneId: "channel-transfer-lab", optionId: "email-private-force", expectCorrect: false },
           { sceneId: "workplace-understatement", answer: "jeg har bedt udlejeren om en konkret dato", expectCorrect: true },
           { sceneId: "epilogue-consequence", optionId: "always-hard", expectCorrect: false }
         ]
@@ -165,13 +178,14 @@ window.PLATA_LESSON_B2_RADIATOR = {
       {
         id: "passive",
         expectedEndingId: "passive",
-        expectedVariables: { landlordTension: 0, sofiaTrust: 0, emilEscalation: 0, workplaceTrust: -1 },
+        expectedVariables: { landlordTension: 0, sofiaTrust: 0, emilEscalation: 0, workplaceTrust: -2 },
         expectedCorrect: 4,
         expectedWeakMastery: ["passive-agency", "formal-register-control", "modal-particle-stance", "understatement-with-agency", "consequence-aware-tone"],
         actions: [
           { sceneId: "official-reply-passive", optionId: "too-trusting", expectCorrect: false },
           { sceneId: "group-chat-particles", matchAll: true },
           { sceneId: "two-registers", optionId: "formal-passive", expectCorrect: false },
+          { sceneId: "channel-transfer-lab", optionId: "email-soft-near-miss", expectCorrect: false },
           { sceneId: "workplace-understatement", answer: "varme", expectCorrect: false },
           { sceneId: "epilogue-consequence", optionId: "always-soft", expectCorrect: false }
         ]
@@ -288,9 +302,112 @@ window.PLATA_LESSON_B2_RADIATOR = {
       tags: ["B2", "register", "complaint", "formal-writing"]
     },
     {
+      id: "channel-transfer-lab",
+      type: "flagship-chain",
+      eyebrow: "Scene 4 · Kanalvalg",
+      title: "The same complaint is not the same sentence in every channel.",
+      learningGoal: "Transfer one complaint across private chat, formal email, workplace talk, and public profile contexts without losing agency or social fit.",
+      sourceRefs: ["Lex: passiv", "Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
+      masteryTags: ["formal-register-control", "passive-agency", "consequence-aware-tone"],
+      pressure: "You have one real intent: get a concrete repair date. But the next sentence could go into Slack, email, a coffee conversation, or LinkedIn. Same intent, different social cost.",
+      narrative: "This is where plateau learners often sound technically correct and still wrong for the room. The sentence can be grammatical Danish and still damage the case.",
+      dialogue: [
+        { speaker: "Emil", line: "Skriv nu bare, at det er sgu ikke godt nok." },
+        { speaker: "Sofia", line: "Du kan godt være tydelig uden at lyde vred." }
+      ],
+      notice: "A near miss is not a grammar failure. It is a channel failure: private force, passive softness, or public oversharing in the wrong place.",
+      targetPhrases: ["konkret dato", "hvornår håndværkeren kommer", "det er sgu ikke godt nok", "varme på et tidspunkt"],
+      prompt: "Choose the sentence that belongs in the formal landlord email, then prove why.",
+      intent: "Ask for a concrete repair date without escalating tone.",
+      archetypes: [
+        "consequence-exercise",
+        "near-miss",
+        "repair-ladder",
+        "same-intent-different-channel",
+        "memory-backed-recurrence",
+        "explain-your-choice"
+      ],
+      memoryCue: {
+        signal: "passive-agency",
+        copy: "Memory-backed recurrence: you have already seen passive agency in the landlord's wording. Now avoid creating the same vagueness in your own reply."
+      },
+      channelVersions: [
+        { id: "slack", label: "Slack to a friend", sample: "Det er sgu ikke godt nok.", risk: "Useful for emotion; risky if pasted into formal email." },
+        { id: "email", label: "Landlord email", sample: "Jeg vil gerne bede om en konkret dato for, hvornår håndværkeren kommer.", risk: "Best channel for actor, date, and actionable pressure." },
+        { id: "meeting", label: "Workplace coffee", sample: "Der har været lidt bøvl med varmen, men jeg har bedt om en dato.", risk: "Enough truth for the room without turning work into the case." },
+        { id: "linkedin", label: "Public profile", sample: "Jeg håndterer praktiske sager roligt og konkret.", risk: "Public channel needs capability, not private complaint detail." }
+      ],
+      options: [
+        {
+          id: "email-clear-agency",
+          channel: "Landlord email",
+          diagnostic: "chooses-channel-fit-with-agency",
+          label: "Tak for svar. Jeg vil gerne bede om en konkret dato for, hvornår håndværkeren kommer.",
+          detail: "formal, concrete, still calm",
+          correct: true,
+          grammarStatus: "grammatical",
+          pragmaticStatus: "workplace-ready",
+          consequence: "The landlord sees a civil request with actor and date pressure. You have not imported private anger, but you have removed passive fog.",
+          effects: { landlordTension: -1 },
+          feedback: "Diagnostic: strong channel transfer. You kept the useful pressure — konkret dato and håndværkeren — while staying inside formal Danish.",
+          repairLadder: [
+            { stage: "raw intent", text: "Fix the heat. I need a date." },
+            { stage: "safer Danish", text: "Jeg vil gerne bede om en dato." },
+            { stage: "workplace-ready Danish", text: "Jeg vil gerne bede om en konkret dato for, hvornår håndværkeren kommer." }
+          ],
+          reasonPrompt: "Why does this work as the email version?",
+          reasonOptions: [
+            { id: "actor-date-channel", label: "It keeps actor/date pressure visible while matching the formal channel.", correct: true },
+            { id: "soft-because-long", label: "It works mainly because the sentence is longer and sounds more official.", correct: false },
+            { id: "harder-is-clearer", label: "It works because it is the hardest possible version of the complaint.", correct: false }
+          ]
+        },
+        {
+          id: "email-private-force",
+          channel: "Landlord email",
+          diagnostic: "imports-private-force-into-formal-channel",
+          label: "Det er sgu ikke godt nok. I må fikse det nu.",
+          detail: "grammatical but socially expensive",
+          correct: false,
+          nearMiss: true,
+          grammarStatus: "grammatical",
+          pragmaticStatus: "too sharp for formal email",
+          consequence: "The fact is legitimate, but the channel cost rises: sgu and nu make the email easier to dismiss as anger instead of evidence.",
+          effects: { landlordTension: 2, sofiaTrust: -1 },
+          feedback: "Diagnostic: near miss. The Danish is understandable, but private-chat force leaks into the formal channel and raises conflict before it adds evidence.",
+          repairLadder: [
+            { stage: "raw phrase", text: "Det er sgu ikke godt nok." },
+            { stage: "safer Danish", text: "Det er ikke holdbart uden varme." },
+            { stage: "workplace-ready Danish", text: "Jeg vil gerne bede om en konkret dato for, hvornår håndværkeren kommer." }
+          ]
+        },
+        {
+          id: "email-soft-near-miss",
+          channel: "Landlord email",
+          diagnostic: "softens-until-agency-disappears",
+          label: "Det løser sig nok, men det ville være fint med varme på et tidspunkt.",
+          detail: "grammatical but too passive",
+          correct: false,
+          nearMiss: true,
+          grammarStatus: "grammatical",
+          pragmaticStatus: "too vague for action",
+          consequence: "The relationship stays smooth, but the repair stays foggy. There is no actor, no date, and no pressure for the case to move.",
+          effects: { workplaceTrust: -1 },
+          feedback: "Diagnostic: near miss. This sounds polite, but it recreates the passive-agency problem: no actor, no date, no deadline.",
+          repairLadder: [
+            { stage: "raw phrase", text: "Det løser sig nok." },
+            { stage: "safer Danish", text: "Jeg vil gerne følge op på varmen." },
+            { stage: "workplace-ready Danish", text: "Jeg vil gerne bede om en konkret dato for, hvornår håndværkeren kommer." }
+          ]
+        }
+      ],
+      carry: "Carry-forward: a valuable B2 answer survives channel transfer. In email, 'Tak for svar' can open calmly before the concrete request; 'uden at lyde vred' is the social target. Keep intent, name the missing actor/date, and change tone for email, chat, meeting, or public profile instead of treating grammar as the whole problem.",
+      tags: ["B2", "register-transfer", "near-miss", "social-consequence", "repair-ladder"]
+    },
+    {
       id: "workplace-understatement",
       type: "completion",
-      eyebrow: "Scene 4 · Arbejdspladsen",
+      eyebrow: "Scene 5 · Arbejdspladsen",
       title: "Honesty is not the same sentence in every room.",
       learningGoal: "Use understatement without losing agency when discussing a private problem at work.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],

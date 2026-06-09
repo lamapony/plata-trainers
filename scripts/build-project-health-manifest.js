@@ -9,6 +9,10 @@ const { buildDemoLearnerReport } = require("./build-demo-learner-report.js");
 const { buildTodayProgramReport } = require("./build-today-program-report.js");
 const { buildGuidedSessionReport } = require("./build-guided-session-report.js");
 const { buildCapabilityMap } = require("./build-capability-map.js");
+const { buildEvaluatorPathReport } = require("./build-evaluator-path-report.js");
+const { buildEvaluatorJourneyReport } = require("./build-evaluator-journey-report.js");
+const { buildProfilePortabilityReport } = require("./build-profile-portability-report.js");
+const { buildExerciseValueReport } = require("./build-exercise-value-report.js");
 const {
   buildDashboardRecommendationSnapshot,
   snapshotText
@@ -59,10 +63,13 @@ const requiredGates = [
   { id: "check:personalization-trajectory-mutations", category: "mutation", contract: "Broken personalization replay transitions fail CI." },
   { id: "check:personalization-trajectory-diff", category: "review", contract: "Personalization trajectory changes produce compact review diffs and regression flags." },
   { id: "check:profile-replay", category: "debug", contract: "Dashboard JSON exports can be replay-debugged by maintainers." },
+  { id: "check:profile-portability", category: "replay", contract: "Real profile export/import/replay preserves active plans, memory corrections, guided outcomes, and derived privacy guardrails." },
   { id: "check:planner", category: "planner", contract: "Planner decisions and practice plans preserve traces and explanations." },
   { id: "check:planner-mutations", category: "mutation", contract: "Bad mastery/remediation planner contracts fail CI." },
   { id: "check:catalog", category: "catalog", contract: "Trainer registry and gold lesson data paths resolve." },
   { id: "check:home", category: "runtime", contract: "Home launcher routes starter, continue, repair, and active-plan flows." },
+  { id: "check:evaluator-path", category: "runtime", contract: "Home evaluator path connects the first-visit CTA to the read-only demo learner and proof-backed guided session route." },
+  { id: "check:evaluator-journey", category: "runtime", contract: "Deterministic evaluator journey proves the public demo-to-proof-to-guided-return path as an acceptance trace." },
   { id: "check:lesson-engine", category: "runtime", contract: "Gold simulation paths replay through the real lesson engine." },
   { id: "check:dashboard", category: "runtime", contract: "Dashboard renders diagnostics, plans, ledger, catalog loading, and profile portability." },
   { id: "check:demo-learner-report", category: "report", contract: "Read-only demo learner profile builds as a deterministic public contract report." },
@@ -78,6 +85,7 @@ const requiredGates = [
   { id: "check:static", category: "static", contract: "Static HTML files satisfy no-dependency page QA." },
   { id: "check:lessons", category: "schema", contract: "Narrative lesson data satisfies the lesson schema." },
   { id: "check:exercise-audit", category: "content", contract: "Lesson exercises avoid contradictory completion gates, duplicate answers, and known Danish editorial slips." },
+  { id: "check:exercise-value-report", category: "report", contract: "Flagship exercises prove consequence, grammatical near-miss, repair ladder, channel transfer, memory recurrence, and explain-your-choice evidence." },
   { id: "check:gold-lessons", category: "simulation", contract: "Gold lesson simulations cover paths, endings, attempts, and weak signals." },
   { id: "check:counterfactuals", category: "simulation", contract: "Lesson edits are compared against deterministic learner profiles." },
   { id: "check:gold-scaffold", category: "authoring", contract: "Generated gold lesson scaffolds remain validator, simulator, and runtime clean." },
@@ -94,6 +102,8 @@ const requiredGates = [
   { id: "check:proof-page", category: "report", contract: "Proof / Health page renders public health, capability, demo learner, quickstart, and golden review artifacts." },
   { id: "check:capability-map", category: "report", contract: "Product capability map links user-facing claims to checks, public reports, source files, and docs." },
   { id: "check:health", category: "report", contract: "Project health manifest links gates, reports, workflows, and fixtures." },
+  { id: "check:public-runtime", category: "runtime", contract: "Built Pages artifact serves over local HTTP and renders home, proof, program, evaluator, and report links without external dependencies." },
+  { id: "check:public-runtime-mutations", category: "mutation", contract: "Public runtime mutation tests prove broken evaluator, read-only demo, report-link, and responsive contracts fail CI." },
   { id: "check:pages", category: "publish", contract: "Pages artifact builds and public files pass static QA." }
 ];
 
@@ -132,6 +142,34 @@ const publicReportSpecs = [
     builderScript: "scripts/build-guided-session-report.js",
     checkScript: "check:guided-session-report",
     pagesPath: "reports/guided-session.json"
+  },
+  {
+    id: "evaluator-path",
+    title: "First-visit evaluator path report",
+    builderScript: "scripts/build-evaluator-path-report.js",
+    checkScript: "check:evaluator-path",
+    pagesPath: "reports/evaluator-path.json"
+  },
+  {
+    id: "evaluator-journey",
+    title: "Deterministic evaluator journey report",
+    builderScript: "scripts/build-evaluator-journey-report.js",
+    checkScript: "check:evaluator-journey",
+    pagesPath: "reports/evaluator-journey.json"
+  },
+  {
+    id: "profile-portability",
+    title: "Profile portability acceptance report",
+    builderScript: "scripts/build-profile-portability-report.js",
+    checkScript: "check:profile-portability",
+    pagesPath: "reports/profile-portability.json"
+  },
+  {
+    id: "exercise-value",
+    title: "Flagship exercise value report",
+    builderScript: "scripts/build-exercise-value-report.js",
+    checkScript: "check:exercise-value-report",
+    pagesPath: "reports/exercise-value.json"
   },
   {
     id: "capabilities",
@@ -270,7 +308,7 @@ function workflowRows(root, issues) {
   });
 }
 
-function reportRows(root, quality, skillCoverage, demoLearner, todayProgram, guidedSession, capabilityMap, issues) {
+function reportRows(root, quality, skillCoverage, demoLearner, todayProgram, guidedSession, evaluatorPath, evaluatorJourney, profilePortability, exerciseValue, capabilityMap, issues) {
   const pagesBuild = fileExists(root, "scripts/build-pages-artifact.js")
     ? readText(root, "scripts/build-pages-artifact.js")
     : "";
@@ -321,6 +359,46 @@ function reportRows(root, quality, skillCoverage, demoLearner, todayProgram, gui
         steps: guidedSession.totals.steps,
         citedFacts: guidedSession.totals.citedFacts,
         issues: guidedSession.totals.issues
+      }
+    },
+    "evaluator-path": {
+      status: evaluatorPath.status,
+      totals: {
+        links: evaluatorPath.entry.links.length,
+        routeTargets: evaluatorPath.routeTargets.length,
+        storageWrites: evaluatorPath.backingReports.demoLearner.storageWrites,
+        issues: evaluatorPath.issues.length
+      }
+    },
+    "evaluator-journey": {
+      status: evaluatorJourney.status,
+      totals: {
+        stages: evaluatorJourney.totals.stages,
+        passedStages: evaluatorJourney.totals.passedStages,
+        storageWrites: evaluatorJourney.totals.storageWrites,
+        issues: evaluatorJourney.totals.issues
+      }
+    },
+    "profile-portability": {
+      status: profilePortability.status,
+      totals: {
+        stages: profilePortability.totals.stages,
+        passedStages: profilePortability.totals.passedStages,
+        eventCount: profilePortability.totals.eventCount,
+        memoryCorrections: profilePortability.totals.memoryCorrections,
+        guidedOutcomes: profilePortability.totals.guidedOutcomes,
+        issues: profilePortability.totals.issues
+      }
+    },
+    "exercise-value": {
+      status: exerciseValue.status,
+      totals: {
+        flagshipChains: exerciseValue.totals.flagshipChains,
+        archetypesCovered: exerciseValue.totals.archetypesCovered,
+        nearMisses: exerciseValue.totals.nearMisses,
+        repairLadders: exerciseValue.totals.repairLadders,
+        explainChoiceScenes: exerciseValue.totals.explainChoiceScenes,
+        issues: exerciseValue.totals.issues
       }
     },
     capabilities: {
@@ -629,8 +707,23 @@ function buildProjectHealthManifest(options = {}) {
   const todayProgram = buildTodayProgramReport({ root });
   const guidedSession = buildGuidedSessionReport({ root });
   const capabilityMap = buildCapabilityMap({ root });
+  const evaluatorPath = buildEvaluatorPathReport({
+    root,
+    demo: demoLearner,
+    guided: guidedSession,
+    capabilities: capabilityMap
+  });
+  const evaluatorJourney = buildEvaluatorJourneyReport({
+    root,
+    demo: demoLearner,
+    guided: guidedSession,
+    evaluator: evaluatorPath,
+    capabilities: capabilityMap
+  });
+  const profilePortability = buildProfilePortabilityReport({ root });
+  const exerciseValue = buildExerciseValueReport({ root });
   const gates = gateRows(root, pkg, issues);
-  const reports = reportRows(root, quality, skillCoverage, demoLearner, todayProgram, guidedSession, capabilityMap, issues);
+  const reports = reportRows(root, quality, skillCoverage, demoLearner, todayProgram, guidedSession, evaluatorPath, evaluatorJourney, profilePortability, exerciseValue, capabilityMap, issues);
   const workflows = workflowRows(root, issues);
   const fixtures = fixtureRows(root, issues);
   const gateCategories = gates.reduce((acc, gate) => {

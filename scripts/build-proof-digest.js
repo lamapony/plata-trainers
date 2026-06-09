@@ -7,6 +7,9 @@ const path = require("node:path");
 const { buildDemoLearnerReport } = require("./build-demo-learner-report.js");
 const { buildCapabilityMap } = require("./build-capability-map.js");
 const { buildProjectHealthManifest } = require("./build-project-health-manifest.js");
+const { buildEvaluatorJourneyReport } = require("./build-evaluator-journey-report.js");
+const { buildProfilePortabilityReport } = require("./build-profile-portability-report.js");
+const { buildExerciseValueReport } = require("./build-exercise-value-report.js");
 const { writeQuickstartProof } = require("./build-quickstart-proof.js");
 
 const repoRoot = path.resolve(__dirname, "..");
@@ -89,6 +92,9 @@ function buildProofDigest(options = {}) {
   const root = sourceRoot(options);
   const demo = buildDemoLearnerReport({ root });
   const capabilities = buildCapabilityMap({ root });
+  const journey = buildEvaluatorJourneyReport({ root, demo, capabilities });
+  const portability = buildProfilePortabilityReport({ root });
+  const exerciseValue = buildExerciseValueReport({ root });
   const health = buildProjectHealthManifest({ root });
   const golden = buildGoldenQuickstart(root);
   const proofCapability = capability(capabilities, "public-github-proof-surface");
@@ -104,8 +110,26 @@ function buildProofDigest(options = {}) {
     && golden.summary.includes("more in JSON artifact");
   const proofPagePass = hasGate(proofCapability, "check:proof-page") && hasSurface(proofCapability, "proof.html");
   const visitorWalkthroughPass = proofPagePass
+    && hasGate(proofCapability, "check:evaluator-path")
+    && hasGate(proofCapability, "check:evaluator-journey")
+    && hasSurface(proofCapability, "Home evaluator path")
+    && hasReport(proofCapability, "evaluator-path")
+    && hasReport(proofCapability, "evaluator-journey")
     && hasReport(proofCapability, "demo-learner")
-    && hasReport(proofCapability, "guided-session");
+    && hasReport(proofCapability, "guided-session")
+    && journey.status === "pass"
+    && journey.totals.passedStages === journey.totals.stages;
+  const profilePortabilityPass = hasGate(proofCapability, "check:profile-portability")
+    && hasReport(proofCapability, "profile-portability")
+    && hasSurface(proofCapability, "reports/profile-portability.json")
+    && portability.status === "pass"
+    && portability.totals.passedStages === portability.totals.stages;
+  const exerciseValuePass = hasGate(proofCapability, "check:exercise-value-report")
+    && hasReport(proofCapability, "exercise-value")
+    && hasSurface(proofCapability, "reports/exercise-value.json")
+    && exerciseValue.status === "pass"
+    && exerciseValue.totals.flagshipChains >= 1
+    && exerciseValue.totals.archetypesCovered === exerciseValue.requiredArchetypes.length;
   const digestPublished = hasGate(proofCapability, "check:proof-digest")
     && hasSurface(proofCapability, "reports/proof-digest.json")
     && hasReport(proofCapability, "proof-digest");
@@ -120,6 +144,8 @@ function buildProofDigest(options = {}) {
     [reviewFixturePass, "golden review fixture is not proving reviewer behavior"],
     [proofPagePass, "proof page is not linked from the public proof capability"],
     [visitorWalkthroughPass, "proof page walkthrough is not backed by demo and guided reports"],
+    [profilePortabilityPass, "profile portability proof is not linked from the public proof capability"],
+    [exerciseValuePass, "exercise value proof is not linked from the public proof capability"],
     [digestPublished, "proof digest is not linked from the public proof capability"],
     [quickstartPublished, "quickstart proof is not linked from the public proof capability"]
   ].forEach(([pass, issue]) => {
@@ -142,6 +168,22 @@ function buildProofDigest(options = {}) {
       ["dashboard.html?demo=learner", "reports/demo-learner.json", "check:demo-learner-report"],
       demoReadOnly,
       "The demo profile proves memory, planner, and companion behavior without touching local progress."
+    ),
+    row(
+      "profile-portability",
+      "A real local profile can be exported, imported, and replayed.",
+      `The portability trace ${portability.traceId} replays ${countLabel(portability.totals.eventCount, "event", "events")}, ${countLabel(portability.totals.memoryCorrections, "memory correction", "memory corrections")}, and ${countLabel(portability.totals.guidedOutcomes, "guided outcome", "guided outcomes")}.`,
+      ["reports/profile-portability.json", "check:profile-portability", "scripts/debug-profile-replay.js"],
+      profilePortabilityPass,
+      "This proves a non-demo learner can move progress between browser sessions without losing plan execution, correction audit, guided receipts, or privacy guardrails."
+    ),
+    row(
+      "flagship-exercise-value",
+      "The flagship exercises are not ordinary context-free quizzes.",
+      `The exercise value report covers ${countLabel(exerciseValue.totals.flagshipChains, "flagship chain", "flagship chains")}, ${exerciseValue.totals.archetypesCovered}/${exerciseValue.requiredArchetypes.length} radical archetypes, ${countLabel(exerciseValue.totals.nearMisses, "near miss", "near misses")}, and ${countLabel(exerciseValue.totals.repairLadders, "repair ladder", "repair ladders")}.`,
+      ["reports/exercise-value.json", "check:exercise-value-report", "lessons/lesson-b2-radiator/data.js"],
+      exerciseValuePass,
+      "The report fails if the exercise loses consequence, grammatical near-miss, repair ladder, channel transfer, memory recurrence, or explain-your-choice proof."
     ),
     row(
       "reviewer-output-contract",
@@ -172,11 +214,11 @@ function buildProofDigest(options = {}) {
     ),
     row(
       "visitor-proof-walkthrough",
-      "A visitor can follow one learner loop before opening raw JSON.",
-      "The proof page now connects the demo learner, Today recommendation, guided session, outcome receipt, and audit trail.",
-      ["dashboard.html?demo=learner", "reports/demo-learner.json", "reports/guided-session.json", "check:proof-page"],
+      "A visitor can follow one deterministic learner loop before opening raw JSON.",
+      `The proof page now connects the first-visit evaluator path, demo learner, Today recommendation, guided route, dashboard return receipt, outcome receipt, and audit trail through ${journey.traceId}.`,
+      ["reports/evaluator-path.json", "reports/evaluator-journey.json", "dashboard.html?demo=learner", "reports/demo-learner.json", "reports/guided-session.json", "check:evaluator-path", "check:evaluator-journey", "check:proof-page"],
       visitorWalkthroughPass,
-      "This turns the generated reports into one inspectable product path for first-time evaluators."
+      "This turns the generated reports into one inspectable acceptance path for first-time evaluators."
     ),
     row(
       "quickstart-proof-published",
@@ -216,6 +258,10 @@ function buildProofDigest(options = {}) {
       issues: issues.length
     },
     sourceReports: [
+      "reports/evaluator-path.json",
+      "reports/evaluator-journey.json",
+      "reports/profile-portability.json",
+      "reports/exercise-value.json",
       "reports/demo-learner.json",
       "reports/guided-session.json",
       "reports/capabilities.json",

@@ -88,6 +88,11 @@ function correctLabel(scene) {
   return correct ? correct.label : "";
 }
 
+function correctReasonLabel(option) {
+  const correct = (option.reasonOptions || []).find(reason => reason.correct === true);
+  return correct ? correct.label : "";
+}
+
 function applyEffects(variables, effects) {
   Object.entries(effects || {}).forEach(([key, value]) => {
     if (Object.prototype.hasOwnProperty.call(variables, key)) variables[key] += Number(value || 0);
@@ -181,6 +186,25 @@ function simulateCompletion(context, state, lesson, variables, scene, action) {
   return 1;
 }
 
+function simulateFlagshipChain(context, state, lesson, variables, scene, action) {
+  assert(action.optionId, `${lesson.id}.${scene.id}: flagship-chain action requires optionId`);
+  const option = optionById(lesson, scene, action.optionId);
+  let ok = option.correct === true;
+  let given = option.label;
+  let expected = correctLabel(scene);
+  if (option.correct === true && option.reasonOptions && option.reasonOptions.length) {
+    assert(action.reasonId, `${lesson.id}.${scene.id}.${option.id}: correct flagship-chain action requires reasonId`);
+    const reason = option.reasonOptions.find(candidate => candidate.id === action.reasonId);
+    assert(reason, `${lesson.id}.${scene.id}.${option.id}: unknown reasonId ${action.reasonId}`);
+    ok = reason.correct === true;
+    given = `${option.label} / ${reason.label}`;
+    expected = `${option.label} / ${correctReasonLabel(option)}`;
+  }
+  if (!option.correct || ok) applyEffects(variables, option.effects);
+  recordAttempt(context, state, scene, ok, given, expected);
+  return 1;
+}
+
 function weakMasteryTags(context, state, lesson) {
   const masteryKeys = Object.keys(lesson.masteryMap || {});
   return context.PlataKernel.getWeakTags(state, 50)
@@ -200,6 +224,7 @@ function simulateLearnerProfile(context, lesson, pathSpec) {
     if (scene.type === "choice") attempts += simulateChoice(context, state, lesson, variables, scene, action);
     else if (scene.type === "match") attempts += simulateMatch(context, state, lesson, scene, action);
     else if (scene.type === "completion") attempts += simulateCompletion(context, state, lesson, variables, scene, action);
+    else if (scene.type === "flagship-chain") attempts += simulateFlagshipChain(context, state, lesson, variables, scene, action);
     else throw new Error(`${lesson.id}.${scene.id}: unsupported scene type ${scene.type}`);
   });
 
@@ -338,6 +363,7 @@ function runCounterfactualSmoke(context) {
 
   const maskedRepair = simulateLesson(context, lessonVariant(context, lessonId, lesson => {
     optionById(lesson, sceneById(lesson, "official-reply-passive"), "too-trusting").correct = true;
+    optionById(lesson, sceneById(lesson, "channel-transfer-lab"), "email-soft-near-miss").correct = true;
   }));
   const maskedDiff = compareLessonReports(baseline, maskedRepair);
   assertProfileDelta(maskedDiff, "passive", profile =>

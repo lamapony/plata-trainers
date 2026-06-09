@@ -335,11 +335,40 @@
     });
   }
 
+  function scrollToHashTarget() {
+    var hash = window.location && window.location.hash;
+    if (!hash) return;
+    try {
+      var target = $(hash);
+      if (target && typeof target.scrollIntoView === "function") {
+        target.scrollIntoView({ block: "start", behavior: "auto" });
+      }
+      if (target && typeof window.scrollTo === "function" && typeof target.getBoundingClientRect === "function") {
+        var top = target.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0);
+        window.scrollTo({ top: top, left: 0, behavior: "auto" });
+      }
+    } catch (_) {
+      // Invalid external hashes should not break the home launcher.
+    }
+  }
+
+  function restoreHashScroll() {
+    scrollToHashTarget();
+    if (typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(scrollToHashTarget);
+    }
+    if (typeof window.setTimeout === "function") {
+      window.setTimeout(scrollToHashTarget, 0);
+      window.setTimeout(scrollToHashTarget, 120);
+    }
+  }
+
   function init() {
     masteryCatalogCache = null;
     var stats = trainers().map(function (trainer, index) { return trainerStats(trainer, index); });
     renderStartCard(chooseRecommendation(stats));
     renderTrainerProgress(stats);
+    restoreHashScroll();
   }
 
   function boot() {
@@ -358,6 +387,10 @@
     document.addEventListener("DOMContentLoaded", boot);
   } else {
     boot();
+  }
+
+  if (typeof window.addEventListener === "function") {
+    window.addEventListener("hashchange", restoreHashScroll);
   }
 
   window.PlataHome = {

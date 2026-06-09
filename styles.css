@@ -109,7 +109,7 @@ h3 { font-size: 30px; }
   transform: none;
 }
 
-.status-card, .start-card, .trainer-card, .path-card, .steps, .copy-block {
+.status-card, .start-card, .trainer-card, .path-card, .evaluator-card, .steps, .copy-block {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--card);
@@ -148,6 +148,45 @@ h3 { font-size: 30px; }
 .path-card { padding: 22px; min-height: 250px; display: flex; flex-direction: column; }
 .path-card p { color: var(--muted); line-height: 1.55; }
 .path-card .card-link { margin-top: auto; }
+.evaluator-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) repeat(3, minmax(0, 0.75fr));
+  gap: 16px;
+  align-items: stretch;
+}
+.evaluator-card {
+  display: flex;
+  min-height: 260px;
+  flex-direction: column;
+  padding: 22px;
+}
+.evaluator-lead {
+  border-left: 4px solid var(--ember);
+  background:
+    linear-gradient(145deg, oklch(0.30 0.032 155 / 0.92), oklch(0.22 0.026 150 / 0.96)),
+    var(--card);
+}
+.evaluator-card > strong {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 18px;
+  border: 1px solid oklch(0.72 0.12 205 / 0.42);
+  border-radius: 999px;
+  background: oklch(0.72 0.12 205 / 0.09);
+  color: oklch(0.78 0.1 205);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+}
+.evaluator-card p { color: var(--muted); line-height: 1.55; }
+.evaluator-card .card-link { margin-top: auto; }
+.evaluator-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+}
 .tag {
   align-self: flex-start;
   margin-bottom: 18px;
@@ -191,7 +230,7 @@ h3 { font-size: 30px; }
 @media (max-width: 820px) {
   .site-shell { width: min(100% - 22px, 1120px); }
   .topnav { align-items: flex-start; flex-direction: column; padding-bottom: 34px; }
-  .hero-grid, .trainer-grid, .quick-start-grid, .split { grid-template-columns: 1fr; }
+  .hero-grid, .trainer-grid, .quick-start-grid, .evaluator-grid, .split { grid-template-columns: 1fr; }
   .today-main, .today-context { grid-template-columns: 1fr; }
   .today-progress { justify-items: start; }
   .section-head { align-items: flex-start; flex-direction: column; gap: 8px; }
@@ -1259,6 +1298,7 @@ h3 { font-size: 30px; }
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 11px;
   line-height: 1.25;
+  overflow-wrap: anywhere;
   text-decoration: none;
 }
 .program-chip.pass {

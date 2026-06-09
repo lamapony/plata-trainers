@@ -79,7 +79,7 @@ function findLessons() {
 }
 
 const REQUIRED_SCENE_FIELDS = ["id", "type", "eyebrow", "title", "pressure", "narrative", "prompt", "carry", "tags"];
-const VALID_TYPES = ["choice", "input", "match", "completion"];
+const VALID_TYPES = ["choice", "input", "match", "completion", "flagship-chain"];
 const KNOWN_COMPETENCIES = loadCompetencyIds();
 const DENSITY_STOPWORDS = new Set([
   "alle", "alt", "altid", "anden", "andre", "bare", "den", "der", "det",
@@ -103,6 +103,10 @@ function buildSupportWords(lesson, scene) {
     scene.failure || "",
     scene.placeholder || "",
     ...((scene.options || []).map(o => [o.detail, o.feedback].join(" "))),
+    ...((scene.options || []).map(o => [o.consequence, o.pragmaticStatus, ...(o.repairLadder || []).map(step => [step.stage, step.text].join(" "))].join(" "))),
+    ...((scene.channelVersions || []).map(channel => [channel.label, channel.sample, channel.risk].join(" "))),
+    scene.intent || "",
+    scene.memoryCue && scene.memoryCue.copy || "",
     ...((lesson.languagePhenomena || []).map(p => [p.item, p.function].join(" ")))
   ].join(" ");
   return new Set(wordsFromText(supportText));
@@ -132,6 +136,10 @@ function sceneQualityText(scene) {
     ...((scene.acceptKeywordGroups || []).flatMap(group => group.keywords || [])),
     ...(scene.dialogue || []).map(d => d.line),
     ...(scene.options || []).map(o => [o.label, o.detail, o.feedback].join(" ")),
+    ...(scene.options || []).map(o => [o.consequence, o.pragmaticStatus, ...(o.repairLadder || []).map(step => [step.stage, step.text].join(" "))].join(" ")),
+    ...(scene.channelVersions || []).map(channel => [channel.label, channel.sample, channel.risk].join(" ")),
+    scene.intent || "",
+    scene.memoryCue && scene.memoryCue.copy || "",
     ...(scene.pairs || []).map(p => [p.left, p.right, p.feedback].join(" "))
   ].join(" ");
 }
@@ -297,6 +305,14 @@ function validateGoldSimulationContract(lessonMeta, lesson) {
       if (scene.type === "choice") {
         if (!nonEmptyString(action.optionId)) issue(`${actionPrefix}.optionId: choice action requires optionId`);
         if (typeof action.expectCorrect !== "boolean") issue(`${actionPrefix}.expectCorrect: choice action requires boolean`);
+      }
+      if (scene.type === "flagship-chain") {
+        if (!nonEmptyString(action.optionId)) issue(`${actionPrefix}.optionId: flagship-chain action requires optionId`);
+        if (typeof action.expectCorrect !== "boolean") issue(`${actionPrefix}.expectCorrect: flagship-chain action requires boolean`);
+        const option = (scene.options || []).find(candidate => candidate.id === action.optionId);
+        if (option && option.correct && Array.isArray(option.reasonOptions) && option.reasonOptions.length && !nonEmptyString(action.reasonId)) {
+          issue(`${actionPrefix}.reasonId: correct flagship-chain action requires reasonId`);
+        }
       }
       if (scene.type === "match" && action.matchAll !== true) {
         issue(`${actionPrefix}.matchAll: match action requires true`);
@@ -597,12 +613,84 @@ function validateLesson(lessonMeta, lesson) {
       }
     }
 
+    if (scene.type === "flagship-chain") {
+      const requiredArchetypes = [
+        "consequence-exercise",
+        "near-miss",
+        "repair-ladder",
+        "same-intent-different-channel",
+        "memory-backed-recurrence",
+        "explain-your-choice"
+      ];
+      const archetypes = Array.isArray(scene.archetypes) ? scene.archetypes : [];
+      requiredArchetypes.forEach(archetype => {
+        if (!archetypes.includes(archetype)) issue(`${prefix}.archetypes: missing ${archetype}`);
+      });
+      if (!nonEmptyString(scene.intent)) issue(`${prefix}.intent: flagship-chain requires the transferable intent`);
+      if (!scene.memoryCue || typeof scene.memoryCue !== "object" || !nonEmptyString(scene.memoryCue.signal) || !nonEmptyString(scene.memoryCue.copy)) {
+        issue(`${prefix}.memoryCue: flagship-chain requires signal and copy`);
+      }
+      if (!Array.isArray(scene.channelVersions) || scene.channelVersions.length < 3) {
+        issue(`${prefix}.channelVersions: flagship-chain requires at least three channel versions`);
+      } else {
+        scene.channelVersions.forEach((channel, ci) => {
+          if (!nonEmptyString(channel.id)) issue(`${prefix}.channelVersions[${ci}].id: empty`);
+          if (!nonEmptyString(channel.label)) issue(`${prefix}.channelVersions[${ci}].label: empty`);
+          if (!nonEmptyString(channel.sample)) issue(`${prefix}.channelVersions[${ci}].sample: empty`);
+          if (!nonEmptyString(channel.risk)) issue(`${prefix}.channelVersions[${ci}].risk: empty`);
+        });
+      }
+      if (!Array.isArray(scene.options) || scene.options.length < 3) {
+        issue(`${prefix}.options: flagship-chain requires at least three options`);
+      } else {
+        const correctCount = scene.options.filter(option => option.correct === true).length;
+        const nearMissCount = scene.options.filter(option => option.nearMiss === true && option.correct === false && option.grammarStatus === "grammatical").length;
+        if (correctCount !== 1) issue(`${prefix}.options: exactly one flagship-chain option must have correct: true (found ${correctCount})`);
+        if (nearMissCount < 1) issue(`${prefix}.options: at least one incorrect grammatical near-miss is required`);
+        const diagnostics = new Set();
+        scene.options.forEach((option, oi) => {
+          const optionPrefix = `${prefix}.options[${oi}]`;
+          if (!nonEmptyString(option.id)) issue(`${optionPrefix}.id: empty`);
+          if (!nonEmptyString(option.channel)) issue(`${optionPrefix}.channel: empty`);
+          if (!nonEmptyString(option.label)) issue(`${optionPrefix}.label: empty`);
+          if (!nonEmptyString(option.detail)) issue(`${optionPrefix}.detail: empty`);
+          if (!nonEmptyString(option.feedback) || !/^Diagnostic:/.test(option.feedback)) issue(`${optionPrefix}.feedback: flagship-chain feedback must be diagnostic`);
+          if (!nonEmptyString(option.diagnostic)) {
+            issue(`${optionPrefix}.diagnostic: required diagnostic key`);
+          } else if (diagnostics.has(option.diagnostic)) {
+            issue(`${optionPrefix}.diagnostic: duplicate diagnostic "${option.diagnostic}"`);
+          } else {
+            diagnostics.add(option.diagnostic);
+          }
+          if (!nonEmptyString(option.consequence)) issue(`${optionPrefix}.consequence: required consequence copy`);
+          if (!nonEmptyString(option.grammarStatus)) issue(`${optionPrefix}.grammarStatus: required grammar status`);
+          if (!nonEmptyString(option.pragmaticStatus)) issue(`${optionPrefix}.pragmaticStatus: required pragmatic status`);
+          if (!Array.isArray(option.repairLadder) || option.repairLadder.length < 3) {
+            issue(`${optionPrefix}.repairLadder: required raw -> safer -> workplace-ready ladder`);
+          } else {
+            option.repairLadder.forEach((step, li) => {
+              if (!nonEmptyString(step.stage)) issue(`${optionPrefix}.repairLadder[${li}].stage: empty`);
+              if (!nonEmptyString(step.text)) issue(`${optionPrefix}.repairLadder[${li}].text: empty`);
+            });
+          }
+          if (option.correct === true) {
+            if (!Array.isArray(option.reasonOptions) || option.reasonOptions.length < 2) {
+              issue(`${optionPrefix}.reasonOptions: correct flagship-chain option requires explain-your-choice reasons`);
+            } else if (option.reasonOptions.filter(reason => reason.correct === true).length !== 1) {
+              issue(`${optionPrefix}.reasonOptions: exactly one reason must be correct`);
+            }
+          }
+        });
+      }
+    }
+
     // Extract Danish words from Danish-language content only for density check
     // Exclude: distractor option labels (correct: false), acceptKeywords (accepted answers, not taught vocab)
     const danishSources = [
       ...(scene.dialogue || []).map(d => d.line),
       scene.danish || "",
       ...(scene.options || []).filter(o => o.correct !== false).map(o => o.label),
+      ...(scene.channelVersions || []).map(channel => channel.sample),
       ...(scene.pairs || []).map(p => p.left),
       scene.prefix || "",
       scene.acceptPrefix || ""

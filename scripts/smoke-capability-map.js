@@ -75,6 +75,10 @@ function hasSurface(item, surface) {
   return item.surfaces.includes(surface);
 }
 
+function hasSource(item, sourcePath) {
+  return item.sourcePaths.some(source => source.path === sourcePath && source.exists);
+}
+
 function runBaseSmoke() {
   const report = buildCapabilityMap();
   assert(report.status === "pass", `capability map should pass:\n${report.issues.join("\n")}`);
@@ -82,15 +86,25 @@ function runBaseSmoke() {
   assert(report.totals.proofGates >= 35, "capability map should cite the substantial QA gate surface");
   assert(report.publicReports.some(row => row.id === "capabilities" && row.pagesPath === "reports/capabilities.json"), "capability report should be part of the public report surface");
   assert(report.publicReports.some(row => row.id === "demo-learner" && row.pagesPath === "reports/demo-learner.json"), "demo learner report should be part of the public report surface");
+  assert(report.publicReports.some(row => row.id === "evaluator-path" && row.pagesPath === "reports/evaluator-path.json"), "evaluator path report should be part of the public report surface");
+  assert(report.publicReports.some(row => row.id === "evaluator-journey" && row.pagesPath === "reports/evaluator-journey.json"), "evaluator journey report should be part of the public report surface");
+  assert(report.publicReports.some(row => row.id === "profile-portability" && row.pagesPath === "reports/profile-portability.json"), "profile portability report should be part of the public report surface");
+  assert(report.publicReports.some(row => row.id === "exercise-value" && row.pagesPath === "reports/exercise-value.json"), "exercise value report should be part of the public report surface");
   assert(report.publicReports.some(row => row.id === "guided-session" && row.pagesPath === "reports/guided-session.json"), "guided session report should be part of the public report surface");
   assert(report.guarantees.every(guarantee => guarantee.pass), "capability guarantees should all pass");
 
   const gold = capability(report, "gold-lesson-quality-engine");
   assert(gold && hasGate(gold, "check:quality-report"), "gold capability should cite the quality report gate");
+  assert(gold && hasGate(gold, "check:exercise-value-report"), "gold capability should cite the exercise value report gate");
   assert(gold && hasReport(gold, "quality"), "gold capability should cite the public quality report");
+  assert(gold && hasReport(gold, "exercise-value"), "gold capability should cite the public exercise value report");
+  assert(gold && hasSource(gold, "scripts/build-exercise-value-report.js"), "gold capability should cite the exercise value builder");
 
   const memory = capability(report, "private-learner-memory");
   assert(memory && hasGate(memory, "check:memory-vault"), "memory capability should cite the memory vault gate");
+  assert(memory && hasGate(memory, "check:profile-portability"), "memory capability should cite the profile portability gate");
+  assert(memory && hasReport(memory, "profile-portability"), "memory capability should cite the public profile portability report");
+  assert(memory && hasSource(memory, "scripts/build-profile-portability-report.js"), "memory capability should cite the profile portability builder");
   assert(memory && hasDoc(memory, "docs/LEARNER_MEMORY_AGENT_RFC.md"), "memory capability should cite the learner memory RFC");
 
   const today = capability(report, "today-program-shell");
@@ -113,21 +127,47 @@ function runBaseSmoke() {
   assert(bridge && hasDoc(bridge, "docs/COMPANION_ARCHITECTURE.md"), "companion capability should cite companion architecture");
 
   const proof = capability(report, "public-github-proof-surface");
+  assert(proof && hasGate(proof, "check:home"), "proof surface should cite the home evaluator path gate");
+  assert(proof && hasGate(proof, "check:evaluator-path"), "proof surface should cite the evaluator path gate");
+  assert(proof && hasGate(proof, "check:evaluator-journey"), "proof surface should cite the evaluator journey gate");
+  assert(proof && hasGate(proof, "check:profile-portability"), "proof surface should cite the profile portability gate");
+  assert(proof && hasGate(proof, "check:exercise-value-report"), "proof surface should cite the exercise value gate");
   assert(proof && hasGate(proof, "check:capability-map"), "proof surface should cite its own gate");
   assert(proof && hasGate(proof, "check:demo-learner-diff"), "proof surface should cite the demo learner diff gate");
   assert(proof && hasGate(proof, "check:review-report-fixture"), "proof surface should cite the golden review fixture gate");
   assert(proof && hasGate(proof, "check:quickstart-proof"), "proof surface should cite the contributor quickstart gate");
   assert(proof && hasGate(proof, "check:proof-digest"), "proof surface should cite the proof digest gate");
   assert(proof && hasGate(proof, "check:proof-page"), "proof surface should cite the public proof page gate");
+  assert(proof && hasGate(proof, "check:public-runtime"), "proof surface should cite the public runtime gate");
+  assert(proof && hasGate(proof, "check:public-runtime-mutations"), "proof surface should cite the public runtime mutation gate");
   assert(proof && hasReport(proof, "capabilities"), "proof surface should cite the capability map report");
   assert(proof && hasReport(proof, "demo-learner"), "proof surface should cite the demo learner report");
+  assert(proof && hasReport(proof, "evaluator-path"), "proof surface should cite the evaluator path report");
+  assert(proof && hasReport(proof, "evaluator-journey"), "proof surface should cite the evaluator journey report");
+  assert(proof && hasReport(proof, "profile-portability"), "proof surface should cite the profile portability report");
+  assert(proof && hasReport(proof, "exercise-value"), "proof surface should cite the exercise value report");
   assert(proof && hasReport(proof, "guided-session"), "proof surface should cite the guided session report");
   assert(proof && hasReport(proof, "quickstart-proof"), "proof surface should cite the public quickstart proof report");
   assert(proof && hasReport(proof, "proof-digest"), "proof surface should cite the public proof digest report");
+  assert(proof && hasSurface(proof, "index.html"), "proof surface should cite the home page surface");
+  assert(proof && hasSurface(proof, "Home evaluator path"), "proof surface should cite the home evaluator path");
   assert(proof && hasSurface(proof, "proof.html"), "proof surface should cite the proof page surface");
+  assert(proof && hasSurface(proof, "reports/evaluator-path.json"), "proof surface should cite the evaluator path public report surface");
+  assert(proof && hasSurface(proof, "reports/evaluator-journey.json"), "proof surface should cite the evaluator journey public report surface");
+  assert(proof && hasSurface(proof, "reports/profile-portability.json"), "proof surface should cite the profile portability public report surface");
+  assert(proof && hasSurface(proof, "reports/exercise-value.json"), "proof surface should cite the exercise value public report surface");
   assert(proof && hasSurface(proof, "reports/proof-digest.json"), "proof surface should cite the proof digest surface");
   assert(proof && hasSurface(proof, "GitHub Step Summary"), "proof surface should cite the GitHub review summary surface");
   assert(proof && hasSurface(proof, "Contributor proof quickstart"), "proof surface should cite the contributor proof quickstart surface");
+  assert(proof && hasSource(proof, "scripts/build-evaluator-path-report.js"), "proof surface should cite the evaluator path report builder");
+  assert(proof && hasSource(proof, "scripts/build-evaluator-journey-report.js"), "proof surface should cite the evaluator journey report builder");
+  assert(proof && hasSource(proof, "scripts/smoke-evaluator-journey.js"), "proof surface should cite the evaluator journey harness");
+  assert(proof && hasSource(proof, "scripts/build-profile-portability-report.js"), "proof surface should cite the profile portability builder");
+  assert(proof && hasSource(proof, "scripts/smoke-profile-portability.js"), "proof surface should cite the profile portability harness");
+  assert(proof && hasSource(proof, "scripts/build-exercise-value-report.js"), "proof surface should cite the exercise value builder");
+  assert(proof && hasSource(proof, "scripts/smoke-exercise-value-report.js"), "proof surface should cite the exercise value harness");
+  assert(proof && hasSource(proof, "scripts/smoke-public-runtime.js"), "proof surface should cite the public runtime harness");
+  assert(proof && hasSource(proof, "scripts/mutation-public-runtime.js"), "proof surface should cite the public runtime mutation harness");
 
   const formatted = formatCapabilityMap(report);
   assert(formatted.includes("Product Capability Map"), "formatter should include report title");

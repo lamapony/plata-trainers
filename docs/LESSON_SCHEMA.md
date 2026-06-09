@@ -257,6 +257,63 @@ Complete a sentence with a keyword check.
 
 If `acceptKeywordGroups` is present, every group must match at least one keyword. Otherwise `acceptKeywords` accepts any one listed keyword. If both are omitted, any non-empty input is accepted.
 
+### Scene type: `flagship-chain`
+
+A B2 gold-only exercise chain for showing value beyond ordinary right/wrong quizzes. It combines consequence feedback, grammatical near-misses, repair ladders, same-intent channel transfer, memory-backed recurrence, and explain-your-choice evidence.
+
+```js
+{
+  id: "channel-transfer-lab",
+  type: "flagship-chain",
+  // ... common fields ...
+  intent: "Ask for a concrete repair date without escalating tone.",
+  archetypes: [
+    "consequence-exercise",
+    "near-miss",
+    "repair-ladder",
+    "same-intent-different-channel",
+    "memory-backed-recurrence",
+    "explain-your-choice"
+  ],
+  memoryCue: {
+    signal: "passive-agency",
+    copy: "You have already seen passive agency in the landlord's wording..."
+  },
+  channelVersions: [
+    { id: "slack", label: "Slack to a friend", sample: "Det er sgu ikke godt nok.", risk: "Useful for emotion; risky in formal email." },
+    { id: "email", label: "Landlord email", sample: "Jeg vil gerne bede om en konkret dato...", risk: "Best for actor/date pressure." },
+    { id: "meeting", label: "Workplace coffee", sample: "Der har været lidt bøvl...", risk: "Enough truth for the room." }
+  ],
+  options: [
+    {
+      id: "email-clear-agency",
+      channel: "Landlord email",
+      label: "Tak for svar. Jeg vil gerne bede om en konkret dato...",
+      detail: "formal, concrete, still calm",
+      diagnostic: "chooses-channel-fit-with-agency",
+      correct: true,
+      grammarStatus: "grammatical",
+      pragmaticStatus: "workplace-ready",
+      consequence: "The landlord sees a civil request with actor and date pressure.",
+      repairLadder: [
+        { stage: "raw intent", text: "Fix the heat. I need a date." },
+        { stage: "safer Danish", text: "Jeg vil gerne bede om en dato." },
+        { stage: "workplace-ready Danish", text: "Jeg vil gerne bede om en konkret dato..." }
+      ],
+      reasonPrompt: "Why does this work as the email version?",
+      reasonOptions: [
+        { id: "actor-date-channel", label: "It keeps actor/date pressure visible while matching the formal channel.", correct: true },
+        { id: "harder-is-clearer", label: "It works because it is the hardest possible version.", correct: false }
+      ],
+      effects: { landlordTension: -1 },
+      feedback: "Diagnostic: strong channel transfer..."
+    }
+  ]
+}
+```
+
+For gold lessons, `flagship-chain` scenes must declare all six archetypes, at least three channel versions, at least one incorrect grammatical `nearMiss`, consequence text for every option, a three-step `repairLadder` for every option, a `memoryCue`, and reason options for the correct answer. `check:exercise-value-report` mutation-tests these contracts and publishes `reports/exercise-value.json`.
+
 ## Social state system (B2+)
 
 When a lesson defines `variables`, the engine:

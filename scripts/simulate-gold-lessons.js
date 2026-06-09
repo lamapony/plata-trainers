@@ -211,6 +211,33 @@ function simulateCompletionAction(context, state, lesson, variables, scene, acti
   return 1;
 }
 
+function correctReasonLabel(option) {
+  const correct = (option.reasonOptions || []).find(reason => reason.correct === true);
+  return correct ? correct.label : "";
+}
+
+function simulateFlagshipChainAction(context, state, lesson, variables, scene, action) {
+  assert(action.optionId, `${lesson.id}::${scene.id}: flagship-chain action requires optionId`);
+  assert(typeof action.expectCorrect === "boolean", `${lesson.id}::${scene.id}: flagship-chain action requires expectCorrect`);
+  const option = scene.options.find(candidate => candidate.id === action.optionId);
+  assert(option, `${lesson.id}::${scene.id}: unknown optionId ${action.optionId}`);
+  let ok = option.correct === true;
+  let given = option.label;
+  let expected = correctLabel(scene.options);
+  if (option.correct === true && option.reasonOptions && option.reasonOptions.length) {
+    assert(action.reasonId, `${lesson.id}::${scene.id}.${option.id}: correct flagship-chain action requires reasonId`);
+    const reason = option.reasonOptions.find(candidate => candidate.id === action.reasonId);
+    assert(reason, `${lesson.id}::${scene.id}.${option.id}: unknown reasonId ${action.reasonId}`);
+    ok = reason.correct === true;
+    given = `${option.label} / ${reason.label}`;
+    expected = `${option.label} / ${correctReasonLabel(option)}`;
+  }
+  assert(ok === action.expectCorrect, `${lesson.id}::${scene.id}.${option.id}: expected correctness ${action.expectCorrect}, got ${ok}`);
+  if (!option.correct || ok) applyEffects(variables, option.effects);
+  recordSceneAttempt(context, state, lesson, scene, ok, given, expected);
+  return 1;
+}
+
 function simulatePath(context, lesson, pathSpec) {
   assert(pathSpec && pathSpec.id, `${lesson.id}: simulation path missing id`);
   assert(pathSpec.expectedEndingId, `${lesson.id}::path[${pathSpec.id}]: missing expectedEndingId`);
@@ -240,6 +267,16 @@ function simulatePath(context, lesson, pathSpec) {
 
     if (scene.type === "completion") {
       expectedAttempts += simulateCompletionAction(context, state, lesson, variables, scene, action);
+      return;
+    }
+
+    if (scene.type === "flagship-chain") {
+      scene.options.forEach(option => {
+        assert(/^Diagnostic:/.test(option.feedback), `${lesson.id}::${scene.id}.${option.id}: flagship feedback should be diagnostic`);
+        assert(option.consequence && option.consequence.length > 0, `${lesson.id}::${scene.id}.${option.id}: missing consequence`);
+        assert(Array.isArray(option.repairLadder) && option.repairLadder.length >= 3, `${lesson.id}::${scene.id}.${option.id}: missing repair ladder`);
+      });
+      expectedAttempts += simulateFlagshipChainAction(context, state, lesson, variables, scene, action);
       return;
     }
 

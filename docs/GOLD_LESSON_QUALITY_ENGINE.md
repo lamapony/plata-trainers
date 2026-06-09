@@ -14,7 +14,7 @@ Most language-learning projects stop at authored content. Platå should go deepe
 
 ## Contract
 
-A gold lesson has six layers:
+A gold lesson has seven layers:
 
 1. **Evidence layer**
    - `sourceNotes` cite the language claims the lesson depends on.
@@ -47,6 +47,11 @@ A gold lesson has six layers:
    - The public report shows whether the prompt contract exists and whether the final asset has been generated.
    - Image generation is optional in CI, but the storyboard contract is build-blocking for gold lessons.
 
+7. **Flagship exercise value layer**
+   - `flagship-chain` scenes demonstrate why the project is not a flat quiz.
+   - They must combine consequence feedback, grammatical near-misses, repair ladders, same-intent channel transfer, memory-backed recurrence, and explain-your-choice evidence.
+   - `reports/exercise-value.json` proves those archetypes are present and mutation-tested.
+
 ## Why This Matters
 
 A normal lesson can say:
@@ -62,6 +67,7 @@ A gold lesson should be able to prove:
 - the weak signal points back to a concrete repair scene;
 - the repair scene opens in repair mode and records attempts with the repair mode;
 - the scene has a comic panel prompt tied to the same evidence and mastery signal;
+- a flagship exercise makes the learner handle a grammatical near-miss, see the social consequence, repair it through a ladder, and explain the channel logic;
 - future weak-tag analysis can show that this learner struggles with passive agency rather than B2 Danish in general.
 
 That is the difference between content and an inspectable learning system.
@@ -91,6 +97,8 @@ The lesson-engine smoke test goes one layer closer to production: it replays the
 
 Pages publishes a generated report at `quality.html`, backed by `reports/quality.json`.
 
+Pages also publishes `reports/exercise-value.json`. That report is narrower than the quality report: it proves that flagship exercises are not context-free quizzes. It fails when a flagship chain loses consequence feedback, grammatical near-misses, repair ladders, same-intent channel transfer, memory-backed recurrence, explain-your-choice evidence, diagnostics, or mastery tags.
+
 The report is built from lesson data during `npm run build:pages`, not edited by hand. It exposes:
 
 - all narrative lessons discovered at build time;
@@ -103,7 +111,7 @@ The report is built from lesson data during `npm run build:pages`, not edited by
 
 The report fails the build if a gold scene is not covered by a simulation path or comic panel, or if a remediation target does not train the mastery signal it claims to repair.
 
-`npm run check:quality-report` builds the JSON report and fails if the report detects contract issues. `npm run check:comic-prompts` builds a dry-run manifest of all image-generation prompts without calling OpenRouter. `npm run check:quality-mutations` creates temporary broken gold lessons and proves the report catches missing sources, missing simulation coverage, missing comic coverage, broken remediation, bad completion answer specs, and duplicate diagnostics. `npm run check:quality-diff` proves the review diff catches regressions such as new issues, failed guarantees, removed evidence rows, and removed comic panels. `npm run check:quality-page` runs the public page renderer against the generated report object.
+`npm run check:quality-report` builds the JSON report and fails if the report detects contract issues. `npm run check:exercise-value-report` builds and mutation-tests the flagship exercise value report. `npm run check:comic-prompts` builds a dry-run manifest of all image-generation prompts without calling OpenRouter. `npm run check:quality-mutations` creates temporary broken gold lessons and proves the report catches missing sources, missing simulation coverage, missing comic coverage, broken remediation, bad completion answer specs, and duplicate diagnostics. `npm run check:quality-diff` proves the review diff catches regressions such as new issues, failed guarantees, removed evidence rows, and removed comic panels. `npm run check:quality-page` runs the public page renderer against the generated report object.
 
 For review, compare two generated reports:
 

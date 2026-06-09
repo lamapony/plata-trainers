@@ -13,6 +13,7 @@ const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-plann
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 const homeSource = fs.readFileSync(path.join(repoRoot, "home.js"), "utf8");
+const indexHtml = fs.readFileSync(path.join(repoRoot, "index.html"), "utf8");
 const dynamicLessonSources = {
   "./lessons/lesson-b2-radiator/data.js": radiatorLessonSource,
   "./lessons/lesson-b2-job-followup/data.js": jobFollowupLessonSource
@@ -54,6 +55,10 @@ function makeElement(tagName, selector) {
       if (query === ".card-link") return this.children.find(child => child.className === "card-link") || null;
       if (query === ".friendly-progress") return this.children.find(child => child.className === "friendly-progress") || null;
       return null;
+    },
+    scrollIntoView(options) {
+      this.scrollIntoViewCalls = this.scrollIntoViewCalls || [];
+      this.scrollIntoViewCalls.push(options || {});
     }
   };
   return element;
@@ -76,7 +81,8 @@ function makeContext(initialStorage) {
     "#home-start-title": makeElement("h2", "#home-start-title"),
     "#home-start-copy": makeElement("p", "#home-start-copy"),
     "#home-start-link": makeElement("a", "#home-start-link"),
-    "#home-start-meta": makeElement("p", "#home-start-meta")
+    "#home-start-meta": makeElement("p", "#home-start-meta"),
+    "#evaluate": makeElement("section", "#evaluate")
   };
   const cards = [
     "bojning",
@@ -87,6 +93,7 @@ function makeContext(initialStorage) {
     "lesson-b2-job-followup"
   ].map(makeTrainerCard);
 
+  const eventListeners = {};
   const context = {
     console,
     Date,
@@ -111,6 +118,12 @@ function makeContext(initialStorage) {
         return makeElement(tagName);
       },
       addEventListener() {}
+    },
+    location: {
+      hash: "#evaluate"
+    },
+    addEventListener(name, handler) {
+      eventListeners[name] = handler;
     },
     localStorage: {
       getItem(key) {
@@ -138,7 +151,7 @@ function makeContext(initialStorage) {
   context.window = context;
   context.globalThis = context;
   vm.createContext(context);
-  return { context, ids, cards, storage };
+  return { context, ids, cards, storage, eventListeners };
 }
 
 function loadKernelAndCatalog(env) {
@@ -221,6 +234,12 @@ async function runEmptyHomeSmoke() {
   assert(env.ids["#home-start-title"].textContent === "New here?", "home recommends starter path for new users");
   assert(env.ids["#home-start-link"].href === "./lessons/lesson-01/", "home starter link points to Lesson 01");
   assert(env.ids["#home-primary-action"].textContent === "Start Lesson 01", "home primary CTA starts Lesson 01");
+  assert(env.ids["#evaluate"].scrollIntoViewCalls && env.ids["#evaluate"].scrollIntoViewCalls.length === 1, "home restores hash scroll after dynamic launcher rendering");
+  assert(env.ids["#evaluate"].scrollIntoViewCalls[0].behavior === "auto", "home hash scroll should use deterministic behavior");
+  assert(typeof env.eventListeners.hashchange === "function", "home restores hash scroll after same-page hash changes");
+  env.ids["#evaluate"].scrollIntoViewCalls = [];
+  env.eventListeners.hashchange();
+  assert(env.ids["#evaluate"].scrollIntoViewCalls.length === 1, "home hashchange listener scrolls to the evaluator path");
   const lessonCard = env.cards.find(card => card.trainerId === "lesson-01-arrival");
   assert(/Not started/.test(lessonCard.querySelector(".friendly-progress").innerHTML), "home labels unstarted trainer cards");
 }
@@ -303,13 +322,24 @@ async function runClosedMasteryHomeSmoke() {
   assert(env.ids["#home-primary-action"].textContent !== "Open repair scene", "home closed signal does not use repair CTA");
 }
 
+function runHomeMarkupSmoke() {
+  assert(indexHtml.includes("id=\"evaluate\""), "home page should expose the evaluator path section");
+  assert(indexHtml.includes("Evaluate in 60 seconds"), "home hero should link to the evaluator path");
+  assert(indexHtml.includes("./dashboard.html?demo=learner"), "home evaluator path should link the demo learner dashboard");
+  assert(indexHtml.includes("./proof.html#proof-walkthrough-title"), "home evaluator path should link the proof walkthrough");
+  assert(indexHtml.includes("./proof.html#proof-guided-title"), "home evaluator path should link guided proof");
+  assert(!indexHtml.includes("href=\"./reports/"), "home page should not link Pages-only reports from the root static page");
+}
+
 async function run() {
+  runHomeMarkupSmoke();
   await runEmptyHomeSmoke();
   await runProgressHomeSmoke();
   await runActivePlanHomeSmoke();
   await runWeakMasteryHomeSmoke();
   await runClosedMasteryHomeSmoke();
 
+  console.log("ok - home page exposes the one-click evaluator path");
   console.log("ok - home launcher recommends a starter path");
   console.log("ok - home launcher continues existing local progress");
   console.log("ok - home launcher resumes active practice plans");

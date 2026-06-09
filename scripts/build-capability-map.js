@@ -37,6 +37,30 @@ const publicReportSpecs = {
     checkScript: "check:guided-session-report",
     pagesPath: "reports/guided-session.json"
   },
+  "evaluator-path": {
+    title: "First-visit evaluator path report",
+    builderScript: "scripts/build-evaluator-path-report.js",
+    checkScript: "check:evaluator-path",
+    pagesPath: "reports/evaluator-path.json"
+  },
+  "evaluator-journey": {
+    title: "Deterministic evaluator journey report",
+    builderScript: "scripts/build-evaluator-journey-report.js",
+    checkScript: "check:evaluator-journey",
+    pagesPath: "reports/evaluator-journey.json"
+  },
+  "profile-portability": {
+    title: "Profile portability acceptance report",
+    builderScript: "scripts/build-profile-portability-report.js",
+    checkScript: "check:profile-portability",
+    pagesPath: "reports/profile-portability.json"
+  },
+  "exercise-value": {
+    title: "Flagship exercise value report",
+    builderScript: "scripts/build-exercise-value-report.js",
+    checkScript: "check:exercise-value-report",
+    pagesPath: "reports/exercise-value.json"
+  },
   "project-health": {
     title: "Project health manifest",
     builderScript: "scripts/build-project-health-manifest.js",
@@ -77,6 +101,7 @@ const capabilitySpecs = [
     contracts: [
       "No backend dependency for basic practice.",
       "Shared progress state migrates old trainer storage into stable v1 keys.",
+      "Home page exposes a root-safe evaluator path into the read-only demo and proof walkthrough.",
       "Pages deploys only checked public files."
     ]
   },
@@ -85,13 +110,14 @@ const capabilitySpecs = [
     title: "Gold lesson quality engine",
     stage: "shipped",
     userValue: "Important lessons are not just authored pages: they carry sources, mastery signals, simulations, remediation, endings, and comic prompt coverage.",
-    surfaces: ["Gold narrative lessons", "quality.html", "reports/quality.json"],
-    proofGates: ["check:lessons", "check:lesson-engine", "check:gold-lessons", "check:counterfactuals", "check:comic-prompts", "check:quality-report", "check:quality-mutations", "check:quality-diff", "check:quality-page"],
-    publicReports: ["quality", "skill-coverage", "project-health"],
+    surfaces: ["Gold narrative lessons", "Flagship exercise chains", "quality.html", "reports/quality.json", "reports/exercise-value.json"],
+    proofGates: ["check:lessons", "check:lesson-engine", "check:exercise-value-report", "check:gold-lessons", "check:counterfactuals", "check:comic-prompts", "check:quality-report", "check:quality-mutations", "check:quality-diff", "check:quality-page"],
+    publicReports: ["quality", "exercise-value", "skill-coverage", "project-health"],
     docs: ["docs/GOLD_LESSON_QUALITY_ENGINE.md", "docs/LESSON_SCHEMA.md", "docs/lessons/lesson-b2-radiator-register.md"],
-    sourcePaths: ["scripts/build-quality-report.js", "scripts/simulate-gold-lessons.js", "scripts/counterfactual-learner-simulator.js", "scripts/generate-comic-assets-openrouter.js", "lessons/lesson-b2-radiator/data.js", "lessons/lesson-b2-job-followup/data.js"],
+    sourcePaths: ["scripts/build-quality-report.js", "scripts/build-exercise-value-report.js", "scripts/smoke-exercise-value-report.js", "scripts/simulate-gold-lessons.js", "scripts/counterfactual-learner-simulator.js", "scripts/generate-comic-assets-openrouter.js", "lessons/lesson-b2-radiator/data.js", "lessons/lesson-b2-job-followup/data.js"],
     contracts: [
       "Gold scenes must have source refs, learning goals, mastery tags, simulation paths, remediation targets, and comic storyboard coverage.",
+      "Flagship exercise chains must prove consequence, grammatical near-miss, repair ladder, channel transfer, memory recurrence, and explain-your-choice evidence.",
       "Broken gold contracts are mutation-tested.",
       "Quality report diffs distinguish review drift from regressions."
     ]
@@ -118,14 +144,15 @@ const capabilitySpecs = [
     stage: "shipped",
     userValue: "Personalization is derived locally from redacted learning events, not from raw answer history or opaque analytics.",
     surfaces: ["Dashboard memory inspector", "Profile export/import", "Memory vault payload"],
-    proofGates: ["check:events", "check:memory", "check:memory-fixtures", "check:memory-corrections", "check:memory-vault", "check:memory-brief", "check:profile-replay"],
-    publicReports: ["demo-learner", "project-health"],
+    proofGates: ["check:events", "check:memory", "check:memory-fixtures", "check:memory-corrections", "check:memory-vault", "check:memory-brief", "check:profile-replay", "check:profile-portability"],
+    publicReports: ["demo-learner", "profile-portability", "project-health"],
     docs: ["docs/LEARNER_MEMORY_AGENT_RFC.md", "docs/DEVELOPMENT_JOURNAL.md"],
-    sourcePaths: ["shared/plata-events.js", "shared/plata-memory.js", "shared/plata-memory-vault.js", "shared/plata-memory-brief.js", "scripts/debug-profile-replay.js", "scripts/fixtures/learner-memory-profiles.json"],
+    sourcePaths: ["shared/plata-events.js", "shared/plata-memory.js", "shared/plata-memory-vault.js", "shared/plata-memory-brief.js", "scripts/debug-profile-replay.js", "scripts/build-profile-portability-report.js", "scripts/smoke-profile-portability.js", "scripts/fixtures/learner-memory-profiles.json"],
     contracts: [
       "Memory facts cite source fingerprints and exclude raw expected/given answer text.",
       "Hidden and corrected facts survive export/import without rewriting the event log.",
-      "Optional vault sync is derived-facts-only."
+      "Optional vault sync is derived-facts-only.",
+      "Profile export/import/replay preserves active plans, memory corrections, guided outcomes, and derived privacy guardrails."
     ]
   },
   {
@@ -219,19 +246,26 @@ const capabilitySpecs = [
     title: "Public GitHub proof surface",
     stage: "shipped",
     userValue: "Visitors can inspect the project's claims as generated JSON reports, a readable proof page, and focused PR drift instead of trusting prose.",
-    surfaces: ["proof.html", "program.html", "dashboard.html?demo=learner", "reports/demo-learner.json", "reports/guided-session.json", "reports/capabilities.json", "reports/project-health.json", "reports/proof-digest.json", "reports/quickstart-proof/quickstart.json", "Pull-request QA review report", "GitHub Step Summary", "Contributor proof quickstart", "README"],
-    proofGates: ["check:program-page", "check:proof-page", "check:proof-digest", "check:capability-map", "check:health", "check:pages", "check:quality-report", "check:demo-learner-report", "check:demo-learner-diff", "check:today-program-report", "check:guided-session-report", "check:guided-session-diff", "check:review-report", "check:review-report-fixture", "check:quickstart-proof"],
-    publicReports: ["capabilities", "demo-learner", "guided-session", "project-health", "proof-digest", "quality", "quickstart-proof", "skill-coverage", "today-program"],
+    surfaces: ["index.html", "Home evaluator path", "proof.html", "program.html", "dashboard.html?demo=learner", "dashboard.html?demo=learner&ledger-return=1", "reports/evaluator-path.json", "reports/evaluator-journey.json", "reports/profile-portability.json", "reports/exercise-value.json", "reports/demo-learner.json", "reports/guided-session.json", "reports/capabilities.json", "reports/project-health.json", "reports/proof-digest.json", "reports/quickstart-proof/quickstart.json", "Pull-request QA review report", "GitHub Step Summary", "Contributor proof quickstart", "README"],
+    proofGates: ["check:home", "check:program-page", "check:proof-page", "check:capability-map", "check:evaluator-path", "check:evaluator-journey", "check:profile-portability", "check:exercise-value-report", "check:proof-digest", "check:health", "check:public-runtime", "check:public-runtime-mutations", "check:pages", "check:quality-report", "check:demo-learner-report", "check:demo-learner-diff", "check:today-program-report", "check:guided-session-report", "check:guided-session-diff", "check:review-report", "check:review-report-fixture", "check:quickstart-proof"],
+    publicReports: ["capabilities", "demo-learner", "evaluator-path", "evaluator-journey", "profile-portability", "exercise-value", "guided-session", "project-health", "proof-digest", "quality", "quickstart-proof", "skill-coverage", "today-program"],
     docs: ["README.md", "docs/DEVELOPMENT_JOURNAL.md"],
-    sourcePaths: ["proof.html", "proof.js", "program.html", "program.js", "dashboard.html", "dashboard.js", "shared/plata-guided-session.js", "scripts/build-demo-learner-report.js", "scripts/diff-demo-learner-report.js", "scripts/smoke-demo-learner-report.js", "scripts/smoke-demo-learner-diff.js", "scripts/build-guided-session-report.js", "scripts/smoke-guided-session-report.js", "scripts/diff-guided-session-report.js", "scripts/smoke-guided-session-diff.js", "scripts/smoke-program-page.js", "scripts/smoke-proof-page.js", "scripts/smoke-dashboard.js", "scripts/build-capability-map.js", "scripts/build-project-health-manifest.js", "scripts/build-proof-digest.js", "scripts/smoke-proof-digest.js", "scripts/build-review-report.js", "scripts/smoke-review-report-fixture.js", "scripts/build-quickstart-proof.js", "scripts/smoke-quickstart-proof.js", "scripts/fixtures/review-report-golden/quality-diff.json", "scripts/fixtures/review-report-golden/guided-diff.json", "scripts/build-pages-artifact.js", ".github/workflows/qa.yml"],
+    sourcePaths: ["index.html", "proof.html", "proof.js", "program.html", "program.js", "dashboard.html", "dashboard.js", "shared/plata-guided-session.js", "scripts/build-demo-learner-report.js", "scripts/diff-demo-learner-report.js", "scripts/smoke-demo-learner-report.js", "scripts/smoke-demo-learner-diff.js", "scripts/build-guided-session-report.js", "scripts/smoke-guided-session-report.js", "scripts/diff-guided-session-report.js", "scripts/smoke-guided-session-diff.js", "scripts/build-evaluator-path-report.js", "scripts/smoke-evaluator-path.js", "scripts/build-evaluator-journey-report.js", "scripts/smoke-evaluator-journey.js", "scripts/build-profile-portability-report.js", "scripts/smoke-profile-portability.js", "scripts/build-exercise-value-report.js", "scripts/smoke-exercise-value-report.js", "scripts/smoke-home.js", "scripts/smoke-program-page.js", "scripts/smoke-proof-page.js", "scripts/smoke-public-runtime.js", "scripts/mutation-public-runtime.js", "scripts/smoke-dashboard.js", "scripts/build-capability-map.js", "scripts/build-project-health-manifest.js", "scripts/build-proof-digest.js", "scripts/smoke-proof-digest.js", "scripts/build-review-report.js", "scripts/smoke-review-report-fixture.js", "scripts/build-quickstart-proof.js", "scripts/smoke-quickstart-proof.js", "scripts/fixtures/review-report-golden/quality-diff.json", "scripts/fixtures/review-report-golden/guided-diff.json", "scripts/build-pages-artifact.js", ".github/workflows/qa.yml"],
     contracts: [
       "Every declared capability links to checks, source files, docs, and public reports.",
       "Program and home pages expose the read-only demo learner dashboard for first-time evaluators.",
+      "Home evaluator path links the read-only demo learner, guided proof, and proof walkthrough without root links to Pages-only reports.",
+      "Evaluator path report makes first-visit route drift inspectable on the public proof page.",
+      "Evaluator journey report proves the demo-to-proof-to-guided-return path as a deterministic acceptance trace.",
+      "Profile portability report proves real local profile export/import/replay as a public acceptance trace.",
+      "Exercise value report proves the flagship lesson is not a context-free quiz.",
       "Project health verifies full-check workflows and report publishing.",
       "Proof / Health renders the reports and golden review fixture as one readable public surface.",
       "Proof / Health renders a visitor walkthrough from demo learner to guided outcome receipt.",
       "Proof / Health renders a compact capability matrix that traces user-facing claims to gates, reports, and source.",
       "Proof / Health explains the guided outcome-loop report, diff gate, and source contracts.",
+      "Public runtime QA serves the built Pages artifact over HTTP and renders the public JS surfaces against generated reports.",
+      "Public runtime mutation QA proves broken evaluator, read-only demo, report-link, and responsive contracts fail before publish.",
       "Proof digest translates generated reports into visitor-facing claims and trust boundaries.",
       "PR review output writes a full JSON artifact plus a capped GitHub Step Summary that groups regressions, review changes, improvements, and informational drift.",
       "The contributor proof quickstart builds the core local proof artifacts with one command."

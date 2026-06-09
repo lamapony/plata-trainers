@@ -4,6 +4,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
+const { buildExerciseValueReport } = require("./build-exercise-value-report.js");
 
 const repoRoot = path.resolve(__dirname, "..");
 const fixedNow = "2026-06-08T09:00:00.000Z";
@@ -84,6 +85,18 @@ function planStep(overrides = {}) {
   }, overrides);
 }
 
+function appendQueryParams(href, params) {
+  const raw = String(href || "#");
+  const hashIndex = raw.indexOf("#");
+  const base = hashIndex === -1 ? raw : raw.slice(0, hashIndex);
+  const hash = hashIndex === -1 ? "" : raw.slice(hashIndex);
+  const pairs = Object.keys(params || {}).filter(key => params[key] !== undefined && params[key] !== null && params[key] !== "").map(key => {
+    return `${encodeURIComponent(key)}=${encodeURIComponent(String(params[key]))}`;
+  });
+  if (!pairs.length) return raw;
+  return `${base}${base.includes("?") ? "&" : "?"}${pairs.join("&")}${hash}`;
+}
+
 function plan(overrides = {}, stepOverrides = {}) {
   const step = planStep(stepOverrides);
   return Object.assign({
@@ -131,7 +144,7 @@ function starterPlan() {
 function advisorReceipt(step, citedFact, overrides = {}) {
   return Object.assign({
     step,
-    actionHref: step && `${step.primaryHref}${step.primaryHref.includes("?") ? "&" : "?"}plan=plan-passive&step=${step.routeId}`,
+    actionHref: step && appendQueryParams(step.primaryHref, { plan: "plan-passive", step: step.routeId }),
     advice: {
       title: "Repair passive-agency",
       advice: "Use the cited weak signal to keep this session narrow.",
@@ -232,6 +245,53 @@ function compactOutcome(outcome) {
   };
 }
 
+function buildFlagshipExerciseOutcomeProof(exerciseValueReport, recordedOutcome, citedFact) {
+  const chain = (exerciseValueReport.lessons || [])
+    .flatMap(lesson => lesson.flagshipChains || [])
+    .find(item => item.lessonId === "lesson-b2-radiator-register" && item.sceneId === "channel-transfer-lab") || null;
+  const checks = [
+    {
+      key: "exercise-value-report-pass",
+      pass: exerciseValueReport.status === "pass",
+      issue: "exercise-value report does not pass"
+    },
+    {
+      key: "flagship-chain-present",
+      pass: Boolean(chain && chain.status === "pass"),
+      issue: "channel-transfer-lab flagship chain is not present and passing"
+    },
+    {
+      key: "memory-signal-aligned",
+      pass: Boolean(chain && chain.memoryCue && citedFact && chain.memoryCue.signal === citedFact.signal),
+      issue: "flagship chain memory cue does not align with guided session memory signal"
+    },
+    {
+      key: "guided-outcome-recorded",
+      pass: Boolean(recordedOutcome && recordedOutcome.fingerprint && recordedOutcome.fingerprint.startsWith("gdo-")),
+      issue: "guided session did not record a portable outcome receipt"
+    },
+    {
+      key: "reason-evidence-required",
+      pass: Boolean(chain && (chain.checks || []).some(item => item.key === "explain-your-choice" && item.pass)),
+      issue: "flagship chain does not require reason evidence"
+    }
+  ];
+  return {
+    status: checks.every(item => item.pass) ? "pass" : "fail",
+    lessonId: "lesson-b2-radiator-register",
+    sceneId: "channel-transfer-lab",
+    routeHref: "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#channel-transfer-lab",
+    publicReport: "reports/exercise-value.json",
+    guidedReport: "reports/guided-session.json",
+    profileReport: "reports/profile-portability.json",
+    memorySignal: citedFact && citedFact.signal || "",
+    guidedOutcomeFingerprint: recordedOutcome && recordedOutcome.fingerprint || "",
+    exerciseArchetypes: chain ? chain.archetypes : [],
+    checks,
+    issues: checks.filter(item => !item.pass).map(item => item.issue)
+  };
+}
+
 function forbiddenLeaks() {
   return [
     "raw weak expected",
@@ -270,6 +330,7 @@ function scenario(api, spec) {
 function buildGuidedSessionReport(options = {}) {
   const root = sourceRoot(options);
   const api = loadGuidedSessionApi(root);
+  const exerciseValueReport = buildExerciseValueReport({ root });
   const weakFact = fact();
   const reviewFact = fact({
     id: "mem-formal-review",
@@ -404,9 +465,11 @@ function buildGuidedSessionReport(options = {}) {
   if (!(recordedOutcome.outcomeReceipt.citedFacts || []).length) outcomeIssues.push("outcome receipt lacks cited memory facts");
   const outcomeLeaks = forbiddenLeaks().filter(value => JSON.stringify(outcomeLedger).includes(value));
   if (outcomeLeaks.length) outcomeIssues.push(`outcome ledger leaked raw learner text: ${outcomeLeaks.join(", ")}`);
+  const flagshipExerciseOutcomeProof = buildFlagshipExerciseOutcomeProof(exerciseValueReport, recordedOutcome, weakFact);
   const issues = [
     ...scenarios.flatMap(item => item.issues.map(issue => `${item.id}: ${issue}`)),
-    ...outcomeIssues.map(issue => `outcome-ledger: ${issue}`)
+    ...outcomeIssues.map(issue => `outcome-ledger: ${issue}`),
+    ...flagshipExerciseOutcomeProof.issues.map(issue => `flagship-exercise-outcome: ${issue}`)
   ];
   const statuses = Array.from(new Set(scenarios.map(item => item.session.status))).sort();
   const stepCount = scenarios.reduce((sum, item) => sum + item.session.steps.length, 0);
@@ -424,6 +487,7 @@ function buildGuidedSessionReport(options = {}) {
       steps: stepCount,
       citedFacts,
       outcomeReceipts: outcomeLedger.totals.outcomes,
+      flagshipExerciseOutcomeProofs: flagshipExerciseOutcomeProof.status === "pass" ? 1 : 0,
       issues: issues.length
     },
     statuses,
@@ -432,11 +496,13 @@ function buildGuidedSessionReport(options = {}) {
       "Ready and active sessions include a route action.",
       "Memory-backed sessions cite derived memory facts.",
       "Completed practice steps write portable outcome receipts.",
+      "The flagship exercise outcome is visible from guided-session proof and linked to exercise-value/profile proof.",
       "Sessions and outcome receipts are deterministic, model-free, and exclude raw learner answers."
     ],
     issues,
     scenarios,
-    outcomeLedger
+    outcomeLedger,
+    flagshipExerciseOutcomeProof
   };
 }
 
@@ -446,6 +512,7 @@ function formatGuidedSessionReport(report) {
     `status: ${report.status}`,
     `scenarios: ${report.totals.scenarios}`,
     `outcome receipts: ${report.totals.outcomeReceipts}`,
+    `flagship outcome proofs: ${report.totals.flagshipExerciseOutcomeProofs}`,
     `statuses: ${report.statuses.join(", ")}`,
     "",
     "Scenarios:"

@@ -220,6 +220,42 @@ function auditCompletionScene(lesson, scene, location, issues) {
   });
 }
 
+function auditFlagshipChainScene(lesson, scene, location, issues) {
+  const requiredArchetypes = [
+    "consequence-exercise",
+    "near-miss",
+    "repair-ladder",
+    "same-intent-different-channel",
+    "memory-backed-recurrence",
+    "explain-your-choice"
+  ];
+  const archetypes = asArray(scene.archetypes);
+  requiredArchetypes.forEach(archetype => {
+    if (!archetypes.includes(archetype)) addIssue(issues, lesson, location, `flagship-chain missing archetype ${archetype}`);
+  });
+
+  if (!scene.memoryCue || !nonEmptyString(scene.memoryCue.signal) || !nonEmptyString(scene.memoryCue.copy)) {
+    addIssue(issues, lesson, location, "flagship-chain missing memory-backed recurrence cue");
+  }
+  if (asArray(scene.channelVersions).length < 3) {
+    addIssue(issues, lesson, location, "flagship-chain needs at least three same-intent channel versions");
+  }
+
+  const options = asArray(scene.options);
+  if (!options.some(option => option.nearMiss === true && option.correct === false && option.grammarStatus === "grammatical")) {
+    addIssue(issues, lesson, location, "flagship-chain needs an incorrect grammatical near-miss option");
+  }
+  if (!options.every(option => nonEmptyString(option.consequence))) {
+    addIssue(issues, lesson, location, "flagship-chain options must explain social consequences");
+  }
+  if (!options.every(option => asArray(option.repairLadder).length >= 3)) {
+    addIssue(issues, lesson, location, "flagship-chain options must include raw -> safer -> workplace-ready repair ladders");
+  }
+  if (!options.some(option => option.correct === true && asArray(option.reasonOptions).length >= 2)) {
+    addIssue(issues, lesson, location, "flagship-chain correct option must require explain-your-choice proof");
+  }
+}
+
 function auditSimulationCompletionAnswers(lesson, scene, location, issues) {
   const answerSpec = lesson.simulation
     && lesson.simulation.completionAnswers
@@ -250,6 +286,7 @@ function auditLesson(lesson) {
     if (!scene || typeof scene !== "object") return;
     if (scene.type === "choice") auditChoiceScene(lesson, scene, location, issues);
     if (scene.type === "match") auditMatchScene(lesson, scene, location, issues);
+    if (scene.type === "flagship-chain") auditFlagshipChainScene(lesson, scene, location, issues);
     if (scene.type === "completion") {
       auditCompletionScene(lesson, scene, location, issues);
       auditSimulationCompletionAnswers(lesson, scene, location, issues);
