@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Dashboard · Platå</title>
   <meta name="description" content="Unified progress dashboard for all Platå trainers." />
+  <link rel="manifest" href="./site.webmanifest" />
+  <link rel="icon" href="./assets/icons/icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -35,6 +38,8 @@
     </header>
 
     <section class="demo-profile-banner" id="demo-profile" hidden aria-label="Demo learner profile"></section>
+
+    <section class="learner-headroom-bar" id="learner-headroom" hidden aria-label="Practice in plain language"></section>
 
     <section class="section today-section" id="today" aria-labelledby="today-title">
       <div class="section-head">
@@ -87,8 +92,9 @@
 
     <section class="section" id="mastery" aria-labelledby="mastery-title">
       <div class="section-head">
-        <p class="eyebrow">Signals</p>
-        <h2 id="mastery-title">Patterns to repair</h2>
+        <p class="eyebrow">Plain language</p>
+        <h2 id="mastery-title">What to fix next</h2>
+        <p class="section-lead">Each card says what we saw, what it means for your Danish, and one repair step. Open technical details only if you want the raw signal ids.</p>
       </div>
       <div id="mastery-list" class="mastery-list"></div>
     </section>
@@ -144,6 +150,8 @@
   <script src="./shared/plata-advisor.js"></script>
   <script src="./shared/plata-companion.js"></script>
   <script src="./shared/plata-guided-session.js"></script>
+  <script src="./shared/plata-headroom.js"></script>
   <script src="./dashboard.js"></script>
+  <script src="./shared/plata-pwa.js"></script>
 </body>
 </html>

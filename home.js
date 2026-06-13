@@ -313,6 +313,22 @@
     if (meta) meta.textContent = recommendation.meta;
   }
 
+  function renderHeadroomSnapshot(stats, recommendation) {
+    var section = $("#your-practice");
+    var container = $("#home-headroom");
+    var layer = window.PlataHeadroom;
+    if (!section || !container || !layer || !layer.compressHomeRecommendation || !layer.renderCard) return;
+    var hasProgress = stats.some(function (item) { return item.hasProgress; });
+    if (!hasProgress) {
+      section.hidden = true;
+      container.innerHTML = "";
+      return;
+    }
+    var rec = Object.assign({}, recommendation, { kind: recommendation.kind || recommendation.mode });
+    section.hidden = false;
+    container.innerHTML = layer.renderCard(layer.compressHomeRecommendation(rec), { extraClass: "home-headroom" });
+  }
+
   function renderTrainerProgress(stats) {
     stats.forEach(function (item) {
       var card = document.querySelector("[data-trainer-id=\"" + item.trainer.id + "\"]");
@@ -366,7 +382,9 @@
   function init() {
     masteryCatalogCache = null;
     var stats = trainers().map(function (trainer, index) { return trainerStats(trainer, index); });
-    renderStartCard(chooseRecommendation(stats));
+    var recommendation = chooseRecommendation(stats);
+    renderStartCard(recommendation);
+    renderHeadroomSnapshot(stats, recommendation);
     renderTrainerProgress(stats);
     restoreHashScroll();
   }

@@ -3,6 +3,8 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { spawnSync } = require("node:child_process");
+const { writePrecacheManifest } = require("./build-precache-manifest.js");
 const { writeQualityReport } = require("./build-quality-report.js");
 const { writeSkillCoverageReport } = require("./build-skill-coverage-report.js");
 const { writeDemoLearnerReport } = require("./build-demo-learner-report.js");
@@ -37,10 +39,12 @@ const rootFiles = [
   "robots.txt",
   "site.webmanifest",
   "sitemap.xml",
-  "styles.css"
+  "styles.css",
+  "sw.js"
 ];
 
 const publicDirs = [
+  "assets",
   "bojning-drill",
   "lessons",
   "ordstilling-drill",
@@ -133,6 +137,15 @@ function walkFiles(dir) {
   return files;
 }
 
+const iconBuild = spawnSync(process.execPath, [path.join(__dirname, "build-pwa-icons.js")], {
+  cwd: root,
+  encoding: "utf8"
+});
+if (iconBuild.status !== 0) {
+  console.error(`pages artifact build failed: PWA icon build\n${iconBuild.stdout}\n${iconBuild.stderr}`);
+  process.exit(1);
+}
+
 fs.rmSync(outRoot, { recursive: true, force: true });
 ensureDir(outRoot);
 
@@ -171,6 +184,12 @@ if (!fs.existsSync(path.join(outRoot, quickstartProofPublicIndex))) {
   process.exit(1);
 }
 
+const precache = writePrecacheManifest(outRoot);
+if (!fs.existsSync(path.join(outRoot, "precache-manifest.json"))) {
+  console.error("pages artifact build failed: missing precache-manifest.json");
+  process.exit(1);
+}
+
 const topLevel = fs.readdirSync(outRoot);
 const leaked = topLevel.filter(name => disallowedTopLevel.has(name));
 if (leaked.length) {
@@ -189,4 +208,4 @@ rootFiles.forEach(file => {
   }
 });
 
-console.log(`pages artifact built: ${rel(outRoot)} (${files.length} file(s))`);
+console.log(`pages artifact built: ${rel(outRoot)} (${files.length} file(s), precache ${precache.version})`);

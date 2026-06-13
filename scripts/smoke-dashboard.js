@@ -20,6 +20,7 @@ const agentHandoffSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-
 const advisorSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-advisor.js"), "utf8");
 const companionSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-companion.js"), "utf8");
 const guidedSessionSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-guided-session.js"), "utf8");
+const headroomSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-headroom.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
@@ -41,6 +42,7 @@ function makeElement(tagName) {
     textContent: "",
     download: "",
     style: {},
+    hidden: false,
     children: [],
     files: [],
     onchange: null,
@@ -58,6 +60,7 @@ function makeContext(initialStorage, options) {
   const elements = {
     "#trainer-cards": makeElement("div"),
     "#demo-profile": makeElement("section"),
+    "#learner-headroom": makeElement("section"),
     "#today-program": makeElement("div"),
     "#guided-session-panel": makeElement("div"),
     "#due-cards": makeElement("div"),
@@ -182,6 +185,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
   vm.runInContext(companionSource, env.context, { filename: "shared/plata-companion.js" });
   vm.runInContext(guidedSessionSource, env.context, { filename: "shared/plata-guided-session.js" });
+  vm.runInContext(headroomSource, env.context, { filename: "shared/plata-headroom.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 }
 
@@ -356,6 +360,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(advisorSource, env.context, { filename: "shared/plata-advisor.js" });
   vm.runInContext(companionSource, env.context, { filename: "shared/plata-companion.js" });
   vm.runInContext(guidedSessionSource, env.context, { filename: "shared/plata-guided-session.js" });
+  vm.runInContext(headroomSource, env.context, { filename: "shared/plata-headroom.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   assert(env.context.PlataCatalog.trainers.length === 6, "dashboard reads trainer catalog");

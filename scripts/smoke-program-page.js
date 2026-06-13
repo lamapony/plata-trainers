@@ -77,7 +77,7 @@ async function run() {
 
   assert(elements["#program-status"].textContent === "Proof map passing", "program page did not render passing status");
   assert(elements["#program-summary"].innerHTML.includes("Capabilities"), "program page did not render summary");
-  assert(elements["#program-pillars"].innerHTML.includes("Start with one useful practice step"), "program page did not render learner pillar");
+  assert(elements["#program-pillars"].innerHTML.includes("Break the plateau one step at a time"), "program page did not render learner pillar");
   assert(elements["#program-pillars"].innerHTML.includes("Personalization stays explainable"), "program page did not render personalization pillar");
   assert(elements["#program-capabilities"].innerHTML.includes("Stateful Today program shell"), "program page did not render Today capability");
   assert(elements["#program-capabilities"].innerHTML.includes("Lightweight companion and read-only bridge"), "program page did not render companion capability");

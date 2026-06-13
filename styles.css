@@ -141,10 +141,28 @@ h3 { font-size: 30px; }
 
 .section { padding: 46px 0; }
 .section-head { display: flex; align-items: end; justify-content: space-between; margin-bottom: 20px; }
+.section-copy {
+  max-width: 740px;
+  margin: 12px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
 .trainer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .trainer-card { padding: 24px; min-height: 280px; display: flex; flex-direction: column; }
 .trainer-card p { color: var(--muted); line-height: 1.55; }
+.trainer-subhead {
+  margin: 30px 0 16px;
+}
+.trainer-subhead h3 {
+  max-width: 680px;
+  font-size: 30px;
+  letter-spacing: 0;
+}
 .quick-start-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+#learner-path .quick-start-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 1100px) {
+  #learner-path .quick-start-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
 .path-card { padding: 22px; min-height: 250px; display: flex; flex-direction: column; }
 .path-card p { color: var(--muted); line-height: 1.55; }
 .path-card .card-link { margin-top: auto; }
@@ -1121,6 +1139,157 @@ h3 { font-size: 30px; }
 .mastery-score { color: var(--ember); }
 .mastery-card h3 { font-size: 28px; letter-spacing: -0.02em; }
 .mastery-card p { color: var(--muted); line-height: 1.55; margin: 12px 0 18px; }
+
+.section-lead {
+  color: var(--muted);
+  max-width: 62ch;
+  line-height: 1.55;
+  margin: 8px 0 0;
+}
+
+.learner-headroom-bar {
+  margin: 0 auto;
+  max-width: var(--shell);
+  padding: 0 24px 8px;
+}
+
+.headroom-bar {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius);
+  background: linear-gradient(145deg, oklch(0.28 0.026 150 / 0.92), oklch(0.22 0.024 150 / 0.94));
+  box-shadow: var(--shadow);
+  padding: 18px 20px;
+  display: grid;
+  gap: 8px;
+}
+
+.headroom-bar-verdict {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.headroom-bar-means {
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 70ch;
+}
+
+.headroom-bar-link {
+  color: var(--green);
+  font-weight: 600;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.headroom-stack { display: grid; gap: 16px; max-width: 720px; }
+
+.headroom-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: oklch(0.24 0.022 150 / 0.55);
+  padding: 18px 20px;
+  display: grid;
+  gap: 10px;
+}
+
+.headroom-card.mastery-card,
+.headroom-card.competency-card {
+  background: linear-gradient(145deg, oklch(0.28 0.026 150 / 0.9), oklch(0.22 0.024 150 / 0.92));
+  box-shadow: var(--shadow);
+  padding: 22px;
+}
+
+.headroom-verdict {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.headroom-label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.headroom-saw,
+.headroom-means,
+.headroom-next {
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.55;
+}
+
+.headroom-next-link {
+  color: var(--green);
+  font-weight: 600;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.headroom-appendix {
+  margin-top: 4px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.headroom-appendix summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  list-style: none;
+}
+
+.headroom-appendix summary::-webkit-details-marker { display: none; }
+
+.headroom-appendix dl,
+.headroom-technical {
+  margin: 12px 0 0;
+  display: grid;
+  gap: 8px;
+}
+
+.headroom-appendix dt {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.headroom-appendix dd {
+  margin: 2px 0 0;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.today-headroom { margin: 14px 0 4px; }
+
+.trainer-headroom,
+.due-headroom,
+.home-headroom {
+  margin: 12px 0 4px;
+}
+
+.trainer-stats-appendix .stats-mini,
+.today-metrics-appendix .today-facts {
+  margin-top: 12px;
+}
+
+@media (max-width: 720px) {
+  .headroom-verdict { font-size: 20px; }
+  .headroom-bar-verdict { font-size: 18px; }
+}
 .mastery-meta { display: grid; gap: 7px; color: var(--muted); font-size: 12px; }
 .mastery-meta span:first-child { color: var(--text); font-family: "JetBrains Mono", monospace; }
 .competency-card { border-color: oklch(0.72 0.16 55 / 0.42); }

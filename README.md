@@ -3,7 +3,7 @@
 [![QA](https://github.com/lamapony/plata-trainers/actions/workflows/qa.yml/badge.svg)](https://github.com/lamapony/plata-trainers/actions/workflows/qa.yml)
 [![Pages](https://github.com/lamapony/plata-trainers/actions/workflows/pages.yml/badge.svg)](https://github.com/lamapony/plata-trainers/actions/workflows/pages.yml)
 
-Open-source Danish plateau-breaker for Danish learners who are no longer starting from zero but still feel stuck. Static HTML/JS, no app build step, no backend.
+**Break your Danish plateau.** Open-source practice for Danish learners who are no longer starting from zero but still freeze under forms, word order, tone, or social pressure. Static HTML/JS, no app build step, no backend.
 Live demo: [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/).
 Demo learner dashboard: [lamapony.github.io/plata-trainers/dashboard.html?demo=learner](https://lamapony.github.io/plata-trainers/dashboard.html?demo=learner).
 Demo learner report: [lamapony.github.io/plata-trainers/reports/demo-learner.json](https://lamapony.github.io/plata-trainers/reports/demo-learner.json).

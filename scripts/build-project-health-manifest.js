@@ -104,6 +104,7 @@ const requiredGates = [
   { id: "check:health", category: "report", contract: "Project health manifest links gates, reports, workflows, and fixtures." },
   { id: "check:public-runtime", category: "runtime", contract: "Built Pages artifact serves over local HTTP and renders home, proof, program, evaluator, and report links without external dependencies." },
   { id: "check:public-runtime-mutations", category: "mutation", contract: "Public runtime mutation tests prove broken evaluator, read-only demo, report-link, and responsive contracts fail CI." },
+  { id: "check:pwa", category: "runtime", contract: "PWA manifest, icons, service worker, precache manifest, and registration helper stay installable." },
   { id: "check:pages", category: "publish", contract: "Pages artifact builds and public files pass static QA." }
 ];
 
