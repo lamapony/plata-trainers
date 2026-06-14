@@ -10,8 +10,10 @@ const fixedNow = "2026-06-08T09:00:00.000Z";
 const sources = [
   "shared/plata-kernel.js",
   "shared/plata-catalog.js",
+  "lessons/lesson-01/data.js",
   "lessons/lesson-b2-radiator/data.js",
   "lessons/lesson-b2-job-followup/data.js",
+  "lessons/lesson-b2-ordstilling/data.js",
   "shared/plata-competencies.js",
   "shared/plata-planner.js",
   "shared/plata-evidence.js",

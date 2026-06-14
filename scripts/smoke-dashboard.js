@@ -23,10 +23,14 @@ const guidedSessionSource = fs.readFileSync(path.join(repoRoot, "shared", "plata
 const headroomSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-headroom.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
+const lesson01Source = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-01", "data.js"), "utf8");
+const ordstillingLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-ordstilling", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
 const dynamicLessonSources = {
   "./lessons/lesson-b2-radiator/data.js": radiatorLessonSource,
-  "./lessons/lesson-b2-job-followup/data.js": jobFollowupLessonSource
+  "./lessons/lesson-b2-job-followup/data.js": jobFollowupLessonSource,
+  "./lessons/lesson-01/data.js": lesson01Source,
+  "./lessons/lesson-b2-ordstilling/data.js": ordstillingLessonSource
 };
 
 function assert(condition, message) {
@@ -171,8 +175,10 @@ function makeContext(initialStorage, options) {
 function loadKernelAndDashboard(env) {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(lesson01Source, env.context, { filename: "lessons/lesson-01/data.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(ordstillingLessonSource, env.context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });

@@ -4,6 +4,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const vm = require("node:vm");
 
 const root = path.resolve(__dirname, "..");
 
@@ -68,6 +69,28 @@ function main() {
     assert(html.includes("assets/icons/icon-192.png"), `${page}: missing install icon link`);
     assert(html.includes("shared/plata-pwa.js"), `${page}: must load shared/plata-pwa.js`);
   });
+
+  assert(read("index.html").includes('id="pwa-status"'), "index.html: missing learner-visible PWA status region");
+  assert(read("dashboard.html").includes('id="pwa-status"'), "dashboard.html: missing learner-visible PWA status region");
+
+  const pwaContext = {
+    document: {
+      readyState: "complete",
+      querySelectorAll() { return []; },
+      getElementById() { return null; },
+      addEventListener() {}
+    },
+    addEventListener() {},
+    matchMedia() { return { matches: false }; },
+    navigator: {}
+  };
+  pwaContext.window = pwaContext;
+  pwaContext.globalThis = pwaContext;
+  vm.createContext(pwaContext);
+  vm.runInContext(read("shared/plata-pwa.js"), pwaContext, { filename: "shared/plata-pwa.js" });
+  assert(pwaContext.PlataPWA && typeof pwaContext.PlataPWA.getStatus === "function", "shared/plata-pwa.js: must expose PlataPWA.getStatus");
+  const status = pwaContext.PlataPWA.getStatus();
+  assert(status && status.key && status.label && status.detail, "PlataPWA.getStatus: must return learner-readable status");
 
   const indexHtml = read("index.html");
   assert(indexHtml.includes("Narrative lesson gallery"), "index.html: missing narrative lesson gallery");

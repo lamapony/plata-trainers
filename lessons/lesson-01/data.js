@@ -1,5 +1,7 @@
 window.PLATA_LESSON_01 = {
   id: "lesson-01-arrival",
+  level: "A0/A1",
+  qualityTier: "starter",
   title: "The First Morning in Copenhagen",
   subtitle: "A compact interactive Danish episode for your first 40 minutes in the city.",
   estimatedMinutes: 10,
@@ -30,7 +32,8 @@ window.PLATA_LESSON_01 = {
         { id: "udgang", label: "Udgang", detail: "exit · out", correct: true, feedback: "Correct. Ud = out. You are outside the terminal before the phone drops another percent." }
       ],
       carry: "Carry-forward words: velkommen, København, skal, find, udgangen, indgang, udgang. The ind/ud compass and the verb skal (must/need) appear again at the hostel and on every Copenhagen sign.",
-      tags: ["signage", "udgang", "survival", "morphology-clue", "velkommen", "København", "skal", "find", "indgang"]
+      tags: ["signage", "udgang", "survival", "morphology-clue", "velkommen", "København", "skal", "find", "indgang"],
+      masteryTags: ["signage-direction"]
     },
     {
       id: "meet-lene",
@@ -51,7 +54,8 @@ window.PLATA_LESSON_01 = {
       success: "That works. A real person now has your name in Danish. The chunk is yours: jeg hedder + name.",
       failure: "Start with the whole chunk: Jeg hedder — then your name. No extra mig needed.",
       carry: "Carry-forward pattern: jeg hedder + name. The question hvad hedder du? returns in Scene 6. The words jeg, hedder, hvad, du are your new social toolkit.",
-      tags: ["greeting", "identity", "jeg-hedder", "formulaic-language", "hvad", "du"]
+      tags: ["greeting", "identity", "jeg-hedder", "formulaic-language", "hvad", "du"],
+      masteryTags: ["identity-chunk"]
     },
     {
       id: "doors-match",
@@ -70,7 +74,8 @@ window.PLATA_LESSON_01 = {
         { id: "udgang", left: "Udgang", right: "Exit" }
       ],
       carry: "Carry-forward contrast: indgang / udgang and ind / ud. The root gang (passage) + direction prefix is a pattern you will see everywhere: indgang, udgang, opgang, nedgang.",
-      tags: ["signage", "indgang", "udgang", "contrast-pair", "ind", "ud", "gang"]
+      tags: ["signage", "indgang", "udgang", "contrast-pair", "ind", "ud", "gang"],
+      masteryTags: ["signage-direction"]
     },
     {
       id: "tak-chain",
@@ -92,7 +97,8 @@ window.PLATA_LESSON_01 = {
         { id: "nej", label: "Nej", detail: "no", correct: false, feedback: "That would reject the help. The scene needs acknowledgement, not refusal." }
       ],
       carry: "Carry-forward word: tak. Also her, er, adressen — the framework for 'here is [thing]' returns when you check in. Tak loops back immediately as Selv tak in the next scene.",
-      tags: ["courtesy", "tak", "social-language", "her", "er", "adressen"]
+      tags: ["courtesy", "tak", "social-language", "her", "er", "adressen"],
+      masteryTags: ["courtesy-loop"]
     },
     {
       id: "selv-tak",
@@ -114,7 +120,8 @@ window.PLATA_LESSON_01 = {
         { id: "reservation", label: "Reservation", detail: "reservation", correct: false, feedback: "Useful at the hostel. Too early in the script." }
       ],
       carry: "Carry-forward phrase: selv tak. The words fordi, prøver, på, dansk appear in Lene's line — they are the anatomy of praise you will hear again. Udgang and reservation are distractors (not learning targets).",
-      tags: ["courtesy", "selv-tak", "chunk", "fordi", "prøver", "dansk", "på"]
+      tags: ["courtesy", "selv-tak", "chunk", "fordi", "prøver", "dansk", "på"],
+      masteryTags: ["courtesy-loop"]
     },
     {
       id: "roommate-payoff",
@@ -134,7 +141,76 @@ window.PLATA_LESSON_01 = {
       success: "You did not learn a list. You carried a sentence through the city and used it when it mattered.",
       failure: "Give Anders a name to answer with. Any name works.",
       carry: "Unlocked: greetings (hej), identity (jeg hedder + name), signage compass (indgang/udgang), politeness loop (tak/selv tak), question frame (hvad hedder du?). The words jeg, hedder, hvad, du, Anders, hej are now yours in the wild.",
-      tags: ["greeting", "identity", "payoff", "retrieval", "hej", "jeg", "hedder", "hvad", "du", "Anders"]
+      tags: ["greeting", "identity", "payoff", "retrieval", "hej", "jeg", "hedder", "hvad", "du", "Anders"],
+      masteryTags: ["identity-chunk"]
     }
-  ]
+  ],
+  masteryMap: {
+    "signage-direction": {
+      competencyId: "process-control",
+      label: "Read signage direction",
+      evidence: "The learner can read Indgang/Udgang signs to navigate a Copenhagen station.",
+      remediation: {
+        sceneId: "doors-match",
+        cta: "Review door signs",
+        action: "Rerun the door matching exercise and pay attention to the prefix ind (in) vs ud (out)."
+      },
+      sourceRefs: ["Københavns Hovedbanegård skiltning"]
+    },
+    "identity-chunk": {
+      competencyId: "agency",
+      label: "Introduce yourself",
+      evidence: "The learner can introduce themselves using standard Danish formulaic chunks.",
+      remediation: {
+        sceneId: "meet-lene",
+        cta: "Introduce yourself",
+        action: "Rerun the introduction exercise and use 'Jeg hedder' followed by your name."
+      },
+      sourceRefs: ["Dansk udtale og basisfraser"]
+    },
+    "courtesy-loop": {
+      competencyId: "register-control",
+      label: "Return courtesy serve",
+      evidence: "The learner can close politeness loops with Tak and Selv tak.",
+      remediation: {
+        sceneId: "selv-tak",
+        cta: "Practise selv tak",
+        action: "Rerun the return-serve dialogue and choose the Selv tak response."
+      },
+      sourceRefs: ["Københavnsk høflighedskontekst"]
+    }
+  },
+  simulation: {
+    expectedEndingId: null,
+    paths: [
+      {
+        id: "survives-morning",
+        expectedEndingId: null,
+        expectedCorrect: 6,
+        expectedWeakMastery: [],
+        actions: [
+          { sceneId: "arrival-udgang", optionId: "udgang", expectCorrect: true },
+          { sceneId: "meet-lene", answer: "Jeg hedder Maria", expectCorrect: true },
+          { sceneId: "doors-match", matchAll: true },
+          { sceneId: "tak-chain", optionId: "tak", expectCorrect: true },
+          { sceneId: "selv-tak", optionId: "selv-tak", expectCorrect: true },
+          { sceneId: "roommate-payoff", answer: "Maria", expectCorrect: true }
+        ]
+      },
+      {
+        id: "socially-lost",
+        expectedEndingId: null,
+        expectedCorrect: 3,
+        expectedWeakMastery: ["signage-direction", "courtesy-loop"],
+        actions: [
+          { sceneId: "arrival-udgang", optionId: "indgang", expectCorrect: false },
+          { sceneId: "meet-lene", answer: "Jeg hedder Maria", expectCorrect: true },
+          { sceneId: "doors-match", matchAll: true },
+          { sceneId: "tak-chain", optionId: "hej", expectCorrect: false },
+          { sceneId: "selv-tak", optionId: "udgang", expectCorrect: false },
+          { sceneId: "roommate-payoff", answer: "Maria", expectCorrect: true }
+        ]
+      }
+    ]
+  }
 };

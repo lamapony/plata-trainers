@@ -12,11 +12,15 @@ const competencySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-co
 const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
+const lesson01Source = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-01", "data.js"), "utf8");
+const ordstillingLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-ordstilling", "data.js"), "utf8");
 const homeSource = fs.readFileSync(path.join(repoRoot, "home.js"), "utf8");
 const indexHtml = fs.readFileSync(path.join(repoRoot, "index.html"), "utf8");
 const dynamicLessonSources = {
   "./lessons/lesson-b2-radiator/data.js": radiatorLessonSource,
-  "./lessons/lesson-b2-job-followup/data.js": jobFollowupLessonSource
+  "./lessons/lesson-b2-job-followup/data.js": jobFollowupLessonSource,
+  "./lessons/lesson-01/data.js": lesson01Source,
+  "./lessons/lesson-b2-ordstilling/data.js": ordstillingLessonSource
 };
 
 function assert(condition, message) {
@@ -33,11 +37,28 @@ function makeElement(tagName, selector) {
     href: "",
     children: [],
     parentElement: null,
+    trainerId: "",
     addEventListener() {},
+    setAttribute(name, value) {
+      if (name === "data-trainer-id") this.trainerId = value;
+      if (name === "class") this.className = value;
+    },
+    getAttribute(name) {
+      if (name === "data-trainer-id") return this.trainerId || null;
+      return null;
+    },
     appendChild(child) {
       child.parentElement = this;
       this.children.push(child);
       return child;
+    },
+    removeChild(child) {
+      this.children = this.children.filter(item => item !== child);
+      if (child.parentElement === this) child.parentElement = null;
+      return child;
+    },
+    get firstChild() {
+      return this.children[0] || null;
     },
     insertBefore(child, reference) {
       child.parentElement = this;
@@ -64,34 +85,56 @@ function makeElement(tagName, selector) {
   return element;
 }
 
-function makeTrainerCard(id) {
-  const card = makeElement("article", `[data-trainer-id="${id}"]`);
-  card.trainerId = id;
-  const link = makeElement("a", ".card-link");
-  link.className = "card-link";
-  link.textContent = "Open →";
-  card.appendChild(link);
-  return card;
+function findTrainerCard(root, trainerId, galleryCards) {
+  const fromGallery = galleryCards.find(card => card.trainerId === trainerId);
+  if (fromGallery) return fromGallery;
+  if (!root || !root.children) return null;
+  return root.children.find(child => child.trainerId === trainerId) || null;
 }
 
 function makeContext(initialStorage) {
   const storage = Object.assign({}, initialStorage || {});
+  const galleryCards = [];
+  const narrativeGallery = makeElement("div", "#narrative-gallery");
+  const drillGallery = makeElement("div", "#drill-gallery");
   const ids = {
     "#home-primary-action": makeElement("a", "#home-primary-action"),
     "#home-start-title": makeElement("h2", "#home-start-title"),
     "#home-start-copy": makeElement("p", "#home-start-copy"),
     "#home-start-link": makeElement("a", "#home-start-link"),
     "#home-start-meta": makeElement("p", "#home-start-meta"),
-    "#evaluate": makeElement("section", "#evaluate")
+    "#evaluate": makeElement("section", "#evaluate"),
+    "#narrative-gallery": narrativeGallery,
+    "#drill-gallery": drillGallery,
+    "#your-practice": makeElement("section", "#your-practice"),
+    "#home-headroom": makeElement("div", "#home-headroom")
   };
-  const cards = [
-    "bojning",
-    "ordstilling",
-    "vocab",
-    "lesson-01-arrival",
-    "lesson-b2-radiator-register",
-    "lesson-b2-job-followup"
-  ].map(makeTrainerCard);
+
+  function trackGalleryCard(child) {
+    if (child && child.trainerId) galleryCards.push(child);
+  }
+
+  narrativeGallery.appendChild = function appendChild(child) {
+    trackGalleryCard(child);
+    child.parentElement = this;
+    this.children.push(child);
+    return child;
+  };
+  drillGallery.appendChild = function appendChild(child) {
+    trackGalleryCard(child);
+    child.parentElement = this;
+    this.children.push(child);
+    return child;
+  };
+  function removeGalleryChild(child) {
+    this.children = this.children.filter(item => item !== child);
+    const index = galleryCards.indexOf(child);
+    if (index !== -1) galleryCards.splice(index, 1);
+    if (child.parentElement === this) child.parentElement = null;
+    return child;
+  }
+  narrativeGallery.removeChild = removeGalleryChild;
+  drillGallery.removeChild = removeGalleryChild;
 
   const eventListeners = {};
   const context = {
@@ -108,7 +151,7 @@ function makeContext(initialStorage) {
       querySelector(selector) {
         if (ids[selector]) return ids[selector];
         const match = /^\[data-trainer-id="([^"]+)"\]$/.exec(selector);
-        if (match) return cards.find(card => card.trainerId === match[1]) || null;
+        if (match) return galleryCards.find(card => card.trainerId === match[1]) || null;
         return null;
       },
       querySelectorAll() {
@@ -151,7 +194,7 @@ function makeContext(initialStorage) {
   context.window = context;
   context.globalThis = context;
   vm.createContext(context);
-  return { context, ids, cards, storage, eventListeners };
+  return { context, ids, galleryCards, storage, eventListeners };
 }
 
 function loadKernelAndCatalog(env) {
@@ -240,7 +283,10 @@ async function runEmptyHomeSmoke() {
   env.ids["#evaluate"].scrollIntoViewCalls = [];
   env.eventListeners.hashchange();
   assert(env.ids["#evaluate"].scrollIntoViewCalls.length === 1, "home hashchange listener scrolls to the evaluator path");
-  const lessonCard = env.cards.find(card => card.trainerId === "lesson-01-arrival");
+  assert(env.galleryCards.filter(card => card.parentElement === env.ids["#narrative-gallery"]).length === 4, "home renders four narrative lessons from catalog");
+  assert(env.galleryCards.filter(card => card.parentElement === env.ids["#drill-gallery"]).length === 3, "home renders three drills from catalog");
+  const lessonCard = env.galleryCards.find(card => card.trainerId === "lesson-01-arrival");
+  assert(lessonCard, "home renders narrative gallery cards from catalog");
   assert(/Not started/.test(lessonCard.querySelector(".friendly-progress").innerHTML), "home labels unstarted trainer cards");
 }
 
@@ -253,7 +299,8 @@ async function runProgressHomeSmoke() {
   assert(env.ids["#home-start-title"].textContent === "Continue Vocab SR", "home recommends continuing existing progress");
   assert(env.ids["#home-start-link"].href === "./vocab-sr/", "home continue link points to latest trainer");
   assert(env.ids["#home-primary-action"].textContent === "Continue", "home primary CTA continues the latest drill");
-  const vocabCard = env.cards.find(card => card.trainerId === "vocab");
+  const vocabCard = env.galleryCards.find(card => card.trainerId === "vocab");
+  assert(vocabCard, "home renders drill gallery cards from catalog");
   assert(/Continue:<\/strong> 1 attempt/.test(vocabCard.querySelector(".friendly-progress").innerHTML), "home labels started trainer cards");
   assert(vocabCard.querySelector(".card-link").textContent === "Continue →", "home card CTA changes to continue");
 }
@@ -324,6 +371,10 @@ async function runClosedMasteryHomeSmoke() {
 
 function runHomeMarkupSmoke() {
   assert(indexHtml.includes("id=\"evaluate\""), "home page should expose the evaluator path section");
+  assert(indexHtml.includes("id=\"narrative-gallery\""), "home page should expose catalog-driven narrative gallery container");
+  assert(indexHtml.includes("id=\"drill-gallery\""), "home page should expose catalog-driven drill gallery container");
+  assert(indexHtml.includes("id=\"pwa-status\""), "home page should expose learner-visible PWA status");
+  assert(indexHtml.includes("Narrative lesson gallery"), "home page should keep narrative gallery section copy");
   assert(indexHtml.includes("Evaluate in 60 seconds"), "home hero should link to the evaluator path");
   assert(indexHtml.includes("./dashboard.html?demo=learner"), "home evaluator path should link the demo learner dashboard");
   assert(indexHtml.includes("./proof.html#proof-walkthrough-title"), "home evaluator path should link the proof walkthrough");
@@ -339,6 +390,8 @@ async function run() {
   await runWeakMasteryHomeSmoke();
   await runClosedMasteryHomeSmoke();
 
+  console.log("ok - home page renders catalog-driven lesson gallery");
+  console.log("ok - home page exposes learner-visible PWA status");
   console.log("ok - home page exposes the one-click evaluator path");
   console.log("ok - home launcher recommends a starter path");
   console.log("ok - home launcher continues existing local progress");

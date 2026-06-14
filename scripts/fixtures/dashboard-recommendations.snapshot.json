@@ -71,10 +71,10 @@
             "trainerId": "lesson-01-arrival",
             "signalTag": "",
             "score": 48,
-            "title": "Start Lesson 01: First Morning",
+            "title": "Start Lesson 01: The First Morning",
             "primaryHref": "./lessons/lesson-01/",
             "traceRule": "dashboard.start.preferred-entry",
-            "traceFingerprint": "ptr-tzmodv"
+            "traceFingerprint": "ptr-1mwfxf2"
           }
         },
         {
@@ -87,10 +87,10 @@
             "trainerId": "lesson-b2-radiator-register",
             "signalTag": "",
             "score": 31,
-            "title": "Start B2: Register & Particles",
+            "title": "Start Det afhænger af, hvordan du siger det",
             "primaryHref": "./lessons/lesson-b2-radiator/",
             "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-16ek1pp"
+            "traceFingerprint": "ptr-x76rry"
           }
         },
         {
@@ -103,17 +103,17 @@
             "trainerId": "lesson-b2-job-followup",
             "signalTag": "",
             "score": 30,
-            "title": "Start B2: Job Follow-up",
+            "title": "Start Efter interviews — tone, tak, og tålmodighed",
             "primaryHref": "./lessons/lesson-b2-job-followup/",
             "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-yz0zwi"
+            "traceFingerprint": "ptr-p75zw4"
           }
         }
       ],
       "due": [
         {
           "trainerId": "lesson-01-arrival",
-          "trainerName": "Lesson 01: First Morning",
+          "trainerName": "Lesson 01: The First Morning",
           "index": 3,
           "stats": {
             "total": 0,
@@ -134,7 +134,7 @@
             "signalTag": "",
             "score": 48,
             "badge": "Start path",
-            "title": "Start Lesson 01: First Morning",
+            "title": "Start Lesson 01: The First Morning",
             "primaryLabel": "Start lesson",
             "primaryHref": "./lessons/lesson-01/",
             "meta": "",
@@ -146,7 +146,7 @@
             "signals": [],
             "trace": {
               "rule": "dashboard.start.preferred-entry",
-              "fingerprint": "ptr-tzmodv",
+              "fingerprint": "ptr-1mwfxf2",
               "selected": {
                 "kind": "start",
                 "targetKind": "start",
@@ -169,7 +169,7 @@
                 "trainer": {
                   "id": "lesson-01-arrival",
                   "index": 3,
-                  "name": "Lesson 01: First Morning",
+                  "name": "Lesson 01: The First Morning",
                   "type": "lesson"
                 },
                 "stats": {
@@ -360,7 +360,7 @@
             "targetKind": "start",
             "trainerId": "lesson-01-arrival",
             "signalTag": "",
-            "title": "Start Lesson 01: First Morning",
+            "title": "Start Lesson 01: The First Morning",
             "primaryLabel": "Start lesson",
             "primaryHref": "./lessons/lesson-01/",
             "routedHref": "./lessons/lesson-01/?plan=pjdxbx9&step=s1-jdxbx9",
@@ -380,7 +380,7 @@
             },
             "trace": {
               "rule": "dashboard.start.preferred-entry",
-              "fingerprint": "ptr-tzmodv",
+              "fingerprint": "ptr-1mwfxf2",
               "selected": {
                 "kind": "start",
                 "targetKind": "start",
@@ -403,7 +403,7 @@
                 "trainer": {
                   "id": "lesson-01-arrival",
                   "index": 3,
-                  "name": "Lesson 01: First Morning",
+                  "name": "Lesson 01: The First Morning",
                   "type": "lesson"
                 },
                 "stats": {
@@ -496,10 +496,10 @@
             "trainerId": "lesson-01-arrival",
             "signalTag": "",
             "score": 48,
-            "title": "Start Lesson 01: First Morning",
+            "title": "Start Lesson 01: The First Morning",
             "primaryHref": "./lessons/lesson-01/",
             "traceRule": "dashboard.start.preferred-entry",
-            "traceFingerprint": "ptr-tzmodv"
+            "traceFingerprint": "ptr-1mwfxf2"
           }
         },
         {
@@ -517,7 +517,7 @@
             "title": "Repair Read passive agency",
             "primaryHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive",
             "traceRule": "dashboard.repair.highest-open-mastery",
-            "traceFingerprint": "ptr-dnrzl4"
+            "traceFingerprint": "ptr-12g7flj"
           }
         },
         {
@@ -530,17 +530,17 @@
             "trainerId": "lesson-b2-job-followup",
             "signalTag": "",
             "score": 30,
-            "title": "Start B2: Job Follow-up",
+            "title": "Start Efter interviews — tone, tak, og tålmodighed",
             "primaryHref": "./lessons/lesson-b2-job-followup/",
             "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-yz0zwi"
+            "traceFingerprint": "ptr-p75zw4"
           }
         }
       ],
       "due": [
         {
           "trainerId": "lesson-b2-radiator-register",
-          "trainerName": "B2: Register & Particles",
+          "trainerName": "Det afhænger af, hvordan du siger det",
           "index": 4,
           "stats": {
             "total": 2,
@@ -603,7 +603,7 @@
             ],
             "trace": {
               "rule": "dashboard.repair.highest-open-mastery",
-              "fingerprint": "ptr-dnrzl4",
+              "fingerprint": "ptr-12g7flj",
               "selected": {
                 "kind": "repair",
                 "targetKind": "repair",
@@ -638,7 +638,7 @@
                 "trainer": {
                   "id": "lesson-b2-radiator-register",
                   "index": 4,
-                  "name": "B2: Register & Particles",
+                  "name": "Det afhænger af, hvordan du siger det",
                   "type": "lesson"
                 },
                 "stats": {
@@ -689,7 +689,7 @@
         },
         {
           "trainerId": "lesson-01-arrival",
-          "trainerName": "Lesson 01: First Morning",
+          "trainerName": "Lesson 01: The First Morning",
           "index": 3,
           "stats": {
             "total": 0,
@@ -710,7 +710,7 @@
             "signalTag": "",
             "score": 48,
             "badge": "Start path",
-            "title": "Start Lesson 01: First Morning",
+            "title": "Start Lesson 01: The First Morning",
             "primaryLabel": "Start lesson",
             "primaryHref": "./lessons/lesson-01/",
             "meta": "",
@@ -722,7 +722,7 @@
             "signals": [],
             "trace": {
               "rule": "dashboard.start.preferred-entry",
-              "fingerprint": "ptr-tzmodv",
+              "fingerprint": "ptr-1mwfxf2",
               "selected": {
                 "kind": "start",
                 "targetKind": "start",
@@ -745,7 +745,7 @@
                 "trainer": {
                   "id": "lesson-01-arrival",
                   "index": 3,
-                  "name": "Lesson 01: First Morning",
+                  "name": "Lesson 01: The First Morning",
                   "type": "lesson"
                 },
                 "stats": {
@@ -887,7 +887,7 @@
             },
             "trace": {
               "rule": "dashboard.repair.highest-open-mastery",
-              "fingerprint": "ptr-dnrzl4",
+              "fingerprint": "ptr-12g7flj",
               "selected": {
                 "kind": "repair",
                 "targetKind": "repair",
@@ -922,7 +922,7 @@
                 "trainer": {
                   "id": "lesson-b2-radiator-register",
                   "index": 4,
-                  "name": "B2: Register & Particles",
+                  "name": "Det afhænger af, hvordan du siger det",
                   "type": "lesson"
                 },
                 "stats": {
