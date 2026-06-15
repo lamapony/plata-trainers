@@ -290,7 +290,10 @@ function loadDashboardRuntime(root, options = {}) {
   const env = makeDashboardContext();
   runSource(env, root, "shared/plata-kernel.js");
   if (options.seed) options.seed(env);
-  dashboardSources.filter(relPath => relPath !== "shared/plata-kernel.js").forEach(relPath => runSource(env, root, relPath));
+  dashboardSources.filter(relPath => relPath !== "shared/plata-kernel.js").forEach(relPath => {
+    if (!fs.existsSync(path.join(root, relPath))) return;
+    runSource(env, root, relPath);
+  });
   return env;
 }
 

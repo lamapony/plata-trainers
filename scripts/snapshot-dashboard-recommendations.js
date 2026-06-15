@@ -160,8 +160,13 @@ function runSource(env, root, relPath) {
   vm.runInContext(readRootSource(root, relPath), env.context, { filename: relPath });
 }
 
+function runSourceIfPresent(env, root, relPath) {
+  if (!fs.existsSync(path.join(root, relPath))) return;
+  runSource(env, root, relPath);
+}
+
 function loadAll(env, root) {
-  sources.forEach(relPath => runSource(env, root, relPath));
+  sources.forEach(relPath => runSourceIfPresent(env, root, relPath));
 }
 
 function invoke(env, expression) {
@@ -195,7 +200,7 @@ function buildScenario(root, seed) {
   if (seed === "weak-mastery") {
     runSource(env, root, "shared/plata-kernel.js");
     seedWeakMasteryState(env);
-    sources.filter(relPath => relPath !== "shared/plata-kernel.js").forEach(relPath => runSource(env, root, relPath));
+    sources.filter(relPath => relPath !== "shared/plata-kernel.js").forEach(relPath => runSourceIfPresent(env, root, relPath));
   } else {
     loadAll(env, root);
   }

@@ -248,7 +248,10 @@ function renderDemoReturnTrace(root, demo) {
   const stepRouteId = step && step.routeId || "";
   const search = `?demo=learner&ledger-return=1&plan=${encodeURIComponent(planToken)}&step=${encodeURIComponent(stepRouteId)}`;
   const env = makeDashboardContext(search);
-  dashboardSources.forEach(relPath => runDashboardSource(env, root, relPath));
+  dashboardSources.forEach(relPath => {
+    if (!fs.existsSync(path.join(root, relPath))) return;
+    runDashboardSource(env, root, relPath);
+  });
   const todayText = stripHtml(env.elements["#today-program"].innerHTML);
   const practicePlanHtml = env.elements["#practice-plan"].innerHTML;
   const practicePlanText = stripHtml(env.elements["#practice-plan"].innerHTML);

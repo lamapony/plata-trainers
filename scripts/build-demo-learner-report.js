@@ -193,8 +193,13 @@ function runSource(env, root, relPath) {
   vm.runInContext(readRootSource(root, relPath), env.context, { filename: relPath });
 }
 
+function runSourceIfPresent(env, root, relPath) {
+  if (!fs.existsSync(path.join(root, relPath))) return;
+  runSource(env, root, relPath);
+}
+
 function loadAll(env, root) {
-  sources.forEach(relPath => runSource(env, root, relPath));
+  sources.forEach(relPath => runSourceIfPresent(env, root, relPath));
 }
 
 function invoke(env, expression) {
