@@ -67,8 +67,22 @@ for (const file of htmlFiles) {
   }
 }
 
-for (const required of ["index.html", "404.html", "robots.txt", "sitemap.xml", "site.webmanifest"]) {
-  if (!fs.existsSync(path.join(root, required))) issues.push(`missing ${required}`);
+const required = [
+  "index.html",
+  "404.html",
+  "robots.txt",
+  "sitemap.xml",
+  "site.webmanifest",
+  "sw.js",
+  "assets/icons/icon-192.png",
+  "assets/icons/icon-512.png",
+  "assets/og-plata.png"
+];
+if (process.env.PUBLIC_ROOT) {
+  required.push("precache-manifest.json");
+}
+for (const file of required) {
+  if (!fs.existsSync(path.join(root, file))) issues.push(`missing ${file}`);
 }
 
 if (issues.length) {

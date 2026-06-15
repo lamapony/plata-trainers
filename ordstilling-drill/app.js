@@ -177,10 +177,11 @@
   function checkAnswer() {
     const p = session[sessionPos];
     const correct = selectedIndex === p.correct;
+    const attemptTags = ["ordstilling", p.cat].concat(!correct && p.weakTags ? p.weakTags : []);
     kernel.recordAttempt(state, {
       itemId: itemIdFor(p),
       correct,
-      tags: ["ordstilling", p.cat],
+      tags: attemptTags,
       mode: p.cat,
       expected: p.options[p.correct],
       given: p.options[selectedIndex]

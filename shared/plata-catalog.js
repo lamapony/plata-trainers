@@ -9,53 +9,219 @@
         name: "Bøjning drill",
         type: "drill",
         path: "./bojning-drill/",
-        description: "Verb tenses + noun inflection",
-        icon: "📝"
+        description: "Type verb forms and noun inflections. Includes nutid, datid, førnutid, bestemt/ubestemt, ental/flertal.",
+        icon: "📝",
+        gallery: {
+          tag: "A2 fundamentals",
+          role: "repair",
+          level: "A2",
+          theme: "Form recall",
+          estimatedMinutes: 8,
+          repairs: "verb tenses · noun inflection",
+          repairSignals: [],
+          sequence: 1
+        }
       },
       {
         id: "ordstilling",
         name: "Ordstilling drill",
         type: "drill",
         path: "./ordstilling-drill/",
-        description: "V2, inversion, ledsætninger",
-        icon: "🔀"
+        description: "Multiple-choice practice for V2, inversion, and ledsætninger with short explanations after each answer.",
+        icon: "🔀",
+        gallery: {
+          tag: "Word order",
+          role: "repair",
+          level: "B1",
+          theme: "Word order",
+          estimatedMinutes: 8,
+          repairs: "V2 · inversion · subordinate clauses",
+          repairSignals: [
+            "inversion-fronted-adverbial",
+            "v2-placement",
+            "fordi-derfor-clause",
+            "ordstilling-principle"
+          ],
+          sequence: 2
+        }
+      },
+      {
+        id: "register",
+        name: "Register drill",
+        type: "drill",
+        path: "./register-drill/",
+        description: "Multiple-choice practice for B2 public-service Danish: name the actor, set deadlines, and escalate politely after passive official replies.",
+        icon: "✉️",
+        gallery: {
+          tag: "B2 register",
+          role: "repair",
+          level: "B2",
+          theme: "Public-service Danish",
+          estimatedMinutes: 8,
+          repairs: "passive agency · deadlines · polite escalation",
+          repairSignals: [
+            "passive-agency",
+            "formal-register-control",
+            "understatement-with-agency",
+            "consequence-aware-tone"
+          ],
+          sequence: 3
+        }
       },
       {
         id: "vocab",
         name: "Vocab SR",
         type: "drill",
         path: "./vocab-sr/",
-        description: "DA ↔ RU spaced repetition",
-        icon: "🗂️"
+        description: "Spaced-repetition vocabulary in Danish ↔ Russian, with aliases for common translation variants.",
+        icon: "🗂️",
+        gallery: {
+          tag: "Vocabulary",
+          role: "repair",
+          level: "A2–B2",
+          theme: "Retrieval",
+          estimatedMinutes: 5,
+          repairs: "recognition · recall gaps from scenes",
+          repairSignals: [],
+          sequence: 4
+        }
       },
       {
         id: "lesson-01-arrival",
-        name: "Lesson 01: First Morning",
+        name: "Lesson 01: The First Morning",
         type: "lesson",
         path: "./lessons/lesson-01/",
-        description: "Narrative A0/A1 onboarding",
-        icon: "🌅"
+        lessonGlobal: "PLATA_LESSON_01",
+        lessonDataPath: "./lessons/lesson-01/data.js",
+        description: "Arrive in Copenhagen, meet Lene, read signs, and say your first useful Danish sentence. Exercises are embedded as story actions.",
+        icon: "🌅",
+        gallery: {
+          tag: "Narrative A0/A1",
+          level: "A0/A1",
+          theme: "First arrival",
+          status: "starter",
+          estimatedMinutes: 10,
+          signalFamily: "signage · identity · courtesy",
+          outcomes: [
+            "Read ind/ud signage under arrival pressure",
+            "Introduce yourself with a usable chunk",
+            "Close a courtesy loop with tak / selv tak"
+          ],
+          sequence: 1,
+          featured: false
+        }
       },
       {
         id: "lesson-b2-radiator-register",
-        name: "B2: Register & Particles",
+        name: "Det afhænger af, hvordan du siger det",
         type: "lesson",
         path: "./lessons/lesson-b2-radiator/",
         lessonGlobal: "PLATA_LESSON_B2_RADIATOR",
         lessonDataPath: "./lessons/lesson-b2-radiator/data.js",
-        description: "Complaints, tone, modal particles",
-        icon: "⚖️"
+        description: "You know the words — but do you sound right? Register, modal particles, and social consequences when a repair goes wrong.",
+        icon: "⚖️",
+        gallery: {
+          tag: "Narrative B2 · Register",
+          level: "B2",
+          theme: "Register & tone",
+          status: "gold",
+          estimatedMinutes: 14,
+          signalFamily: "passive agency · particles · register",
+          outcomes: [
+            "Spot passive promises that hide who acts",
+            "Read modal particles as social stance",
+            "Transfer tone across email, chat, and workplace"
+          ],
+          sequence: 2,
+          featured: false
+        }
       },
       {
         id: "lesson-b2-job-followup",
-        name: "B2: Job Follow-up",
+        name: "Efter interviews — tone, tak, og tålmodighed",
         type: "lesson",
         path: "./lessons/lesson-b2-job-followup/",
         lessonGlobal: "PLATA_LESSON_B2_JOB_FOLLOWUP",
         lessonDataPath: "./lessons/lesson-b2-job-followup/data.js",
-        description: "Post-interview email, LinkedIn, professional tone",
-        icon: "💼"
+        description: "Nailed the interview. Now the silence starts. Post-interview follow-up, LinkedIn tone, and sounding like a future colleague.",
+        icon: "💼",
+        gallery: {
+          tag: "Narrative B2 · Professional",
+          level: "B2",
+          theme: "Professional follow-up",
+          status: "gold",
+          estimatedMinutes: 15,
+          signalFamily: "timing · formal warmth · platform register",
+          outcomes: [
+            "Follow up after silence without sounding desperate",
+            "Shift register between email and LinkedIn",
+            "Keep agency while sounding patient"
+          ],
+          sequence: 3,
+          featured: true
+        }
+      },
+      {
+        id: "lesson-b2-ordstilling",
+        name: "Hvem gør hvad — ordstilling i praksis",
+        type: "lesson",
+        path: "./lessons/lesson-b2-ordstilling/",
+        lessonGlobal: "PLATA_LESSON_B2_ORDSTILLING",
+        lessonDataPath: "./lessons/lesson-b2-ordstilling/data.js",
+        description: "Learn Danish word order through a conference narrative: V2, inversion after fronted adverbials, and the difference between fordi and derfor clause structure.",
+        icon: "🔀",
+        gallery: {
+          tag: "Narrative B1/B2 · Word order",
+          level: "B1/B2",
+          theme: "Ordstilling in context",
+          status: "gold",
+          estimatedMinutes: 14,
+          signalFamily: "V2 · inversion · clause structure",
+          outcomes: [
+            "Apply inversion after fronted time and place adverbials",
+            "Distinguish fordi + subordinate clause from derfor + inversion",
+            "Transfer correct word order across email, chat, and spoken Danish"
+          ],
+          sequence: 4,
+          featured: false
+        }
       }
-    ]
+    ],
+    drillForSignal: function (signalTag) {
+      if (!signalTag) return null;
+      for (var i = 0; i < this.trainers.length; i++) {
+        var trainer = this.trainers[i];
+        if (trainer.type !== "drill") continue;
+        var signals = trainer.gallery && trainer.gallery.repairSignals;
+        if (Array.isArray(signals) && signals.indexOf(signalTag) !== -1) return trainer;
+      }
+      return null;
+    },
+    drillRepairLink: function (drill, signalTag, sourceTrainerId) {
+      if (!drill || !drill.path) return "";
+      var href = drill.path;
+      var params = [];
+      if (signalTag) params.push("signal=" + encodeURIComponent(signalTag));
+      if (sourceTrainerId) params.push("from=" + encodeURIComponent(sourceTrainerId));
+      if (!params.length) return href;
+      var joiner = href.indexOf("?") === -1 ? "?" : "&";
+      return href + joiner + params.join("&");
+    },
+    drillRemediation: function (signalTag, sourceTrainerId) {
+      var drill = this.drillForSignal(signalTag);
+      if (!drill) return null;
+      var repairs = drill.gallery && drill.gallery.repairs ? drill.gallery.repairs : "";
+      return {
+        kind: "drill",
+        cta: "Run " + drill.name,
+        action: repairs
+          ? "You missed this in a story. Repair the reflex with a short drill: " + repairs + "."
+          : "You missed this in a story. A short drill session repairs the reflex faster than rereading the scene.",
+        href: this.drillRepairLink(drill, signalTag, sourceTrainerId),
+        trainerIcon: drill.icon,
+        trainerName: drill.name,
+        drillId: drill.id
+      };
+    }
   };
 })(typeof window !== "undefined" ? window : globalThis);

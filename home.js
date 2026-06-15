@@ -96,7 +96,8 @@
     if (!spec || !spec.refs || spec.refs.length === 0) return null;
     var ref = spec.refs.find(function (item) { return trainer && item.trainerId === trainer.id; }) || spec.refs[0];
     if (!ref.remediation) return null;
-    return {
+    var sceneRepair = {
+      kind: "scene",
       cta: ref.remediation.cta || "Review scene",
       action: ref.remediation.action || "",
       sceneId: ref.remediation.sceneId || "",
@@ -104,6 +105,12 @@
       trainerName: ref.trainerName,
       trainerIcon: ref.trainerIcon
     };
+    var catalog = window.PlataCatalog;
+    var drillRepair = catalog && catalog.drillRemediation
+      ? catalog.drillRemediation(spec.tag, trainer && trainer.id)
+      : null;
+    if (!drillRepair) return sceneRepair;
+    return Object.assign({}, sceneRepair, { drillRepair: drillRepair });
   }
 
   function isMasteryTag(tag) {
@@ -313,6 +320,109 @@
     if (meta) meta.textContent = recommendation.meta;
   }
 
+  function renderHeadroomSnapshot(stats, recommendation) {
+    var section = $("#your-practice");
+    var container = $("#home-headroom");
+    var layer = window.PlataHeadroom;
+    if (!section || !container || !layer || !layer.compressHomeRecommendation || !layer.renderCard) return;
+    var hasProgress = stats.some(function (item) { return item.hasProgress; });
+    if (!hasProgress) {
+      section.hidden = true;
+      container.innerHTML = "";
+      return;
+    }
+    var rec = Object.assign({}, recommendation, { kind: recommendation.kind || recommendation.mode });
+    section.hidden = false;
+    container.innerHTML = layer.renderCard(layer.compressHomeRecommendation(rec), { extraClass: "home-headroom" });
+  }
+
+  function galleryMetaLine(trainer) {
+    var g = trainer.gallery || {};
+    var parts = [];
+    if (g.estimatedMinutes) parts.push(g.estimatedMinutes + " min");
+    if (trainer.type === "lesson" && g.signalFamily) parts.push(g.signalFamily);
+    if (trainer.type === "drill" && g.repairs) parts.push(g.repairs);
+    return parts.join(" · ");
+  }
+
+  function galleryOpenLabel(trainer) {
+    if (trainer.type === "lesson") return "Open lesson →";
+    return "Open drill →";
+  }
+
+  function buildGalleryCard(trainer) {
+    var g = trainer.gallery || {};
+    var article = document.createElement("article");
+    article.className = "trainer-card gallery-card";
+    article.setAttribute("data-trainer-id", trainer.id);
+
+    var tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = g.tag || (trainer.type === "lesson" ? "Narrative lesson" : "Drill");
+    article.appendChild(tag);
+
+    if (g.status) {
+      var status = document.createElement("span");
+      status.className = "gallery-status gallery-status-" + g.status;
+      status.textContent = g.status;
+      article.appendChild(status);
+    }
+
+    var title = document.createElement("h3");
+    title.textContent = trainer.name;
+    article.appendChild(title);
+
+    var metaLine = galleryMetaLine(trainer);
+    if (metaLine) {
+      var meta = document.createElement("p");
+      meta.className = "gallery-meta";
+      meta.textContent = metaLine;
+      article.appendChild(meta);
+    }
+
+    var copy = document.createElement("p");
+    copy.textContent = trainer.description;
+    article.appendChild(copy);
+
+    if (Array.isArray(g.outcomes) && g.outcomes.length) {
+      var list = document.createElement("ul");
+      list.className = "gallery-outcomes";
+      g.outcomes.slice(0, 3).forEach(function (outcome) {
+        var item = document.createElement("li");
+        item.textContent = outcome;
+        list.appendChild(item);
+      });
+      article.appendChild(list);
+    }
+
+    var link = document.createElement("a");
+    link.className = "card-link";
+    link.href = trainer.path;
+    link.textContent = galleryOpenLabel(trainer);
+    article.appendChild(link);
+
+    return article;
+  }
+
+  function renderGallerySection(containerSelector, filterFn) {
+    var container = $(containerSelector);
+    if (!container) return;
+    while (container.firstChild) container.removeChild(container.firstChild);
+    trainers()
+      .filter(filterFn)
+      .sort(function (a, b) {
+        return ((a.gallery && a.gallery.sequence) || 99) - ((b.gallery && b.gallery.sequence) || 99);
+      })
+      .forEach(function (trainer) {
+        container.appendChild(buildGalleryCard(trainer));
+      });
+  }
+
+  function renderGalleries() {
+    renderGallerySection("#narrative-gallery", function (trainer) { return trainer.type === "lesson"; });
+    renderGallerySection("#drill-gallery", function (trainer) { return trainer.type === "drill"; });
+  }
+
   function renderTrainerProgress(stats) {
     stats.forEach(function (item) {
       var card = document.querySelector("[data-trainer-id=\"" + item.trainer.id + "\"]");
@@ -366,7 +476,10 @@
   function init() {
     masteryCatalogCache = null;
     var stats = trainers().map(function (trainer, index) { return trainerStats(trainer, index); });
-    renderStartCard(chooseRecommendation(stats));
+    var recommendation = chooseRecommendation(stats);
+    renderStartCard(recommendation);
+    renderHeadroomSnapshot(stats, recommendation);
+    renderGalleries();
     renderTrainerProgress(stats);
     restoreHashScroll();
   }
@@ -395,6 +508,7 @@
 
   window.PlataHome = {
     chooseRecommendation: chooseRecommendation,
-    trainerStats: trainerStats
+    trainerStats: trainerStats,
+    renderGalleries: renderGalleries
   };
 })();

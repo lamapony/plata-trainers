@@ -128,8 +128,11 @@ jobs:
           test -f robots.txt
           test -f sitemap.xml
           test -f site.webmanifest
+          test -f sw.js
+          test -f shared/plata-pwa.js
           test -f bojning-drill/index.html
           test -f ordstilling-drill/index.html
+          test -f register-drill/index.html
           test -f vocab-sr/index.html
           test -f lessons/lesson-01/index.html
           test -f lessons/lesson-b2-radiator/index.html

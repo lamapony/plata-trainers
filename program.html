@@ -3,8 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Program · Platå</title>
-  <meta name="description" content="User-facing map of Platå Trainers capabilities, checks, reports, and open-source proof surface." />
+  <title>Program · Platå — Break your Danish plateau</title>
+  <meta name="description" content="Learner path A2→B2 plus proof-backed map of Platå capabilities, checks, and open-source reports." />
+  <meta property="og:title" content="Platå program · Break your Danish plateau" />
+  <meta property="og:description" content="Where to start on the plateau, what ships today, and which checks keep each claim honest." />
+  <meta property="og:image" content="https://lamapony.github.io/plata-trainers/assets/og-plata.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="manifest" href="./site.webmanifest" />
+  <link rel="icon" href="./assets/icons/icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -33,6 +40,7 @@
           <div class="hero-actions">
             <a class="btn primary" href="./dashboard.html">Open dashboard</a>
             <a class="btn" href="./dashboard.html?demo=learner">View demo learner</a>
+            <a class="btn" href="./proof.html#proof-walkthrough">Reviewer walkthrough</a>
             <a class="btn" href="./proof.html">Open proof page</a>
             <a id="program-json-link" class="btn" href="#" aria-disabled="true">Open JSON map</a>
           </div>
@@ -44,6 +52,40 @@
         </aside>
       </section>
     </header>
+
+    <section class="section" id="learner-path" aria-labelledby="learner-path-title">
+      <div class="section-head">
+        <p class="eyebrow">Learner path</p>
+        <h2 id="learner-path-title">A2 → B2 on the plateau</h2>
+        <p class="lead">Platå is not a zero-to-hero course. Pick the module that matches where you freeze.</p>
+      </div>
+      <div class="quick-start-grid">
+        <article class="path-card">
+          <span class="tag">M0 · First visit</span>
+          <h3>Learn how Platå works</h3>
+          <p>One narrative lesson shows choices, feedback, and local progress. Use this once, then move to your real bottleneck.</p>
+          <a class="card-link" href="./lessons/lesson-01/">Start Lesson 01 →</a>
+        </article>
+        <article class="path-card">
+          <span class="tag">M1 · Automatic forms</span>
+          <h3>Forms should be reflexes</h3>
+          <p>When bøjning or word order is the blocker, use short drills until recall is fast enough for real speech.</p>
+          <a class="card-link" href="./bojning-drill/">Open bøjning drill →</a>
+        </article>
+        <article class="path-card">
+          <span class="tag">M2 · Vocabulary</span>
+          <h3>Words you almost have</h3>
+          <p>Spaced repetition for high-frequency gaps. Pairs with drills when you recognize words but cannot retrieve them in time.</p>
+          <a class="card-link" href="./vocab-sr/">Open vocab SR →</a>
+        </article>
+        <article class="path-card">
+          <span class="tag">M3 · Real-life B2</span>
+          <h3>Tone and social cost</h3>
+          <p>Gold lessons when grammar is fine but you sound wrong: workplace follow-up, register, particles, consequences.</p>
+          <a class="card-link" href="./lessons/lesson-b2-job-followup/">Try job follow-up lesson →</a>
+        </article>
+      </div>
+    </section>
 
     <section class="section" aria-labelledby="program-pillars-title">
       <div class="section-head">
@@ -65,7 +107,7 @@
       <div>
         <p class="eyebrow">Open-source proof</p>
         <h2 id="program-proof-title">Trust comes from generated checks.</h2>
-        <p class="program-copy">The public page is backed by <code>reports/capabilities.json</code>. If a capability loses its gate, source file, report, or documentation, the map fails before Pages deploys.</p>
+        <p class="program-copy">The public page is backed by <code>reports/capabilities.json</code>. If a capability loses its gate, source file, report, or documentation, the map fails before Pages deploys. <a href="./proof.html#proof-walkthrough">Follow the 60-second reviewer walkthrough</a> to see demo learner → Today → receipt → gates without opening <code>.dist</code> manually.</p>
       </div>
       <div class="program-proof-panel">
         <div id="program-guarantees" class="program-guarantees"></div>
@@ -79,5 +121,6 @@
   </main>
 
   <script src="./program.js"></script>
+  <script src="./shared/plata-pwa.js"></script>
 </body>
 </html>

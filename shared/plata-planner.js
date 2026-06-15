@@ -451,6 +451,10 @@
       var href = sceneHref("", repair.sceneId || "", weak.tag).replace(/^\?/, "?");
       var competency = weak.competency || null;
       var repairScore = weakScore(weak);
+      var catalog = root.PlataCatalog;
+      var drillRepair = catalog && catalog.drillRemediation
+        ? catalog.drillRemediation(weak.tag, lessonData.id || "")
+        : null;
       return withTrace({
         kind: "repair",
         targetKind: "repair",
@@ -462,11 +466,15 @@
         copy: "You missed " + (weak.spec.label || weak.tag) + ". Replay the source scene while that signal is still fresh.",
         primaryLabel: repair.cta || "Open repair scene",
         primaryHref: href,
-        secondaryLabel: "Open dashboard",
-        secondaryHref: dashboardHref,
+        secondaryLabel: drillRepair ? drillRepair.cta : "Open dashboard",
+        secondaryHref: drillRepair ? drillRepair.href : dashboardHref,
         meta: repair.action || "",
         competency: competency,
-        reasons: (competency ? ["Root competency: " + competency.label] : []).concat(["Weak mastery signal: " + (weak.spec.label || weak.tag)])
+        drillRepair: drillRepair,
+        reasons: (competency ? ["Root competency: " + competency.label] : []).concat(
+          ["Weak mastery signal: " + (weak.spec.label || weak.tag)],
+          drillRepair ? ["Drill repair available for reflex practice"] : []
+        )
       }, {
         source: "lessonDecision",
         rule: "lesson.repair.weak-mastery",
@@ -648,6 +656,10 @@
       });
       if (memoryFacts.length) repairTraceInputs.memoryFactCount = memoryFacts.length;
       if (repairMemoryFacts.length) repairTraceInputs.selectedMemoryFacts = repairMemoryFacts;
+      var catalog = root.PlataCatalog;
+      var drillRepair = catalog && catalog.drillRemediation
+        ? catalog.drillRemediation(topMastery.tag, trainer.id || "")
+        : null;
       return withTrace({
         kind: "repair",
         targetKind: "repair",
@@ -659,12 +671,19 @@
         copy: topMastery.evidence || "A gold lesson mastery signal is currently weak.",
         primaryLabel: "Open repair scene",
         primaryHref: topMastery.remediation.href,
+        secondaryLabel: drillRepair ? drillRepair.cta : "",
+        secondaryHref: drillRepair ? drillRepair.href : "",
         meta: topMastery.remediation.action || "",
         signals: [topMastery],
         competency: repairCompetency,
         repair: topMastery.remediation,
+        drillRepair: drillRepair,
         memoryFacts: repairMemoryFacts,
-        reasons: (repairCompetency ? ["Root competency: " + repairCompetency.label] : []).concat(["Highest weak mastery signal"], repairMemory.reasons)
+        reasons: (repairCompetency ? ["Root competency: " + repairCompetency.label] : []).concat(
+          ["Highest weak mastery signal"],
+          drillRepair ? ["Drill repair available for reflex practice"] : [],
+          repairMemory.reasons
+        )
       }, {
         source: "dashboardDecision",
         rule: "dashboard.repair.highest-open-mastery",

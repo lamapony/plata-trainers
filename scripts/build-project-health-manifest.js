@@ -68,6 +68,7 @@ const requiredGates = [
   { id: "check:planner-mutations", category: "mutation", contract: "Bad mastery/remediation planner contracts fail CI." },
   { id: "check:catalog", category: "catalog", contract: "Trainer registry and gold lesson data paths resolve." },
   { id: "check:home", category: "runtime", contract: "Home launcher routes starter, continue, repair, and active-plan flows." },
+  { id: "check:headroom", category: "runtime", contract: "PlataHeadroom compresses mastery, competency, trainer, and dashboard payloads into plain-language learner copy without leaking raw answers." },
   { id: "check:evaluator-path", category: "runtime", contract: "Home evaluator path connects the first-visit CTA to the read-only demo learner and proof-backed guided session route." },
   { id: "check:evaluator-journey", category: "runtime", contract: "Deterministic evaluator journey proves the public demo-to-proof-to-guided-return path as an acceptance trace." },
   { id: "check:lesson-engine", category: "runtime", contract: "Gold simulation paths replay through the real lesson engine." },
@@ -84,6 +85,8 @@ const requiredGates = [
   { id: "check:data", category: "content", contract: "Drill data has valid item shapes and coverage." },
   { id: "check:static", category: "static", contract: "Static HTML files satisfy no-dependency page QA." },
   { id: "check:lessons", category: "schema", contract: "Narrative lesson data satisfies the lesson schema." },
+  { id: "check:exercise-schema", category: "schema", contract: "Rendering-independent exercise specs validate, normalize, grade answers, and bridge to kernel attempts." },
+  { id: "check:exercise-generator", category: "authoring", contract: "Exercise variant generator validates templates and emits validator-clean spec batches for agent workflows." },
   { id: "check:exercise-audit", category: "content", contract: "Lesson exercises avoid contradictory completion gates, duplicate answers, and known Danish editorial slips." },
   { id: "check:exercise-value-report", category: "report", contract: "Flagship exercises prove consequence, grammatical near-miss, repair ladder, channel transfer, memory recurrence, and explain-your-choice evidence." },
   { id: "check:gold-lessons", category: "simulation", contract: "Gold lesson simulations cover paths, endings, attempts, and weak signals." },
@@ -104,6 +107,7 @@ const requiredGates = [
   { id: "check:health", category: "report", contract: "Project health manifest links gates, reports, workflows, and fixtures." },
   { id: "check:public-runtime", category: "runtime", contract: "Built Pages artifact serves over local HTTP and renders home, proof, program, evaluator, and report links without external dependencies." },
   { id: "check:public-runtime-mutations", category: "mutation", contract: "Public runtime mutation tests prove broken evaluator, read-only demo, report-link, and responsive contracts fail CI." },
+  { id: "check:pwa", category: "runtime", contract: "PWA manifest, icons, service worker, precache manifest, and registration helper stay installable." },
   { id: "check:pages", category: "publish", contract: "Pages artifact builds and public files pass static QA." }
 ];
 

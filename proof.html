@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Proof / Health · Platå</title>
   <meta name="description" content="Public proof and health surface for Platå Trainers: generated reports, QA gates, demo learner, and PR review fixtures." />
+  <link rel="manifest" href="./site.webmanifest" />
+  <link rel="icon" href="./assets/icons/icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -29,8 +32,11 @@
         <div>
           <p class="eyebrow">Public project health</p>
           <h1>Proof / Health</h1>
-          <p class="lead">A readable surface over the generated reports: demo learner, capability map, project health, and the golden PR review fixture.</p>
+          <p class="lead">Follow one learner from demo profile to outcome receipt in about 60 seconds. JSON reports below hold the full contract for contributors.</p>
           <div class="hero-actions">
+            <a class="btn primary" href="#proof-walkthrough">Follow reviewer path</a>
+            <a class="btn" href="./dashboard.html?demo=learner">Open demo learner</a>
+            <a class="btn" href="./quality.html">Quality report</a>
             <a id="proof-digest-link" class="btn primary" href="#" aria-disabled="true">Proof digest JSON</a>
             <a id="proof-health-link" class="btn" href="#" aria-disabled="true">Project health JSON</a>
             <a id="proof-capabilities-link" class="btn" href="#" aria-disabled="true">Capability map JSON</a>
@@ -49,6 +55,8 @@
         </aside>
       </section>
     </header>
+
+    <section class="learner-headroom-bar proof-headroom-bar" id="proof-headroom" hidden aria-label="Proof in plain language"></section>
 
     <section class="section" aria-labelledby="proof-digest-title">
       <div class="section-head">
@@ -128,6 +136,8 @@
     </footer>
   </main>
 
+  <script src="./shared/plata-headroom.js"></script>
   <script src="./proof.js"></script>
+  <script src="./shared/plata-pwa.js"></script>
 </body>
 </html>

@@ -83,7 +83,8 @@ function remediationFor(spec, trainer) {
   if (!spec || !spec.refs || spec.refs.length === 0) return null;
   const ref = spec.refs.find(item => trainer && item.trainerId === trainer.id) || spec.refs[0];
   if (!ref.remediation) return null;
-  return {
+  const sceneRepair = {
+    kind: "scene",
     cta: ref.remediation.cta || "Review scene",
     action: ref.remediation.action || "",
     sceneId: ref.remediation.sceneId || "",
@@ -91,6 +92,12 @@ function remediationFor(spec, trainer) {
     trainerName: ref.trainerName,
     trainerIcon: ref.trainerIcon
   };
+  const catalog = window.PlataCatalog;
+  const drillRepair = catalog && catalog.drillRemediation
+    ? catalog.drillRemediation(spec.tag, trainer && trainer.id)
+    : null;
+  if (!drillRepair) return sceneRepair;
+  return Object.assign({}, sceneRepair, { drillRepair });
 }
 
 function isMasteryTag(tag) {
@@ -166,6 +173,72 @@ function countLabel(count, singular, plural) {
 
 function missTryText(misses, tries) {
   return `${countLabel(misses, "miss", "misses")} / ${countLabel(tries, "try", "tries")}`;
+}
+
+function headroom() {
+  return window.PlataHeadroom || null;
+}
+
+function repairBlockHtml(repair) {
+  if (!repair) return "";
+  const isDrill = repair.kind === "drill";
+  return `
+          <div class="repair-block ${isDrill ? "repair-block-drill" : ""}">
+            <span class="eyebrow">${isDrill ? "Drill repair" : "Scene repair"}</span>
+            <strong>${escapeHtml(repair.cta)}</strong>
+            <p>${escapeHtml(repair.action)}</p>
+            <a href="${escapeHtml(repair.href)}">${escapeHtml(repair.trainerIcon || "")} ${isDrill ? "Open drill →" : "Open scene →"}</a>
+          </div>
+        `;
+}
+
+function headroomCard(interp, options) {
+  const layer = headroom();
+  if (!layer || !layer.renderCard) return "";
+  return layer.renderCard(interp, options || {});
+}
+
+function aggregateMasterySignals() {
+  const signalMap = new Map();
+  trainers().forEach(trainer => {
+    const state = loadTrainerState(trainer.id);
+    const stats = computeStats(state, trainer);
+    if (!stats) return;
+    stats.weakMastery.forEach(signal => {
+      if (!signalMap.has(signal.tag)) {
+        signalMap.set(signal.tag, {
+          tag: signal.tag,
+          label: signal.label,
+          evidence: signal.evidence,
+          total: 0,
+          correct: 0,
+          wrong: 0,
+          score: 0,
+          trainers: [],
+          remediations: []
+        });
+      }
+      const entry = signalMap.get(signal.tag);
+      entry.total += signal.total;
+      entry.correct += signal.correct;
+      entry.wrong += signal.wrong;
+      entry.score = entry.wrong / Math.max(1, entry.total);
+      entry.trainers.push({ id: trainer.id, name: trainer.name, icon: trainer.icon });
+      if (signal.remediation) {
+        const sceneRepair = Object.assign({ kind: "scene" }, signal.remediation);
+        delete sceneRepair.drillRepair;
+        if (!entry.remediations.some(item => item.href === sceneRepair.href)) {
+          entry.remediations.push(sceneRepair);
+        }
+        const drillRepair = signal.remediation.drillRepair;
+        if (drillRepair && !entry.remediations.some(item => item.href === drillRepair.href)) {
+          entry.remediations.push(drillRepair);
+        }
+      }
+    });
+  });
+  return Array.from(signalMap.values())
+    .sort((a, b) => b.score - a.score || b.wrong - a.wrong || b.total - a.total);
 }
 
 function getStreakLabel(streak) {
@@ -846,50 +919,62 @@ function renderTodayProgram(candidates, context) {
     citedFacts.length ? "Cited memory" : "Local progress"
   ].concat(program.tags || []).filter(Boolean);
 
+  const layer = headroom();
+  const todayInterp = layer && layer.compressTodayProgram
+    ? layer.compressTodayProgram({ program, step, actionHref, companion, visibleFacts, progress, guardrailLabels, citedFacts })
+    : null;
+  const todayHeadroomHtml = todayInterp ? headroomCard(todayInterp, { extraClass: "today-headroom" }) : "";
+  const todayFactsHtml = `
+    ${todayMetricHtml("program state", program.kind)}
+    ${todayMetricHtml("visible memory facts", visibleFacts.length)}
+    ${todayMetricHtml("open step", step ? step.number : "done")}
+    ${todayMetricHtml("plan steps", plan.steps.length)}
+    ${companion && companion.confidence ? todayMetricHtml("confidence", companion.confidence) : ""}
+  `;
+  const evidenceTagsHtml = Array.from(new Set(guardrailLabels)).map(label => `<span>${escapeHtml(label)}</span>`).join("")
+    + (companion && companion.fingerprint ? `<span>${escapeHtml(companion.fingerprint)}</span>` : "");
+  const citationsHtml = citedFacts.length
+    ? `<div class="today-citations" aria-label="Cited companion memory">
+        <span class="eyebrow">Cited memory</span>
+        <div>${citedFacts.slice(0, 4).map(todayFactHtml).join("")}</div>
+      </div>`
+    : "";
+
   container.innerHTML = `
     <article class="today-program-card ${escapeHtml(program.kind)}">
-      <div class="today-main">
-        <div>
-          <p class="eyebrow">${escapeHtml(program.eyebrow)}</p>
-          <h3>${escapeHtml(program.headline)}</h3>
-          <p>${escapeHtml(program.message)}</p>
-          ${step && actionHref ? `
-            <div class="today-action">
-              <a class="btn primary" href="${escapeHtml(actionHref)}">${escapeHtml(program.actionLabel)}</a>
-              <span>${escapeHtml(program.routeMeta)}</span>
-            </div>
-          ` : ""}
-        </div>
-        <div class="today-progress" aria-label="${progress}% complete">
-          <strong>${progress}%</strong>
-          <span>route complete</span>
+      <div class="today-hero">
+        <p class="eyebrow">${escapeHtml(program.eyebrow)}</p>
+        <h3>${escapeHtml(program.headline)}</h3>
+        <p class="today-message">${escapeHtml(program.message)}</p>
+        ${todayHeadroomHtml}
+        ${step && actionHref ? `
+          <div class="today-action">
+            <a class="btn primary" href="${escapeHtml(actionHref)}">${escapeHtml(program.actionLabel)}</a>
+            <span class="today-route-meta">${escapeHtml(program.routeMeta)}</span>
+          </div>
+          <p class="today-outcome">${escapeHtml(program.why)}</p>
+        ` : `<p class="today-outcome">${escapeHtml(program.why)}</p>`}
+        <div class="today-progress-inline" aria-label="${progress}% complete">
+          <span><strong>${progress}%</strong> route complete</span>
           <div><span style="width: ${progress}%"></span></div>
         </div>
       </div>
-      <div class="today-context">
-        <div class="today-why">
-          <span class="eyebrow">Why this</span>
-          <p>${escapeHtml(program.why)}</p>
-          <div class="today-tags">
-            ${Array.from(new Set(guardrailLabels)).map(label => `<span>${escapeHtml(label)}</span>`).join("")}
-            ${companion && companion.fingerprint ? `<span>${escapeHtml(companion.fingerprint)}</span>` : ""}
+      <details class="headroom-appendix today-evidence-appendix">
+        <summary>Route evidence and citations</summary>
+        <div class="today-context">
+          <div class="today-why">
+            <span class="eyebrow">Why this</span>
+            <p>${escapeHtml(program.why)}</p>
+            <div class="today-tags">${evidenceTagsHtml}</div>
+          </div>
+          <div class="today-facts-panel">
+            <span class="eyebrow">Session metrics</span>
+            <div class="today-facts">${todayFactsHtml}</div>
           </div>
         </div>
-        <div class="today-facts">
-          ${todayMetricHtml("program state", program.kind)}
-          ${todayMetricHtml("visible memory facts", visibleFacts.length)}
-          ${todayMetricHtml("open step", step ? step.number : "done")}
-          ${todayMetricHtml("plan steps", plan.steps.length)}
-          ${companion && companion.confidence ? todayMetricHtml("confidence", companion.confidence) : ""}
-        </div>
-      </div>
+        ${citationsHtml}
+      </details>
       ${todayStageStripHtml(program.kind)}
-      ${citedFacts.length ? `
-        <div class="today-citations" aria-label="Cited companion memory">
-          <span class="eyebrow">Cited memory</span>
-          <div>${citedFacts.slice(0, 4).map(todayFactHtml).join("")}</div>
-        </div>
-      ` : ""}
     </article>
   `;
 }
@@ -988,7 +1073,9 @@ function guidedOutcomeLedgerHtml(ledger) {
   `;
 }
 
-function guidedSessionPanelHtml(session, outcomeLedger) {
+function guidedSessionPanelHtml(session, outcomeLedger, options) {
+  options = options || {};
+  const companionMode = Boolean(options.companionMode);
   if (!session) return '<p class="narrative">Start any trainer to build a guided session.</p>';
   const goal = session.goal || {};
   const route = session.route || {};
@@ -1002,24 +1089,31 @@ function guidedSessionPanelHtml(session, outcomeLedger) {
   ].filter(Boolean);
   const validation = session.validation || {};
   return `
-    <article class="guided-session-card ${escapeHtml(session.status || "ready")} ${escapeHtml(goal.kind || "continue")}">
+    <article class="guided-session-card ${escapeHtml(session.status || "ready")} ${escapeHtml(goal.kind || "continue")}${companionMode ? " guided-session-companion" : ""}">
       <div class="guided-session-head">
         <div>
-          <p class="eyebrow">Guided session</p>
+          <p class="eyebrow">${companionMode ? "Walkthrough" : "Guided session"}</p>
           <h3>${escapeHtml(goal.title || "Focused session")}</h3>
           <p>${escapeHtml(goal.reason || "The route comes from local practice evidence.")}</p>
-          ${route.href ? `
+          ${route.href ? (
+            companionMode
+              ? `<p class="guided-session-same-step">Same step as <strong>Today</strong> above — open it when you want the full walkthrough.</p>`
+              : `
             <div class="guided-session-action">
               <a class="btn primary" href="${escapeHtml(route.href)}">${escapeHtml(route.label || "Start session")}</a>
               <span>${escapeHtml([route.trainerId, route.stepRouteId].filter(Boolean).join(" · "))}</span>
             </div>
-          ` : ""}
+          `
+          ) : ""}
         </div>
-        <div class="guided-session-receipt">
-          <span>${escapeHtml(session.fingerprint || "")}</span>
-          <strong>${escapeHtml(session.status || "ready")}</strong>
-          <small>${escapeHtml(goal.signal || "starter-route")}</small>
-        </div>
+        <details class="guided-session-receipt-appendix">
+          <summary>Session trace</summary>
+          <div class="guided-session-receipt">
+            <span>${escapeHtml(session.fingerprint || "")}</span>
+            <strong>${escapeHtml(session.status || "ready")}</strong>
+            <small>${escapeHtml(goal.signal || "starter-route")}</small>
+          </div>
+        </details>
       </div>
       <ol class="guided-session-steps">
         ${(session.steps || []).map(guidedSessionStepHtml).join("")}
@@ -1052,11 +1146,22 @@ function renderGuidedSession(candidates, context) {
   const container = $("#guided-session-panel");
   if (!container) return;
   const resolved = context || resolvePracticePlan(candidates);
-  const session = guidedSessionForPlan(resolved.plan, resolved.planner);
+  const planner = resolved.planner;
+  const plan = resolved.plan;
+  const step = plan && !plan.completed && planner
+    ? (planner.actionablePracticePlanStep ? planner.actionablePracticePlanStep(plan) : plan.primaryStep)
+    : null;
+  const todayActionHref = step && planner
+    ? (planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref)
+    : "";
+  const session = guidedSessionForPlan(plan, planner);
+  const companionMode = Boolean(
+    session && session.route && session.route.href && todayActionHref && session.route.href === todayActionHref
+  );
   const outcomeLedger = window.PlataGuidedSession && window.PlataGuidedSession.readOutcomeLedger
     ? window.PlataGuidedSession.readOutcomeLedger()
     : null;
-  container.innerHTML = guidedSessionPanelHtml(session, outcomeLedger);
+  container.innerHTML = guidedSessionPanelHtml(session, outcomeLedger, { companionMode });
 }
 
 function advisorAdviceForPracticePlan(plan, memoryFacts, step) {
@@ -1181,11 +1286,12 @@ function renderTrainerCards() {
 
     const card = document.createElement("article");
     card.className = "trainer-card";
-    card.innerHTML = `
-      <span class="tag">${trainer.icon} ${trainer.type === "lesson" ? "Narrative" : "Drill"}</span>
-      <h3>${escapeHtml(trainer.name)}</h3>
-      <p>${escapeHtml(trainer.description)}</p>
-      ${hasData ? `
+    const layer = headroom();
+    const trainerInterp = layer && layer.compressTrainerStats
+      ? layer.compressTrainerStats({ trainer, stats: hasData ? stats : { total: 0 } })
+      : null;
+    const headroomHtml = trainerInterp ? headroomCard(trainerInterp, { extraClass: "trainer-headroom" }) : "";
+    const statsHtml = hasData ? `
         <div class="stats-mini">
           <div><strong>${stats.total}</strong> attempts</div>
           <div><strong>${stats.accuracy !== null ? stats.accuracy + "%" : "—"}</strong> accuracy</div>
@@ -1195,7 +1301,16 @@ function renderTrainerCards() {
         </div>
       ` : `
         <div class="stats-mini empty">No progress yet</div>
-      `}
+      `;
+    card.innerHTML = `
+      <span class="tag">${trainer.icon} ${trainer.type === "lesson" ? "Narrative" : "Drill"}</span>
+      <h3>${escapeHtml(trainer.name)}</h3>
+      <p>${escapeHtml(trainer.description)}</p>
+      ${headroomHtml}
+      <details class="headroom-appendix trainer-stats-appendix">
+        <summary>Trainer metrics</summary>
+        ${statsHtml}
+      </details>
       <a class="card-link" href="${escapeHtml(trainer.path)}">${hasData ? "Continue" : "Start"} ${trainer.type === "lesson" ? "lesson" : "drill"} →</a>
     `;
     container.appendChild(card);
@@ -1309,14 +1424,12 @@ function renderDueCards(candidates) {
     const repair = decision.repair || null;
     const competency = decision.competency || null;
     const reasons = decision.reasons || [];
-    const card = document.createElement("article");
-    const decisionClass = String(decision.kind || "continue").replace(/[^a-z0-9-]/gi, "");
-    card.className = `trainer-card due-card ${decisionClass}`;
-    card.innerHTML = `
-      <span class="tag due">${trainer.icon} ${escapeHtml(decision.badge || "Practice now")}</span>
-      <h3>${escapeHtml(decision.title || trainer.name)}</h3>
-      <p>${escapeHtml(decision.copy || trainer.description)}</p>
-      <div class="due-reasons">
+    const layer = headroom();
+    const dueInterp = layer && layer.compressDueDecision
+      ? layer.compressDueDecision({ trainer, stats, decision })
+      : null;
+    const headroomHtml = dueInterp ? headroomCard(dueInterp, { extraClass: "due-headroom" }) : "";
+    const technicalHtml = `
         ${topMastery.length ? `
           <div class="mastery-tags">
             <span class="eyebrow">Mastery signal</span>
@@ -1345,7 +1458,19 @@ function renderDueCards(candidates) {
         ${decision.meta && !repair ? `<div class="due-reason">${escapeHtml(decision.meta)}</div>` : ""}
         ${reasons.map(reason => `<div class="due-reason">${escapeHtml(reason)}</div>`).join("")}
         ${stats.accuracy !== null ? `<div class="due-reason">Current accuracy: ${stats.accuracy}%</div>` : ""}
-      </div>
+    `;
+    const card = document.createElement("article");
+    const decisionClass = String(decision.kind || "continue").replace(/[^a-z0-9-]/gi, "");
+    card.className = `trainer-card due-card ${decisionClass}`;
+    card.innerHTML = `
+      <span class="tag due">${trainer.icon} ${escapeHtml(decision.badge || "Practice now")}</span>
+      <h3>${escapeHtml(decision.title || trainer.name)}</h3>
+      <p>${escapeHtml(decision.copy || trainer.description)}</p>
+      ${headroomHtml}
+      <details class="headroom-appendix due-technical">
+        <summary>Recommendation evidence</summary>
+        <div class="due-reasons">${technicalHtml}</div>
+      </details>
       <a class="card-link" href="${escapeHtml(decision.primaryHref || trainer.path)}">${escapeHtml(decision.primaryLabel || "Open trainer")} →</a>
     `;
     container.appendChild(card);
@@ -1535,8 +1660,7 @@ function renderCompetencyList() {
   container.innerHTML = competencies.map(item => {
     const primary = item.primarySignal || {};
     const repair = primary.remediation || null;
-    return `
-      <article class="mastery-card competency-card">
+    const technicalHtml = `
         <div class="mastery-card-head">
           <span class="mastery-key">${escapeHtml(item.id)}</span>
           <span class="mastery-score">${item.signalCount} signal${item.signalCount === 1 ? "" : "s"}</span>
@@ -1547,14 +1671,19 @@ function renderCompetencyList() {
           <span>${escapeHtml(missTryText(item.wrong, item.total))} · ${Math.round(item.errorRate * 100)}% error rate</span>
           <span>${item.signals.map(signal => `${escapeHtml(signal.tag)} · ${escapeHtml(missTryText(signal.wrong, signal.total))}`).join(" · ")}</span>
         </div>
-        ${repair ? `
-          <div class="repair-block">
-            <span class="eyebrow">Best first repair</span>
-            <strong>${escapeHtml(primary.label || primary.tag)}</strong>
-            <p>${escapeHtml(repair.action)}</p>
-            <a href="${escapeHtml(repair.href)}">${escapeHtml(primary.trainerIcon || repair.trainerIcon || "")} Open scene →</a>
-          </div>
-        ` : ""}
+        ${repair ? repairBlockHtml(repair) : ""}
+        ${repair && repair.drillRepair ? repairBlockHtml(repair.drillRepair) : ""}
+    `;
+    const layer = headroom();
+    if (layer && layer.compressCompetency) {
+      return headroomCard(layer.compressCompetency(item), {
+        extraClass: "mastery-card competency-card",
+        technicalHtml
+      });
+    }
+    return `
+      <article class="mastery-card competency-card">
+        ${technicalHtml}
       </article>
     `;
   }).join("");
@@ -1564,68 +1693,36 @@ function renderMasteryList() {
   const container = $("#mastery-list");
   if (!container) return;
 
-  const signalMap = new Map();
-  trainers().forEach(trainer => {
-    const state = loadTrainerState(trainer.id);
-    const stats = computeStats(state, trainer);
-    if (!stats) return;
-    stats.weakMastery.forEach(signal => {
-      if (!signalMap.has(signal.tag)) {
-        signalMap.set(signal.tag, {
-          tag: signal.tag,
-          label: signal.label,
-          evidence: signal.evidence,
-          total: 0,
-          correct: 0,
-          wrong: 0,
-          score: 0,
-          trainers: [],
-          remediations: []
-        });
-      }
-      const entry = signalMap.get(signal.tag);
-      entry.total += signal.total;
-      entry.correct += signal.correct;
-      entry.wrong += signal.wrong;
-      entry.score = entry.wrong / Math.max(1, entry.total);
-      entry.trainers.push({ id: trainer.id, name: trainer.name, icon: trainer.icon });
-      if (signal.remediation && !entry.remediations.some(item => item.href === signal.remediation.href)) {
-        entry.remediations.push(signal.remediation);
-      }
-    });
-  });
-
-  const signals = Array.from(signalMap.values())
-    .sort((a, b) => b.score - a.score || b.wrong - a.wrong || b.total - a.total)
-    .slice(0, 6);
+  const signals = aggregateMasterySignals().slice(0, 6);
 
   if (signals.length === 0) {
     container.innerHTML = '<p class="narrative">No repair pattern is active yet. When a lesson miss points to a concept, it will appear here with a source scene.</p>';
     return;
   }
 
-  container.innerHTML = signals.map(signal => `
-    <article class="mastery-card">
-      <div class="mastery-card-head">
-        <span class="mastery-key">${escapeHtml(signal.tag)}</span>
-        <span class="mastery-score">${Math.round(signal.score * 100)}% error rate</span>
-      </div>
-      <h3>${escapeHtml(signal.label)}</h3>
-      <p>${escapeHtml(signal.evidence)}</p>
-      <div class="mastery-meta">
-        <span>${escapeHtml(missTryText(signal.wrong, signal.total))}</span>
-        <span>${signal.trainers.map(t => `${t.icon} ${escapeHtml(t.name)}`).join(" · ")}</span>
-      </div>
-      ${signal.remediations.length ? signal.remediations.slice(0, 2).map(repair => `
-        <div class="repair-block">
-          <span class="eyebrow">Repair path</span>
-          <strong>${escapeHtml(repair.cta)}</strong>
-          <p>${escapeHtml(repair.action)}</p>
-          <a href="${escapeHtml(repair.href)}">${escapeHtml(repair.trainerIcon)} Open scene →</a>
+  container.innerHTML = signals.map(signal => {
+    const technicalHtml = `
+        <div class="mastery-card-head">
+          <span class="mastery-key">${escapeHtml(signal.tag)}</span>
+          <span class="mastery-score">${Math.round(signal.score * 100)}% error rate</span>
         </div>
-      `).join("") : ""}
-    </article>
-  `).join("");
+        <h3>${escapeHtml(signal.label)}</h3>
+        <p>${escapeHtml(signal.evidence)}</p>
+        <div class="mastery-meta">
+          <span>${escapeHtml(missTryText(signal.wrong, signal.total))}</span>
+          <span>${signal.trainers.map(t => `${t.icon} ${escapeHtml(t.name)}`).join(" · ")}</span>
+        </div>
+        ${signal.remediations.length ? signal.remediations.slice(0, 3).map(repair => repairBlockHtml(repair)).join("") : ""}
+    `;
+    const layer = headroom();
+    if (layer && layer.compressMasterySignal) {
+      return headroomCard(layer.compressMasterySignal(signal), {
+        extraClass: "mastery-card",
+        technicalHtml
+      });
+    }
+    return `<article class="mastery-card">${technicalHtml}</article>`;
+  }).join("");
 }
 
 function renderWeakList() {
@@ -1872,11 +1969,55 @@ function renderDemoProfileBanner() {
   }
 }
 
+function renderLearnerHeadroom(candidates, planContext) {
+  const container = $("#learner-headroom");
+  const layer = headroom();
+  if (!container || !layer || !layer.compressDashboardSnapshot || !layer.renderBar) return;
+
+  const resolved = planContext || resolvePracticePlan(candidates);
+  const plan = resolved.plan;
+  const planner = resolved.planner;
+  const step = plan && !plan.completed && planner
+    ? (planner.actionablePracticePlanStep ? planner.actionablePracticePlanStep(plan) : plan.primaryStep)
+    : null;
+  const actionHref = step && planner
+    ? (planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref)
+    : "";
+  const receipt = advisorReceiptForPlan(plan);
+  const companion = receipt && receipt.companion || null;
+  const memoryBundle = buildMemoryFacts(null, plan);
+  const visibleFacts = memoryBundle.visibleFacts || [];
+  const progress = plan && plan.steps && plan.steps.length
+    ? Math.min(100, Math.max(0, Math.round(((plan.completedCount || 0) / plan.steps.length) * 100)))
+    : 0;
+  const program = plan ? resolveTodayProgramState({ plan, step, companion, advice: receipt && receipt.advice, candidates, visibleFacts }) : null;
+  const todayInterp = program && layer.compressTodayProgram
+    ? layer.compressTodayProgram({ program, step, actionHref, companion, visibleFacts, progress })
+    : null;
+  const topSignal = aggregateMasterySignals()[0] || null;
+  const totalAttempts = candidates.reduce((sum, item) => sum + Number(item && item.stats && item.stats.total || 0), 0);
+  const snapshot = layer.compressDashboardSnapshot({
+    today: todayInterp,
+    topSignal,
+    totalAttempts
+  });
+
+  if (!totalAttempts && !topSignal && (!plan || !plan.steps || plan.steps.length === 0)) {
+    container.hidden = true;
+    container.innerHTML = "";
+    return;
+  }
+
+  container.hidden = false;
+  container.innerHTML = layer.renderBar(snapshot);
+}
+
 function renderDashboard() {
   masteryCatalogCache = null;
   const candidates = dashboardCandidates();
   const planContext = resolvePracticePlan(candidates);
   renderDemoProfileBanner();
+  renderLearnerHeadroom(candidates, planContext);
   renderTrainerCards();
   renderTodayProgram(candidates, planContext);
   renderGuidedSession(candidates, planContext);

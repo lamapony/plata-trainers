@@ -1,10 +1,30 @@
 {
-  "name": "Platå Trainers",
+  "name": "Platå — Break your Danish plateau",
   "short_name": "Platå",
-  "description": "Open Danish practice tools for A2-B1 learners.",
+  "description": "Open Danish practice for A2–B2 learners stuck on the plateau. Static, private, offline-friendly.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#202a24",
   "theme_color": "#202a24",
-  "icons": []
+  "icons": [
+    {
+      "src": "./assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
 }

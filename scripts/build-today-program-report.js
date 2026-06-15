@@ -10,8 +10,10 @@ const fixedNow = "2026-06-08T09:00:00.000Z";
 const sources = [
   "shared/plata-kernel.js",
   "shared/plata-catalog.js",
+  "lessons/lesson-01/data.js",
   "lessons/lesson-b2-radiator/data.js",
   "lessons/lesson-b2-job-followup/data.js",
+  "lessons/lesson-b2-ordstilling/data.js",
   "shared/plata-competencies.js",
   "shared/plata-planner.js",
   "shared/plata-evidence.js",
@@ -180,8 +182,13 @@ function runSource(env, root, relPath) {
   vm.runInContext(readRootSource(root, relPath), env.context, { filename: relPath });
 }
 
+function runSourceIfPresent(env, root, relPath) {
+  if (!fs.existsSync(path.join(root, relPath))) return;
+  runSource(env, root, relPath);
+}
+
 function loadAll(env, root) {
-  sources.forEach(relPath => runSource(env, root, relPath));
+  sources.forEach(relPath => runSourceIfPresent(env, root, relPath));
 }
 
 function invoke(env, expression) {
@@ -428,7 +435,7 @@ function scenario(root, spec) {
     runSource(env, root, "shared/plata-kernel.js");
     if (spec.seed === "weak-mastery") seedWeakMasteryState(env);
     if (spec.seed === "due-review") seedDueReviewState(env);
-    sources.filter(relPath => relPath !== "shared/plata-kernel.js").forEach(relPath => runSource(env, root, relPath));
+    sources.filter(relPath => relPath !== "shared/plata-kernel.js").forEach(relPath => runSourceIfPresent(env, root, relPath));
   } else {
     loadAll(env, root);
   }

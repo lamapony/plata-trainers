@@ -76,6 +76,31 @@ if (!catalog || !Array.isArray(catalog.trainers)) {
     if (trainer.lessonDataPath && !exists(trainer.lessonDataPath)) issue(`${prefix}.lessonDataPath: missing target ${trainer.lessonDataPath}`);
     if (trainer.lessonGlobal && !trainer.lessonDataPath) issue(`${prefix}.lessonDataPath: required when lessonGlobal is present`);
     if (trainer.lessonDataPath && !trainer.lessonGlobal) issue(`${prefix}.lessonGlobal: required when lessonDataPath is present`);
+
+    if (!trainer.gallery || typeof trainer.gallery !== "object" || Array.isArray(trainer.gallery)) {
+      issue(`${prefix}.gallery: required object`);
+    } else {
+      const gallery = trainer.gallery;
+      if (!nonEmptyString(gallery.tag)) issue(`${prefix}.gallery.tag: required non-empty string`);
+      if (typeof gallery.estimatedMinutes !== "number" || gallery.estimatedMinutes <= 0) {
+        issue(`${prefix}.gallery.estimatedMinutes: required positive number`);
+      }
+      if (trainer.type === "lesson") {
+        ["level", "status", "signalFamily"].forEach(field => {
+          if (!nonEmptyString(gallery[field])) issue(`${prefix}.gallery.${field}: required for lessons`);
+        });
+        if (!Array.isArray(gallery.outcomes) || gallery.outcomes.length < 3) {
+          issue(`${prefix}.gallery.outcomes: lessons need at least three outcome strings`);
+        }
+      }
+      if (trainer.type === "drill") {
+        if (gallery.role !== "repair") issue(`${prefix}.gallery.role: drills must use role "repair"`);
+        if (!Array.isArray(gallery.repairSignals)) issue(`${prefix}.gallery.repairSignals: drills need repairSignals array`);
+        if (!nonEmptyString(gallery.repairs) && !nonEmptyString(gallery.theme)) {
+          issue(`${prefix}.gallery.repairs: drills need repairs or theme metadata`);
+        }
+      }
+    }
   });
 
   findLessonDataFiles().forEach(dataPath => {

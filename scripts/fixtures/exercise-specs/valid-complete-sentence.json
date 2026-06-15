@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "v2-inversion-corridor",
+  "type": "complete-sentence",
+  "level": "B1",
+  "context": "Du skriver en besked til din ven om morgendagens lægebesøg.",
+  "language": {
+    "phenomena": ["v2-inversion", "fronted-adverbial"],
+    "stimulus": "I morgen ___ (jeg/tage) til lægen",
+    "correct": ["tager jeg", "jeg tager"],
+    "distractors": ["jeg tager ikke"],
+    "weakTags": ["v2-inversion", "fronted-adverbial-practice"],
+    "explanation": "Fronted adverbial keeps verb in position 2: I morgen tager jeg ..."
+  },
+  "metrics": {
+    "accuracy": true,
+    "responseTimeMs": true,
+    "attempts": true
+  },
+  "sourceRefs": ["TECHNICAL_TRACK example"]
+}

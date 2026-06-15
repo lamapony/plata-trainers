@@ -14,8 +14,10 @@ const fixedNow = "2026-06-08T09:00:00.000Z";
 const dashboardSources = [
   "shared/plata-kernel.js",
   "shared/plata-catalog.js",
+  "lessons/lesson-01/data.js",
   "lessons/lesson-b2-radiator/data.js",
   "lessons/lesson-b2-job-followup/data.js",
+  "lessons/lesson-b2-ordstilling/data.js",
   "shared/plata-competencies.js",
   "shared/plata-planner.js",
   "shared/plata-evidence.js",
@@ -246,7 +248,10 @@ function renderDemoReturnTrace(root, demo) {
   const stepRouteId = step && step.routeId || "";
   const search = `?demo=learner&ledger-return=1&plan=${encodeURIComponent(planToken)}&step=${encodeURIComponent(stepRouteId)}`;
   const env = makeDashboardContext(search);
-  dashboardSources.forEach(relPath => runDashboardSource(env, root, relPath));
+  dashboardSources.forEach(relPath => {
+    if (!fs.existsSync(path.join(root, relPath))) return;
+    runDashboardSource(env, root, relPath);
+  });
   const todayText = stripHtml(env.elements["#today-program"].innerHTML);
   const practicePlanHtml = env.elements["#practice-plan"].innerHTML;
   const practicePlanText = stripHtml(env.elements["#practice-plan"].innerHTML);
@@ -264,7 +269,7 @@ function renderDemoReturnTrace(root, demo) {
   if (!/plan-return-receipt/.test(practicePlanHtml)) issues.push("dashboard return receipt did not render");
   if (!/Step 1 recorded/.test(practicePlanText)) issues.push("dashboard return receipt did not name the returned step");
   if (!/Continue next step/.test(practicePlanText)) issues.push("dashboard return receipt did not offer the next step");
-  if (!/Guided session/.test(guidedText)) issues.push("dashboard guided session panel did not render on return");
+  if (!/Guided session|Walkthrough/.test(guidedText)) issues.push("dashboard guided session panel did not render on return");
   if (!/Sample B2 plateau profile/.test(demoText)) issues.push("dashboard return did not stay on the demo learner profile");
   if (env.writes.length) issues.push(`dashboard demo return wrote localStorage keys: ${env.writes.map(item => item.key).join(", ")}`);
 

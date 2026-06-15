@@ -1,0 +1,179 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://plata.dev/schemas/exercise-spec-v1.json",
+  "title": "Platå Exercise Spec v1",
+  "description": "Rendering-independent exercise contract for agent generation, variant engines, and metric collection.",
+  "type": "object",
+  "required": ["id", "type", "level", "language", "metrics"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "Spec schema version. Defaults to 1 when omitted."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Stable kebab-case identifier for this exercise or variant."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["complete-sentence", "multiple-choice", "match-pairs", "free-input"],
+      "description": "Interaction shape the renderer should use."
+    },
+    "level": {
+      "type": "string",
+      "enum": ["A1", "A2", "B1", "B2"],
+      "description": "CEFR band for load and copy tone."
+    },
+    "language": {
+      "$ref": "#/definitions/languageBlock"
+    },
+    "metrics": {
+      "$ref": "#/definitions/metricsBlock"
+    },
+    "context": {
+      "type": "string",
+      "description": "Optional narrative frame supplied by the product track."
+    },
+    "sourceRefs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Source note titles or URLs backing the exercise."
+    },
+    "variantOf": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Template id when this spec is one generated variant."
+    }
+  },
+  "definitions": {
+    "tagList": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      }
+    },
+    "languageBlock": {
+      "type": "object",
+      "required": ["phenomena", "stimulus", "weakTags"],
+      "additionalProperties": false,
+      "properties": {
+        "phenomena": {
+          "$ref": "#/definitions/tagList",
+          "description": "Linguistic phenomena trained by this exercise."
+        },
+        "stimulus": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Prompt, sentence frame, or question shown to the learner."
+        },
+        "correct": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Acceptable answers for completion or generated MC options."
+        },
+        "distractors": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Incorrect answers used when options are generated from strings."
+        },
+        "weakTags": {
+          "$ref": "#/definitions/tagList",
+          "description": "Tags recorded when the learner misses this exercise."
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/definitions/choiceOption" },
+          "description": "Explicit multiple-choice options with per-option diagnostics."
+        },
+        "pairs": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/definitions/matchPair" },
+          "description": "Left/right pairs for match-pairs exercises."
+        },
+        "acceptPrefix": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Required answer prefix for free-input exercises."
+        },
+        "acceptKeywords": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "At least one keyword must appear in a free-input answer."
+        },
+        "context": {
+          "type": "string",
+          "description": "Short in-exercise narrative frame."
+        },
+        "explanation": {
+          "type": "string",
+          "description": "Post-answer explanation shown after grading."
+        }
+      }
+    },
+    "choiceOption": {
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "label": { "type": "string", "minLength": 1 },
+        "detail": { "type": "string" },
+        "correct": { "type": "boolean" },
+        "weakTags": { "$ref": "#/definitions/tagList" },
+        "feedback": { "type": "string" }
+      }
+    },
+    "matchPair": {
+      "type": "object",
+      "required": ["id", "left", "right"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "left": { "type": "string", "minLength": 1 },
+        "right": { "type": "string", "minLength": 1 },
+        "feedback": { "type": "string" }
+      }
+    },
+    "metricsBlock": {
+      "type": "object",
+      "required": ["accuracy"],
+      "additionalProperties": false,
+      "properties": {
+        "accuracy": {
+          "type": "boolean",
+          "description": "Record whether the first attempt was correct."
+        },
+        "responseTimeMs": {
+          "type": "boolean",
+          "description": "Record time-to-answer in milliseconds."
+        },
+        "attempts": {
+          "type": "boolean",
+          "description": "Record attempt count before success."
+        },
+        "sessionVolume": {
+          "type": "boolean",
+          "description": "Include this exercise in session volume aggregates."
+        },
+        "spacing": {
+          "type": "boolean",
+          "description": "Track days since the last attempt on this item."
+        }
+      }
+    }
+  }
+}

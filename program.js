@@ -6,8 +6,8 @@
   var pillarSpecs = [
     {
       id: "practice",
-      title: "Start with one useful practice step",
-      copy: "The program chooses between story lessons, repair routes, review, and short drills without needing an account.",
+      title: "Break the plateau one step at a time",
+      copy: "The program chooses between B2 story lessons, repair routes, review, and short drills—one useful session, no account.",
       capabilityIds: ["static-forkable-runtime", "today-program-shell", "guided-session-outcome-loop", "gold-lesson-quality-engine"]
     },
     {

@@ -9,7 +9,9 @@ const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
 const competencySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-competencies.js"), "utf8");
 const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
+const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catalog.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
+const ordstillingLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-ordstilling", "data.js"), "utf8");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -45,7 +47,9 @@ function makeContext() {
   vm.runInContext(kernelSource, context, { filename: "shared/plata-kernel.js" });
   vm.runInContext(competencySource, context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, context, { filename: "shared/plata-planner.js" });
+  vm.runInContext(catalogSource, context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(radiatorLessonSource, context, { filename: "lessons/lesson-b2-radiator/data.js" });
+  vm.runInContext(ordstillingLessonSource, context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   return context;
 }
 
@@ -123,6 +127,60 @@ function runLessonDecisionSmoke(context) {
     rootPrefix: "../../"
   });
   assert(reopened.kind === "repair", "later miss should reopen lesson repair");
+}
+
+function runDrillRepairRoutingSmoke(context) {
+  const catalog = context.PlataCatalog;
+  const kernel = context.PlataKernel;
+  const drill = catalog.drillForSignal("v2-placement");
+  assert(drill && drill.id === "ordstilling", "catalog maps v2-placement to ordstilling drill");
+  const link = catalog.drillRepairLink(drill, "v2-placement", "lesson-b2-ordstilling");
+  assert(link.includes("ordstilling-drill"), "drill repair link targets ordstilling drill");
+  assert(link.includes("signal=v2-placement"), "drill repair link carries mastery signal");
+  assert(link.includes("from=lesson-b2-ordstilling"), "drill repair link carries source lesson");
+
+  const registerDrill = catalog.drillForSignal("passive-agency");
+  assert(registerDrill && registerDrill.id === "register", "catalog maps passive-agency to register drill");
+  const registerLink = catalog.drillRepairLink(registerDrill, "passive-agency", "lesson-b2-radiator-register");
+  assert(registerLink.includes("register-drill"), "register drill repair link targets register drill");
+  assert(registerLink.includes("signal=passive-agency"), "register drill repair link carries mastery signal");
+  assert(registerLink.includes("from=lesson-b2-radiator-register"), "register drill repair link carries source lesson");
+
+  const radState = kernel.freshState("lesson-b2-radiator-register");
+  kernel.recordAttempt(radState, {
+    itemId: "official-reply-passive-too-trusting",
+    correct: false,
+    tags: ["B2", "passive", "passive-agency"],
+    mode: "lesson",
+    expected: "De har registreret sagen, men de lover ikke en dato.",
+    given: "De lover en hurtig reparation."
+  });
+  const radDecision = context.PlataPlanner.lessonDecision({
+    lesson: context.PLATA_LESSON_B2_RADIATOR,
+    state: radState,
+    rootPrefix: "../../"
+  });
+  assert(radDecision.kind === "repair", "radiator lesson miss should recommend repair");
+  assert(radDecision.secondaryHref.includes("register-drill"), "radiator lesson repair should offer register drill secondary");
+  assert(radDecision.secondaryHref.includes("signal=passive-agency"), "radiator drill secondary carries signal");
+
+  const state = kernel.freshState("lesson-b2-ordstilling");
+  kernel.recordAttempt(state, {
+    itemId: "hotel-question",
+    correct: false,
+    tags: ["B2", "v2-placement"],
+    mode: "lesson",
+    expected: "Hvor ligger konferencelokalet?",
+    given: "værelse"
+  });
+  const decision = context.PlataPlanner.lessonDecision({
+    lesson: context.PLATA_LESSON_B2_ORDSTILLING,
+    state,
+    rootPrefix: "../../"
+  });
+  assert(decision.kind === "repair", "ordstilling lesson miss should recommend repair");
+  assert(decision.secondaryHref.includes("ordstilling-drill"), "ordstilling lesson repair should offer drill secondary");
+  assert(decision.secondaryHref.includes("signal=v2-placement"), "lesson drill secondary carries signal");
 }
 
 function runDrillDecisionSmoke(context) {
@@ -395,9 +453,12 @@ function runDashboardDecisionSmoke(context) {
 function run() {
   const context = makeContext();
   runLessonDecisionSmoke(context);
+  runDrillRepairRoutingSmoke(context);
   runDrillDecisionSmoke(context);
   runDashboardDecisionSmoke(context);
   console.log("ok - planner recommends lesson repair from weak mastery");
+  console.log("ok - planner routes weak word-order signals to ordstilling drill repair");
+  console.log("ok - planner routes passive-agency signals to register drill repair");
   console.log("ok - planner ranks drill repeat, continue, and enough decisions");
   console.log("ok - planner ranks dashboard decisions from the same contract");
   console.log("ok - planner tracks active practice-plan completion");

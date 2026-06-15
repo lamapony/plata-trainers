@@ -3,7 +3,7 @@
 [![QA](https://github.com/lamapony/plata-trainers/actions/workflows/qa.yml/badge.svg)](https://github.com/lamapony/plata-trainers/actions/workflows/qa.yml)
 [![Pages](https://github.com/lamapony/plata-trainers/actions/workflows/pages.yml/badge.svg)](https://github.com/lamapony/plata-trainers/actions/workflows/pages.yml)
 
-Open-source Danish plateau-breaker for Danish learners who are no longer starting from zero but still feel stuck. Static HTML/JS, no app build step, no backend.
+**Break your Danish plateau.** Open-source practice for Danish learners who are no longer starting from zero but still freeze under forms, word order, tone, or social pressure. Static HTML/JS, no app build step, no backend.
 Live demo: [lamapony.github.io/plata-trainers](https://lamapony.github.io/plata-trainers/).
 Demo learner dashboard: [lamapony.github.io/plata-trainers/dashboard.html?demo=learner](https://lamapony.github.io/plata-trainers/dashboard.html?demo=learner).
 Demo learner report: [lamapony.github.io/plata-trainers/reports/demo-learner.json](https://lamapony.github.io/plata-trainers/reports/demo-learner.json).
@@ -136,6 +136,26 @@ Gold lesson scaffold:
 
 ```bash
 npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic"
+npm run check
+```
+
+Gold lesson preflight (fast local validation before full suite):
+
+```bash
+npm run check:lessons             # scene schema contract
+npm run check:gold-lessons        # deterministic simulation paths
+npm run check:counterfactuals     # learner profile regression
+npm run check:lesson-engine       # engine replay with fake DOM
+npm run check:quality-report      # gold quality report contract
+npm run check:exercise-value-report  # flagship chain archetypes
+npm run check:comic-prompts       # dry-run storyboard prompts
+npm run check:quality-mutations   # negative contract tests
+npm run check:quality-diff        # review diff regression check
+```
+
+Full suite still required before merge:
+
+```bash
 npm run check
 ```
 

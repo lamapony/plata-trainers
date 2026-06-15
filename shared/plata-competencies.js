@@ -12,13 +12,13 @@
       id: "agency",
       label: "Agency and responsibility",
       copy: "Can name who acts, own the next move, and avoid hiding behind vague or passive wording.",
-      tags: ["passive-agency", "understatement-with-agency", "professional-email-agency", "agency-without-pressure"]
+      tags: ["passive-agency", "understatement-with-agency", "professional-email-agency", "agency-without-pressure", "identity-chunk"]
     },
     {
       id: "register-control",
       label: "Register control",
       copy: "Can choose formality, platform, and phrase signals for the relationship in front of them.",
-      tags: ["formal-register-control", "platform-register-shift", "register-signal-control"]
+      tags: ["formal-register-control", "platform-register-shift", "register-signal-control", "courtesy-loop", "inversion-fronted-adverbial", "v2-placement", "fordi-derfor-clause"]
     },
     {
       id: "stance-reading",
@@ -30,13 +30,13 @@
       id: "process-control",
       label: "Process and next-step control",
       copy: "Can separate anxiety from process, then make the next step visible enough to act on.",
-      tags: ["process-patience", "concrete-next-step", "context-reading"]
+      tags: ["process-patience", "concrete-next-step", "context-reading", "signage-direction"]
     },
     {
       id: "consequence-awareness",
       label: "Consequence awareness",
       copy: "Can connect wording choices to social cost, trust, and the outcome after the sentence.",
-      tags: ["consequence-aware-tone", "professional-agency-principle", "consequence-aware-register"]
+      tags: ["consequence-aware-tone", "professional-agency-principle", "consequence-aware-register", "ordstilling-principle"]
     }
   ];
 

@@ -14,8 +14,10 @@ const fixedNow = "2026-06-08T09:00:00.000Z";
 const dashboardSources = [
   "shared/plata-kernel.js",
   "shared/plata-catalog.js",
+  "lessons/lesson-01/data.js",
   "lessons/lesson-b2-radiator/data.js",
   "lessons/lesson-b2-job-followup/data.js",
+  "lessons/lesson-b2-ordstilling/data.js",
   "shared/plata-competencies.js",
   "shared/plata-planner.js",
   "shared/plata-evidence.js",
@@ -288,7 +290,10 @@ function loadDashboardRuntime(root, options = {}) {
   const env = makeDashboardContext();
   runSource(env, root, "shared/plata-kernel.js");
   if (options.seed) options.seed(env);
-  dashboardSources.filter(relPath => relPath !== "shared/plata-kernel.js").forEach(relPath => runSource(env, root, relPath));
+  dashboardSources.filter(relPath => relPath !== "shared/plata-kernel.js").forEach(relPath => {
+    if (!fs.existsSync(path.join(root, relPath))) return;
+    runSource(env, root, relPath);
+  });
   return env;
 }
 
