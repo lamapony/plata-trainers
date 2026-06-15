@@ -33,6 +33,7 @@ function makeElement(selector) {
 
 async function run() {
   assert(programHtml.includes("dashboard.html?demo=learner"), "program page does not link the demo learner dashboard");
+  assert(programHtml.includes("proof.html#proof-walkthrough"), "program page should link reviewer walkthrough on proof");
 
   const elements = {};
   [

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "v2-inversion-drill",
+  "type": "complete-sentence",
+  "level": "B1",
+  "context": "Du skriver en kort besked om en plan.",
+  "language": {
+    "phenomena": ["v2-inversion", "fronted-adverbial"],
+    "weakTags": ["v2-inversion", "fronted-adverbial-practice"],
+    "explanation": "Fronted adverbial keeps verb in position 2: {adverbial} {verb} {subject} {rest}"
+  },
+  "metrics": {
+    "accuracy": true,
+    "responseTimeMs": true,
+    "attempts": true
+  },
+  "variantTemplate": {
+    "kind": "v2-inversion-complete",
+    "slotPools": {
+      "adverbial": ["I morgen", "I går", "På lørdag"],
+      "frames": [
+        { "subject": "jeg", "verb": "tager", "verbInfinitive": "tage", "rest": "til lægen" },
+        { "subject": "hun", "verb": "kommer", "verbInfinitive": "komme", "rest": "hjem" },
+        { "subject": "vi", "verb": "spiser", "verbInfinitive": "spise", "rest": "morgenmad" }
+      ]
+    }
+  },
+  "sourceRefs": ["ordstilling-drill inversion patterns"]
+}

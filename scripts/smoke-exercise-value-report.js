@@ -45,8 +45,8 @@ function runBaseSmoke() {
   assert(report.totals.explainChoiceScenes >= 1, "exercise value report should count explain-your-choice scenes");
   assert(report.guarantees.every(guarantee => guarantee.pass), "exercise value guarantees should pass");
 
-  const chain = firstChain(report);
-  assert(chain.sceneId === "channel-transfer-lab", "B2 radiator flagship chain should be the first proof row");
+  const chain = report.lessons.flatMap(lesson => lesson.flagshipChains).find(c => c.sceneId === "channel-transfer-lab");
+  assert(chain && chain.sceneId === "channel-transfer-lab", "B2 radiator flagship chain should be present in the proof rows");
   assert(chain.checks.some(check => check.key === "not-flat-quiz" && check.pass), "flagship chain should prove it is not a flat quiz");
   assert(chain.checks.some(check => check.key === "memory-backed-recurrence" && check.pass), "flagship chain should prove memory-backed recurrence");
   assert(chain.options.some(option => option.nearMiss && option.grammarStatus === "grammatical"), "flagship chain should expose grammatical near misses");

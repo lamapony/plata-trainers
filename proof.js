@@ -83,6 +83,17 @@
     });
   }
 
+  function proofPassing(data) {
+    return data.demo.status === "pass" &&
+      data.evaluator.status === "pass" &&
+      data.journey.status === "pass" &&
+      data.portability.status === "pass" &&
+      data.exerciseValue.status === "pass" &&
+      data.capabilities.status === "pass" &&
+      data.health.status === "pass" &&
+      data.quickstart.status === "pass";
+  }
+
   function renderSummary(data) {
     enableLink("#proof-digest-link", proofSources.digest);
     enableLink("#proof-health-link", proofSources.health);
@@ -93,14 +104,7 @@
     enableLink("#proof-exercise-link", proofSources.exerciseValue);
     enableLink("#proof-guided-link", proofSources.guided);
     enableLink("#proof-quickstart-link", quickstartBase + "quickstart.md");
-    var passing = data.demo.status === "pass" &&
-      data.evaluator.status === "pass" &&
-      data.journey.status === "pass" &&
-      data.portability.status === "pass" &&
-      data.exerciseValue.status === "pass" &&
-      data.capabilities.status === "pass" &&
-      data.health.status === "pass" &&
-      data.quickstart.status === "pass";
+    var passing = proofPassing(data);
     $("#proof-status").textContent = passing ? "Proof passing" : "Needs attention";
     $("#proof-status").className = passing ? "quality-pass" : "quality-fail";
     $("#proof-summary").innerHTML = [
@@ -117,6 +121,22 @@
       return "<li><span>" + escapeHtml(item[0]) + "</span><strong>" + escapeHtml(item[1]) + "</strong></li>";
     }).join("");
     $("#proof-generated").textContent = "Health generated " + new Date(data.health.generatedAt).toLocaleString();
+  }
+
+  function renderProofHeadroom(data) {
+    var container = $("#proof-headroom");
+    var layer = window.PlataHeadroom;
+    if (!container || !layer || !layer.compressProofSnapshot || !layer.renderBar) return;
+    var snapshot = layer.compressProofSnapshot({
+      passing: proofPassing(data),
+      digest: data.digest,
+      demo: data.demo,
+      journey: data.journey,
+      health: data.health,
+      capabilities: data.capabilities
+    });
+    container.hidden = false;
+    container.innerHTML = layer.renderBar(snapshot);
   }
 
   function renderEvidenceChips(items) {
@@ -363,12 +383,13 @@
       },
       {
         title: "Audit the proof trail",
-        copy: "The same flow is guarded by generated reports, the deterministic evaluator journey, PR drift checks, and source contracts that are published with the static site.",
+        copy: "The same flow is guarded by generated reports, the deterministic evaluator journey, PR drift checks, and source contracts published with the static site.",
         href: proofSources.capabilities,
         hrefLabel: "Open capability map",
         chips: [
           proofGates,
           chip("check:evaluator-journey", "pass"),
+          linkChip(localPageHref("quality.html"), "Quality report", "pass"),
           linkChip(proofSources.health, "project-health.json", "pass"),
           sourceChip("shared/plata-guided-session.js", "guided source")
         ]
@@ -388,11 +409,18 @@
     }).join("");
 
     $("#proof-walkthrough").innerHTML =
+      "<nav class=\"proof-reviewer-route\" aria-label=\"Reviewer path at a glance\">" +
+        linkChip(dashboardHref, "1 · Demo learner", "mastery") +
+        linkChip(routeHref, "2 · Today step", "pass") +
+        linkChip(localPageHref(route.href || "dashboard.html?demo=learner"), "3 · Guided session", "pass") +
+        linkChip(localPageHref("quality.html"), "4 · Quality gates", "pass") +
+        linkChip(proofSources.capabilities, "5 · Capability map", "pass") +
+      "</nav>" +
       "<article class=\"proof-walkthrough-summary " + escapeHtml(data.guided.status === "pass" && demo.status === "pass" && journey.status === "pass" ? "pass" : "fail") + "\">" +
         "<div>" +
           "<span class=\"quality-key\">visitor path</span>" +
           "<h3>One inspectable loop from recommendation to receipt</h3>" +
-          "<p>This walkthrough is assembled from generated reports and a deterministic journey trace, so it fails with the proof page if the demo profile, guided route, return receipt, or outcome contract drifts.</p>" +
+          "<p>Assembled from generated reports and a deterministic journey trace — it fails with this page if demo, guided route, return receipt, or outcome contract drifts.</p>" +
         "</div>" +
         "<div class=\"program-proof-strip\">" +
           chip(countLabel(demoPlan.steps && demoPlan.steps.length || 0, "plan step", "plan steps"), "mastery") +
@@ -649,6 +677,11 @@
   function renderError(error) {
     $("#proof-status").textContent = "Unavailable";
     $("#proof-status").className = "quality-fail";
+    var headroom = $("#proof-headroom");
+    if (headroom) {
+      headroom.hidden = true;
+      headroom.innerHTML = "";
+    }
     $("#proof-summary").innerHTML = "<li><span>Proof</span><strong>missing</strong></li>";
     $("#proof-generated").textContent = error.message || "Could not load proof reports";
     $("#proof-digest").innerHTML = "<article class=\"proof-digest-card fail\"><h3>Proof digest missing</h3><p>Run npm run build:pages to generate reports/proof-digest.json.</p></article>";
@@ -691,6 +724,7 @@
       summary: values[11]
     };
     renderSummary(data);
+    renderProofHeadroom(data);
     renderDigest(data);
     renderProofWalkthrough(data);
     renderEvaluatorPath(data);

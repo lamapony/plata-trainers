@@ -317,9 +317,10 @@ function buildDemoLearnerReport(options = {}) {
     };
   })()`);
 
+  const todayStripped = stripHtml(env.elements["#today-program"].innerHTML);
   const rendered = {
     banner: stripHtml(env.elements["#demo-profile"].innerHTML),
-    today: stripHtml(env.elements["#today-program"].innerHTML).slice(0, 420),
+    today: todayStripped.slice(0, 900),
     practicePlan: stripHtml(env.elements["#practice-plan"].innerHTML).slice(0, 420),
     evidence: stripHtml(env.elements["#evidence-ledger"].innerHTML).slice(0, 420),
     memory: stripHtml(env.elements["#memory-facts"].innerHTML).slice(0, 420),
@@ -337,9 +338,9 @@ function buildDemoLearnerReport(options = {}) {
 
   if (extracted.routeSearch !== "?demo=learner") issues.push("demo route search drifted");
   if (!rendered.banner.includes("Sample B2 plateau profile")) issues.push("demo banner missing");
-  if (!rendered.today.includes("Study companion")) issues.push("Today surface is not companion-backed");
-  if (rendered.today.toLowerCase().includes("onboarding")) issues.push("demo Today surface fell back to onboarding");
-  if (!rendered.today.includes("Cited memory")) issues.push("Today surface does not cite memory");
+  if (!todayStripped.includes("Study companion")) issues.push("Today surface is not companion-backed");
+  if (todayStripped.toLowerCase().includes("onboarding")) issues.push("demo Today surface fell back to onboarding");
+  if (!todayStripped.includes("Cited memory")) issues.push("Today surface does not cite memory");
   if (!rendered.importDisabled) issues.push("demo import is not disabled");
   if (storageWrites.length) issues.push(`demo wrote localStorage keys: ${storageWrites.join(", ")}`);
   if (extracted.totalAttempts !== 8) issues.push(`expected 8 demo attempts, got ${extracted.totalAttempts}`);
@@ -380,7 +381,7 @@ function buildDemoLearnerReport(options = {}) {
     },
     guarantees: [
       { key: "read-only-storage", label: "Demo learner renders without localStorage writes", pass: storageWrites.length === 0 },
-      { key: "companion-backed-today", label: "Today surface is companion-backed and cites memory", pass: rendered.today.includes("Study companion") && rendered.today.includes("Cited memory") },
+      { key: "companion-backed-today", label: "Today surface is companion-backed and cites memory", pass: todayStripped.includes("Study companion") && todayStripped.includes("Cited memory") },
       { key: "rich-returning-profile", label: "Demo profile contains attempts, weak signals, root skill memory, and due review", pass: facts.length >= 7 && factKinds.includes("root_competency_trap") && factKinds.includes("next_review_due") },
       { key: "privacy-no-raw-answers", label: "Report excludes raw learner answer text", pass: forbiddenLeaks.every(text => !rawJson.includes(text)) }
     ],

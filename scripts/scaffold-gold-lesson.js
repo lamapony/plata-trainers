@@ -568,10 +568,16 @@ function addCatalogEntry(root, options) {
   if (source.includes(`id: ${js(options.slug)}`)) {
     throw new Error(`Catalog already contains ${options.slug}`);
   }
-  const marker = "\n    ]\n  };";
-  if (!source.includes(marker)) throw new Error("Could not find catalog insertion point");
+  const markers = [
+    "      }\n    ],\n    drillForSignal:",
+    "\n    ]\n  };"
+  ];
+  const marker = markers.find(item => source.includes(item));
+  if (!marker) throw new Error("Could not find catalog insertion point");
   const entry = renderCatalogEntry(options);
-  const next = source.replace(marker, `,\n${entry}${marker}`);
+  const next = marker.startsWith("      }")
+    ? source.replace(marker, `      },\n${entry}\n    ],\n    drillForSignal:`)
+    : source.replace(marker, `,\n${entry}${marker}`);
   fs.writeFileSync(catalogPath, next);
 }
 

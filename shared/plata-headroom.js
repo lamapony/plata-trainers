@@ -62,7 +62,9 @@
         ["Error rate", Math.round(rate * 100) + "%"],
         ["Attempts", signal.total || 0],
         ["Trainers", (signal.trainers || []).map(function (t) { return t.name; }).join(", ")]
-      ]
+      ].concat((signal.remediations || []).slice(1).map(function (item) {
+        return [item.kind === "drill" ? "Drill repair" : "Alternate repair", item.cta || item.href || ""];
+      }))
     });
   }
 
@@ -235,6 +237,47 @@
     });
   }
 
+  function compressProofSnapshot(payload) {
+    payload = payload || {};
+    var digest = payload.digest || {};
+    var demo = payload.demo || {};
+    var journey = payload.journey || {};
+    var health = payload.health || {};
+    var capabilities = payload.capabilities || {};
+    var issueCount = Number(health.totals && health.totals.issues || 0)
+      + Number(capabilities.totals && capabilities.totals.issues || 0);
+    if (!payload.passing) {
+      return interpretationFromParts({
+        verdict: "Proof needs attention before you trust the demo",
+        saw: issueCount
+          ? issueCount + " contract issue(s) in generated health or capability reports."
+          : "One or more proof reports did not pass.",
+        means: "The walkthrough below still shows the intended reviewer path, but some gates or artifacts are not green.",
+        nextStep: "Follow the walkthrough, then open the failing JSON report.",
+        nextHref: "#proof-walkthrough",
+        nextLabel: "Follow reviewer path",
+        appendix: [
+          ["Digest", digest.status || "unknown"],
+          ["Demo learner", demo.status || "unknown"],
+          ["Journey", journey.status || "unknown"]
+        ]
+      });
+    }
+    return interpretationFromParts({
+      verdict: digest.headline || "Public proof is passing",
+      saw: "Demo learner → Today step → guided session → outcome receipt is checked as one deterministic journey (" + (journey.traceId || "trace") + ").",
+      means: "A reviewer can verify personalization without accounts, raw learner answers, or hidden model calls.",
+      nextStep: "Walk the 60-second path, then open quality and JSON reports for source gates.",
+      nextHref: "#proof-walkthrough",
+      nextLabel: "Follow reviewer path",
+      appendix: [
+        ["Health gates", health.totals && health.totals.gates || 0],
+        ["Capabilities", capabilities.totals && capabilities.totals.capabilities || 0],
+        ["Journey stages", journey.totals && journey.totals.stages || 0]
+      ]
+    });
+  }
+
   function renderCard(interp, options) {
     options = options || {};
     interp = interp || interpretationFromParts({});
@@ -286,6 +329,7 @@
     compressTodayProgram: compressTodayProgram,
     compressDashboardSnapshot: compressDashboardSnapshot,
     compressHomeRecommendation: compressHomeRecommendation,
+    compressProofSnapshot: compressProofSnapshot,
     renderCard: renderCard,
     renderBar: renderBar
   };

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "id": "v2-subject-first-01",
+  "type": "multiple-choice",
+  "level": "A2",
+  "language": {
+    "phenomena": ["v2-subject-first"],
+    "stimulus": "Vælg den sætning hvor subjektet står først (V2):",
+    "weakTags": ["v2-subject-first"],
+    "options": [
+      {
+        "id": "correct",
+        "label": "Hun læser en bog hver aften.",
+        "detail": "subject before verb",
+        "correct": true,
+        "feedback": "Subjekt 'hun' i pos. 1, verbum 'læser' i pos. 2."
+      },
+      {
+        "id": "inversion",
+        "label": "Hver aften læser hun en bog.",
+        "detail": "inversion, not subject-first prompt",
+        "correct": false,
+        "weakTags": ["v2-inversion"],
+        "feedback": "Det er inversion, ikke subjekt-først."
+      },
+      {
+        "id": "broken",
+        "label": "Hun en bog læser hver aften.",
+        "correct": false,
+        "feedback": "Objekt står mellem subjekt og verbum."
+      },
+      {
+        "id": "broken-two",
+        "label": "Hver aften hun læser en bog.",
+        "correct": false,
+        "feedback": "Verbum er ikke i position 2."
+      }
+    ]
+  },
+  "metrics": {
+    "accuracy": true,
+    "responseTimeMs": true,
+    "attempts": true,
+    "sessionVolume": true
+  },
+  "variantOf": "v2-subject-first-template"
+}

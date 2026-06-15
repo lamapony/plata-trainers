@@ -288,7 +288,7 @@ function runEmptyDashboardSmoke() {
   const env = makeContext();
   loadKernelAndDashboard(env);
 
-  assert(env.elements["#trainer-cards"].children.length === 6, "dashboard renders all trainer cards");
+  assert(env.elements["#trainer-cards"].children.length === 8, "dashboard renders all trainer cards");
   assert(/Planner route/.test(env.elements["#today-program"].innerHTML), "dashboard renders Today program shell for starter routes");
   assert(/First session/.test(env.elements["#today-program"].innerHTML), "dashboard labels the empty profile as a first session");
   assert(/Start Lesson 01/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes the starter step");
@@ -296,8 +296,8 @@ function runEmptyDashboardSmoke() {
   assert(/onboarding/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell exposes the onboarding state");
   assert(/First run/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell shows the program state strip");
   assert(/Local progress/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell labels local-progress recommendations");
-  assert(/Guided session/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard renders guided session shell");
-  assert(/Start Lesson 01/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session promotes the starter outcome");
+  assert(/Walkthrough|Guided session/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard renders guided session shell");
+  assert(/Start Lesson 01|Same step as/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session promotes the starter outcome");
   assert(/Outcome receipt/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session renders an outcome receipt");
   assert(/No model call/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session renders model guardrail");
   assert(/No raw answers/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session renders raw-answer guardrail");
@@ -329,7 +329,7 @@ function runDemoLearnerSmoke() {
   assert(/Study companion/.test(env.elements["#today-program"].innerHTML), "dashboard demo mode renders a companion-backed Today step");
   assert(!/onboarding/.test(env.elements["#today-program"].innerHTML), "dashboard demo mode does not look like an empty first-run profile");
   assert(/Cited memory/.test(env.elements["#today-program"].innerHTML), "dashboard demo Today step cites learner memory");
-  assert(/Guided session/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard demo mode renders a guided session");
+  assert(/Walkthrough|Guided session/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard demo mode renders a guided session");
   assert(/Cited memory/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard demo guided session cites learner memory");
   assert(/No raw answers/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard demo guided session renders privacy guardrail");
   assert(/Active plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard demo mode renders a practice plan");
@@ -356,8 +356,10 @@ function runSeededMasterySmoke() {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   seedWeakMasteryState(env);
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(lesson01Source, env.context, { filename: "lessons/lesson-01/data.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(ordstillingLessonSource, env.context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
@@ -369,7 +371,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(headroomSource, env.context, { filename: "shared/plata-headroom.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
-  assert(env.context.PlataCatalog.trainers.length === 6, "dashboard reads trainer catalog");
+  assert(env.context.PlataCatalog.trainers.length === 8, "dashboard reads trainer catalog");
   assert(/Read passive agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders weak mastery label");
   assert(/passive-agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders mastery tag key");
   assert(/registration\/process language/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders lesson-owned mastery evidence");
@@ -393,7 +395,7 @@ function runSeededMasterySmoke() {
   assert(/Hermes optional/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell keeps Hermes optional");
   assert(/cmp-/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell includes companion fingerprint");
   assert(!/De lover, at radiatoren bliver fikset hurtigt/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell does not leak raw learner answers");
-  assert(/Guided session/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard renders guided session for memory-backed plans");
+  assert(/Walkthrough|Guided session/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard renders guided session for memory-backed plans");
   assert(/Repair passive-agency/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session promotes repair focus");
   assert(/Outcome receipt/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session includes an outcome receipt");
   assert(/Cited memory/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session exposes cited memory");
@@ -468,8 +470,10 @@ function runStartedPlanSmoke() {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   seedWeakMasteryState(env);
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(lesson01Source, env.context, { filename: "lessons/lesson-01/data.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(ordstillingLessonSource, env.context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
@@ -550,8 +554,10 @@ function runPlanReturnReceiptSmoke() {
   const env = makeContext();
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(lesson01Source, env.context, { filename: "lessons/lesson-01/data.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(ordstillingLessonSource, env.context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
@@ -610,8 +616,10 @@ function runDueReviewProgramSmoke() {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   seedDueReviewState(env);
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(lesson01Source, env.context, { filename: "lessons/lesson-01/data.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(ordstillingLessonSource, env.context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
@@ -637,8 +645,10 @@ function runClosedMasterySmoke() {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
   seedClosedMasteryState(env);
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(lesson01Source, env.context, { filename: "lessons/lesson-01/data.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(ordstillingLessonSource, env.context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });

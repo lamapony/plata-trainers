@@ -18,6 +18,7 @@
           theme: "Form recall",
           estimatedMinutes: 8,
           repairs: "verb tenses · noun inflection",
+          repairSignals: [],
           sequence: 1
         }
       },
@@ -35,7 +36,36 @@
           theme: "Word order",
           estimatedMinutes: 8,
           repairs: "V2 · inversion · subordinate clauses",
+          repairSignals: [
+            "inversion-fronted-adverbial",
+            "v2-placement",
+            "fordi-derfor-clause",
+            "ordstilling-principle"
+          ],
           sequence: 2
+        }
+      },
+      {
+        id: "register",
+        name: "Register drill",
+        type: "drill",
+        path: "./register-drill/",
+        description: "Multiple-choice practice for B2 public-service Danish: name the actor, set deadlines, and escalate politely after passive official replies.",
+        icon: "✉️",
+        gallery: {
+          tag: "B2 register",
+          role: "repair",
+          level: "B2",
+          theme: "Public-service Danish",
+          estimatedMinutes: 8,
+          repairs: "passive agency · deadlines · polite escalation",
+          repairSignals: [
+            "passive-agency",
+            "formal-register-control",
+            "understatement-with-agency",
+            "consequence-aware-tone"
+          ],
+          sequence: 3
         }
       },
       {
@@ -52,7 +82,8 @@
           theme: "Retrieval",
           estimatedMinutes: 5,
           repairs: "recognition · recall gaps from scenes",
-          sequence: 3
+          repairSignals: [],
+          sequence: 4
         }
       },
       {
@@ -155,6 +186,42 @@
           featured: false
         }
       }
-    ]
+    ],
+    drillForSignal: function (signalTag) {
+      if (!signalTag) return null;
+      for (var i = 0; i < this.trainers.length; i++) {
+        var trainer = this.trainers[i];
+        if (trainer.type !== "drill") continue;
+        var signals = trainer.gallery && trainer.gallery.repairSignals;
+        if (Array.isArray(signals) && signals.indexOf(signalTag) !== -1) return trainer;
+      }
+      return null;
+    },
+    drillRepairLink: function (drill, signalTag, sourceTrainerId) {
+      if (!drill || !drill.path) return "";
+      var href = drill.path;
+      var params = [];
+      if (signalTag) params.push("signal=" + encodeURIComponent(signalTag));
+      if (sourceTrainerId) params.push("from=" + encodeURIComponent(sourceTrainerId));
+      if (!params.length) return href;
+      var joiner = href.indexOf("?") === -1 ? "?" : "&";
+      return href + joiner + params.join("&");
+    },
+    drillRemediation: function (signalTag, sourceTrainerId) {
+      var drill = this.drillForSignal(signalTag);
+      if (!drill) return null;
+      var repairs = drill.gallery && drill.gallery.repairs ? drill.gallery.repairs : "";
+      return {
+        kind: "drill",
+        cta: "Run " + drill.name,
+        action: repairs
+          ? "You missed this in a story. Repair the reflex with a short drill: " + repairs + "."
+          : "You missed this in a story. A short drill session repairs the reflex faster than rereading the scene.",
+        href: this.drillRepairLink(drill, signalTag, sourceTrainerId),
+        trainerIcon: drill.icon,
+        trainerName: drill.name,
+        drillId: drill.id
+      };
+    }
   };
 })(typeof window !== "undefined" ? window : globalThis);

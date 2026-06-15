@@ -284,7 +284,7 @@ async function runEmptyHomeSmoke() {
   env.eventListeners.hashchange();
   assert(env.ids["#evaluate"].scrollIntoViewCalls.length === 1, "home hashchange listener scrolls to the evaluator path");
   assert(env.galleryCards.filter(card => card.parentElement === env.ids["#narrative-gallery"]).length === 4, "home renders four narrative lessons from catalog");
-  assert(env.galleryCards.filter(card => card.parentElement === env.ids["#drill-gallery"]).length === 3, "home renders three drills from catalog");
+  assert(env.galleryCards.filter(card => card.parentElement === env.ids["#drill-gallery"]).length === 4, "home renders four drills from catalog");
   const lessonCard = env.galleryCards.find(card => card.trainerId === "lesson-01-arrival");
   assert(lessonCard, "home renders narrative gallery cards from catalog");
   assert(/Not started/.test(lessonCard.querySelector(".friendly-progress").innerHTML), "home labels unstarted trainer cards");

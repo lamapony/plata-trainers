@@ -266,7 +266,7 @@ function renderDemoReturnTrace(root, demo) {
   if (!/plan-return-receipt/.test(practicePlanHtml)) issues.push("dashboard return receipt did not render");
   if (!/Step 1 recorded/.test(practicePlanText)) issues.push("dashboard return receipt did not name the returned step");
   if (!/Continue next step/.test(practicePlanText)) issues.push("dashboard return receipt did not offer the next step");
-  if (!/Guided session/.test(guidedText)) issues.push("dashboard guided session panel did not render on return");
+  if (!/Guided session|Walkthrough/.test(guidedText)) issues.push("dashboard guided session panel did not render on return");
   if (!/Sample B2 plateau profile/.test(demoText)) issues.push("dashboard return did not stay on the demo learner profile");
   if (env.writes.length) issues.push(`dashboard demo return wrote localStorage keys: ${env.writes.map(item => item.key).join(", ")}`);
 

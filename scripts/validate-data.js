@@ -71,6 +71,30 @@ if (!ord || !Array.isArray(ord.ordstilling)) {
   }
 }
 
+const reg = loadData("register-drill/data.js");
+if (!reg || !Array.isArray(reg.register)) {
+  fail("register: missing register array");
+} else {
+  unique(reg.register, (item) => `${item.cat}::${item.prompt}::${(item.options || []).join("|")}`, "register.items");
+  const regCats = new Set();
+  reg.register.forEach((item, i) => {
+    if (!nonEmptyString(item.cat)) fail(`register[${i}]: missing cat`);
+    else regCats.add(item.cat);
+    if (!nonEmptyString(item.prompt)) fail(`register[${i}]: missing prompt`);
+    if (!Array.isArray(item.options) || item.options.length !== 4) fail(`register[${i}]: expected 4 options`);
+    else {
+      item.options.forEach((option, j) => { if (!nonEmptyString(option)) fail(`register[${i}].options[${j}]: empty option`); });
+      unique(item.options.map((option) => ({ option })), (x) => x.option, `register[${i}].options`);
+    }
+    if (!Number.isInteger(item.correct) || item.correct < 0 || item.correct > 3) fail(`register[${i}]: correct must be 0..3`);
+    if (Array.isArray(item.options) && nonEmptyString(item.options[item.correct]) === false) fail(`register[${i}]: correct option is empty`);
+    if (!nonEmptyString(item.why)) fail(`register[${i}]: missing why explanation`);
+  });
+  for (const expected of ["passive", "deadline", "escalation"]) {
+    if (!regCats.has(expected)) fail(`register: missing category ${expected}`);
+  }
+}
+
 const vocab = loadData("vocab-sr/data.js");
 if (!vocab || !Array.isArray(vocab.vocab)) {
   fail("vocab: missing vocab array");
@@ -90,4 +114,4 @@ if (issues.length) {
   process.exit(1);
 }
 
-console.log(`data QA passed: ${bojning.verber.length} verbs, ${bojning.substantiver.length} nouns, ${ord.ordstilling.length} word-order items, ${vocab.vocab.length} vocab items`);
+console.log(`data QA passed: ${bojning.verber.length} verbs, ${bojning.substantiver.length} nouns, ${ord.ordstilling.length} word-order items, ${reg.register.length} register items, ${vocab.vocab.length} vocab items`);

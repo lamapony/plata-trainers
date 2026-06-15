@@ -139,6 +139,26 @@ npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic"
 npm run check
 ```
 
+Gold lesson preflight (fast local validation before full suite):
+
+```bash
+npm run check:lessons             # scene schema contract
+npm run check:gold-lessons        # deterministic simulation paths
+npm run check:counterfactuals     # learner profile regression
+npm run check:lesson-engine       # engine replay with fake DOM
+npm run check:quality-report      # gold quality report contract
+npm run check:exercise-value-report  # flagship chain archetypes
+npm run check:comic-prompts       # dry-run storyboard prompts
+npm run check:quality-mutations   # negative contract tests
+npm run check:quality-diff        # review diff regression check
+```
+
+Full suite still required before merge:
+
+```bash
+npm run check
+```
+
 Individual checks:
 
 ```bash

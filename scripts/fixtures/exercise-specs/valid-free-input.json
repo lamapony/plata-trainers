@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "intro-name-free-input",
+  "type": "free-input",
+  "level": "A1",
+  "language": {
+    "phenomena": ["self-introduction"],
+    "stimulus": "Introducer dig: skriv din sætning.",
+    "acceptPrefix": "jeg hedder ",
+    "weakTags": ["self-introduction"],
+    "explanation": "Start med Jeg hedder ..."
+  },
+  "metrics": {
+    "accuracy": true,
+    "attempts": true
+  }
+}

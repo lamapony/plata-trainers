@@ -30,6 +30,7 @@ function makeElement(selector) {
     textContent: "",
     innerHTML: "",
     href: "",
+    hidden: true,
     attributes: {},
     setAttribute(name, value) {
       this.attributes[name] = String(value);
@@ -49,6 +50,8 @@ async function run() {
   assert(proofHtml.includes("id=\"proof-health-link\""), "proof page should expose the health link target");
   assert(proofHtml.includes("id=\"proof-digest\""), "proof page should expose the plain-language digest target");
   assert(proofHtml.includes("id=\"proof-walkthrough\""), "proof page should expose the visitor proof walkthrough target");
+  assert(proofHtml.includes("id=\"proof-headroom\""), "proof page should expose the plain-language proof headroom target");
+  assert(proofHtml.includes("Follow reviewer path"), "proof page should expose reviewer path hero action");
   assert(proofHtml.includes("id=\"proof-evaluator\""), "proof page should expose the evaluator path report target");
   assert(proofHtml.includes("id=\"proof-capability-matrix\""), "proof page should expose the capability proof matrix target");
   assert(!proofHtml.includes("href=\"./reports/"), "proof page should not break root static QA with pre-build report links");
@@ -89,6 +92,7 @@ async function run() {
       "#proof-generated",
       "#proof-digest",
       "#proof-walkthrough",
+      "#proof-headroom",
       "#proof-evaluator",
       "#proof-artifacts",
       "#proof-surfaces",
@@ -148,10 +152,15 @@ async function run() {
     context.window = context;
     context.globalThis = context;
     vm.createContext(context);
+    vm.runInContext(fs.readFileSync(path.join(root, "shared", "plata-headroom.js"), "utf8"), context, { filename: "shared/plata-headroom.js" });
     vm.runInContext(fs.readFileSync(path.join(root, "proof.js"), "utf8"), context, { filename: "proof.js" });
     await new Promise(resolve => setImmediate(resolve));
 
     assert(elements["#proof-status"].textContent === "Proof passing", "proof page did not render passing status");
+    assert(elements["#proof-headroom"].innerHTML.includes("headroom-bar"), "proof page did not render plain-language headroom bar");
+    assert(elements["#proof-headroom"].innerHTML.includes("coherent"), "proof page headroom should summarize digest headline");
+    assert(elements["#proof-headroom"].innerHTML.includes("Follow reviewer path"), "proof page headroom should link reviewer path");
+    assert(!elements["#proof-headroom"].hidden, "proof page headroom should be visible after load");
     assert(elements["#proof-summary"].innerHTML.includes("Health gates"), "proof page did not render health summary");
     assert(elements["#proof-summary"].innerHTML.includes("Review regressions"), "proof page did not render review summary");
     assert(elements["#proof-digest"].innerHTML.includes("The public proof surface is coherent"), "proof page did not render digest headline");
@@ -159,6 +168,9 @@ async function run() {
     assert(elements["#proof-digest"].innerHTML.includes("Trust boundaries"), "proof page did not render digest trust boundaries");
     assert(elements["#proof-digest"].innerHTML.includes("reports/proof-digest.json"), "proof page did not render digest evidence links");
     assert(elements["#proof-walkthrough"].innerHTML.includes("One inspectable loop from recommendation to receipt"), "proof page did not render walkthrough summary");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("proof-reviewer-route"), "proof page did not render reviewer route strip");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("1 · Demo learner"), "proof page did not render reviewer route demo link");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("quality.html"), "proof page did not link quality report from reviewer route");
     assert(elements["#proof-walkthrough"].innerHTML.includes("evaljourney-"), "proof page did not render evaluator journey trace");
     assert(elements["#proof-walkthrough"].innerHTML.includes("evaluator-journey.json"), "proof page did not link evaluator journey report");
     assert(elements["#proof-journey-link"].href === "./reports/evaluator-journey.json", "proof page did not enable the evaluator journey report link");

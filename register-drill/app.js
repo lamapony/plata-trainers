@@ -1,29 +1,35 @@
-/* platå · ordstilling-drill · app v0.1
+/* platå · register-drill · app v0.1
  *
- * Multiple choice word-order drill.
- * Lite SM-2 spaced repetition (same shape as bøjning-drill).
- * Categories: v2, inversion, ledsaetning, blandet
+ * Multiple choice register / agency drill after B2 narrative misses.
+ * Lite SM-2 spaced repetition (same shape as ordstilling-drill).
+ * Categories: passive, deadline, escalation, blandet
  */
 
 (function () {
   "use strict";
 
-  const TRAINER_ID = "ordstilling";
-  const LEGACY_STORAGE_KEY = "plata-ordstilling-v0";
+  const TRAINER_ID = "register";
+  const LEGACY_STORAGE_KEY = "plata-register-v0";
   const SESSION_SIZE = 10;
   const kernel = window.PlataKernel;
   const dashboard = window.PlataDashboard;
 
-  /** @type {{ byItemId: Record<string, {box:number, correct:number, wrong:number, lastSeen:string|null, mastered:boolean}>, meta: any }} */
   let stateHandle = kernel.createTrainerState({ trainerId: TRAINER_ID, oldKeys: [LEGACY_STORAGE_KEY] });
   let state = stateHandle.state;
 
-  let category = "v2";
+  let category = "passive";
   let session = [];
   let sessionPos = 0;
   let sessionResults = [];
   let selectedIndex = -1;
   let awaitingCheck = true;
+
+  const SIGNAL_CATEGORY = {
+    "passive-agency": "passive",
+    "formal-register-control": "passive",
+    "consequence-aware-tone": "deadline",
+    "understatement-with-agency": "escalation"
+  };
 
   const $ = (id) => document.getElementById(id);
   const els = {
@@ -56,7 +62,6 @@
     resetBtn: $("reset-btn")
   };
 
-  // ---------- persistence ----------
   function freshState() {
     return kernel.freshState(TRAINER_ID);
   }
@@ -66,30 +71,19 @@
   function ensureItemRecord(itemId, tags) {
     return kernel.ensureItemRecord(state, itemId, tags);
   }
-  function itemIdFor(item) { return "o::" + (item.cat + "::" + item.prompt); }
+  function itemIdFor(item) { return "r::" + (item.cat + "::" + item.prompt); }
 
-  // ---------- session ----------
   function buildSession() {
-    const pool = window.PLATA_DATA.ordstilling;
+    const pool = window.PLATA_DATA.register;
     let items = category === "blandet" ? pool.slice() : pool.filter((it) => it.cat === category);
     if (items.length === 0) items = pool.slice();
 
-    const enriched = items.map((it) => ({ item: it, rec: ensureItemRecord(itemIdFor(it), ["ordstilling", it.cat]) }));
+    const enriched = items.map((it) => ({ item: it, rec: ensureItemRecord(itemIdFor(it), ["register", it.cat]) }));
     const picked = kernel.pickSessionItems(enriched, { size: SESSION_SIZE });
-
-    // Deterministic per-item shuffle so correct answer isn't always at index 0.
-    // Same item → same order across re-encounters within this session; but
-    // across items the correct answer is distributed across A/B/C/D.
     return picked.map((p) => shuffleItem(p.item));
   }
 
   function shuffleItem(item) {
-    // FNV-1a hash of the item's stable content, then mulberry32 PRNG for
-    // a well-distributed shuffle. Same item → same order; different items
-    // get well-spread positions for the correct answer. Options are part
-    // of the seed because multiple items in the data share prompt text
-    // (e.g. "Vælg den sætning hvor subjektet står først (V2):") but have
-    // different option sets.
     const seed = item.cat + "::" + item.prompt + "::" + item.options.join("|");
     let h = 0x811c9dc5;
     for (let i = 0; i < seed.length; i++) {
@@ -97,7 +91,6 @@
       h = Math.imul(h, 0x01000193);
     }
     h = h >>> 0;
-    // mulberry32 PRNG seeded with the hash
     let s = h;
     function rand() {
       s = (s + 0x6D2B79F5) | 0;
@@ -115,7 +108,6 @@
     return Object.assign({}, item, { options: newOptions, correct: newCorrect });
   }
 
-  // ---------- render ----------
   function renderStats() {
     const view = dashboard.statsView(state);
     els.statToday.textContent = view.today;
@@ -177,7 +169,7 @@
   function checkAnswer() {
     const p = session[sessionPos];
     const correct = selectedIndex === p.correct;
-    const attemptTags = ["ordstilling", p.cat].concat(!correct && p.weakTags ? p.weakTags : []);
+    const attemptTags = ["register", p.cat].concat(!correct && p.weakTags ? p.weakTags : []);
     kernel.recordAttempt(state, {
       itemId: itemIdFor(p),
       correct,
@@ -187,13 +179,11 @@
       given: p.options[selectedIndex]
     });
     if (!correct) {
-      // re-queue later in same session
       const insertAt = Math.min(session.length, sessionPos + 3 + Math.floor(Math.random() * 3));
       session.splice(insertAt, 0, p);
     }
     sessionResults.push({ itemId: itemIdFor(p), prompt: p.prompt, given: p.options[selectedIndex], expected: p.options[p.correct], why: p.why, correct });
 
-    // mark options visually
     [...els.options.querySelectorAll(".option")].forEach((b, idx) => {
       b.disabled = true;
       if (idx === p.correct) b.classList.add("correct");
@@ -297,10 +287,18 @@
     return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
 
-  // ---------- mode switching ----------
+  function applyRepairSignalFromUrl() {
+    const signal = new URLSearchParams(window.location.search).get("signal");
+    if (signal && SIGNAL_CATEGORY[signal]) category = SIGNAL_CATEGORY[signal];
+  }
+
+  function syncCategoryChips() {
+    [...els.catGroup.querySelectorAll(".chip")].forEach((c) => c.setAttribute("aria-selected", c.dataset.cat === category ? "true" : "false"));
+  }
+
   function setCategory(newCat) {
     category = newCat;
-    [...els.catGroup.querySelectorAll(".chip")].forEach((c) => c.setAttribute("aria-selected", c.dataset.cat === category ? "true" : "false"));
+    syncCategoryChips();
     startNewSession();
   }
 
@@ -317,13 +315,12 @@
     renderStats();
   }
 
-  // ---------- export / import / reset ----------
   function doExport() {
     const blob = new Blob([kernel.exportState(state)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `plata-ordstilling-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `plata-register-${new Date().toISOString().slice(0, 10)}.json`;
     document.body.appendChild(a); a.click();
     setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 0);
   }
@@ -343,7 +340,6 @@
     state = freshState(); saveState(); renderStats(); startNewSession();
   }
 
-  // ---------- init ----------
   function init() {
     els.catGroup.addEventListener("click", (e) => {
       const c = e.target.closest(".chip");
@@ -370,7 +366,9 @@
     });
     els.resetBtn.addEventListener("click", doReset);
 
-    for (const it of window.PLATA_DATA.ordstilling) ensureItemRecord(itemIdFor(it), ["ordstilling", it.cat]);
+    for (const it of window.PLATA_DATA.register) ensureItemRecord(itemIdFor(it), ["register", it.cat]);
+    applyRepairSignalFromUrl();
+    syncCategoryChips();
     saveState();
     renderStats();
     renderPlanContext();

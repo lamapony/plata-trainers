@@ -1,0 +1,11 @@
+{
+  "id": "broken-no-metrics",
+  "type": "complete-sentence",
+  "level": "A2",
+  "language": {
+    "phenomena": ["v2"],
+    "stimulus": "Test",
+    "correct": ["jeg går"],
+    "weakTags": ["v2"]
+  }
+}

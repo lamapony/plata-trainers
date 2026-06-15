@@ -96,7 +96,8 @@
     if (!spec || !spec.refs || spec.refs.length === 0) return null;
     var ref = spec.refs.find(function (item) { return trainer && item.trainerId === trainer.id; }) || spec.refs[0];
     if (!ref.remediation) return null;
-    return {
+    var sceneRepair = {
+      kind: "scene",
       cta: ref.remediation.cta || "Review scene",
       action: ref.remediation.action || "",
       sceneId: ref.remediation.sceneId || "",
@@ -104,6 +105,12 @@
       trainerName: ref.trainerName,
       trainerIcon: ref.trainerIcon
     };
+    var catalog = window.PlataCatalog;
+    var drillRepair = catalog && catalog.drillRemediation
+      ? catalog.drillRemediation(spec.tag, trainer && trainer.id)
+      : null;
+    if (!drillRepair) return sceneRepair;
+    return Object.assign({}, sceneRepair, { drillRepair: drillRepair });
   }
 
   function isMasteryTag(tag) {

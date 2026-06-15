@@ -157,6 +157,16 @@ Comic prompts can be generated as a manifest without network access:
 npm run check:comic-prompts
 ```
 
+## Gold lesson preflight
+
+Before a pull request that edits gold lesson data, run the focused gate:
+
+```bash
+npm run preflight:gold-lesson -- --lesson lesson-b2-radiator
+```
+
+See [GOLD_LESSON_PREFLIGHT.md](./GOLD_LESSON_PREFLIGHT.md) for the file checklist and which step catches which regression class. `npm run check:gold-lesson-preflight` keeps the orchestrator honest in CI.
+
 Actual asset generation is explicit and local. Set `OPENROUTER_API_KEY` in the shell, choose a reviewed model, then generate only the requested lesson or panel:
 
 ```bash

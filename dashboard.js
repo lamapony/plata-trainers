@@ -83,7 +83,8 @@ function remediationFor(spec, trainer) {
   if (!spec || !spec.refs || spec.refs.length === 0) return null;
   const ref = spec.refs.find(item => trainer && item.trainerId === trainer.id) || spec.refs[0];
   if (!ref.remediation) return null;
-  return {
+  const sceneRepair = {
+    kind: "scene",
     cta: ref.remediation.cta || "Review scene",
     action: ref.remediation.action || "",
     sceneId: ref.remediation.sceneId || "",
@@ -91,6 +92,12 @@ function remediationFor(spec, trainer) {
     trainerName: ref.trainerName,
     trainerIcon: ref.trainerIcon
   };
+  const catalog = window.PlataCatalog;
+  const drillRepair = catalog && catalog.drillRemediation
+    ? catalog.drillRemediation(spec.tag, trainer && trainer.id)
+    : null;
+  if (!drillRepair) return sceneRepair;
+  return Object.assign({}, sceneRepair, { drillRepair });
 }
 
 function isMasteryTag(tag) {
@@ -172,6 +179,19 @@ function headroom() {
   return window.PlataHeadroom || null;
 }
 
+function repairBlockHtml(repair) {
+  if (!repair) return "";
+  const isDrill = repair.kind === "drill";
+  return `
+          <div class="repair-block ${isDrill ? "repair-block-drill" : ""}">
+            <span class="eyebrow">${isDrill ? "Drill repair" : "Scene repair"}</span>
+            <strong>${escapeHtml(repair.cta)}</strong>
+            <p>${escapeHtml(repair.action)}</p>
+            <a href="${escapeHtml(repair.href)}">${escapeHtml(repair.trainerIcon || "")} ${isDrill ? "Open drill →" : "Open scene →"}</a>
+          </div>
+        `;
+}
+
 function headroomCard(interp, options) {
   const layer = headroom();
   if (!layer || !layer.renderCard) return "";
@@ -204,8 +224,16 @@ function aggregateMasterySignals() {
       entry.wrong += signal.wrong;
       entry.score = entry.wrong / Math.max(1, entry.total);
       entry.trainers.push({ id: trainer.id, name: trainer.name, icon: trainer.icon });
-      if (signal.remediation && !entry.remediations.some(item => item.href === signal.remediation.href)) {
-        entry.remediations.push(signal.remediation);
+      if (signal.remediation) {
+        const sceneRepair = Object.assign({ kind: "scene" }, signal.remediation);
+        delete sceneRepair.drillRepair;
+        if (!entry.remediations.some(item => item.href === sceneRepair.href)) {
+          entry.remediations.push(sceneRepair);
+        }
+        const drillRepair = signal.remediation.drillRepair;
+        if (drillRepair && !entry.remediations.some(item => item.href === drillRepair.href)) {
+          entry.remediations.push(drillRepair);
+        }
       }
     });
   });
@@ -903,49 +931,50 @@ function renderTodayProgram(candidates, context) {
     ${todayMetricHtml("plan steps", plan.steps.length)}
     ${companion && companion.confidence ? todayMetricHtml("confidence", companion.confidence) : ""}
   `;
+  const evidenceTagsHtml = Array.from(new Set(guardrailLabels)).map(label => `<span>${escapeHtml(label)}</span>`).join("")
+    + (companion && companion.fingerprint ? `<span>${escapeHtml(companion.fingerprint)}</span>` : "");
+  const citationsHtml = citedFacts.length
+    ? `<div class="today-citations" aria-label="Cited companion memory">
+        <span class="eyebrow">Cited memory</span>
+        <div>${citedFacts.slice(0, 4).map(todayFactHtml).join("")}</div>
+      </div>`
+    : "";
 
   container.innerHTML = `
     <article class="today-program-card ${escapeHtml(program.kind)}">
-      <div class="today-main">
-        <div>
-          <p class="eyebrow">${escapeHtml(program.eyebrow)}</p>
-          <h3>${escapeHtml(program.headline)}</h3>
-          <p>${escapeHtml(program.message)}</p>
-          ${todayHeadroomHtml}
-          ${step && actionHref ? `
-            <div class="today-action">
-              <a class="btn primary" href="${escapeHtml(actionHref)}">${escapeHtml(program.actionLabel)}</a>
-              <span>${escapeHtml(program.routeMeta)}</span>
-            </div>
-          ` : ""}
-        </div>
-        <div class="today-progress" aria-label="${progress}% complete">
-          <strong>${progress}%</strong>
-          <span>route complete</span>
+      <div class="today-hero">
+        <p class="eyebrow">${escapeHtml(program.eyebrow)}</p>
+        <h3>${escapeHtml(program.headline)}</h3>
+        <p class="today-message">${escapeHtml(program.message)}</p>
+        ${todayHeadroomHtml}
+        ${step && actionHref ? `
+          <div class="today-action">
+            <a class="btn primary" href="${escapeHtml(actionHref)}">${escapeHtml(program.actionLabel)}</a>
+            <span class="today-route-meta">${escapeHtml(program.routeMeta)}</span>
+          </div>
+          <p class="today-outcome">${escapeHtml(program.why)}</p>
+        ` : `<p class="today-outcome">${escapeHtml(program.why)}</p>`}
+        <div class="today-progress-inline" aria-label="${progress}% complete">
+          <span><strong>${progress}%</strong> route complete</span>
           <div><span style="width: ${progress}%"></span></div>
         </div>
       </div>
-      <div class="today-context">
-        <div class="today-why">
-          <span class="eyebrow">Why this</span>
-          <p>${escapeHtml(program.why)}</p>
-          <div class="today-tags">
-            ${Array.from(new Set(guardrailLabels)).map(label => `<span>${escapeHtml(label)}</span>`).join("")}
-            ${companion && companion.fingerprint ? `<span>${escapeHtml(companion.fingerprint)}</span>` : ""}
+      <details class="headroom-appendix today-evidence-appendix">
+        <summary>Route evidence and citations</summary>
+        <div class="today-context">
+          <div class="today-why">
+            <span class="eyebrow">Why this</span>
+            <p>${escapeHtml(program.why)}</p>
+            <div class="today-tags">${evidenceTagsHtml}</div>
+          </div>
+          <div class="today-facts-panel">
+            <span class="eyebrow">Session metrics</span>
+            <div class="today-facts">${todayFactsHtml}</div>
           </div>
         </div>
-        <details class="headroom-appendix today-metrics-appendix">
-          <summary>Session metrics</summary>
-          <div class="today-facts">${todayFactsHtml}</div>
-        </details>
-      </div>
+        ${citationsHtml}
+      </details>
       ${todayStageStripHtml(program.kind)}
-      ${citedFacts.length ? `
-        <div class="today-citations" aria-label="Cited companion memory">
-          <span class="eyebrow">Cited memory</span>
-          <div>${citedFacts.slice(0, 4).map(todayFactHtml).join("")}</div>
-        </div>
-      ` : ""}
     </article>
   `;
 }
@@ -1044,7 +1073,9 @@ function guidedOutcomeLedgerHtml(ledger) {
   `;
 }
 
-function guidedSessionPanelHtml(session, outcomeLedger) {
+function guidedSessionPanelHtml(session, outcomeLedger, options) {
+  options = options || {};
+  const companionMode = Boolean(options.companionMode);
   if (!session) return '<p class="narrative">Start any trainer to build a guided session.</p>';
   const goal = session.goal || {};
   const route = session.route || {};
@@ -1058,24 +1089,31 @@ function guidedSessionPanelHtml(session, outcomeLedger) {
   ].filter(Boolean);
   const validation = session.validation || {};
   return `
-    <article class="guided-session-card ${escapeHtml(session.status || "ready")} ${escapeHtml(goal.kind || "continue")}">
+    <article class="guided-session-card ${escapeHtml(session.status || "ready")} ${escapeHtml(goal.kind || "continue")}${companionMode ? " guided-session-companion" : ""}">
       <div class="guided-session-head">
         <div>
-          <p class="eyebrow">Guided session</p>
+          <p class="eyebrow">${companionMode ? "Walkthrough" : "Guided session"}</p>
           <h3>${escapeHtml(goal.title || "Focused session")}</h3>
           <p>${escapeHtml(goal.reason || "The route comes from local practice evidence.")}</p>
-          ${route.href ? `
+          ${route.href ? (
+            companionMode
+              ? `<p class="guided-session-same-step">Same step as <strong>Today</strong> above — open it when you want the full walkthrough.</p>`
+              : `
             <div class="guided-session-action">
               <a class="btn primary" href="${escapeHtml(route.href)}">${escapeHtml(route.label || "Start session")}</a>
               <span>${escapeHtml([route.trainerId, route.stepRouteId].filter(Boolean).join(" · "))}</span>
             </div>
-          ` : ""}
+          `
+          ) : ""}
         </div>
-        <div class="guided-session-receipt">
-          <span>${escapeHtml(session.fingerprint || "")}</span>
-          <strong>${escapeHtml(session.status || "ready")}</strong>
-          <small>${escapeHtml(goal.signal || "starter-route")}</small>
-        </div>
+        <details class="guided-session-receipt-appendix">
+          <summary>Session trace</summary>
+          <div class="guided-session-receipt">
+            <span>${escapeHtml(session.fingerprint || "")}</span>
+            <strong>${escapeHtml(session.status || "ready")}</strong>
+            <small>${escapeHtml(goal.signal || "starter-route")}</small>
+          </div>
+        </details>
       </div>
       <ol class="guided-session-steps">
         ${(session.steps || []).map(guidedSessionStepHtml).join("")}
@@ -1108,11 +1146,22 @@ function renderGuidedSession(candidates, context) {
   const container = $("#guided-session-panel");
   if (!container) return;
   const resolved = context || resolvePracticePlan(candidates);
-  const session = guidedSessionForPlan(resolved.plan, resolved.planner);
+  const planner = resolved.planner;
+  const plan = resolved.plan;
+  const step = plan && !plan.completed && planner
+    ? (planner.actionablePracticePlanStep ? planner.actionablePracticePlanStep(plan) : plan.primaryStep)
+    : null;
+  const todayActionHref = step && planner
+    ? (planner.planStepHref ? planner.planStepHref(plan, step) : step.primaryHref)
+    : "";
+  const session = guidedSessionForPlan(plan, planner);
+  const companionMode = Boolean(
+    session && session.route && session.route.href && todayActionHref && session.route.href === todayActionHref
+  );
   const outcomeLedger = window.PlataGuidedSession && window.PlataGuidedSession.readOutcomeLedger
     ? window.PlataGuidedSession.readOutcomeLedger()
     : null;
-  container.innerHTML = guidedSessionPanelHtml(session, outcomeLedger);
+  container.innerHTML = guidedSessionPanelHtml(session, outcomeLedger, { companionMode });
 }
 
 function advisorAdviceForPracticePlan(plan, memoryFacts, step) {
@@ -1622,14 +1671,8 @@ function renderCompetencyList() {
           <span>${escapeHtml(missTryText(item.wrong, item.total))} · ${Math.round(item.errorRate * 100)}% error rate</span>
           <span>${item.signals.map(signal => `${escapeHtml(signal.tag)} · ${escapeHtml(missTryText(signal.wrong, signal.total))}`).join(" · ")}</span>
         </div>
-        ${repair ? `
-          <div class="repair-block">
-            <span class="eyebrow">Best first repair</span>
-            <strong>${escapeHtml(primary.label || primary.tag)}</strong>
-            <p>${escapeHtml(repair.action)}</p>
-            <a href="${escapeHtml(repair.href)}">${escapeHtml(primary.trainerIcon || repair.trainerIcon || "")} Open scene →</a>
-          </div>
-        ` : ""}
+        ${repair ? repairBlockHtml(repair) : ""}
+        ${repair && repair.drillRepair ? repairBlockHtml(repair.drillRepair) : ""}
     `;
     const layer = headroom();
     if (layer && layer.compressCompetency) {
@@ -1669,14 +1712,7 @@ function renderMasteryList() {
           <span>${escapeHtml(missTryText(signal.wrong, signal.total))}</span>
           <span>${signal.trainers.map(t => `${t.icon} ${escapeHtml(t.name)}`).join(" · ")}</span>
         </div>
-        ${signal.remediations.length ? signal.remediations.slice(0, 2).map(repair => `
-          <div class="repair-block">
-            <span class="eyebrow">Repair path</span>
-            <strong>${escapeHtml(repair.cta)}</strong>
-            <p>${escapeHtml(repair.action)}</p>
-            <a href="${escapeHtml(repair.href)}">${escapeHtml(repair.trainerIcon)} Open scene →</a>
-          </div>
-        `).join("") : ""}
+        ${signal.remediations.length ? signal.remediations.slice(0, 3).map(repair => repairBlockHtml(repair)).join("") : ""}
     `;
     const layer = headroom();
     if (layer && layer.compressMasterySignal) {

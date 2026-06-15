@@ -69,6 +69,17 @@ function run() {
   assert(/headroom-bar/.test(bar), "renderBar returns bar markup");
   assert(/Read passive agency/.test(bar), "dashboard bar mentions top signal");
 
+  var proof = layer.compressProofSnapshot({
+    passing: true,
+    digest: { status: "pass", headline: "The public proof surface is coherent" },
+    demo: { status: "pass" },
+    journey: { status: "pass", traceId: "evaljourney-demo", totals: { stages: 6 } },
+    health: { totals: { gates: 42, issues: 0 } },
+    capabilities: { totals: { capabilities: 10, issues: 0 } }
+  });
+  assert(proof.verdict.includes("coherent"), "proof verdict uses digest headline");
+  assert(proof.nextHref === "#proof-walkthrough", "proof next links to walkthrough");
+
   console.log("ok - PlataHeadroom compress + render");
 }
 

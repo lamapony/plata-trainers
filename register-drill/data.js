@@ -1,0 +1,144 @@
+/* platå · register-drill · data v0.1
+ *
+ * B2 public-service register repair after narrative misses.
+ * Pairs with lesson-b2-radiator-register (passive official replies).
+ * Source notes: radiator gold lesson, audit-lesson-exercises editorial rules.
+ *
+ * Categories: passive, deadline, escalation, blandet
+ */
+
+window.PLATA_DATA = {
+  register: [
+    { cat: "passive", weakTags: ["passive-agency", "formal-register-control"],
+      prompt: "Du svarer på en passiv besked fra udlejeren om radiatoren. Vælg den professionelle opfølgning med tydelig aktør og dato:",
+      options: [
+        "Vores tekniker kontakter Dem senest fredag med en konkret tid.",
+        "Der gives besked om, at radiatoren repareres hurtigst muligt.",
+        "Radiatoren bliver set på, når det kan lade sig gøre.",
+        "Man vender tilbage, så snart der er nyt."
+      ],
+      correct: 0,
+      why: "Navngiv aktøren (tekniker) og en konkret tidsramme. De tre andre skjuler ansvar bag passiv eller ubestemt 'man'." },
+
+    { cat: "passive", weakTags: ["passive-agency"],
+      prompt: "Vælg den mest professionelle formulering til Borgerservice:",
+      options: [
+        "Jeg beder om en skriftlig bekræftelse af, hvem der behandler min sag, og hvornår jeg kan forvente svar.",
+        "Der bliver set på sagen, og jeg får svar senere.",
+        "Kan I ikke bare fikse det hurtigt?",
+        "Jeg håber, at der snart sker noget."
+      ],
+      correct: 0,
+      why: "Offentlig dansk kræver stadig agency: du beder om aktør + tidsramme uden at presse for meget." },
+
+    { cat: "passive", weakTags: ["passive-agency", "formal-register-control"],
+      prompt: "Udlejeren skriver: «Sagen er noteret.» Vælg et høfligt svar, der holder register uden at acceptere passivitet:",
+      options: [
+        "Tak for noteringen. Hvem er ansvarlig for opfølgning, og hvilken dato kan jeg forvente et udkald?",
+        "Okay, så venter jeg bare.",
+        "Det er ikke godt nok — I må komme i dag.",
+        "Jeg går ud fra, at det ordner sig af sig selv."
+      ],
+      correct: 0,
+      why: "Tak + præcis opfølgning bevarer formalitet og agency. Trusler eller passiv accept ødelægger register-træningen." },
+
+    { cat: "passive", weakTags: ["formal-register-control", "consequence-aware-tone"],
+      prompt: "Vælg den sætning, der lyder mest passende i en formel e-mail til en boligforening:",
+      options: [
+        "Jeg skriver for at få bekræftet næste skridt i sagen om den kolde radiator i lejlighed 4B.",
+        "Radiatoren virker stadig ikke, og det er virkelig koldt.",
+        "Fix det nu — det er uacceptabelt.",
+        "Hej, kan I hjælpe med noget varme?"
+      ],
+      correct: 0,
+      why: "Formel kanal = præcis sag + neutral tone. Emotion eller slang bryder register-kontrakten." },
+
+    { cat: "deadline", weakTags: ["consequence-aware-tone", "passive-agency"],
+      prompt: "Du har fået et vagt løfte om reparation. Vælg en høflig deadline-anmodning:",
+      options: [
+        "Kan De bekræfte en dato senest mandag, så jeg kan planlægge alternativ opvarmning?",
+        "I må komme i morgen, ellers klager jeg.",
+        "Bare kom når I har tid.",
+        "Jeg venter bare på, at nogen gør noget."
+      ],
+      correct: 0,
+      why: "Deadline med begrundelse (alternativ opvarmning) er professionel. Trusel eller passiv venten mangler agency." },
+
+    { cat: "deadline", weakTags: ["formal-register-control"],
+      prompt: "Første svar fra myndigheden kom efter tre uger. Vælg en passende opfølgning:",
+      options: [
+        "Jeg følger op på min henvendelse af 3. maj og beder om en opdateret tidsplan for behandlingen.",
+        "Hvorfor svarer I aldrig?",
+        "Det er pinligt langsomt.",
+        "Jeg går ud fra, at I stadig arbejder på det."
+      ],
+      correct: 0,
+      why: "Dato + neutral opfølgning holder register. Klage-tone eller passiv accept træner ikke deadline-stance." },
+
+    { cat: "deadline", weakTags: ["passive-agency", "understatement-with-agency"],
+      prompt: "Vælg formuleringen med tydelig agency uden at lyde desperat:",
+      options: [
+        "Hvis jeg ikke hører fra Dem inden fredag, må jeg desværre kontakte Forbrugerombudsmanden.",
+        "I er nødt til at hjælpe mig NU!!!",
+        "Måske kunne der ske noget en dag.",
+        "Det er ligegyldigt — jeg giver op."
+      ],
+      correct: 0,
+      why: "Understatement med konsekvens: navngiv næste skridt og en dato. Panik eller passivitet undgår agency." },
+
+    { cat: "deadline", weakTags: ["consequence-aware-tone"],
+      prompt: "Du skal bekræfte et møde med Borgerservice. Vælg det bedste svar:",
+      options: [
+        "Jeg bekræfter tiden tirsdag kl. 10.30 og beder om navnet på den sagsbehandler, jeg møder.",
+        "Super, vi ses.",
+        "Kan vi ikke bare tage det på telefonen i stedet?",
+        "Jeg kommer måske."
+      ],
+      correct: 0,
+      why: "Bekræft tid + bed om aktør. Korthed uden detaljer efterlader dig passiv i den officielle proces." },
+
+    { cat: "escalation", weakTags: ["understatement-with-agency", "formal-register-control"],
+      prompt: "Anden henvendelse uden svar. Vælg en høflig eskalering:",
+      options: [
+        "Da jeg endnu ikke har modtaget svar på min henvendelse af 12. juni, beder jeg om en opdatering fra den ansvarlige sagsbehandler.",
+        "Nu er jeg virkelig sur.",
+        "I er de værste udlejere ever.",
+        "Jeg siger ikke mere — I må finde ud af det."
+      ],
+      correct: 0,
+      why: "Eskalering = gentag reference + bed om aktør. Emotion eller passiv boykot træner ikke professionel persistence." },
+
+    { cat: "escalation", weakTags: ["understatement-with-agency"],
+      prompt: "Vælg den formulering, der bløder tonen op uden at undvige:",
+      options: [
+        "Jeg forstår, at sagen kan tage tid, men jeg har brug for at vide, hvem der følger op, og hvornår.",
+        "Det er fint — jeg gider ikke vente alligevel.",
+        "Bare gør hvad I vil.",
+        "I skal bare ordne det, punktum."
+      ],
+      correct: 0,
+      why: "Understatement med agency: anerkend tempo, men kræv aktør og tid. Undvigelse eller hårdhed mangler den øvede balance." },
+
+    { cat: "escalation", weakTags: ["consequence-aware-tone", "passive-agency"],
+      prompt: "Du vil eskalere til administrator. Vælg den mest professionelle åbning:",
+      options: [
+        "Jeg kontakter Dem, fordi min henvendelse til drift den 4. juni ikke har givet et konkret svar om radiatorens reparation.",
+        "Din kollega gør ingenting.",
+        "Alle jeres svar er ligegyldige.",
+        "Der sker ikke noget, så nu skriver jeg til chefen."
+      ],
+      correct: 0,
+      why: "Eskalering med fakta og dato — ikke personangreb. Passiv frustration uden struktur svækker din position." },
+
+    { cat: "escalation", weakTags: ["formal-register-control", "consequence-aware-tone"],
+      prompt: "Afslut en formel eskalering med den bedste afslutning:",
+      options: [
+        "Jeg ser frem til Deres svar senest på fredag og takker på forhånd for opfølgningen.",
+        "Hilsen, fix det.",
+        "Mvh, whatever.",
+        "Venlig hilsen — I ved hvad I skal."
+      ],
+      correct: 0,
+      why: "Formel afslutning + deadline + tak bevarer register. Slack-tone i en officiel eskalering bryder kanalen." }
+  ]
+};
