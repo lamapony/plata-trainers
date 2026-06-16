@@ -2,7 +2,7 @@
 
 Date: 2026-06-13  
 Track: Factory Day 6 (`plans/FACTORY_NEXT.md`)  
-Status: Active — thin slices shipped for backlog #1 (channel) and #2 (register passive)
+Status: Active — thin slices shipped for backlog #1 (channel), #2 (register passive), and #3 (ordstilling repair routing)
 
 ---
 
@@ -28,11 +28,12 @@ Every backlog item must name a **concrete learner situation**, an **existing mas
 - **Route:** `lesson-b2-radiator-register` scene repair → `register-drill/?signal=…&from=lesson-b2-radiator-register` → return to `official-reply-passive` repair mode.
 - **Artifact:** `register-drill/` (12 MC items · passive / deadline / escalation)
 
-### 3. B1/A2 word-order repair pack (partial — narrative exists)
+### 3. B1/A2 word-order repair pack — **thin slice shipped**
 
 - **Situation:** Fronted time/place adverbials break V2 in email and chat after the conference narrative.
-- **Signals:** `v2-placement`, `inversion-fronted-adverbial`, `fordi-derfor-clause`
-- **Route:** `lesson-b2-ordstilling` → `ordstilling-drill/` (already wired).
+- **Signals:** `v2-placement`, `inversion-fronted-adverbial`, `fordi-derfor-clause`, `ordstilling-principle`
+- **Route:** `lesson-b2-ordstilling` scene miss → `ordstilling-drill/?cat=…&signal=…&from=lesson-b2-ordstilling` → return to narrative repair mode.
+- **Artifact:** `ordstilling-drill/` (54 MC items · V2 / inversion / ledsætning / blandet) with URL category routing from lesson signals.
 
 ### 4. B1 noun/verb trap pack (not started)
 

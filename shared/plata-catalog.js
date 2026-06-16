@@ -217,9 +217,18 @@
         "consequence-aware-tone": true,
         "understatement-with-agency": true
       };
-      var linkOptions = sourceTrainerId === "lesson-b2-radiator-register" && channelSignals[signalTag]
-        ? { cat: "channel" }
-        : null;
+      var ordstillingCatMap = {
+        "v2-placement": "v2",
+        "inversion-fronted-adverbial": "inversion",
+        "fordi-derfor-clause": "ledsaetning",
+        "ordstilling-principle": "blandet"
+      };
+      var linkOptions = null;
+      if (sourceTrainerId === "lesson-b2-radiator-register" && channelSignals[signalTag]) {
+        linkOptions = { cat: "channel" };
+      } else if (drill.id === "ordstilling" && ordstillingCatMap[signalTag]) {
+        linkOptions = { cat: ordstillingCatMap[signalTag] };
+      }
       return {
         kind: "drill",
         cta: "Run " + drill.name,

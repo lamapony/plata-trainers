@@ -139,6 +139,11 @@ function runDrillRepairRoutingSmoke(context) {
   assert(link.includes("signal=v2-placement"), "drill repair link carries mastery signal");
   assert(link.includes("from=lesson-b2-ordstilling"), "drill repair link carries source lesson");
 
+  const inversionRemediation = catalog.drillRemediation("inversion-fronted-adverbial", "lesson-b2-ordstilling");
+  assert(inversionRemediation && inversionRemediation.href.includes("cat=inversion"), "ordstilling lesson inversion miss should open inversion category");
+  const clauseRemediation = catalog.drillRemediation("fordi-derfor-clause", "lesson-b2-ordstilling");
+  assert(clauseRemediation && clauseRemediation.href.includes("cat=ledsaetning"), "ordstilling lesson clause miss should open ledsætning category");
+
   const registerDrill = catalog.drillForSignal("passive-agency");
   assert(registerDrill && registerDrill.id === "register", "catalog maps passive-agency to register drill");
   const registerLink = catalog.drillRepairLink(registerDrill, "passive-agency", "lesson-b2-radiator-register");
