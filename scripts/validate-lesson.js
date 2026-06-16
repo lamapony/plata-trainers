@@ -12,6 +12,11 @@ const warnings = [];
 function issue(message) { issues.push(message); }
 function warn(message) { warnings.push(message); }
 
+function sceneTrainsTag(scene, tag) {
+  if ((scene.masteryTags || []).includes(tag)) return true;
+  return (scene.options || []).some(option => (option.weakTags || []).includes(tag));
+}
+
 function loadLesson(relPath) {
   const source = fs.readFileSync(resolveInputPath(relPath), "utf8");
   const context = { window: {} };
@@ -195,7 +200,7 @@ function validateGoldMasteryMap(lessonMeta, lesson) {
         issue(`${prefix}.remediation.sceneId: required non-empty string`);
       } else if (!scenesById.has(spec.remediation.sceneId)) {
         issue(`${prefix}.remediation.sceneId: unknown scene "${spec.remediation.sceneId}"`);
-      } else if (!((scenesById.get(spec.remediation.sceneId).masteryTags || []).includes(key))) {
+      } else if (!sceneTrainsTag(scenesById.get(spec.remediation.sceneId), key)) {
         issue(`${prefix}.remediation.sceneId: scene "${spec.remediation.sceneId}" does not train mastery tag "${key}"`);
       }
       if (!nonEmptyString(spec.remediation.cta)) issue(`${prefix}.remediation.cta: required non-empty string`);

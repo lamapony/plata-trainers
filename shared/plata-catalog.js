@@ -17,8 +17,12 @@
           level: "A2",
           theme: "Form recall",
           estimatedMinutes: 8,
-          repairs: "verb tenses · noun inflection",
-          repairSignals: [],
+          repairs: "verb tenses · noun inflection · common-gender · irregular plural · strong past",
+          repairSignals: [
+            "common-gender-noun",
+            "irregular-plural-noun",
+            "strong-verb-past"
+          ],
           sequence: 1
         }
       },
@@ -223,11 +227,18 @@
         "fordi-derfor-clause": "ledsaetning",
         "ordstilling-principle": "blandet"
       };
+      var bojningTrapMap = {
+        "common-gender-noun": "common-gender",
+        "irregular-plural-noun": "irregular-plural",
+        "strong-verb-past": "strong-verb"
+      };
       var linkOptions = null;
       if (sourceTrainerId === "lesson-b2-radiator-register" && channelSignals[signalTag]) {
         linkOptions = { cat: "channel" };
       } else if (drill.id === "ordstilling" && ordstillingCatMap[signalTag]) {
         linkOptions = { cat: ordstillingCatMap[signalTag] };
+      } else if (drill.id === "bojning" && bojningTrapMap[signalTag]) {
+        linkOptions = { cat: bojningTrapMap[signalTag] };
       }
       return {
         kind: "drill",
