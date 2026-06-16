@@ -18,7 +18,7 @@
       id: "register-control",
       label: "Register control",
       copy: "Can choose formality, platform, and phrase signals for the relationship in front of them.",
-      tags: ["formal-register-control", "platform-register-shift", "register-signal-control", "courtesy-loop", "inversion-fronted-adverbial", "v2-placement", "fordi-derfor-clause"]
+      tags: ["formal-register-control", "platform-register-shift", "register-signal-control", "courtesy-loop", "inversion-fronted-adverbial", "v2-placement", "fordi-derfor-clause", "common-gender-noun", "irregular-plural-noun", "strong-verb-past"]
     },
     {
       id: "stance-reading",

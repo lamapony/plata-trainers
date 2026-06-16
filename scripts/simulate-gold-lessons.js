@@ -11,6 +11,11 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function sceneTrainsTag(scene, tag) {
+  if ((scene.masteryTags || []).includes(tag)) return true;
+  return (scene.options || []).some(option => (option.weakTags || []).includes(tag));
+}
+
 function loadContext() {
   const storage = {};
   const context = {
@@ -130,8 +135,13 @@ function resolveEnding(lesson, variables) {
   return null;
 }
 
-function recordSceneAttempt(context, state, lesson, scene, correct, given, expected) {
+function recordSceneAttempt(context, state, lesson, scene, correct, given, expected, option) {
   const tags = context.PlataLessonEngine.getSceneAttemptTags(scene);
+  if (!correct && option && Array.isArray(option.weakTags)) {
+    option.weakTags.forEach(tag => {
+      if (tag && !tags.includes(tag)) tags.push(tag);
+    });
+  }
   scene.masteryTags.forEach(tag => {
     assert(tags.includes(tag), `${lesson.id}::${scene.id}: missing recorded mastery tag ${tag}`);
   });
@@ -188,7 +198,7 @@ function simulateChoiceAction(context, state, lesson, variables, scene, action) 
     assert(option.correct === action.expectCorrect, `${lesson.id}::${scene.id}.${option.id}: expected correctness ${action.expectCorrect}, got ${option.correct}`);
   }
   applyEffects(variables, option.effects);
-  recordSceneAttempt(context, state, lesson, scene, !!option.correct, option.label, correctLabel(scene.options));
+  recordSceneAttempt(context, state, lesson, scene, !!option.correct, option.label, correctLabel(scene.options), option);
   return 1;
 }
 
@@ -348,7 +358,7 @@ function simulateGoldLesson(context, lesson) {
     pathResult.weakMastery.forEach(tag => exercisedSignals.add(tag));
   });
   masteryKeys.forEach(tag => {
-    const inAnyScene = lesson.scenes.some(scene => (scene.masteryTags || []).includes(tag));
+    const inAnyScene = lesson.scenes.some(scene => sceneTrainsTag(scene, tag));
     assert(inAnyScene, `${lesson.id}: mastery tag not attached to any scene: ${tag}`);
   });
 

@@ -138,8 +138,13 @@ function resolveEnding(lesson, variables) {
   return endingIds.find(id => endingRuleMatches(lesson.endingLogic[id], variables)) || null;
 }
 
-function recordAttempt(context, state, scene, correct, given, expected) {
+function recordAttempt(context, state, scene, correct, given, expected, option) {
   const tags = context.PlataLessonEngine.getSceneAttemptTags(scene);
+  if (!correct && option && Array.isArray(option.weakTags)) {
+    option.weakTags.forEach(tag => {
+      if (tag && !tags.includes(tag)) tags.push(tag);
+    });
+  }
   context.PlataKernel.recordAttempt(state, {
     itemId: scene.id,
     correct,
@@ -166,7 +171,7 @@ function actionMapForPath(lesson, pathSpec) {
 function simulateChoice(context, state, lesson, variables, scene, action) {
   const option = optionById(lesson, scene, action.optionId);
   applyEffects(variables, option.effects);
-  recordAttempt(context, state, scene, !!option.correct, option.label, correctLabel(scene));
+  recordAttempt(context, state, scene, !!option.correct, option.label, correctLabel(scene), option);
   return 1;
 }
 

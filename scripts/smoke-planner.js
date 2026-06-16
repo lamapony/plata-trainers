@@ -12,6 +12,7 @@ const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-plann
 const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catalog.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const ordstillingLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-ordstilling", "data.js"), "utf8");
+const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -50,6 +51,7 @@ function makeContext() {
   vm.runInContext(catalogSource, context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(radiatorLessonSource, context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(ordstillingLessonSource, context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
+  vm.runInContext(jobFollowupLessonSource, context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   return context;
 }
 
@@ -156,6 +158,17 @@ function runDrillRepairRoutingSmoke(context) {
   const channelRemediation = catalog.drillRemediation("understatement-with-agency", "lesson-b2-radiator-register");
   assert(channelRemediation && channelRemediation.href.includes("cat=channel"), "radiator channel signals should open channel drill category");
 
+  const bojningDrill = catalog.drillForSignal("common-gender-noun");
+  assert(bojningDrill && bojningDrill.id === "bojning", "catalog maps common-gender-noun to bojning drill");
+  const genderRemediation = catalog.drillRemediation("common-gender-noun", "lesson-b2-job-followup");
+  assert(genderRemediation && genderRemediation.href.includes("bojning-drill"), "common-gender-noun should route to bojning drill");
+  assert(genderRemediation.href.includes("cat=common-gender"), "bojning trap should open common-gender category");
+  assert(genderRemediation.href.includes("signal=common-gender-noun"), "bojning trap link carries mastery signal");
+  const pluralRemediation = catalog.drillRemediation("irregular-plural-noun", "lesson-b2-job-followup");
+  assert(pluralRemediation && pluralRemediation.href.includes("cat=irregular-plural"), "irregular plural trap should open irregular-plural category");
+  const strongVerbRemediation = catalog.drillRemediation("strong-verb-past", "lesson-b2-job-followup");
+  assert(strongVerbRemediation && strongVerbRemediation.href.includes("cat=strong-verb"), "strong verb trap should open strong-verb category");
+
   const radState = kernel.freshState("lesson-b2-radiator-register");
   kernel.recordAttempt(radState, {
     itemId: "official-reply-passive-too-trusting",
@@ -191,6 +204,24 @@ function runDrillRepairRoutingSmoke(context) {
   assert(decision.kind === "repair", "ordstilling lesson miss should recommend repair");
   assert(decision.secondaryHref.includes("ordstilling-drill"), "ordstilling lesson repair should offer drill secondary");
   assert(decision.secondaryHref.includes("signal=v2-placement"), "lesson drill secondary carries signal");
+
+  const jobState = kernel.freshState("lesson-b2-job-followup");
+  kernel.recordAttempt(jobState, {
+    itemId: "email-register",
+    correct: false,
+    tags: ["common-gender-noun", "B2", "formal-email"],
+    mode: "lesson",
+    expected: "Kære [Navn], jeg tager stilling til jeres henvendelse…",
+    given: "Kære [Navn], mit store interesse i stillingen…"
+  });
+  const jobDecision = context.PlataPlanner.lessonDecision({
+    lesson: context.PLATA_LESSON_B2_JOB_FOLLOWUP,
+    state: jobState,
+    rootPrefix: "../../"
+  });
+  assert(jobDecision.kind === "repair", "job follow-up gender miss should recommend repair");
+  assert(jobDecision.secondaryHref.includes("bojning-drill"), "job follow-up gender miss should offer bojning drill secondary");
+  assert(jobDecision.secondaryHref.includes("cat=common-gender"), "job follow-up bojning secondary opens common-gender trap");
 }
 
 function runDrillDecisionSmoke(context) {
@@ -469,6 +500,7 @@ function run() {
   console.log("ok - planner recommends lesson repair from weak mastery");
   console.log("ok - planner routes weak word-order signals to ordstilling drill repair");
   console.log("ok - planner routes passive-agency signals to register drill repair");
+  console.log("ok - planner routes noun/verb trap signals to bojning drill repair");
   console.log("ok - planner ranks drill repeat, continue, and enough decisions");
   console.log("ok - planner ranks dashboard decisions from the same contract");
   console.log("ok - planner tracks active practice-plan completion");
