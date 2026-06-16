@@ -2,7 +2,7 @@
  *
  * Multiple choice register / agency drill after B2 narrative misses.
  * Lite SM-2 spaced repetition (same shape as ordstilling-drill).
- * Categories: passive, deadline, escalation, blandet
+ * Categories: passive, deadline, escalation, channel, blandet
  */
 
 (function () {
@@ -288,7 +288,23 @@
   }
 
   function applyRepairSignalFromUrl() {
-    const signal = new URLSearchParams(window.location.search).get("signal");
+    const params = new URLSearchParams(window.location.search);
+    const catParam = params.get("cat");
+    if (catParam && ["passive", "deadline", "escalation", "channel", "blandet"].includes(catParam)) {
+      category = catParam;
+      return;
+    }
+    const signal = params.get("signal");
+    const fromLesson = params.get("from") || "";
+    const channelSignals = {
+      "formal-register-control": true,
+      "consequence-aware-tone": true,
+      "understatement-with-agency": true
+    };
+    if (fromLesson === "lesson-b2-radiator-register" && signal && channelSignals[signal]) {
+      category = "channel";
+      return;
+    }
     if (signal && SIGNAL_CATEGORY[signal]) category = SIGNAL_CATEGORY[signal];
   }
 

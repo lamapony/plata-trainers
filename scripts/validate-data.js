@@ -90,7 +90,7 @@ if (!reg || !Array.isArray(reg.register)) {
     if (Array.isArray(item.options) && nonEmptyString(item.options[item.correct]) === false) fail(`register[${i}]: correct option is empty`);
     if (!nonEmptyString(item.why)) fail(`register[${i}]: missing why explanation`);
   });
-  for (const expected of ["passive", "deadline", "escalation"]) {
+  for (const expected of ["passive", "deadline", "escalation", "channel"]) {
     if (!regCats.has(expected)) fail(`register: missing category ${expected}`);
   }
 }

@@ -146,6 +146,11 @@ function runDrillRepairRoutingSmoke(context) {
   assert(registerLink.includes("signal=passive-agency"), "register drill repair link carries mastery signal");
   assert(registerLink.includes("from=lesson-b2-radiator-register"), "register drill repair link carries source lesson");
 
+  const channelLink = catalog.drillRepairLink(registerDrill, "formal-register-control", "lesson-b2-radiator-register", { cat: "channel" });
+  assert(channelLink.includes("cat=channel"), "register drill channel link carries category");
+  const channelRemediation = catalog.drillRemediation("understatement-with-agency", "lesson-b2-radiator-register");
+  assert(channelRemediation && channelRemediation.href.includes("cat=channel"), "radiator channel signals should open channel drill category");
+
   const radState = kernel.freshState("lesson-b2-radiator-register");
   kernel.recordAttempt(radState, {
     itemId: "official-reply-passive-too-trusting",

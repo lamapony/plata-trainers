@@ -4,7 +4,7 @@
  * Pairs with lesson-b2-radiator-register (passive official replies).
  * Source notes: radiator gold lesson, audit-lesson-exercises editorial rules.
  *
- * Categories: passive, deadline, escalation, blandet
+ * Categories: passive, deadline, escalation, channel, blandet
  */
 
 window.PLATA_DATA = {
@@ -139,6 +139,72 @@ window.PLATA_DATA = {
         "Venlig hilsen — I ved hvad I skal."
       ],
       correct: 0,
-      why: "Formel afslutning + deadline + tak bevarer register. Slack-tone i en officiel eskalering bryder kanalen." }
+      why: "Formel afslutning + deadline + tak bevarer register. Slack-tone i en officiel eskalering bryder kanalen." },
+
+    { cat: "channel", weakTags: ["formal-register-control", "consequence-aware-tone"],
+      prompt: "Samme intent: bed kollegaen om at flytte deadline. Vælg sætningen til en formel e-mail:",
+      options: [
+        "Jeg vil gerne bede om, at vi flytter leveringsdatoen til fredag, så jeg kan nå at gennemgå udkastet ordentligt.",
+        "Det er sgu ikke okay — I må bare flytte det.",
+        "Måske kunne vi finde en anden dato en dag.",
+        "Det løser sig nok, men det ville være fint med en ny dato på et tidspunkt."
+      ],
+      correct: 0,
+      why: "E-mail kanal = konkret anmodning uden chat-force. Sgu og passiv ubestemthed hører til andre kanaler." },
+
+    { cat: "channel", weakTags: ["consequence-aware-tone", "formal-register-control"],
+      prompt: "Du er uenig i Slack med en kollega om prioritering. Vælg det, der hører til kanalen:",
+      options: [
+        "Jeg er uenig i rækkefølgen — kan vi tage det i morgen og finde en dato, der holder for begge?",
+        "Det er sgu ikke godt nok. I må fikse det nu.",
+        "Kære alle, jeg er meget skuffet over jeres prioritering.",
+        "Jeg går ud fra, at det ordner sig af sig selv."
+      ],
+      correct: 0,
+      why: "Slack tillader kort uenighed + næste skridt. Formel eskalering eller passiv accept passer dårligt i tråden." },
+
+    { cat: "channel", weakTags: ["understatement-with-agency", "consequence-aware-tone"],
+      prompt: "Mette spørger ved kaffemaskinen, om projektet hænger. Vælg det afbalancerede svar:",
+      options: [
+        "Der har været lidt bøvl med tidsplanen, men jeg har bedt om en ny deadline fredag.",
+        "Alt er kaos, og ledelsen gør ingenting.",
+        "Det går fint — der er ingen problemer overhovedet.",
+        "Jeg kan ikke snakke om det her."
+      ],
+      correct: 0,
+      why: "Ansigt-til-ansigt: lidt bøvl + agency-word + konkret næste skridt. Drama eller total undvigelse skader tilliden." },
+
+    { cat: "channel", weakTags: ["formal-register-control"],
+      prompt: "Du skal IKKE kopiere Slack-teksten ind i e-mail til chefen. Vælg den rigtige e-mail-version:",
+      options: [
+        "Jeg vil gerne følge op på vores diskussion og bede om en afklaring af deadline senest onsdag.",
+        "Det er sgu ikke godt nok — I må fikse det nu.",
+        "Som jeg skrev i Slack: det er sgu ikke okay.",
+        "Hej hej, kan vi ikke bare finde ud af det?"
+      ],
+      correct: 0,
+      why: "Kanaltransfer: fjern sgu og privat vrede; behold intent (deadline) i formelt register." },
+
+    { cat: "channel", weakTags: ["understatement-with-agency", "formal-register-control"],
+      prompt: "Du er uenig i et møde, men vil ikke eskalere tonen. Vælg det professionelle indspark:",
+      options: [
+        "Jeg er ikke helt enig i rækkefølgen — kan vi finde en dato, der også holder for mit team?",
+        "Det her er bare forkert, punktum.",
+        "Det går fint nok, I bestemmer.",
+        "Jeg siger ingenting og sender en vred e-mail bagefter."
+      ],
+      correct: 0,
+      why: "Mødekanal: tydelig uenighed uden angreb + konkret næste skridt. Hårdhed eller passiv boykot ødelægger rummet." },
+
+    { cat: "channel", weakTags: ["consequence-aware-tone"],
+      prompt: "Vælg sætningen, der hører til LinkedIn — ikke til Slack-tråden om samme uenighed:",
+      options: [
+        "Jeg arbejder struktureret med deadlines og afstemmer forventninger tidligt i projekter.",
+        "Min chef forstår ikke prioritering — det er pinligt.",
+        "Det er sgu ikke godt nok, som vi planlægger.",
+        "Jeg er virkelig sur på mit team i dag."
+      ],
+      correct: 0,
+      why: "Offentlig kanal = kapabilitet og ro, ikke privat konflikt eller chat-slang." }
   ]
 };
