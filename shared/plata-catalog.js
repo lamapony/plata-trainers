@@ -50,15 +50,15 @@
         name: "Register drill",
         type: "drill",
         path: "./register-drill/",
-        description: "Multiple-choice practice for B2 public-service Danish: name the actor, set deadlines, and escalate politely after passive official replies.",
+        description: "Multiple-choice practice for B2 register: passive agency in official Danish, channel transfer across Slack/email/meeting, deadlines, and polite escalation.",
         icon: "✉️",
         gallery: {
           tag: "B2 register",
           role: "repair",
           level: "B2",
-          theme: "Public-service Danish",
+          theme: "Public-service & workplace Danish",
           estimatedMinutes: 8,
-          repairs: "passive agency · deadlines · polite escalation",
+          repairs: "passive agency · channel transfer · deadlines · polite escalation",
           repairSignals: [
             "passive-agency",
             "formal-register-control",
@@ -197,12 +197,13 @@
       }
       return null;
     },
-    drillRepairLink: function (drill, signalTag, sourceTrainerId) {
+    drillRepairLink: function (drill, signalTag, sourceTrainerId, linkOptions) {
       if (!drill || !drill.path) return "";
       var href = drill.path;
       var params = [];
       if (signalTag) params.push("signal=" + encodeURIComponent(signalTag));
       if (sourceTrainerId) params.push("from=" + encodeURIComponent(sourceTrainerId));
+      if (linkOptions && linkOptions.cat) params.push("cat=" + encodeURIComponent(linkOptions.cat));
       if (!params.length) return href;
       var joiner = href.indexOf("?") === -1 ? "?" : "&";
       return href + joiner + params.join("&");
@@ -211,13 +212,21 @@
       var drill = this.drillForSignal(signalTag);
       if (!drill) return null;
       var repairs = drill.gallery && drill.gallery.repairs ? drill.gallery.repairs : "";
+      var channelSignals = {
+        "formal-register-control": true,
+        "consequence-aware-tone": true,
+        "understatement-with-agency": true
+      };
+      var linkOptions = sourceTrainerId === "lesson-b2-radiator-register" && channelSignals[signalTag]
+        ? { cat: "channel" }
+        : null;
       return {
         kind: "drill",
         cta: "Run " + drill.name,
         action: repairs
           ? "You missed this in a story. Repair the reflex with a short drill: " + repairs + "."
           : "You missed this in a story. A short drill session repairs the reflex faster than rereading the scene.",
-        href: this.drillRepairLink(drill, signalTag, sourceTrainerId),
+        href: this.drillRepairLink(drill, signalTag, sourceTrainerId, linkOptions),
         trainerIcon: drill.icon,
         trainerName: drill.name,
         drillId: drill.id

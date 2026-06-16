@@ -2,7 +2,7 @@
 
 Date: 2026-06-13  
 Track: Factory Day 6 (`plans/FACTORY_NEXT.md`)  
-Status: Active — first thin slice shipped as `register-drill/`
+Status: Active — thin slices shipped for backlog #1 (channel) and #2 (register passive)
 
 ---
 
@@ -14,12 +14,12 @@ Every backlog item must name a **concrete learner situation**, an **existing mas
 
 ## Ranked backlog
 
-### 1. B2 workplace disagreement (not started)
+### 1. B2 workplace disagreement — **thin slice shipped**
 
 - **Situation:** Same intent must land differently in Slack, email, and face-to-face without sounding evasive or aggressive.
 - **Signals:** `understatement-with-agency`, `consequence-aware-tone`, `formal-register-control`
-- **Route:** New gold lesson or multi-channel scene pack; drill fallback only if gold contract is too heavy.
-- **Source notes:** Professional register corpus; radiator/job-followup channel-transfer patterns.
+- **Route:** `lesson-b2-radiator-register` (`#channel-transfer-lab` + workplace scenes) → `register-drill/?cat=channel&signal=…&from=lesson-b2-radiator-register` → return to narrative repair mode.
+- **Artifact:** `register-drill/` category **Kanalvalg** (6 MC items · Slack / email / meeting / public channel)
 
 ### 2. B2 public-service reply — **thin slice shipped**
 
