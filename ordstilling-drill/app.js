@@ -297,10 +297,32 @@
     return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
 
+  const SIGNAL_CATEGORY = {
+    "v2-placement": "v2",
+    "inversion-fronted-adverbial": "inversion",
+    "fordi-derfor-clause": "ledsaetning",
+    "ordstilling-principle": "blandet"
+  };
+
+  function applyRepairSignalFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const catParam = params.get("cat");
+    if (catParam && ["v2", "inversion", "ledsaetning", "blandet"].includes(catParam)) {
+      category = catParam;
+      return;
+    }
+    const signal = params.get("signal");
+    if (signal && SIGNAL_CATEGORY[signal]) category = SIGNAL_CATEGORY[signal];
+  }
+
+  function syncCategoryChips() {
+    [...els.catGroup.querySelectorAll(".chip")].forEach((c) => c.setAttribute("aria-selected", c.dataset.cat === category ? "true" : "false"));
+  }
+
   // ---------- mode switching ----------
   function setCategory(newCat) {
     category = newCat;
-    [...els.catGroup.querySelectorAll(".chip")].forEach((c) => c.setAttribute("aria-selected", c.dataset.cat === category ? "true" : "false"));
+    syncCategoryChips();
     startNewSession();
   }
 
@@ -369,6 +391,9 @@
       e.target.value = "";
     });
     els.resetBtn.addEventListener("click", doReset);
+
+    applyRepairSignalFromUrl();
+    syncCategoryChips();
 
     for (const it of window.PLATA_DATA.ordstilling) ensureItemRecord(itemIdFor(it), ["ordstilling", it.cat]);
     saveState();
