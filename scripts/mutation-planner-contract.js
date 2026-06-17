@@ -176,6 +176,11 @@ function assertPlannerRepairContract(context, entry, tag, spec, scene) {
   assert(routed.includes("signal=" + encodeURIComponent(tag)), "practicePlan route is missing repair signal");
 }
 
+function sceneTrainsTag(scene, tag) {
+  if ((scene.masteryTags || []).includes(tag)) return true;
+  return (scene.options || []).some(option => (option.weakTags || []).includes(tag));
+}
+
 function issuesForPlannerContracts(context, entries) {
   const graph = context.PlataCompetencies;
   const knownCompetencies = new Set(graph.definitions().map(def => def.id));
@@ -198,7 +203,7 @@ function issuesForPlannerContracts(context, entries) {
         assert(nonEmpty(spec.remediation.action), "remediation.action is required");
         const scene = sceneMap[spec.remediation.sceneId];
         assert(scene, `remediation scene ${spec.remediation.sceneId} does not exist`);
-        assert((scene.masteryTags || []).includes(tag), `remediation scene ${scene.id} does not train ${tag}`);
+        assert(sceneTrainsTag(scene, tag), `remediation scene ${scene.id} does not train ${tag}`);
         assertPlannerRepairContract(context, entry, tag, spec, scene);
       } catch (err) {
         issues.push(`${prefix}: ${err.message}`);
