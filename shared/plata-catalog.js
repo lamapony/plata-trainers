@@ -226,6 +226,8 @@
       var linkOptions = null;
       if (sourceTrainerId === "lesson-b2-radiator-register" && channelSignals[signalTag]) {
         linkOptions = { cat: "channel" };
+      } else if (sourceTrainerId === "lesson-b2-job-followup" && signalTag === "consequence-aware-tone") {
+        linkOptions = { cat: "deadline" };
       } else if (drill.id === "ordstilling" && ordstillingCatMap[signalTag]) {
         linkOptions = { cat: ordstillingCatMap[signalTag] };
       }

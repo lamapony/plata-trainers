@@ -205,6 +205,28 @@ window.PLATA_DATA = {
         "Jeg er virkelig sur på mit team i dag."
       ],
       correct: 0,
-      why: "Offentlig kanal = kapabilitet og ro, ikke privat konflikt eller chat-slang." }
+      why: "Offentlig kanal = kapabilitet og ro, ikke privat konflikt eller chat-slang." },
+
+    { cat: "deadline", weakTags: ["consequence-aware-tone", "professional-email-agency"],
+      prompt: "Du afslutter en opfølgningsmail efter et jobinterview. Vælg den bedste afslutning:",
+      options: [
+        "Jeg ser frem til at høre om næste skridt i processen og står naturligvis til rådighed, hvis I har brug for yderligere oplysninger.",
+        "Jeg forventer svar senest fredag, da jeg har andre processer kørende.",
+        "Hvis det passer jer, må I endelig vende tilbage, når det er muligt.",
+        "Tak for alt — vi ses!"
+      ],
+      correct: 0,
+      why: "Balanceret afslutning: proces + til rådighed uden ultimatum og uden at forsvinde bag 'må I endelig'." },
+
+    { cat: "deadline", weakTags: ["consequence-aware-tone"],
+      prompt: "Hvilken afslutning presser for hårdt på svar i en formel opfølgningsmail?",
+      options: [
+        "Jeg forventer svar senest fredag, da jeg har andre processer kørende.",
+        "Jeg ser frem til at høre om næste skridt i processen.",
+        "Jeg står naturligvis til rådighed, hvis I har brug for yderligere oplysninger.",
+        "Tak for den gode dialog i torsdags."
+      ],
+      correct: 0,
+      why: "Senest fredag + andre processer signalerer pres — ikke rolig procesbevidsthed." }
   ]
 };

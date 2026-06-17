@@ -34,6 +34,17 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         avoid: ["readable Danish", "robotic corporate stock pose", "messy anxiety"]
       },
       {
+        id: "email-closing",
+        sceneId: "email-closing",
+        assetPath: "./assets/comic/email-closing.png",
+        alt: "The candidate chooses a professional closing line for the follow-up email.",
+        prompt: "A single comic panel showing the candidate pausing before sending, cursor near the closing paragraph of a formal email draft. The mood is calm decision-making: neither aggressive urgency nor vague disappearance. No readable text, no logos, no speech bubbles.",
+        sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
+        masteryTags: ["consequence-aware-tone"],
+        mustInclude: ["closing paragraph focus", "calm send decision", "formal desk"],
+        avoid: ["readable Danish", "panic send button", "brand logos"]
+      },
+      {
         id: "linkedin-choice",
         sceneId: "linkedin-choice",
         assetPath: "./assets/comic/linkedin-choice.png",
@@ -91,6 +102,17 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       },
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Den Danske Ordbog / ordnet.dk"]
     },
+    "consequence-aware-tone": {
+      competencyId: "consequence-awareness",
+      label: "Close without bulldozing or disappearing",
+      evidence: "The learner finishes a follow-up email with calm process language instead of a deadline threat or a vague vanishing act.",
+      remediation: {
+        sceneId: "email-closing",
+        cta: "Repair the email closing",
+        action: "Rerun the closing scene and balance acknowledgement with a concrete process signal — no ultimatum, no 'må I endelig vende tilbage'."
+      },
+      sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Den Danske Ordbog / ordnet.dk"]
+    },
     "platform-register-shift": {
       competencyId: "register-control",
       label: "Shift register by platform",
@@ -137,12 +159,13 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       {
         id: "professional",
         expectedEndingId: "professional",
-        expectedVariables: { employerTone: 2, desperation: 0, professionalism: 3, networkTrust: 3 },
-        expectedCorrect: 5,
+        expectedVariables: { employerTone: 3, desperation: 0, professionalism: 4, networkTrust: 3 },
+        expectedCorrect: 6,
         expectedWeakMastery: [],
         actions: [
           { sceneId: "silence-pressure", optionId: "wait-calm", expectCorrect: true },
           { sceneId: "email-register", optionId: "formal-warm", expectCorrect: true },
+          { sceneId: "email-closing", optionId: "closing-balanced", expectCorrect: true },
           { sceneId: "linkedin-choice", optionId: "linkedin-good", expectCorrect: true },
           { sceneId: "reply-consequence", answer: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt", expectCorrect: true },
           { sceneId: "epilogue", optionId: "principle-owned", expectCorrect: true }
@@ -151,12 +174,13 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       {
         id: "acceptable",
         expectedEndingId: "acceptable",
-        expectedVariables: { employerTone: 0, desperation: 0, professionalism: 1, networkTrust: 0 },
-        expectedCorrect: 3,
-        expectedWeakMastery: ["platform-register-shift", "professional-email-agency"],
+        expectedVariables: { employerTone: 1, desperation: 0, professionalism: 1, networkTrust: 1 },
+        expectedCorrect: 4,
+        expectedWeakMastery: ["consequence-aware-tone", "platform-register-shift", "professional-email-agency"],
         actions: [
           { sceneId: "silence-pressure", optionId: "wait-calm", expectCorrect: true },
-          { sceneId: "email-register", optionId: "stiff-passive", expectCorrect: false },
+          { sceneId: "email-register", optionId: "formal-warm", expectCorrect: true },
+          { sceneId: "email-closing", optionId: "closing-vague", expectCorrect: false },
           { sceneId: "linkedin-choice", optionId: "linkedin-generic", expectCorrect: false },
           { sceneId: "reply-consequence", answer: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt", expectCorrect: true },
           { sceneId: "epilogue", optionId: "principle-owned", expectCorrect: true }
@@ -165,12 +189,13 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       {
         id: "damaged",
         expectedEndingId: "damaged",
-        expectedVariables: { employerTone: -2, desperation: 4, professionalism: -2, networkTrust: -1 },
+        expectedVariables: { employerTone: -3, desperation: 6, professionalism: -3, networkTrust: -1 },
         expectedCorrect: 0,
-        expectedWeakMastery: ["platform-register-shift", "process-patience", "professional-agency-principle", "professional-email-agency", "reply-tone-reading"],
+        expectedWeakMastery: ["consequence-aware-tone", "platform-register-shift", "process-patience", "professional-agency-principle", "professional-email-agency", "reply-tone-reading"],
         actions: [
           { sceneId: "silence-pressure", optionId: "push-now", expectCorrect: false },
           { sceneId: "email-register", optionId: "casual-generic", expectCorrect: false },
+          { sceneId: "email-closing", optionId: "closing-pushy", expectCorrect: false },
           { sceneId: "linkedin-choice", optionId: "linkedin-pushy", expectCorrect: false },
           { sceneId: "reply-consequence", answer: "takke", expectCorrect: false },
           { sceneId: "epilogue", optionId: "principle-wait", expectCorrect: false }
@@ -202,7 +227,9 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
     { item: "modtage", function: "formal 'receive', not få — register marker" },
     { item: "jeg tager stilling til", function: "formal phrase: 'I address / respond to'" },
     { item: "partikler: jo/da/nok", function: "soften or position stance in professional mail" },
-    { item: "passiv: 'der gives svar'", function: "can sound evasive; active 'vi svarer' owns it" }
+    { item: "passiv: 'der gives svar'", function: "can sound evasive; active 'vi svarer' owns it" },
+    { item: "næste skridt i processen", function: "closing signal that names process without ultimatum" },
+    { item: "må I endelig vende tilbage", function: "over-deferential closing that hides agency" }
   ],
   sourceNotes: [
     {
@@ -268,6 +295,30 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       ],
       carry: "Carry-forward: 'Kære' signalerer formalitet; 'vi lægger vægt på', 'jeg tager stilling til', 'jeres henvendelse', 'takke', and a concrete reference to folk writing professionelt på dansk create professional warmth.",
       tags: ["B2", "formal-email", "register", "tage-stilling-til", "particles"]
+    },
+    {
+      id: "email-closing",
+      type: "choice",
+      eyebrow: "Scene 2b · Mailafslutning",
+      title: "Same email. The closing line decides whether you sound pushy or invisible.",
+      learningGoal: "Close a follow-up email with calm process language — neither a deadline threat nor a vanishing act.",
+      sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
+      masteryTags: ["consequence-aware-tone"],
+      pressure: "The opening was warm. The closing can still undo it: too direct reads desperate; too vague reads like you don't dare take space.",
+      narrative: "You have the opening and a short body. One closing sentence left before Send. The hiring manager will read this line twice — once alone, once forwarded to the CTO.",
+      dialogue: [
+        { speaker: "You (drafting)", line: "Jeg ser frem til… / Jeg forventer svar… / Må I endelig… — hvad signalerer hvad?" }
+      ],
+      notice: "Balanced closings name process (næste skridt, processen) without a deadline threat. Vague deferral (må I endelig vende tilbage) hides agency. Ultimatums (senest fredag + andre processer) leak desperation.",
+      targetPhrases: ["næste skridt i processen", "står til rådighed", "ser frem til at høre"],
+      prompt: "Choose the closing sentence that keeps warm professional Danish intact.",
+      options: [
+        { id: "closing-balanced", diagnostic: "process-aware-closing", label: "Jeg ser frem til at høre om næste skridt i processen og står naturligvis til rådighed, hvis I har brug for yderligere oplysninger.", detail: "process + availability, no ultimatum", correct: true, effects: { professionalism: 1, employerTone: 1 }, feedback: "Diagnostic: strong. You name the process, offer availability, and stay calm — no deadline weapon, no disappearing act." },
+        { id: "closing-pushy", diagnostic: "deadline-pressure-closing", label: "Jeg forventer svar senest fredag, da jeg har andre processer kørende.", detail: "ultimatum + competing processes", correct: false, weakTags: ["consequence-aware-tone"], effects: { desperation: 2, employerTone: -1, professionalism: -1 }, feedback: "Diagnostic: senest fredag turns follow-up into pressure, and andre processer kørende signals you are already shopping exits. That reads junior, not colleague-ready." },
+        { id: "closing-vague", diagnostic: "deferential-vanishing-closing", label: "Hvis det passer jer, må I endelig vende tilbage, når det er muligt.", detail: "over-deferential, hides agency", correct: false, weakTags: ["professional-email-agency"], effects: { professionalism: -1, employerTone: -1 }, feedback: "Diagnostic: må I endelig vende tilbage makes you disappear behind politeness. You opened with agency — the closing should not surrender it." }
+      ],
+      carry: "Carry-forward: close with næste skridt / processen plus til rådighed — not senest fredag ultimatums or må I endelig vanishing acts.",
+      tags: ["B2", "formal-email", "closing", "process-language", "consequence-tone"]
     },
     {
       id: "linkedin-choice",
@@ -341,7 +392,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
     }
   ],
   endingLogic: {
-    professional: { minEmployerTone: 1, minProfessionalism: 1, maxDesperation: 0 },
+    professional: { minEmployerTone: 1, minProfessionalism: 2, maxDesperation: 0 },
     acceptable: { minEmployerTone: 0, minProfessionalism: 0 },
     damaged: { maxEmployerTone: -1, maxNetworkTrust: 0 }
   },

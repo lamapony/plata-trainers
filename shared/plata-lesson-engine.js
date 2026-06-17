@@ -187,11 +187,12 @@
   }
 
   /* ---- kernel integration ---- */
-  function record(ctx, scene, correct, given, expected) {
+  function record(ctx, scene, correct, given, expected, option) {
     var tracker = ctx.tracker;
     if (!tracker || !ctx.kernel || !ctx.kernel.recordAttempt) return;
     var mode = ctx.state.repair && ctx.state.repair.active ? "repair" : "lesson";
     var tags = sceneAttemptTags(scene);
+    if (!correct && option && option.weakTags) tags = normaliseTags(tags.concat(option.weakTags));
     if (mode === "repair" && ctx.state.repair.tag) tags = normaliseTags(tags.concat(ctx.state.repair.tag));
     ctx.kernel.recordAttempt(tracker.state, {
       itemId: scene.id,
@@ -402,7 +403,7 @@
         $("#feedback").className = "feedback show " + (opt.correct ? "ok" : "warn");
         $("#feedback").textContent = opt.feedback;
         if (!already) {
-          record(ctx, scene, opt.correct, opt.label, correctLabel(scene.options));
+          record(ctx, scene, opt.correct, opt.label, correctLabel(scene.options), opt);
           applyEffects(ctx.state, opt.effects);
           ctx.state.attempts[scene.id + opt.id] = true;
         }
@@ -564,7 +565,7 @@
         $("#feedback").className = "feedback show " + (ok ? "ok" : "warn");
         $("#feedback").textContent = ok ? option.feedback : "Diagnostic: the phrase is promising, but the explanation must name the channel logic: actor/date pressure plus formal tone.";
         if (!ctx.state.attempts[scene.id + option.id + reason.id] || ok) {
-          record(ctx, scene, ok, option.label + " / " + reason.label, option.label + " / " + (option.reasonPrompt || "reason"));
+          record(ctx, scene, ok, option.label + " / " + reason.label, option.label + " / " + (option.reasonPrompt || "reason"), option);
           ctx.state.attempts[scene.id + option.id + reason.id] = ok ? "correct" : "tried";
         }
         if (ok) {
@@ -629,7 +630,7 @@
         $("#feedback").className = "feedback show " + (opt.correct ? "ok" : "warn");
         $("#feedback").textContent = opt.feedback;
         if (!ctx.state.attempts[scene.id + opt.id]) {
-          record(ctx, scene, !!opt.correct, opt.label, correctLabel(scene.options || []));
+          record(ctx, scene, !!opt.correct, opt.label, correctLabel(scene.options || []), opt);
           applyEffects(ctx.state, opt.effects);
           ctx.state.attempts[scene.id + opt.id] = true;
         }

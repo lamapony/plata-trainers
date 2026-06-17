@@ -12,6 +12,7 @@ const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-plann
 const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catalog.js"), "utf8");
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const ordstillingLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-ordstilling", "data.js"), "utf8");
+const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -50,6 +51,7 @@ function makeContext() {
   vm.runInContext(catalogSource, context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(radiatorLessonSource, context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(ordstillingLessonSource, context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
+  vm.runInContext(jobFollowupLessonSource, context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   return context;
 }
 
@@ -156,6 +158,11 @@ function runDrillRepairRoutingSmoke(context) {
   const channelRemediation = catalog.drillRemediation("understatement-with-agency", "lesson-b2-radiator-register");
   assert(channelRemediation && channelRemediation.href.includes("cat=channel"), "radiator channel signals should open channel drill category");
 
+  const closingRemediation = catalog.drillRemediation("consequence-aware-tone", "lesson-b2-job-followup");
+  assert(closingRemediation && closingRemediation.href.includes("register-drill"), "job follow-up closing miss should open register drill");
+  assert(closingRemediation.href.includes("cat=deadline"), "job follow-up consequence-aware-tone should open deadline category");
+  assert(closingRemediation.href.includes("from=lesson-b2-job-followup"), "job follow-up drill remediation carries source lesson");
+
   const radState = kernel.freshState("lesson-b2-radiator-register");
   kernel.recordAttempt(radState, {
     itemId: "official-reply-passive-too-trusting",
@@ -191,6 +198,24 @@ function runDrillRepairRoutingSmoke(context) {
   assert(decision.kind === "repair", "ordstilling lesson miss should recommend repair");
   assert(decision.secondaryHref.includes("ordstilling-drill"), "ordstilling lesson repair should offer drill secondary");
   assert(decision.secondaryHref.includes("signal=v2-placement"), "lesson drill secondary carries signal");
+
+  const jobState = kernel.freshState("lesson-b2-job-followup");
+  kernel.recordAttempt(jobState, {
+    itemId: "email-closing",
+    correct: false,
+    tags: ["B2", "consequence-aware-tone", "professional-email-agency"],
+    mode: "lesson",
+    expected: "Jeg ser frem til at høre om næste skridt i processen og står naturligvis til rådighed, hvis I har brug for yderligere oplysninger.",
+    given: "Jeg forventer svar senest fredag, da jeg har andre processer kørende."
+  });
+  const jobDecision = context.PlataPlanner.lessonDecision({
+    lesson: context.PLATA_LESSON_B2_JOB_FOLLOWUP,
+    state: jobState,
+    rootPrefix: "../../"
+  });
+  assert(jobDecision.kind === "repair", "job follow-up closing miss should recommend repair");
+  assert(jobDecision.secondaryHref.includes("register-drill"), "job follow-up repair should offer register drill secondary");
+  assert(jobDecision.secondaryHref.includes("cat=deadline"), "job follow-up drill secondary opens deadline category");
 }
 
 function runDrillDecisionSmoke(context) {
@@ -468,6 +493,7 @@ function run() {
   runDashboardDecisionSmoke(context);
   console.log("ok - planner recommends lesson repair from weak mastery");
   console.log("ok - planner routes weak word-order signals to ordstilling drill repair");
+  console.log("ok - planner routes job follow-up closing signals to register deadline drill");
   console.log("ok - planner routes passive-agency signals to register drill repair");
   console.log("ok - planner ranks drill repeat, continue, and enough decisions");
   console.log("ok - planner ranks dashboard decisions from the same contract");
