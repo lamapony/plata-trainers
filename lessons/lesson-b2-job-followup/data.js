@@ -287,6 +287,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       ],
       notice: "Kære = formal, safe, expected. Hej = acceptable if they used du first, but risky in follow-up. B2 writers choose Kære unless du was explicitly agreed.",
       targetPhrases: ["Kære [Navn]", "jeg tager stilling til", "jeres henvendelse", "god dialog i torsdags"],
+      vocabFocus: ["henvendelse", "opfølgning"],
       prompt: "Choose the opening + first sentence that hits warm professional Danish.",
       options: [
         { id: "formal-warm", diagnostic: "formal-warm-agency", label: "Kære [Navn],\n\nJeg tager stilling til jeres henvendelse og vil takke for en god dialog i torsdags.", detail: "formal, warm, owns the follow-up", correct: true, effects: { employerTone: 1, professionalism: 1, networkTrust: 1 }, feedback: "Diagnostic: strong. Kære sets the register, jeg tager stilling til gives agency, and god dialog makes the thanks specific." },
@@ -311,6 +312,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       ],
       notice: "Balanced closings name process (næste skridt, processen) without a deadline threat. Vague deferral (må I endelig vende tilbage) hides agency. Ultimatums (senest fredag + andre processer) leak desperation.",
       targetPhrases: ["næste skridt i processen", "står til rådighed", "ser frem til at høre"],
+      vocabFocus: ["proces", "opfølgning"],
       prompt: "Choose the closing sentence that keeps warm professional Danish intact.",
       options: [
         { id: "closing-balanced", diagnostic: "process-aware-closing", label: "Jeg ser frem til at høre om næste skridt i processen og står naturligvis til rådighed, hvis I har brug for yderligere oplysninger.", detail: "process + availability, no ultimatum", correct: true, effects: { professionalism: 1, employerTone: 1 }, feedback: "Diagnostic: strong. You name the process, offer availability, and stay calm — no deadline weapon, no disappearing act." },

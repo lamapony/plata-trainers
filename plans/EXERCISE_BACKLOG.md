@@ -2,7 +2,7 @@
 
 Date: 2026-06-13  
 Track: Factory Day 6 (`plans/FACTORY_NEXT.md`)  
-Status: Active — thin slices shipped for backlog #1 (channel), #2 (register passive), and #3 (ordstilling repair routing)
+Status: Active — thin slices shipped for backlog #1 (channel), #2 (register passive), #3 (ordstilling repair routing), #5 (email endings), and #6 (vocab recurrence)
 
 ---
 
@@ -41,17 +41,17 @@ Every backlog item must name a **concrete learner situation**, an **existing mas
 - **Signals:** TBD per trap family; reuse `bojning-drill` where form recall is the gap.
 - **Route:** Scene miss → `bojning-drill/` with tagged weak forms.
 
-### 5. B2 email endings — too direct vs too vague (not started)
+### 5. B2 email endings — too direct vs too vague (shipped)
 
 - **Situation:** Professional follow-up endings that neither bulldoze nor disappear.
 - **Signals:** `consequence-aware-tone`, `professional-email-agency`
-- **Route:** Extend job-followup gold chain or small ending pack tied to `lesson-b2-job-followup`.
+- **Route:** `lesson-b2-job-followup` scene `email-closing` → repair scene; secondary `register-drill/?cat=deadline` for `consequence-aware-tone`.
 
-### 6. Vocabulary recurrence pack (not started)
+### 6. Vocabulary recurrence pack (shipped)
 
 - **Situation:** Words that appeared in a weak B2 scene should resurface in vocab SR before the learner forgets them.
-- **Signals:** scene-derived vocab tags from lesson attempts
-- **Route:** Dashboard planner → `vocab-sr/` with `from=` lesson id.
+- **Signals:** `scene-vocab:*` tags from lesson wrong attempts + scene `vocabFocus` in catalog
+- **Route:** Scene miss on `lesson-b2-job-followup` (`email-closing`, `email-register`) → planner/dashboard `vocabRepair` → `vocab-sr/?from=…&scene=…` (focused session, padded to session size).
 
 ---
 

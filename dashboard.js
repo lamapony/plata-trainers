@@ -96,8 +96,12 @@ function remediationFor(spec, trainer) {
   const drillRepair = catalog && catalog.drillRemediation
     ? catalog.drillRemediation(spec.tag, trainer && trainer.id)
     : null;
-  if (!drillRepair) return sceneRepair;
-  return Object.assign({}, sceneRepair, { drillRepair });
+  const vocabRepair = catalog && catalog.buildVocabRemediation
+    ? catalog.buildVocabRemediation(trainer && trainer.id, ref.remediation.sceneId || "")
+    : null;
+  const merged = Object.assign({}, sceneRepair, { drillRepair, vocabRepair });
+  if (!drillRepair && !vocabRepair) return sceneRepair;
+  return merged;
 }
 
 function isMasteryTag(tag) {
@@ -182,12 +186,15 @@ function headroom() {
 function repairBlockHtml(repair) {
   if (!repair) return "";
   const isDrill = repair.kind === "drill";
+  const isVocab = repair.kind === "vocab";
+  const eyebrow = isDrill ? "Drill repair" : isVocab ? "Vocabulary recurrence" : "Scene repair";
+  const linkLabel = isDrill ? "Open drill →" : isVocab ? "Open vocab SR →" : "Open scene →";
   return `
-          <div class="repair-block ${isDrill ? "repair-block-drill" : ""}">
-            <span class="eyebrow">${isDrill ? "Drill repair" : "Scene repair"}</span>
+          <div class="repair-block ${isDrill ? "repair-block-drill" : isVocab ? "repair-block-vocab" : ""}">
+            <span class="eyebrow">${eyebrow}</span>
             <strong>${escapeHtml(repair.cta)}</strong>
             <p>${escapeHtml(repair.action)}</p>
-            <a href="${escapeHtml(repair.href)}">${escapeHtml(repair.trainerIcon || "")} ${isDrill ? "Open drill →" : "Open scene →"}</a>
+            <a href="${escapeHtml(repair.href)}">${escapeHtml(repair.trainerIcon || "")} ${linkLabel}</a>
           </div>
         `;
 }
@@ -233,6 +240,10 @@ function aggregateMasterySignals() {
         const drillRepair = signal.remediation.drillRepair;
         if (drillRepair && !entry.remediations.some(item => item.href === drillRepair.href)) {
           entry.remediations.push(drillRepair);
+        }
+        const vocabRepair = signal.remediation.vocabRepair;
+        if (vocabRepair && !entry.remediations.some(item => item.href === vocabRepair.href)) {
+          entry.remediations.push(vocabRepair);
         }
       }
     });
@@ -1673,6 +1684,7 @@ function renderCompetencyList() {
         </div>
         ${repair ? repairBlockHtml(repair) : ""}
         ${repair && repair.drillRepair ? repairBlockHtml(repair.drillRepair) : ""}
+        ${repair && repair.vocabRepair ? repairBlockHtml(repair.vocabRepair) : ""}
     `;
     const layer = headroom();
     if (layer && layer.compressCompetency) {

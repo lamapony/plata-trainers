@@ -193,6 +193,12 @@
     var mode = ctx.state.repair && ctx.state.repair.active ? "repair" : "lesson";
     var tags = sceneAttemptTags(scene);
     if (!correct && option && option.weakTags) tags = normaliseTags(tags.concat(option.weakTags));
+    if (!correct && Array.isArray(scene.vocabFocus)) {
+      scene.vocabFocus.forEach(function (word) {
+        var slug = String(word || "").trim().toLowerCase().replace(/\s+/g, "-");
+        if (slug) tags.push("scene-vocab:" + slug);
+      });
+    }
     if (mode === "repair" && ctx.state.repair.tag) tags = normaliseTags(tags.concat(ctx.state.repair.tag));
     ctx.kernel.recordAttempt(tracker.state, {
       itemId: scene.id,

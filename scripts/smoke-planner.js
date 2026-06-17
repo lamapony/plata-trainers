@@ -216,6 +216,16 @@ function runDrillRepairRoutingSmoke(context) {
   assert(jobDecision.kind === "repair", "job follow-up closing miss should recommend repair");
   assert(jobDecision.secondaryHref.includes("register-drill"), "job follow-up repair should offer register drill secondary");
   assert(jobDecision.secondaryHref.includes("cat=deadline"), "job follow-up drill secondary opens deadline category");
+  assert(jobDecision.vocabRepair && jobDecision.vocabRepair.kind === "vocab", "job follow-up repair should offer vocab remediation");
+  assert(jobDecision.vocabRepair.href.includes("scene=email-closing"), "job follow-up vocab repair carries source scene");
+
+  const vocabLink = catalog.vocabRepairLink("lesson-b2-job-followup", "email-closing");
+  assert(vocabLink.includes("vocab-sr"), "vocab repair link targets vocab SR");
+  assert(vocabLink.includes("from=lesson-b2-job-followup"), "vocab repair link carries source lesson");
+  assert(vocabLink.includes("scene=email-closing"), "vocab repair link carries source scene");
+  const vocabRemediation = catalog.buildVocabRemediation("lesson-b2-job-followup", "email-closing");
+  assert(vocabRemediation && vocabRemediation.kind === "vocab", "job follow-up closing scene should offer vocab remediation");
+  assert(vocabRemediation.href.includes("proces") === false, "vocab remediation href uses query params not inline words");
 }
 
 function runDrillDecisionSmoke(context) {
@@ -494,6 +504,7 @@ function run() {
   console.log("ok - planner recommends lesson repair from weak mastery");
   console.log("ok - planner routes weak word-order signals to ordstilling drill repair");
   console.log("ok - planner routes job follow-up closing signals to register deadline drill");
+  console.log("ok - planner routes weak scene vocabulary to vocab SR repair");
   console.log("ok - planner routes passive-agency signals to register drill repair");
   console.log("ok - planner ranks drill repeat, continue, and enough decisions");
   console.log("ok - planner ranks dashboard decisions from the same contract");

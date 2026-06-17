@@ -32,6 +32,7 @@
       "<div class='next-step-actions'>",
       "<a class='primary btn btn-primary link-button' href='" + escapeHtml(spec.primaryHref) + "'>" + escapeHtml(spec.primaryLabel) + "</a>",
       spec.secondaryHref ? "<a class='ghost btn btn-ghost link-button' href='" + escapeHtml(spec.secondaryHref) + "'>" + escapeHtml(spec.secondaryLabel) + "</a>" : "",
+      spec.vocabRepair && spec.vocabRepair.href ? "<a class='ghost btn btn-ghost link-button' href='" + escapeHtml(spec.vocabRepair.href) + "'>" + escapeHtml(spec.vocabRepair.cta) + "</a>" : "",
       "</div>",
       "</section>"
     ].join("");

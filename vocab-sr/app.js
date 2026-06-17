@@ -61,11 +61,43 @@
     return kernel.ensureItemRecord(state, id, tags);
   }
   function itemIdFor(item, dir) { return `v::${item.da}::${dir}`; }
+  function normalizeDa(value) { return String(value || "").trim().toLowerCase(); }
+
+  function lessonFocusFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      from: params.get("from") || "",
+      scene: params.get("scene") || ""
+    };
+  }
+
+  function focusedVocabPool(fromLesson, sceneId) {
+    const catalog = window.PlataCatalog;
+    const focus = catalog && catalog.vocabFocusForScene
+      ? catalog.vocabFocusForScene(fromLesson, sceneId)
+      : null;
+    if (!focus || !focus.length) return null;
+    const wanted = new Set(focus.map(normalizeDa));
+    const matched = window.PLATA_DATA.vocab.filter((item) => wanted.has(normalizeDa(item.da)));
+    return matched.length ? matched : null;
+  }
 
   function buildSession() {
+    const focusCtx = lessonFocusFromUrl();
+    const focused = focusedVocabPool(focusCtx.from, focusCtx.scene);
     const pool = window.PLATA_DATA.vocab;
     const pickDirection = direction === "blandet" ? "da2ru" : direction;
-    const enriched = pool.map((it) => ({ item: it, rec: ensureItemRecord(itemIdFor(it, pickDirection), ["vocab", pickDirection]) }));
+    let candidates = focused && focused.length ? focused.slice() : pool.slice();
+    if (focused && focused.length && candidates.length < SESSION_SIZE) {
+      const seen = new Set(candidates.map((item) => normalizeDa(item.da)));
+      pool.forEach((item) => {
+        if (candidates.length >= SESSION_SIZE) return;
+        if (seen.has(normalizeDa(item.da))) return;
+        candidates.push(item);
+        seen.add(normalizeDa(item.da));
+      });
+    }
+    const enriched = candidates.map((it) => ({ item: it, rec: ensureItemRecord(itemIdFor(it, pickDirection), ["vocab", pickDirection]) }));
     const picked = kernel.pickSessionItems(enriched, { size: SESSION_SIZE });
     return picked.map((p) => p.item);
   }

@@ -109,8 +109,12 @@
     var drillRepair = catalog && catalog.drillRemediation
       ? catalog.drillRemediation(spec.tag, trainer && trainer.id)
       : null;
-    if (!drillRepair) return sceneRepair;
-    return Object.assign({}, sceneRepair, { drillRepair: drillRepair });
+    var vocabRepair = catalog && catalog.buildVocabRemediation
+      ? catalog.buildVocabRemediation(trainer && trainer.id, ref.remediation.sceneId || "")
+      : null;
+    var merged = Object.assign({}, sceneRepair, { drillRepair: drillRepair, vocabRepair: vocabRepair });
+    if (!drillRepair && !vocabRepair) return sceneRepair;
+    return merged;
   }
 
   function isMasteryTag(tag) {

@@ -66,6 +66,11 @@ window.PLATA_DATA = {
     { da: "ny",        ru: "новый",             en: "new",         example: "Jeg har en ny bil." },
     { da: "gammel",    ru: "старый",            en: "old",         example: "Huset er gammelt men smukt." },
     { da: "varm",      ru: "тёплый, горячий",   en: "warm/hot",    example: "Kaffen er varm." },
-    { da: "kold",      ru: "холодный",          en: "cold",        example: "Øllen er kold." }
+    { da: "kold",      ru: "холодный",          en: "cold",        example: "Øllen er kold." },
+
+    // ----- B2 professional (scene recurrence) -----
+    { da: "proces",      ru: "процесс",                 en: "process",      example: "Jeg ser frem til næste skridt i processen.", note: "en-word · job follow-up" },
+    { da: "opfølgning",  ru: "продолжение, follow-up",  en: "follow-up",    example: "Tak for din opfølgning efter interviewet.",  note: "en-word · job follow-up" },
+    { da: "henvendelse", ru: "обращение, запрос",       en: "inquiry",      example: "Jeg tager stilling til jeres henvendelse.",  note: "en-word · formal register" }
   ]
 };

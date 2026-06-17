@@ -455,6 +455,9 @@
       var drillRepair = catalog && catalog.drillRemediation
         ? catalog.drillRemediation(weak.tag, lessonData.id || "")
         : null;
+      var vocabRepair = catalog && catalog.buildVocabRemediation
+        ? catalog.buildVocabRemediation(lessonData.id || "", repair.sceneId || "")
+        : null;
       return withTrace({
         kind: "repair",
         targetKind: "repair",
@@ -471,9 +474,11 @@
         meta: repair.action || "",
         competency: competency,
         drillRepair: drillRepair,
+        vocabRepair: vocabRepair,
         reasons: (competency ? ["Root competency: " + competency.label] : []).concat(
           ["Weak mastery signal: " + (weak.spec.label || weak.tag)],
-          drillRepair ? ["Drill repair available for reflex practice"] : []
+          drillRepair ? ["Drill repair available for reflex practice"] : [],
+          vocabRepair ? ["Scene vocabulary should recur in SR before it fades"] : []
         )
       }, {
         source: "lessonDecision",
@@ -660,6 +665,10 @@
       var drillRepair = catalog && catalog.drillRemediation
         ? catalog.drillRemediation(topMastery.tag, trainer.id || "")
         : null;
+      var sceneId = topMastery.remediation && topMastery.remediation.sceneId || "";
+      var vocabRepair = catalog && catalog.buildVocabRemediation
+        ? catalog.buildVocabRemediation(trainer.id || "", sceneId)
+        : null;
       return withTrace({
         kind: "repair",
         targetKind: "repair",
@@ -678,10 +687,12 @@
         competency: repairCompetency,
         repair: topMastery.remediation,
         drillRepair: drillRepair,
+        vocabRepair: vocabRepair,
         memoryFacts: repairMemoryFacts,
         reasons: (repairCompetency ? ["Root competency: " + repairCompetency.label] : []).concat(
           ["Highest weak mastery signal"],
           drillRepair ? ["Drill repair available for reflex practice"] : [],
+          vocabRepair ? ["Scene vocabulary should recur in SR before it fades"] : [],
           repairMemory.reasons
         )
       }, {

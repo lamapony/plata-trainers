@@ -208,6 +208,52 @@
       var joiner = href.indexOf("?") === -1 ? "?" : "&";
       return href + joiner + params.join("&");
     },
+    vocabScenesByLesson: {
+      "lesson-b2-job-followup": {
+        "email-closing": ["proces", "opfølgning"],
+        "email-register": ["henvendelse", "opfølgning"]
+      }
+    },
+    vocabFocusForScene: function (lessonId, sceneId) {
+      if (!lessonId || !sceneId) return null;
+      var lesson = this.vocabScenesByLesson && this.vocabScenesByLesson[lessonId];
+      if (!lesson) return null;
+      return lesson[sceneId] || null;
+    },
+    vocabRepairLink: function (sourceLessonId, sceneId) {
+      if (!sourceLessonId) return "";
+      var href = "./vocab-sr/";
+      var params = ["from=" + encodeURIComponent(sourceLessonId)];
+      if (sceneId) params.push("scene=" + encodeURIComponent(sceneId));
+      return href + "?" + params.join("&");
+    },
+    vocabRemediation: function (sourceLessonId, sceneId, focusWords) {
+      if (!sourceLessonId || !sceneId || !focusWords || !focusWords.length) return null;
+      var vocabTrainer = null;
+      for (var i = 0; i < this.trainers.length; i++) {
+        if (this.trainers[i].id === "vocab") {
+          vocabTrainer = this.trainers[i];
+          break;
+        }
+      }
+      if (!vocabTrainer) return null;
+      var preview = focusWords.slice(0, 3).join(", ");
+      return {
+        kind: "vocab",
+        cta: "Review scene vocabulary",
+        action: "These words appeared in a weak scene (" + preview + "). A short SR pass keeps them retrievable before you forget them.",
+        href: this.vocabRepairLink(sourceLessonId, sceneId),
+        trainerIcon: vocabTrainer.icon,
+        trainerName: vocabTrainer.name,
+        sceneId: sceneId,
+        focus: focusWords.slice()
+      };
+    },
+    buildVocabRemediation: function (sourceLessonId, sceneId) {
+      var focus = this.vocabFocusForScene(sourceLessonId, sceneId);
+      if (!focus || !focus.length) return null;
+      return this.vocabRemediation(sourceLessonId, sceneId, focus);
+    },
     drillRemediation: function (signalTag, sourceTrainerId) {
       var drill = this.drillForSignal(signalTag);
       if (!drill) return null;
