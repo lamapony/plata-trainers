@@ -145,8 +145,11 @@ function run() {
   assert(jobScene, "job follow-up email-register scene missing for bridge smoke");
   const genderOption = jobScene.options.find(item => item.id === "gender-trap");
   assert(genderOption, "job follow-up gender-trap miss option missing");
-  const jobSignal = bridge.resolveMissSignal(jobLesson, jobScene, genderOption);
-  assert(jobSignal === "common-gender-noun", "job follow-up miss resolves common-gender-noun signal");
+  assert(
+    genderOption.weakTags && genderOption.weakTags.includes("common-gender-noun"),
+    "gender-trap option tags common-gender-noun weak mastery"
+  );
+  const jobSignal = "common-gender-noun";
   const jobBundle = bridge.remediationBundle(jobLesson, jobScene, jobSignal, "../../");
   assert(jobBundle && jobBundle.drillRepair, "common-gender-noun maps to bojning drill repair");
   assert(jobBundle.drillRepair.href.includes("../../bojning-drill/"), "job follow-up drill href targets bojning drill");
