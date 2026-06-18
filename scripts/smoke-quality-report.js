@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
 const { buildQualityReport } = require("./build-quality-report.js");
+const { assertQualityPageHtml } = require("./smoke-quality-page.js");
 
 const root = path.resolve(__dirname, "..");
 const report = buildQualityReport();
@@ -31,6 +32,8 @@ function makeElement(selector) {
 }
 
 async function run() {
+  assertQualityPageHtml();
+
   const elements = {};
   [
     "#quality-status",
@@ -39,7 +42,8 @@ async function run() {
     "#quality-metrics",
     "#quality-evidence",
     "#quality-lessons",
-    "#quality-json-link"
+    "#quality-json-link",
+    "#quality-channel-callout"
   ].forEach(selector => {
     elements[selector] = makeElement(selector);
   });
@@ -80,6 +84,15 @@ async function run() {
   assert(elements["#quality-evidence"].innerHTML.includes("Every scene is replayed by simulation"), "quality page did not render evidence guarantees");
   assert(elements["#quality-evidence"].innerHTML.includes("ok Sources"), "quality page did not render scene check labels");
   assert(elements["#quality-lessons"].innerHTML.includes("lesson-b2-radiator-register"), "quality page did not render radiator lesson");
+  assert(elements["#quality-lessons"].innerHTML.includes("lesson-a2-doctor"), "quality page did not render doctor gold lesson");
+  assert(elements["#quality-lessons"].innerHTML.includes("id=\"lesson-a2-doctor\""), "quality page did not anchor doctor lesson card");
+  assert(
+    elements["#quality-lessons"].innerHTML.indexOf("lesson-a2-doctor") <
+      elements["#quality-lessons"].innerHTML.indexOf("lesson-b2-radiator-register"),
+    "quality page should surface doctor lesson before other gold lessons"
+  );
+  assert(elements["#quality-channel-callout"].innerHTML.includes("lesson-a2-doctor"), "quality page did not render doctor channel callout");
+  assert(elements["#quality-channel-callout"].innerHTML.includes("apotek → skrive sundhed"), "quality page did not render doctor repair ladder");
   assert(elements["#quality-lessons"].innerHTML.includes("lesson-b2-job-followup"), "quality page did not render job lesson");
   assert(elements["#quality-lessons"].innerHTML.includes("official-reply-passive"), "quality page did not render generated comic panel status");
   assert(elements["#quality-lessons"].innerHTML.includes("group-chat-particles (prompt)"), "quality page did not render comic panel prompt status");

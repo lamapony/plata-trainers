@@ -134,6 +134,50 @@
       .join("");
   }
 
+  function findDoctorLesson(report) {
+    return (report.lessons || []).find(function (lesson) {
+      return lesson.id === "lesson-a2-doctor";
+    }) || null;
+  }
+
+  function renderChannelCallout(report) {
+    var container = $("#quality-channel-callout");
+    if (!container) return;
+    var doctor = findDoctorLesson(report);
+    if (!doctor) {
+      container.innerHTML =
+        "<h2>Not in report</h2>" +
+        "<p>lesson-a2-doctor is missing from the generated quality report.</p>";
+      return;
+    }
+    var statusLabel = doctor.status === "pass" ? "Passing" : "Needs attention";
+    var statusClass = doctor.status === "pass" ? "quality-pass" : "quality-fail";
+    var mastery = doctor.masterySignals.map(function (signal) {
+      return chip(signal.key, "mastery");
+    }).join("");
+    container.innerHTML =
+      "<h2 class=\"" + statusClass + "\">" + escapeHtml(statusLabel) + "</h2>" +
+      "<ul>" +
+        "<li><span>Gold lesson</span><strong>" + escapeHtml(doctor.id) + "</strong></li>" +
+        "<li><span>Scenes</span><strong>" + escapeHtml(doctor.counts.scenes) + "</strong></li>" +
+        "<li><span>Simulation paths</span><strong>" + escapeHtml(doctor.counts.simulationPaths) + "</strong></li>" +
+        "<li><span>Repair ladder</span><strong>apotek → skrive sundhed</strong></li>" +
+      "</ul>" +
+      "<p>" + escapeHtml(doctor.title || doctor.id) + "</p>" +
+      (mastery ? "<div class=\"quality-chip-row\">" + mastery + "</div>" : "") +
+      (doctor.catalog ? "<a class=\"card-link\" href=\"" + escapeHtml(doctor.catalog.path) + "\">Open lesson →</a>" : "");
+  }
+
+  function sortLessons(lessons) {
+    return lessons.slice().sort(function (a, b) {
+      if (a.id === "lesson-a2-doctor") return -1;
+      if (b.id === "lesson-a2-doctor") return 1;
+      if (a.qualityTier === "gold" && b.qualityTier !== "gold") return -1;
+      if (a.qualityTier !== "gold" && b.qualityTier === "gold") return 1;
+      return String(a.id).localeCompare(String(b.id));
+    });
+  }
+
   function renderLesson(lesson) {
     var status = lesson.status === "pass" ? "pass" : "fail";
     var paths = lesson.simulation.paths.map(function (path) {
@@ -151,7 +195,7 @@
       ? "<div class=\"quality-issues\">" + lesson.issues.map(function (issue) { return "<p>" + escapeHtml(issue) + "</p>"; }).join("") + "</div>"
       : "";
 
-    return "<article class=\"quality-lesson " + status + "\">" +
+    return "<article id=\"" + escapeHtml(lesson.id) + "\" class=\"quality-lesson " + status + "\">" +
       "<div class=\"quality-card-head\">" +
         "<span class=\"quality-key\">" + escapeHtml(lesson.qualityTier) + "</span>" +
         "<span class=\"quality-state\">" + escapeHtml(lesson.status) + "</span>" +
@@ -174,7 +218,7 @@
   }
 
   function renderLessons(report) {
-    $("#quality-lessons").innerHTML = report.lessons.map(renderLesson).join("");
+    $("#quality-lessons").innerHTML = sortLessons(report.lessons).map(renderLesson).join("");
   }
 
   function renderError(error) {
@@ -196,6 +240,7 @@
       renderMetrics(report);
       renderEvidence(report);
       renderLessons(report);
+      renderChannelCallout(report);
     })
     .catch(renderError);
 })();
