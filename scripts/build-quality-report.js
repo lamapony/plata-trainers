@@ -82,6 +82,11 @@ function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+function sceneTrainsTag(scene, tag) {
+  if (asArray(scene.masteryTags).includes(tag)) return true;
+  return asArray(scene.options).some(option => asArray(option.weakTags).includes(tag));
+}
+
 function unique(values) {
   return [...new Set(values.filter(Boolean))].sort();
 }
@@ -356,10 +361,10 @@ function summarizeLesson(entry, catalogById, root) {
       const remediation = spec.remediation || {};
       if (!remediation.sceneId || !sceneById.has(remediation.sceneId)) issues.push(`mastery ${key} has invalid remediation scene`);
       const remediationScene = sceneById.get(remediation.sceneId);
-      if (remediationScene && !asArray(remediationScene.masteryTags).includes(key)) {
+      if (remediationScene && !sceneTrainsTag(remediationScene, key)) {
         issues.push(`mastery ${key} remediation scene does not train the signal`);
       }
-      if (!scenes.some(scene => asArray(scene.masteryTags).includes(key))) {
+      if (!scenes.some(scene => sceneTrainsTag(scene, key))) {
         issues.push(`mastery ${key} is not attached to any scene`);
       }
       asArray(spec.sourceRefs).forEach(ref => {

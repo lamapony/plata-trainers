@@ -89,9 +89,14 @@ function duplicateGraphTags(rows) {
     .map(([tag, ids]) => ({ tag, competencyIds: unique(ids) }));
 }
 
+function sceneTrainsTag(scene, tag) {
+  if (asArray(scene.masteryTags).includes(tag)) return true;
+  return asArray(scene.options).some(option => asArray(option.weakTags).includes(tag));
+}
+
 function sceneIdsForTag(scenes, tag) {
   return scenes
-    .filter(scene => asArray(scene.masteryTags).includes(tag))
+    .filter(scene => sceneTrainsTag(scene, tag))
     .map(scene => scene.id)
     .filter(Boolean)
     .sort();
@@ -147,7 +152,7 @@ function summarizeGoldLesson(entry, catalogIndex, graph, knownCompetencies) {
       signalIssues.push("missing remediation scene");
     } else if (!remediationScene) {
       signalIssues.push(`remediation scene ${remediation.sceneId} does not exist`);
-    } else if (!asArray(remediationScene.masteryTags).includes(tag)) {
+    } else if (!sceneTrainsTag(remediationScene, tag)) {
       signalIssues.push(`remediation scene ${remediation.sceneId} does not train the signal`);
     }
 

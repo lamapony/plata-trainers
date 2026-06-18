@@ -134,13 +134,28 @@ function scanStrings(value, visitor, location) {
 }
 
 function auditEditorialPhrases(lesson, issues) {
-  scanStrings(lesson, (text, location) => {
-    EDITORIAL_PHRASE_RULES.forEach(rule => {
-      if (rule.pattern.test(text)) {
-        addIssue(issues, lesson, location, `${rule.id}: ${rule.message}`);
-      }
-    });
-  }, "");
+  function scan(value, location, context) {
+    if (typeof value === "string") {
+      if (context && context.skipEditorial) return;
+      EDITORIAL_PHRASE_RULES.forEach(rule => {
+        if (rule.pattern.test(value)) {
+          addIssue(issues, lesson, location, `${rule.id}: ${rule.message}`);
+        }
+      });
+      return;
+    }
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => scan(item, `${location}[${index}]`, context));
+      return;
+    }
+    if (value && typeof value === "object") {
+      const childContext = asArray(value.weakTags).includes("common-gender-noun")
+        ? { skipEditorial: true }
+        : context;
+      Object.keys(value).forEach(key => scan(value[key], location ? `${location}.${key}` : key, childContext));
+    }
+  }
+  scan(lesson, "", null);
 }
 
 function auditChoiceScene(lesson, scene, location, issues) {

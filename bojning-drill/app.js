@@ -28,6 +28,7 @@
 
   let mode = "verber";        // "verber" | "substantiver"
   let type = "nutid";         // for verber: nutid|datid|førnutid|blandet ; for substantiver: bestemtEntal|flertalUbestemt|bestemtFlertal|blandet
+  let sessionTrap = "";       // "", "common-gender", "irregular-plural", "strong-verb"
   let session = [];           // queue of {item, prompt, expected, aliases}
   let sessionPos = 0;         // 0..SESSION_SIZE-1
   let sessionResults = [];    // {item, expected, given, correct}
@@ -88,7 +89,11 @@
 
   // ---------- session building ----------
   function buildSession() {
-    const pool = window.PLATA_DATA[mode];
+    let pool = window.PLATA_DATA[mode];
+    if (sessionTrap) {
+      pool = pool.filter((item) => Array.isArray(item.traps) && item.traps.includes(sessionTrap));
+    }
+    if (!pool.length) pool = window.PLATA_DATA[mode];
     const candidates = pool.map((item) => ({
       item,
       rec: ensureItemRecord(itemIdFor(item, mode), [mode])
@@ -312,8 +317,86 @@
   }
 
   // ---------- mode / type switching ----------
+  const TRAP_PRESETS = {
+    "common-gender": { mode: "substantiver", type: "bestemtEntal", trap: "common-gender" },
+    "irregular-plural": { mode: "substantiver", type: "blandet", trap: "irregular-plural" },
+    "strong-verb": { mode: "verber", type: "datid", trap: "strong-verb" }
+  };
+  const SIGNAL_TRAP = {
+    "common-gender-noun": "common-gender",
+    "irregular-plural-noun": "irregular-plural",
+    "strong-verb-past": "strong-verb"
+  };
+
+  function applyCategoryFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const catParam = params.get("cat");
+    if (catParam && TRAP_PRESETS[catParam]) {
+      const preset = TRAP_PRESETS[catParam];
+      mode = preset.mode;
+      type = preset.type;
+      sessionTrap = preset.trap;
+      return;
+    }
+    const signal = params.get("signal");
+    if (signal && SIGNAL_TRAP[signal]) {
+      const preset = TRAP_PRESETS[SIGNAL_TRAP[signal]];
+      mode = preset.mode;
+      type = preset.type;
+      sessionTrap = preset.trap;
+    }
+  }
+
+  const JOB_REPAIR_COPY = {
+    "common-gender-noun": "Du missede køn på et substantiv i opfølgningsmailen. Øv min/mit på en-ord som interesse — ikke mit interesse.",
+    "irregular-plural-noun": "Du missede et uregelmæssigt flertal i job-konteksten. Øv substantiv-bøjning på de ord, der ikke følger -er-reglen.",
+    "strong-verb-past": "Du missede en stærk datidsform i job-konteksten. Øv uregelmæssige verber i datid, før du sender professionel dansk."
+  };
+
+  function renderRepairContextBanner() {
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get("from") || "";
+    const signal = params.get("signal") || "";
+    if (from !== "lesson-b2-job-followup") return;
+    const copy = JOB_REPAIR_COPY[signal] || "Du missede en form-fælde i job-opfølgningsmailen. Øv substantiv- og verbum-bøjning, før du sender professionel dansk.";
+    const existing = document.querySelector(".repair-context-slot");
+    const html = [
+      "<aside class='repair-context-card' aria-label='Repair context from job follow-up lesson'>",
+      "<p class='eyebrow'>Match → Gym · email → bøjning</p>",
+      "<h3>Samme kompetence, form-drill</h3>",
+      "<p>" + escapeHtml(copy) + "</p>",
+      "<div class='repair-context-meta'>",
+      "<span>narrative miss</span>",
+      "<span>form repair</span>",
+      signal ? "<span>" + escapeHtml(signal) + "</span>" : "",
+      "</div>",
+      "</aside>"
+    ].join("");
+    if (existing) {
+      existing.innerHTML = html;
+      return;
+    }
+    const slot = document.createElement("div");
+    slot.className = "repair-context-slot";
+    slot.innerHTML = html;
+    els.stats.insertAdjacentElement("afterend", slot);
+  }
+
+  function syncModeChips() {
+    [...els.modeGroup.querySelectorAll(".chip")].forEach((c) => {
+      c.setAttribute("aria-selected", c.dataset.mode === mode ? "true" : "false");
+    });
+    els.typeRowVerber.classList.toggle("hidden", mode !== "verber");
+    els.typeRowSubstantiver.classList.toggle("hidden", mode !== "substantiver");
+    const group = mode === "verber" ? els.typeGroupVerber : els.typeGroupSubstantiver;
+    [...group.querySelectorAll(".chip")].forEach((c) => {
+      c.setAttribute("aria-selected", c.dataset.type === type ? "true" : "false");
+    });
+  }
+
   function setMode(newMode) {
     mode = newMode;
+    sessionTrap = "";
     [...els.modeGroup.querySelectorAll(".chip")].forEach((c) => {
       c.setAttribute("aria-selected", c.dataset.mode === mode ? "true" : "false");
     });
@@ -321,25 +404,18 @@
       els.typeRowVerber.classList.remove("hidden");
       els.typeRowSubstantiver.classList.add("hidden");
       type = "nutid";
-      [...els.typeGroupVerber.querySelectorAll(".chip")].forEach((c) => {
-        c.setAttribute("aria-selected", c.dataset.type === type ? "true" : "false");
-      });
     } else {
       els.typeRowVerber.classList.add("hidden");
       els.typeRowSubstantiver.classList.remove("hidden");
       type = "bestemtEntal";
-      [...els.typeGroupSubstantiver.querySelectorAll(".chip")].forEach((c) => {
-        c.setAttribute("aria-selected", c.dataset.type === type ? "true" : "false");
-      });
     }
+    syncModeChips();
     startNewSession();
   }
   function setType(newType) {
     type = newType;
-    const group = mode === "verber" ? els.typeGroupVerber : els.typeGroupSubstantiver;
-    [...group.querySelectorAll(".chip")].forEach((c) => {
-      c.setAttribute("aria-selected", c.dataset.type === type ? "true" : "false");
-    });
+    sessionTrap = "";
+    syncModeChips();
     startNewSession();
   }
 
@@ -421,6 +497,10 @@
       e.target.value = "";
     });
     els.resetBtn.addEventListener("click", doReset);
+
+    applyCategoryFromUrl();
+    syncModeChips();
+    renderRepairContextBanner();
 
     // ensure every item has a record (so box stats are correct)
     for (const item of window.PLATA_DATA.verber) ensureItemRecord(itemIdFor(item, "verber"), ["verber"]);

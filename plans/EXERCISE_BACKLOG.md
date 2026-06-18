@@ -2,7 +2,7 @@
 
 Date: 2026-06-13  
 Track: Factory Day 6 (`plans/FACTORY_NEXT.md`)  
-Status: Active — thin slices shipped for backlog #1 (channel), #2 (register passive), #3 (ordstilling repair routing), #5 (email endings), and #6 (vocab recurrence)
+Status: Active — thin slices shipped for backlog #1 (channel), #2 (register passive), #3 (ordstilling repair routing), #4 (noun/verb trap pack), #5 (email endings), and #6 (vocab recurrence)
 
 ---
 
@@ -35,11 +35,12 @@ Every backlog item must name a **concrete learner situation**, an **existing mas
 - **Route:** `lesson-b2-ordstilling` scene miss → `ordstilling-drill/?cat=…&signal=…&from=lesson-b2-ordstilling` → return to narrative repair mode.
 - **Artifact:** `ordstilling-drill/` (54 MC items · V2 / inversion / ledsætning / blandet) with URL category routing from lesson signals.
 
-### 4. B1 noun/verb trap pack (not started)
+### 4. B1 noun/verb trap pack — **thin slice shipped**
 
-- **Situation:** Common-gender nouns, plural traps, and tense choices that already appear inside lesson scenes.
-- **Signals:** TBD per trap family; reuse `bojning-drill` where form recall is the gap.
-- **Route:** Scene miss → `bojning-drill/` with tagged weak forms.
+- **Situation:** Common-gender nouns, irregular plurals, and strong-verb past inside lesson scenes and form drills.
+- **Signals:** `common-gender-noun`, `irregular-plural-noun`, `strong-verb-past`
+- **Route:** Scene miss (option `weakTags`) or drill gap → `bojning-drill/?cat=…&signal=…&from=…` → return to narrative repair mode.
+- **Artifact:** `bojning-drill/` trap presets (common-gender · irregular-plural · strong-verb) with URL routing; `lesson-b2-job-followup` gender-trap distractor on `email-register`.
 
 ### 5. B2 email endings — too direct vs too vague (shipped)
 

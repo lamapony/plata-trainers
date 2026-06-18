@@ -160,6 +160,17 @@ function runDrillRepairRoutingSmoke(context) {
   const channelRemediation = catalog.drillRemediation("understatement-with-agency", "lesson-b2-radiator-register");
   assert(channelRemediation && channelRemediation.href.includes("cat=channel"), "radiator channel signals should open channel drill category");
 
+  const bojningDrill = catalog.drillForSignal("common-gender-noun");
+  assert(bojningDrill && bojningDrill.id === "bojning", "catalog maps common-gender-noun to bojning drill");
+  const genderRemediation = catalog.drillRemediation("common-gender-noun", "lesson-b2-job-followup");
+  assert(genderRemediation && genderRemediation.href.includes("bojning-drill"), "common-gender-noun should route to bojning drill");
+  assert(genderRemediation.href.includes("cat=common-gender"), "bojning trap should open common-gender category");
+  assert(genderRemediation.href.includes("signal=common-gender-noun"), "bojning trap link carries mastery signal");
+  const pluralRemediation = catalog.drillRemediation("irregular-plural-noun", "lesson-b2-job-followup");
+  assert(pluralRemediation && pluralRemediation.href.includes("cat=irregular-plural"), "irregular plural trap should open irregular-plural category");
+  const strongVerbRemediation = catalog.drillRemediation("strong-verb-past", "lesson-b2-job-followup");
+  assert(strongVerbRemediation && strongVerbRemediation.href.includes("cat=strong-verb"), "strong verb trap should open strong-verb category");
+
   const closingRemediation = catalog.drillRemediation("consequence-aware-tone", "lesson-b2-job-followup");
   assert(closingRemediation && closingRemediation.href.includes("register-drill"), "job follow-up closing miss should open register drill");
   assert(closingRemediation.href.includes("cat=deadline"), "job follow-up consequence-aware-tone should open deadline category");
@@ -220,6 +231,24 @@ function runDrillRepairRoutingSmoke(context) {
   assert(jobDecision.secondaryHref.includes("cat=deadline"), "job follow-up drill secondary opens deadline category");
   assert(jobDecision.vocabRepair && jobDecision.vocabRepair.kind === "vocab", "job follow-up repair should offer vocab remediation");
   assert(jobDecision.vocabRepair.href.includes("scene=email-closing"), "job follow-up vocab repair carries source scene");
+
+  const genderState = kernel.freshState("lesson-b2-job-followup");
+  kernel.recordAttempt(genderState, {
+    itemId: "email-register",
+    correct: false,
+    tags: ["common-gender-noun", "B2", "formal-email"],
+    mode: "lesson",
+    expected: "Kære [Navn], jeg tager stilling til jeres henvendelse…",
+    given: "Kære [Navn], mit store interesse i stillingen…"
+  });
+  const genderDecision = context.PlataPlanner.lessonDecision({
+    lesson: context.PLATA_LESSON_B2_JOB_FOLLOWUP,
+    state: genderState,
+    rootPrefix: "../../"
+  });
+  assert(genderDecision.kind === "repair", "job follow-up gender miss should recommend repair");
+  assert(genderDecision.secondaryHref.includes("bojning-drill"), "job follow-up gender miss should offer bojning drill secondary");
+  assert(genderDecision.secondaryHref.includes("cat=common-gender"), "job follow-up bojning secondary opens common-gender trap");
 
   const vocabLink = catalog.vocabRepairLink("lesson-b2-job-followup", "email-closing");
   assert(vocabLink.includes("vocab-sr"), "vocab repair link targets vocab SR");
@@ -550,6 +579,7 @@ function run() {
   console.log("ok - planner routes weak scene vocabulary to vocab SR repair");
   console.log("ok - planner routes doctor health signals to skrive sundhed drill");
   console.log("ok - planner routes passive-agency signals to register drill repair");
+  console.log("ok - planner routes noun/verb trap signals to bojning drill repair");
   console.log("ok - planner ranks drill repeat, continue, and enough decisions");
   console.log("ok - planner ranks dashboard decisions from the same contract");
   console.log("ok - planner tracks active practice-plan completion");

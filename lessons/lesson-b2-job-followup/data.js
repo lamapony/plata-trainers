@@ -102,6 +102,17 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       },
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Den Danske Ordbog / ordnet.dk"]
     },
+    "common-gender-noun": {
+      competencyId: "register-control",
+      label: "Common-gender noun agreement",
+      evidence: "The learner keeps en-words like interesse with min/mit forms that match common gender, not neutral mit on an en-word.",
+      remediation: {
+        sceneId: "email-register",
+        cta: "Repair the email opening",
+        action: "Rerun the email scene and watch min/minde forms on en-words like interesse before you send professional Danish."
+      },
+      sourceRefs: ["Den Danske Ordbog / ordnet.dk"]
+    },
     "consequence-aware-tone": {
       competencyId: "consequence-awareness",
       label: "Close without bulldozing or disappearing",
@@ -167,6 +178,21 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
           { sceneId: "email-register", optionId: "formal-warm", expectCorrect: true },
           { sceneId: "email-closing", optionId: "closing-balanced", expectCorrect: true },
           { sceneId: "linkedin-choice", optionId: "linkedin-good", expectCorrect: true },
+          { sceneId: "reply-consequence", answer: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt", expectCorrect: true },
+          { sceneId: "epilogue", optionId: "principle-owned", expectCorrect: true }
+        ]
+      },
+      {
+        id: "form-trap",
+        expectedEndingId: "acceptable",
+        expectedVariables: { employerTone: 1, desperation: 0, professionalism: 1, networkTrust: 0 },
+        expectedCorrect: 4,
+        expectedWeakMastery: ["common-gender-noun", "platform-register-shift", "professional-email-agency"],
+        actions: [
+          { sceneId: "silence-pressure", optionId: "wait-calm", expectCorrect: true },
+          { sceneId: "email-register", optionId: "gender-trap", expectCorrect: false },
+          { sceneId: "email-closing", optionId: "closing-balanced", expectCorrect: true },
+          { sceneId: "linkedin-choice", optionId: "linkedin-generic", expectCorrect: false },
           { sceneId: "reply-consequence", answer: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt", expectCorrect: true },
           { sceneId: "epilogue", optionId: "principle-owned", expectCorrect: true }
         ]
@@ -292,7 +318,8 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       options: [
         { id: "formal-warm", diagnostic: "formal-warm-agency", label: "Kære [Navn],\n\nJeg tager stilling til jeres henvendelse og vil takke for en god dialog i torsdags.", detail: "formal, warm, owns the follow-up", correct: true, effects: { employerTone: 1, professionalism: 1, networkTrust: 1 }, feedback: "Diagnostic: strong. Kære sets the register, jeg tager stilling til gives agency, and god dialog makes the thanks specific." },
         { id: "casual-generic", diagnostic: "casual-self-minimising", label: "Hej [Navn],\n\nTak for snakken i torsdags! Bare en hurtig opfølgning — jeg er super interesseret.", detail: "too casual, 'bare' weakens", correct: false, effects: { employerTone: -1, professionalism: -1, desperation: 1 }, feedback: "Diagnostic: bare en hurtig opfølgning minimises your own message, and super interesseret sounds junior in this channel." },
-        { id: "stiff-passive", diagnostic: "passive-agency-removal", label: "Kære [Navn],\n\nDer gives besked om, at jeg fortsat er interesseret i stillingen.", detail: "passive, evasive", correct: false, effects: { employerTone: -1, professionalism: 0 }, feedback: "Diagnostic: der gives besked hides the actor. You sound like a form letter, not like a candidate owning the follow-up." }
+        { id: "stiff-passive", diagnostic: "passive-agency-removal", label: "Kære [Navn],\n\nDer gives besked om, at jeg fortsat er interesseret i stillingen.", detail: "passive, evasive", correct: false, effects: { employerTone: -1, professionalism: 0 }, feedback: "Diagnostic: der gives besked hides the actor. You sound like a form letter, not like a candidate owning the follow-up." },
+        { id: "gender-trap", diagnostic: "common-gender-noun-trap", label: "Kære [Navn],\n\nMit store interesse i stillingen gør, at jeg følger op på vores dialog.", detail: "wrong gender on interesse", correct: false, weakTags: ["common-gender-noun"], effects: { employerTone: -1, professionalism: -1 }, feedback: "Diagnostic: interesse is common gender (en interesse). Write min interesse or min store interesse — not mit interesse." }
       ],
       carry: "Carry-forward: 'Kære' signalerer formalitet; 'vi lægger vægt på', 'jeg tager stilling til', 'jeres henvendelse', 'takke', and a concrete reference to folk writing professionelt på dansk create professional warmth.",
       tags: ["B2", "formal-email", "register", "tage-stilling-til", "particles"]
