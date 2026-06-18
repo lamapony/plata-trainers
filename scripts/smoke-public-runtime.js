@@ -541,6 +541,13 @@ async function run() {
     assert(pages["index.html"].includes("./dashboard.html?demo=learner"), "public home page is missing demo learner link");
     assert(pages["index.html"].includes("./proof.html#proof-walkthrough-title"), "public home page is missing proof walkthrough link");
     assert(pages["index.html"].includes("./proof.html#proof-guided-title"), "public home page is missing guided proof link");
+    assert(pages["index.html"].includes("./proof.html#proof-distribution-title"), "public home page is missing offline distribution proof link");
+    assert(pages["index.html"].includes("pressure, notice, action, feedback"), "public home gallery copy should keep pressure/notice/action/feedback loop");
+    assert(pages["index.html"].includes("id=\"repair-paths\""), "public home page is missing Match→Gym repair paths list");
+    assert(pages["index.html"].includes("register drill · deadline"), "public home repair paths should list job follow-up register deadline bridge");
+    assert(pages["index.html"].includes("bøjning drill · gender traps"), "public home repair paths should list job follow-up bojning trap bridge");
+    assert(pages["index.html"].includes("skrive sundhed"), "public home repair paths should list doctor skrive bridge");
+    assert(pages["index.html"].includes("vocab SR · scene words"), "public home repair paths should list vocab SR scene repair bridge");
     assert(!/<section\b(?=[^>]*\bid="evaluate")[\s\S]*?href="\.\.?\/?reports\//i.test(pages["index.html"]), "home evaluator section links directly to Pages-only reports");
     assert(idsFromHtml(pages["proof.html"]).has("proof-evaluator-title"), "proof page is missing evaluator hash target");
 

@@ -393,6 +393,14 @@ function runHomeMarkupSmoke() {
   assert(indexHtml.includes("./proof.html#proof-walkthrough-title"), "home evaluator path should link the proof walkthrough");
   assert(indexHtml.includes("./proof.html#proof-guided-title"), "home evaluator path should link guided proof");
   assert(indexHtml.includes("./proof.html#proof-distribution-title"), "home evaluator path should link offline distribution proof");
+  assert(indexHtml.includes("pressure, notice, action, feedback"), "home gallery copy should keep pressure/notice/action/feedback loop");
+  assert(indexHtml.includes("id=\"repair-paths\""), "home page should expose Match→Gym repair paths list");
+  assert(indexHtml.includes("B2 radiator</a> → <a href=\"./register-drill/"), "home repair paths should list radiator register channel bridge");
+  assert(indexHtml.includes("B2 ordstilling</a> → <a href=\"./ordstilling-drill/"), "home repair paths should list ordstilling V2 bridge");
+  assert(indexHtml.includes("register drill · deadline"), "home repair paths should list job follow-up register deadline bridge");
+  assert(indexHtml.includes("bøjning drill · gender traps"), "home repair paths should list job follow-up bojning trap bridge");
+  assert(indexHtml.includes("A2 doctor</a> → skrive sundhed"), "home repair paths should list doctor skrive sundhed bridge");
+  assert(indexHtml.includes("vocab SR · scene words"), "home repair paths should list vocab SR scene repair bridge");
   assert(!indexHtml.includes("href=\"./reports/"), "home page should not link Pages-only reports from the root static page");
 }
 
