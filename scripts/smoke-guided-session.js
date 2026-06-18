@@ -166,7 +166,8 @@ function runActiveAndCompleteSmoke(api) {
 function runEmptySmoke(api) {
   const session = api.buildSession({ plan: null, step: null, memoryFacts: [], now: "2026-06-08T09:00:00.000Z" });
   assert(session.status === "empty", "missing plan should produce empty guided session");
-  assert(session.goal.title === "Create the first evidence trail", "empty session should be honest first-run UX");
+  assert(session.goal.title === "Start B2 job follow-up", "empty session should promote B2 follow-up as primary first action");
+  assert(session.goal.trainerId === "lesson-b2-job-followup", "empty session should target job-followup lesson");
   assert(session.steps.length === 4, "empty session should still keep the four-step shell");
   assert(session.validation.status === "pass", `empty session validation should pass: ${session.validation.issues.join(", ")}`);
 }

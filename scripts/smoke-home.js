@@ -98,7 +98,12 @@ function makeContext(initialStorage) {
   const narrativeGallery = makeElement("div", "#narrative-gallery");
   const drillGallery = makeElement("div", "#drill-gallery");
   const ids = {
-    "#home-primary-action": makeElement("a", "#home-primary-action"),
+    "#home-primary-action": (function () {
+      const el = makeElement("a", "#home-primary-action");
+      el.textContent = "Try B2 follow-up lesson";
+      el.href = "./lessons/lesson-b2-job-followup/";
+      return el;
+    })(),
     "#home-start-title": makeElement("h2", "#home-start-title"),
     "#home-start-copy": makeElement("p", "#home-start-copy"),
     "#home-start-link": makeElement("a", "#home-start-link"),
@@ -274,9 +279,11 @@ async function runEmptyHomeSmoke() {
   loadKernelAndCatalog(env);
   await runHome(env);
 
-  assert(env.ids["#home-start-title"].textContent === "New here?", "home recommends starter path for new users");
+  assert(env.ids["#home-start-title"].textContent === "First visit?", "home start card recommends tutorial for new users");
   assert(env.ids["#home-start-link"].href === "./lessons/lesson-01/", "home starter link points to Lesson 01");
-  assert(env.ids["#home-primary-action"].textContent === "Start Lesson 01", "home primary CTA starts Lesson 01");
+  assert(env.ids["#home-start-link"].textContent === "Start tutorial", "home start card CTA opens tutorial");
+  assert(env.ids["#home-primary-action"].textContent === "Try B2 follow-up lesson", "home hero primary CTA stays on B2 lesson for new users");
+  assert(env.ids["#home-primary-action"].href === "./lessons/lesson-b2-job-followup/", "home hero primary CTA links to B2 job follow-up");
   assert(env.ids["#evaluate"].scrollIntoViewCalls && env.ids["#evaluate"].scrollIntoViewCalls.length === 1, "home restores hash scroll after dynamic launcher rendering");
   assert(env.ids["#evaluate"].scrollIntoViewCalls[0].behavior === "auto", "home hash scroll should use deterministic behavior");
   assert(typeof env.eventListeners.hashchange === "function", "home restores hash scroll after same-page hash changes");

@@ -19,7 +19,7 @@
       <nav class="topnav" aria-label="Main navigation">
         <a class="brand" href="./"><span>⛰</span> platå</a>
         <div class="navlinks">
-          <a href="./">Trainers</a>
+          <a href="./">Practice</a>
           <a href="#" aria-current="page">Dashboard</a>
           <a href="./program.html">Program</a>
           <a href="./quality.html">Quality</a>
@@ -32,7 +32,7 @@
         <div>
           <p class="eyebrow">Progress that explains itself</p>
           <h1>Dashboard</h1>
-          <p class="lead">A local, inspectable view of your Danish practice. It shows the next useful step, the evidence behind it, and the signals that changed after each repair.</p>
+          <p class="lead">Start with the one next action your Coach surfaces in <a href="#today">Today</a>. Evidence trails, memory, and mastery signals sit in collapsed Inspect drawers below—open them when you want the full picture, not on first load.</p>
         </div>
       </section>
     </header>
@@ -60,7 +60,7 @@
     <section class="section" id="overview" aria-labelledby="overview-title">
       <div class="section-head">
         <p class="eyebrow">Overview</p>
-        <h2 id="overview-title">All trainers at a glance</h2>
+        <h2 id="overview-title">Lessons &amp; drills at a glance</h2>
       </div>
       <div id="trainer-cards" class="trainer-grid"></div>
     </section>
@@ -69,50 +69,66 @@
       <div class="section-head">
         <p class="eyebrow">Next step</p>
         <h2 id="due-title">Practice with context</h2>
+        <p class="section-lead">Drills are the repair layer—they follow narrative misses, not the story run itself.</p>
       </div>
       <div id="practice-plan" class="practice-plan"></div>
       <div id="due-cards" class="trainer-grid"></div>
     </section>
 
     <section class="section" id="evidence" aria-labelledby="evidence-title">
-      <div class="section-head">
-        <p class="eyebrow">Evidence trail</p>
-        <h2 id="evidence-title">What changed and why</h2>
-      </div>
-      <div id="evidence-ledger" class="evidence-ledger"></div>
+      <details class="inspect-drawer">
+        <summary>Inspect: Evidence trail</summary>
+        <div class="section-head">
+          <p class="eyebrow">Evidence trail</p>
+          <h2 id="evidence-title">What changed and why</h2>
+        </div>
+        <div id="evidence-ledger" class="evidence-ledger"></div>
+      </details>
     </section>
 
     <section class="section" id="memory" aria-labelledby="memory-title">
-      <div class="section-head">
-        <p class="eyebrow">Learner memory</p>
-        <h2 id="memory-title">What the system believes</h2>
-      </div>
-      <div id="memory-facts" class="memory-facts"></div>
+      <details class="inspect-drawer">
+        <summary>Inspect: Learner memory</summary>
+        <div class="section-head">
+          <p class="eyebrow">Learner memory</p>
+          <h2 id="memory-title">What the system believes</h2>
+        </div>
+        <div id="memory-facts" class="memory-facts"></div>
+      </details>
     </section>
 
     <section class="section" id="mastery" aria-labelledby="mastery-title">
-      <div class="section-head">
-        <p class="eyebrow">Plain language</p>
-        <h2 id="mastery-title">What to fix next</h2>
-        <p class="section-lead">Each card says what we saw, what it means for your Danish, and one repair step. Open technical details only if you want the raw signal ids.</p>
-      </div>
-      <div id="mastery-list" class="mastery-list"></div>
+      <details class="inspect-drawer">
+        <summary>Inspect: Plain language mastery</summary>
+        <div class="section-head">
+          <p class="eyebrow">Plain language</p>
+          <h2 id="mastery-title">What to fix next</h2>
+          <p class="section-lead">Each card says what we saw, what it means for your Danish, and one repair step. Open technical details only if you want the raw signal ids.</p>
+        </div>
+        <div id="mastery-list" class="mastery-list"></div>
+      </details>
     </section>
 
     <section class="section" id="competencies" aria-labelledby="competencies-title">
-      <div class="section-head">
-        <p class="eyebrow">Root skills</p>
-        <h2 id="competencies-title">Competency map</h2>
-      </div>
-      <div id="competency-list" class="mastery-list competency-list"></div>
+      <details class="inspect-drawer">
+        <summary>Inspect: Competency map</summary>
+        <div class="section-head">
+          <p class="eyebrow">Root skills</p>
+          <h2 id="competencies-title">Competency map</h2>
+        </div>
+        <div id="competency-list" class="mastery-list competency-list"></div>
+      </details>
     </section>
 
     <section class="section" id="raw-weak" aria-labelledby="raw-weak-title">
-      <div class="section-head">
-        <p class="eyebrow">Developer view</p>
-        <h2 id="raw-weak-title">Raw weak tags</h2>
-      </div>
-      <div id="weak-list" class="weak-list"></div>
+      <details class="inspect-drawer">
+        <summary>Inspect: Raw weak tags</summary>
+        <div class="section-head">
+          <p class="eyebrow">Developer view</p>
+          <h2 id="raw-weak-title">Raw weak tags</h2>
+        </div>
+        <div id="weak-list" class="weak-list"></div>
+      </details>
     </section>
 
     <section class="section split" id="data-tools" aria-labelledby="data-title">

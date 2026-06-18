@@ -152,10 +152,15 @@
     var program = payload.program || {};
     var step = payload.step || null;
     var companion = payload.companion || null;
+    var isOnboarding = program.kind === "onboarding";
     return interpretationFromParts({
-      verdict: program.headline || "Your next step",
-      saw: program.message || "The planner picked one step from your saved route.",
-      means: program.why || "This choice is deterministic — same evidence, same recommendation.",
+      verdict: program.headline || (isOnboarding ? "Start B2 job follow-up" : "Your next step"),
+      saw: program.message || (isOnboarding
+        ? "No local progress yet — the planner starts with the B2 follow-up lesson."
+        : "The planner picked one step from your saved route."),
+      means: isOnboarding
+        ? (program.why || "B2 job-follow-up is the primary first action for plateau learners.") + " Lesson 01 remains an optional first-visit tutorial."
+        : (program.why || "This choice is deterministic — same evidence, same recommendation."),
       nextStep: step ? (program.actionLabel || "Start step") + " (" + (program.routeMeta || "") + ")" : program.actionLabel || "Review route",
       nextHref: payload.actionHref || "",
       nextLabel: program.actionLabel || "Start",
@@ -178,10 +183,10 @@
       return interpretationFromParts({
         verdict: "First session — no plateau data yet",
         saw: "This browser has no practice history.",
-        means: "Start Lesson 01 once. After that, Today and repair cards explain themselves in plain language.",
-        nextStep: "Do one short lesson to seed local evidence.",
-        nextHref: "./lessons/lesson-01/",
-        nextLabel: "Start Lesson 01",
+        means: "Start the B2 job-follow-up lesson for the primary entry. Lesson 01 is an optional first-visit tutorial if you want to see how Platå works.",
+        nextStep: "Do one short B2 follow-up lesson to seed local evidence.",
+        nextHref: "./lessons/lesson-b2-job-followup/",
+        nextLabel: "Start job follow-up",
         appendix: [["Attempts", 0]]
       });
     }
@@ -219,6 +224,9 @@
   function compressHomeRecommendation(recommendation) {
     recommendation = recommendation || {};
     var kind = recommendation.kind || recommendation.mode || "";
+    var trainerId = recommendation.trainer && recommendation.trainer.id || "";
+    var isTutorialStart = kind === "start" && trainerId === "lesson-01-arrival";
+    var isPreferredStart = kind === "start" && trainerId === "lesson-b2-job-followup";
     return interpretationFromParts({
       verdict: recommendation.title || "Start here",
       saw: recommendation.copy || recommendation.meta || "",
@@ -226,13 +234,17 @@
         ? "Lesson evidence says this pattern still costs you in real Danish moments."
         : kind === "active-plan"
           ? "You already have a saved route — finishing the open step beats starting fresh."
-          : "One short session here builds the evidence trail for smarter recommendations.",
+          : isPreferredStart
+            ? "B2 job-follow-up is the primary entry for plateau learners. Lesson 01 is an optional first-visit tutorial."
+            : isTutorialStart
+              ? "Lesson 01 is the optional first-visit tutorial — use it to see how choices, feedback, and local progress work."
+              : "One short session here builds the evidence trail for smarter recommendations.",
       nextStep: recommendation.meta || recommendation.copy || "",
       nextHref: recommendation.href || (recommendation.trainer && recommendation.trainer.path) || "",
       nextLabel: recommendation.cta || "Start",
       appendix: [
         ["Kind", kind],
-        ["Trainer", recommendation.trainer && recommendation.trainer.id || ""]
+        ["Trainer", trainerId]
       ]
     });
   }

@@ -80,8 +80,8 @@ function run() {
         replaceInFile(
           root,
           "shared/plata-planner.js",
-          'var startScore = trainer.id === "lesson-01-arrival" ? 48 : 35 - index;',
-          'var startScore = trainer.id === "lesson-b2-radiator-register" ? 60 : 35 - index;'
+          'if (trainer.id === "lesson-b2-job-followup") {',
+          'if (trainer.id === "lesson-b2-radiator-register") {'
         );
       },
       assert(snapshot) {

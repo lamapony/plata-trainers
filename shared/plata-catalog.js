@@ -96,7 +96,7 @@
         description: "Arrive in Copenhagen, meet Lene, read signs, and say your first useful Danish sentence. Exercises are embedded as story actions.",
         icon: "🌅",
         gallery: {
-          tag: "Narrative A0/A1",
+          tag: "Tutorial · onboarding",
           level: "A0/A1",
           theme: "First arrival",
           status: "starter",
@@ -107,7 +107,7 @@
             "Introduce yourself with a usable chunk",
             "Close a courtesy loop with tak / selv tak"
           ],
-          sequence: 1,
+          sequence: 99,
           featured: false
         }
       },
@@ -157,7 +157,7 @@
             "Shift register between email and LinkedIn",
             "Keep agency while sounding patient"
           ],
-          sequence: 3,
+          sequence: 1,
           featured: true
         }
       },
@@ -182,7 +182,7 @@
             "Distinguish fordi + subordinate clause from derfor + inversion",
             "Transfer correct word order across email, chat, and spoken Danish"
           ],
-          sequence: 4,
+          sequence: 3,
           featured: false
         }
       }

@@ -116,21 +116,21 @@ function plan(overrides = {}, stepOverrides = {}) {
 function starterPlan() {
   const step = planStep({
     kind: "continue",
-    trainerId: "lesson-01",
-    trainerName: "Lesson 01",
-    title: "Start Lesson 01",
-    copy: "Begin with a short story lesson and create the first evidence trail.",
+    trainerId: "lesson-b2-job-followup",
+    trainerName: "Efter interviews — tone, tak, og tålmodighed",
+    title: "Start B2 job follow-up",
+    copy: "Begin with the B2 job-follow-up lesson and create the first evidence trail.",
     primaryLabel: "Start first session",
-    primaryHref: "./lessons/lesson-01/",
+    primaryHref: "./lessons/lesson-b2-job-followup/",
     signalTag: "",
     routeId: "s1-start",
     competency: null,
-    minutes: "6 min"
+    minutes: "15 min"
   });
   return {
     kind: "starter",
     title: "Starter plan",
-    copy: "Start with the first short route.",
+    copy: "Start with the B2 follow-up route.",
     planToken: "plan-starter",
     fingerprint: "plan-starter-fp",
     steps: [step],
@@ -367,7 +367,7 @@ function buildGuidedSessionReport(options = {}) {
         plan: starterPlan(),
         step: starterPlan().steps[0],
         memoryFacts: [],
-        actionHref: "./lessons/lesson-01/?plan=plan-starter&step=s1-start"
+        actionHref: "./lessons/lesson-b2-job-followup/?plan=plan-starter&step=s1-start"
       })
     },
     {

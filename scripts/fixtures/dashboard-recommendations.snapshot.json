@@ -88,11 +88,11 @@
             "kind": "start",
             "trainerId": "lesson-01-arrival",
             "signalTag": "",
-            "score": 48,
+            "score": 40,
             "title": "Start Lesson 01: The First Morning",
             "primaryHref": "./lessons/lesson-01/",
-            "traceRule": "dashboard.start.preferred-entry",
-            "traceFingerprint": "ptr-k8ti0b"
+            "traceRule": "dashboard.start.tutorial-option",
+            "traceFingerprint": "ptr-il92io"
           }
         },
         {
@@ -120,11 +120,11 @@
             "kind": "start",
             "trainerId": "lesson-b2-job-followup",
             "signalTag": "",
-            "score": 29,
+            "score": 52,
             "title": "Start Efter interviews — tone, tak, og tålmodighed",
             "primaryHref": "./lessons/lesson-b2-job-followup/",
-            "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-wwh49g"
+            "traceRule": "dashboard.start.preferred-entry",
+            "traceFingerprint": "ptr-1iia68f"
           }
         },
         {
@@ -146,6 +146,83 @@
       ],
       "due": [
         {
+          "trainerId": "lesson-b2-job-followup",
+          "trainerName": "Efter interviews — tone, tak, og tålmodighed",
+          "index": 6,
+          "stats": {
+            "total": 0,
+            "correct": 0,
+            "accuracy": null,
+            "mastered": 0,
+            "totalItems": 0,
+            "today": 0,
+            "lastSessionDate": "",
+            "weakTags": [],
+            "weakMastery": [],
+            "weakCompetencies": []
+          },
+          "decision": {
+            "kind": "start",
+            "targetKind": "start",
+            "trainerId": "lesson-b2-job-followup",
+            "signalTag": "",
+            "score": 52,
+            "badge": "Start path",
+            "title": "Start Efter interviews — tone, tak, og tålmodighed",
+            "primaryLabel": "Start lesson",
+            "primaryHref": "./lessons/lesson-b2-job-followup/",
+            "meta": "",
+            "reasons": [
+              "No local progress yet"
+            ],
+            "competency": null,
+            "repair": null,
+            "signals": [],
+            "trace": {
+              "rule": "dashboard.start.preferred-entry",
+              "fingerprint": "ptr-1iia68f",
+              "selected": {
+                "kind": "start",
+                "targetKind": "start",
+                "trainerId": "lesson-b2-job-followup",
+                "signalTag": "",
+                "primaryHref": "./lessons/lesson-b2-job-followup/"
+              },
+              "score": 52,
+              "scoreBreakdown": [
+                {
+                  "label": "empty-profile start priority",
+                  "value": 52
+                },
+                {
+                  "label": "catalog order adjustment",
+                  "value": 0
+                }
+              ],
+              "inputs": {
+                "trainer": {
+                  "id": "lesson-b2-job-followup",
+                  "index": 6,
+                  "name": "Efter interviews — tone, tak, og tålmodighed",
+                  "type": "lesson"
+                },
+                "stats": {
+                  "correct": 0,
+                  "lastSessionDate": "",
+                  "today": 0,
+                  "total": 0
+                },
+                "weakMasteryCount": 0,
+                "weakTagCount": 0,
+                "weakCompetencyCount": 0
+              },
+              "reasons": [
+                "No local progress yet"
+              ]
+            }
+          }
+        },
+        {
           "trainerId": "lesson-01-arrival",
           "trainerName": "Lesson 01: The First Morning",
           "index": 4,
@@ -166,21 +243,21 @@
             "targetKind": "start",
             "trainerId": "lesson-01-arrival",
             "signalTag": "",
-            "score": 48,
-            "badge": "Start path",
+            "score": 40,
+            "badge": "Tutorial option",
             "title": "Start Lesson 01: The First Morning",
             "primaryLabel": "Start lesson",
             "primaryHref": "./lessons/lesson-01/",
             "meta": "",
             "reasons": [
-              "No local progress yet"
+              "Optional first-visit tutorial"
             ],
             "competency": null,
             "repair": null,
             "signals": [],
             "trace": {
-              "rule": "dashboard.start.preferred-entry",
-              "fingerprint": "ptr-k8ti0b",
+              "rule": "dashboard.start.tutorial-option",
+              "fingerprint": "ptr-il92io",
               "selected": {
                 "kind": "start",
                 "targetKind": "start",
@@ -188,11 +265,11 @@
                 "signalTag": "",
                 "primaryHref": "./lessons/lesson-01/"
               },
-              "score": 48,
+              "score": 40,
               "scoreBreakdown": [
                 {
                   "label": "empty-profile start priority",
-                  "value": 48
+                  "value": 40
                 },
                 {
                   "label": "catalog order adjustment",
@@ -217,7 +294,7 @@
                 "weakCompetencyCount": 0
               },
               "reasons": [
-                "No local progress yet"
+                "Optional first-visit tutorial"
               ]
             }
           }
@@ -298,108 +375,31 @@
               ]
             }
           }
-        },
-        {
-          "trainerId": "ordstilling",
-          "trainerName": "Ordstilling drill",
-          "index": 1,
-          "stats": {
-            "total": 0,
-            "correct": 0,
-            "accuracy": null,
-            "mastered": 0,
-            "totalItems": 0,
-            "today": 0,
-            "lastSessionDate": "",
-            "weakTags": [],
-            "weakMastery": [],
-            "weakCompetencies": []
-          },
-          "decision": {
-            "kind": "start",
-            "targetKind": "start",
-            "trainerId": "ordstilling",
-            "signalTag": "",
-            "score": 34,
-            "badge": "Start path",
-            "title": "Start Ordstilling drill",
-            "primaryLabel": "Start drill",
-            "primaryHref": "./ordstilling-drill/",
-            "meta": "",
-            "reasons": [
-              "No local progress yet"
-            ],
-            "competency": null,
-            "repair": null,
-            "signals": [],
-            "trace": {
-              "rule": "dashboard.start.empty-profile",
-              "fingerprint": "ptr-1v2cj2i",
-              "selected": {
-                "kind": "start",
-                "targetKind": "start",
-                "trainerId": "ordstilling",
-                "signalTag": "",
-                "primaryHref": "./ordstilling-drill/"
-              },
-              "score": 34,
-              "scoreBreakdown": [
-                {
-                  "label": "empty-profile start priority",
-                  "value": 35
-                },
-                {
-                  "label": "catalog order adjustment",
-                  "value": -1
-                }
-              ],
-              "inputs": {
-                "trainer": {
-                  "id": "ordstilling",
-                  "index": 1,
-                  "name": "Ordstilling drill",
-                  "type": "drill"
-                },
-                "stats": {
-                  "correct": 0,
-                  "lastSessionDate": "",
-                  "today": 0,
-                  "total": 0
-                },
-                "weakMasteryCount": 0,
-                "weakTagCount": 0,
-                "weakCompetencyCount": 0
-              },
-              "reasons": [
-                "No local progress yet"
-              ]
-            }
-          }
         }
       ],
       "practicePlan": {
         "kind": "start",
         "title": "Starter plan",
-        "fingerprint": "start::lesson-01-arrival::::./lessons/lesson-01/",
-        "planToken": "pjdxbx9",
+        "fingerprint": "start::lesson-b2-job-followup::::./lessons/lesson-b2-job-followup/",
+        "planToken": "pk4fu3",
         "meta": "0/1 tracked step completed.",
         "completedCount": 0,
         "openCount": 1,
-        "primaryStepRouteId": "s1-jdxbx9",
+        "primaryStepRouteId": "s1-k4fu3",
         "steps": [
           {
             "number": 1,
-            "routeId": "s1-jdxbx9",
+            "routeId": "s1-k4fu3",
             "kind": "start",
             "targetKind": "start",
-            "trainerId": "lesson-01-arrival",
+            "trainerId": "lesson-b2-job-followup",
             "signalTag": "",
-            "title": "Start Lesson 01: The First Morning",
+            "title": "Start Efter interviews — tone, tak, og tålmodighed",
             "primaryLabel": "Start lesson",
-            "primaryHref": "./lessons/lesson-01/",
-            "routedHref": "./lessons/lesson-01/?plan=pjdxbx9&step=s1-jdxbx9",
+            "primaryHref": "./lessons/lesson-b2-job-followup/",
+            "routedHref": "./lessons/lesson-b2-job-followup/?plan=pk4fu3&step=s1-k4fu3",
             "minutes": "10-15 min",
-            "score": 48,
+            "score": 52,
             "attemptsAtStart": 0,
             "status": "open",
             "statusLabel": "Open",
@@ -414,19 +414,19 @@
             },
             "trace": {
               "rule": "dashboard.start.preferred-entry",
-              "fingerprint": "ptr-k8ti0b",
+              "fingerprint": "ptr-1iia68f",
               "selected": {
                 "kind": "start",
                 "targetKind": "start",
-                "trainerId": "lesson-01-arrival",
+                "trainerId": "lesson-b2-job-followup",
                 "signalTag": "",
-                "primaryHref": "./lessons/lesson-01/"
+                "primaryHref": "./lessons/lesson-b2-job-followup/"
               },
-              "score": 48,
+              "score": 52,
               "scoreBreakdown": [
                 {
                   "label": "empty-profile start priority",
-                  "value": 48
+                  "value": 52
                 },
                 {
                   "label": "catalog order adjustment",
@@ -435,9 +435,9 @@
               ],
               "inputs": {
                 "trainer": {
-                  "id": "lesson-01-arrival",
-                  "index": 4,
-                  "name": "Lesson 01: The First Morning",
+                  "id": "lesson-b2-job-followup",
+                  "index": 6,
+                  "name": "Efter interviews — tone, tak, og tålmodighed",
                   "type": "lesson"
                 },
                 "stats": {
@@ -547,11 +547,11 @@
             "kind": "start",
             "trainerId": "lesson-01-arrival",
             "signalTag": "",
-            "score": 48,
+            "score": 40,
             "title": "Start Lesson 01: The First Morning",
             "primaryHref": "./lessons/lesson-01/",
-            "traceRule": "dashboard.start.preferred-entry",
-            "traceFingerprint": "ptr-k8ti0b"
+            "traceRule": "dashboard.start.tutorial-option",
+            "traceFingerprint": "ptr-il92io"
           }
         },
         {
@@ -581,11 +581,11 @@
             "kind": "start",
             "trainerId": "lesson-b2-job-followup",
             "signalTag": "",
-            "score": 29,
+            "score": 52,
             "title": "Start Efter interviews — tone, tak, og tålmodighed",
             "primaryHref": "./lessons/lesson-b2-job-followup/",
-            "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-wwh49g"
+            "traceRule": "dashboard.start.preferred-entry",
+            "traceFingerprint": "ptr-1iia68f"
           }
         },
         {
@@ -758,6 +758,83 @@
           }
         },
         {
+          "trainerId": "lesson-b2-job-followup",
+          "trainerName": "Efter interviews — tone, tak, og tålmodighed",
+          "index": 6,
+          "stats": {
+            "total": 0,
+            "correct": 0,
+            "accuracy": null,
+            "mastered": 0,
+            "totalItems": 0,
+            "today": 0,
+            "lastSessionDate": "",
+            "weakTags": [],
+            "weakMastery": [],
+            "weakCompetencies": []
+          },
+          "decision": {
+            "kind": "start",
+            "targetKind": "start",
+            "trainerId": "lesson-b2-job-followup",
+            "signalTag": "",
+            "score": 52,
+            "badge": "Start path",
+            "title": "Start Efter interviews — tone, tak, og tålmodighed",
+            "primaryLabel": "Start lesson",
+            "primaryHref": "./lessons/lesson-b2-job-followup/",
+            "meta": "",
+            "reasons": [
+              "No local progress yet"
+            ],
+            "competency": null,
+            "repair": null,
+            "signals": [],
+            "trace": {
+              "rule": "dashboard.start.preferred-entry",
+              "fingerprint": "ptr-1iia68f",
+              "selected": {
+                "kind": "start",
+                "targetKind": "start",
+                "trainerId": "lesson-b2-job-followup",
+                "signalTag": "",
+                "primaryHref": "./lessons/lesson-b2-job-followup/"
+              },
+              "score": 52,
+              "scoreBreakdown": [
+                {
+                  "label": "empty-profile start priority",
+                  "value": 52
+                },
+                {
+                  "label": "catalog order adjustment",
+                  "value": 0
+                }
+              ],
+              "inputs": {
+                "trainer": {
+                  "id": "lesson-b2-job-followup",
+                  "index": 6,
+                  "name": "Efter interviews — tone, tak, og tålmodighed",
+                  "type": "lesson"
+                },
+                "stats": {
+                  "correct": 0,
+                  "lastSessionDate": "",
+                  "today": 0,
+                  "total": 0
+                },
+                "weakMasteryCount": 0,
+                "weakTagCount": 0,
+                "weakCompetencyCount": 0
+              },
+              "reasons": [
+                "No local progress yet"
+              ]
+            }
+          }
+        },
+        {
           "trainerId": "lesson-01-arrival",
           "trainerName": "Lesson 01: The First Morning",
           "index": 4,
@@ -778,21 +855,21 @@
             "targetKind": "start",
             "trainerId": "lesson-01-arrival",
             "signalTag": "",
-            "score": 48,
-            "badge": "Start path",
+            "score": 40,
+            "badge": "Tutorial option",
             "title": "Start Lesson 01: The First Morning",
             "primaryLabel": "Start lesson",
             "primaryHref": "./lessons/lesson-01/",
             "meta": "",
             "reasons": [
-              "No local progress yet"
+              "Optional first-visit tutorial"
             ],
             "competency": null,
             "repair": null,
             "signals": [],
             "trace": {
-              "rule": "dashboard.start.preferred-entry",
-              "fingerprint": "ptr-k8ti0b",
+              "rule": "dashboard.start.tutorial-option",
+              "fingerprint": "ptr-il92io",
               "selected": {
                 "kind": "start",
                 "targetKind": "start",
@@ -800,11 +877,11 @@
                 "signalTag": "",
                 "primaryHref": "./lessons/lesson-01/"
               },
-              "score": 48,
+              "score": 40,
               "scoreBreakdown": [
                 {
                   "label": "empty-profile start priority",
-                  "value": 48
+                  "value": 40
                 },
                 {
                   "label": "catalog order adjustment",
@@ -829,84 +906,7 @@
                 "weakCompetencyCount": 0
               },
               "reasons": [
-                "No local progress yet"
-              ]
-            }
-          }
-        },
-        {
-          "trainerId": "bojning",
-          "trainerName": "Bøjning drill",
-          "index": 0,
-          "stats": {
-            "total": 0,
-            "correct": 0,
-            "accuracy": null,
-            "mastered": 0,
-            "totalItems": 0,
-            "today": 0,
-            "lastSessionDate": "",
-            "weakTags": [],
-            "weakMastery": [],
-            "weakCompetencies": []
-          },
-          "decision": {
-            "kind": "start",
-            "targetKind": "start",
-            "trainerId": "bojning",
-            "signalTag": "",
-            "score": 35,
-            "badge": "Start path",
-            "title": "Start Bøjning drill",
-            "primaryLabel": "Start drill",
-            "primaryHref": "./bojning-drill/",
-            "meta": "",
-            "reasons": [
-              "No local progress yet"
-            ],
-            "competency": null,
-            "repair": null,
-            "signals": [],
-            "trace": {
-              "rule": "dashboard.start.empty-profile",
-              "fingerprint": "ptr-1vroyk7",
-              "selected": {
-                "kind": "start",
-                "targetKind": "start",
-                "trainerId": "bojning",
-                "signalTag": "",
-                "primaryHref": "./bojning-drill/"
-              },
-              "score": 35,
-              "scoreBreakdown": [
-                {
-                  "label": "empty-profile start priority",
-                  "value": 35
-                },
-                {
-                  "label": "catalog order adjustment",
-                  "value": 0
-                }
-              ],
-              "inputs": {
-                "trainer": {
-                  "id": "bojning",
-                  "index": 0,
-                  "name": "Bøjning drill",
-                  "type": "drill"
-                },
-                "stats": {
-                  "correct": 0,
-                  "lastSessionDate": "",
-                  "today": 0,
-                  "total": 0
-                },
-                "weakMasteryCount": 0,
-                "weakTagCount": 0,
-                "weakCompetencyCount": 0
-              },
-              "reasons": [
-                "No local progress yet"
+                "Optional first-visit tutorial"
               ]
             }
           }
@@ -915,11 +915,11 @@
       "practicePlan": {
         "kind": "repair",
         "title": "Repair plan",
-        "fingerprint": "repair::lesson-b2-radiator-register::passive-agency::./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive",
-        "planToken": "p1z0mgdg",
-        "meta": "0/1 tracked step completed.",
+        "fingerprint": "repair::lesson-b2-radiator-register::passive-agency::./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive|drill-repair::register::passive-agency::./register-drill/?signal=passive-agency&from=lesson-b2-radiator-register",
+        "planToken": "p1g56kim",
+        "meta": "0/2 tracked steps completed.",
         "completedCount": 0,
-        "openCount": 1,
+        "openCount": 2,
         "primaryStepRouteId": "s1-1z0mgdg",
         "steps": [
           {
@@ -932,7 +932,7 @@
             "title": "Repair Read passive agency",
             "primaryLabel": "Open repair scene",
             "primaryHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive",
-            "routedHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency&plan=p1z0mgdg&step=s1-1z0mgdg#official-reply-passive",
+            "routedHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency&plan=p1g56kim&step=s1-1z0mgdg#official-reply-passive",
             "minutes": "4-6 min",
             "score": 169,
             "attemptsAtStart": 2,
@@ -1040,6 +1040,51 @@
                 "Memory fact: weak_signal passive-agency memsrc-h7inq3"
               ]
             }
+          },
+          {
+            "number": 2,
+            "routeId": "s2-1jxdh6f",
+            "kind": "drill-repair",
+            "targetKind": "drill",
+            "trainerId": "register",
+            "signalTag": "passive-agency",
+            "title": "Run Register drill",
+            "primaryLabel": "Run Register drill",
+            "primaryHref": "./register-drill/?signal=passive-agency&from=lesson-b2-radiator-register",
+            "routedHref": "./register-drill/?signal=passive-agency&from=lesson-b2-radiator-register&plan=p1g56kim&step=s2-1jxdh6f",
+            "minutes": "5-8 min",
+            "score": 164,
+            "attemptsAtStart": 0,
+            "status": "open",
+            "statusLabel": "Open",
+            "competency": {
+              "id": "agency",
+              "label": "Agency and responsibility",
+              "signalCount": 1
+            },
+            "explanation": {
+              "label": "Why this step",
+              "copy": "Chosen because this signal has a mapped reflex drill after the scene repair.",
+              "facts": [
+                "Signal: passive-agency"
+              ],
+              "source": "drill-repair"
+            },
+            "trace": {
+              "rule": "practice-plan.drill-follow-up",
+              "fingerprint": "ptr-wzrjwt",
+              "selected": {
+                "kind": "",
+                "targetKind": "",
+                "trainerId": "",
+                "signalTag": "",
+                "primaryHref": ""
+              },
+              "score": 0,
+              "scoreBreakdown": [],
+              "inputs": {},
+              "reasons": []
+            }
           }
         ]
       },
@@ -1049,7 +1094,7 @@
         "advice": "Start with one repair scene because this signal is still weak in learner memory.",
         "nextAction": {
           "label": "Open repair scene",
-          "href": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency&plan=p1z0mgdg&step=s1-1z0mgdg#official-reply-passive"
+          "href": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency&plan=p1g56kim&step=s1-1z0mgdg#official-reply-passive"
         },
         "citedFacts": [
           {

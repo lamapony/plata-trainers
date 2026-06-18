@@ -67,6 +67,7 @@ const requiredGates = [
   { id: "check:planner", category: "planner", contract: "Planner decisions and practice plans preserve traces and explanations." },
   { id: "check:planner-mutations", category: "mutation", contract: "Bad mastery/remediation planner contracts fail CI." },
   { id: "check:catalog", category: "catalog", contract: "Trainer registry and gold lesson data paths resolve." },
+  { id: "check:repair-bridge", category: "runtime", contract: "Narrative misses mount Match→Gym repair panels and persist scene + drill practice plans." },
   { id: "check:home", category: "runtime", contract: "Home launcher routes starter, continue, repair, and active-plan flows." },
   { id: "check:headroom", category: "runtime", contract: "PlataHeadroom compresses mastery, competency, trainer, and dashboard payloads into plain-language learner copy without leaking raw answers." },
   { id: "check:evaluator-path", category: "runtime", contract: "Home evaluator path connects the first-visit CTA to the read-only demo learner and proof-backed guided session route." },

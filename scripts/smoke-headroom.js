@@ -43,18 +43,19 @@ function run() {
     program: {
       kind: "onboarding",
       eyebrow: "First session",
-      headline: "Start Lesson 01",
-      message: "Begin with the first short story lesson.",
-      why: "No local progress yet.",
+      headline: "Start B2 job follow-up",
+      message: "Begin with the B2 job-follow-up lesson.",
+      why: "No local progress yet — B2 follow-up is the primary entry.",
       actionLabel: "Start first session",
       routeMeta: "No local history yet"
     },
     step: { number: 1 },
-    actionHref: "./lessons/lesson-01/",
+    actionHref: "./lessons/lesson-b2-job-followup/",
     progress: 0,
     guardrailLabels: ["Onboarding", "Planner route"]
   });
-  assert(today.verdict === "Start Lesson 01", "today verdict uses headline");
+  assert(today.verdict === "Start B2 job follow-up", "today verdict uses headline");
+  assert(/first-visit tutorial/.test(today.means), "today means mentions optional tutorial");
 
   const bar = layer.renderBar(layer.compressDashboardSnapshot({
     totalAttempts: 12,

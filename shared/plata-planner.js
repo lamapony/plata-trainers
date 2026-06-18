@@ -764,25 +764,42 @@
     }
 
     if (stats.total === 0) {
-      var startScore = trainer.id === "lesson-01-arrival" ? 48 : 35 - index;
+      var startScore;
+      var startRule;
+      var startCopy;
+      if (trainer.id === "lesson-b2-job-followup") {
+        startScore = 52;
+        startRule = "dashboard.start.preferred-entry";
+        startCopy = "Start with the B2 job-follow-up lesson — the primary entry for plateau learners who need professional Danish under hiring pressure.";
+      } else if (trainer.id === "lesson-01-arrival") {
+        startScore = 40;
+        startRule = "dashboard.start.tutorial-option";
+        startCopy = "Optional first-visit tutorial: a short arrival story that shows how choices, feedback, and local progress work.";
+      } else {
+        startScore = 35 - index;
+        startRule = "dashboard.start.empty-profile";
+        startCopy = trainer.description || "Start with one short session so the planner has real signal.";
+      }
       return withTrace({
         kind: "start",
         targetKind: "start",
         trainerId: trainer.id || "",
         score: startScore,
-        badge: "Start path",
+        badge: trainer.id === "lesson-01-arrival" ? "Tutorial option" : "Start path",
         title: "Start " + (trainer.name || "trainer"),
-        copy: trainer.description || "Start with one short session so the planner has real signal.",
+        copy: startCopy,
         primaryLabel: "Start " + (trainer.type || "trainer"),
         primaryHref: trainerPath,
-        reasons: ["No local progress yet"]
+        reasons: trainer.id === "lesson-01-arrival"
+          ? ["Optional first-visit tutorial"]
+          : ["No local progress yet"]
       }, {
         source: "dashboardDecision",
-        rule: trainer.id === "lesson-01-arrival" ? "dashboard.start.preferred-entry" : "dashboard.start.empty-profile",
+        rule: startRule,
         inputs: traceInputs,
         scoreBreakdown: [
-          { label: "empty-profile start priority", value: trainer.id === "lesson-01-arrival" ? 48 : 35 },
-          { label: "catalog order adjustment", value: trainer.id === "lesson-01-arrival" ? 0 : -index }
+          { label: "empty-profile start priority", value: trainer.id === "lesson-b2-job-followup" ? 52 : trainer.id === "lesson-01-arrival" ? 40 : 35 },
+          { label: "catalog order adjustment", value: trainer.id === "lesson-b2-job-followup" || trainer.id === "lesson-01-arrival" ? 0 : -index }
         ]
       });
     }
@@ -899,6 +916,7 @@
 
   function minutesForDecision(kind) {
     if (kind === "repair") return "4-6 min";
+    if (kind === "drill-repair") return "5-8 min";
     if (kind === "repeat" || kind === "weak" || kind === "accuracy") return "6-8 min";
     if (kind === "start") return "10-15 min";
     if (kind === "enough") return "0 min";
@@ -1070,6 +1088,57 @@
     };
   }
 
+  function planStepFromDrillRepair(drillRepair, sourceStep, number) {
+    drillRepair = drillRepair || {};
+    sourceStep = sourceStep || {};
+    return {
+      number: number,
+      kind: "drill-repair",
+      targetKind: "drill",
+      trainerId: drillRepair.drillId || "",
+      signalTag: sourceStep.signalTag || "",
+      trainerName: drillRepair.trainerName || "",
+      trainerIcon: drillRepair.trainerIcon || "",
+      badge: "Gym",
+      title: drillRepair.cta || "Run drill repair",
+      copy: drillRepair.action || "",
+      primaryLabel: drillRepair.cta || "Open drill",
+      primaryHref: drillRepair.href || "#",
+      minutes: minutesForDecision("drill-repair"),
+      score: Math.max(0, Number(sourceStep.score || 0) - 5),
+      attemptsAtStart: 0,
+      lastSessionDateAtStart: "",
+      competency: sourceStep.competency || null,
+      reasons: ["Drill repair follows the open narrative signal"],
+      memoryFacts: [],
+      explanation: normalizeExplanation({
+        label: "Why this step",
+        copy: "Chosen because this signal has a mapped reflex drill after the scene repair.",
+        facts: sourceStep.signalTag ? ["Signal: " + sourceStep.signalTag] : [],
+        source: "drill-repair"
+      }),
+      trace: normalizeTrace({
+        source: "practicePlan",
+        rule: "practice-plan.drill-follow-up",
+        inputs: {
+          signalTag: sourceStep.signalTag || "",
+          drillId: drillRepair.drillId || "",
+          sourceStep: sourceStep.number || 1
+        }
+      })
+    };
+  }
+
+  function appendDrillFollowUp(steps, firstItem, limit) {
+    if (!steps.length || steps.length >= limit) return steps;
+    if (steps[0].kind !== "repair") return steps;
+    var drillRepair = firstItem && firstItem.decision && firstItem.decision.drillRepair;
+    if (!drillRepair || !drillRepair.href) return steps;
+    var drillStep = planStepFromDrillRepair(drillRepair, steps[0], steps.length + 1);
+    steps.push(drillStep);
+    return steps;
+  }
+
   function practicePlan(items, options) {
     options = options || {};
     var limit = Math.max(1, Number(options.limit || 3));
@@ -1106,6 +1175,7 @@
     });
 
     var steps = picked.map(function (item, index) { return planStep(item, index + 1); });
+    steps = appendDrillFollowUp(steps, picked[0], limit);
     var firstKind = steps[0] && steps[0].kind || "continue";
     return {
       kind: firstKind,

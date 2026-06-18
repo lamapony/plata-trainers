@@ -394,6 +394,13 @@
     countEl.textContent = (state.index + 1) + " / " + lesson.scenes.length;
   }
 
+  function afterMiss(ctx, scene, option) {
+    if (!ctx || !scene || (option && option.correct)) return;
+    if (!root.PlataRepairBridge || !root.PlataRepairBridge.mountMissRepairPanel) return;
+    root.PlataRepairBridge.mountMissRepairPanel(ctx, scene, option);
+    refreshPlanContext(ctx);
+  }
+
   /* ---- choice renderer ---- */
   function renderChoice(ctx, scene) {
     var body = $("#exercise-body");
@@ -412,6 +419,7 @@
           record(ctx, scene, opt.correct, opt.label, correctLabel(scene.options), opt);
           applyEffects(ctx.state, opt.effects);
           ctx.state.attempts[scene.id + opt.id] = true;
+          if (!opt.correct) afterMiss(ctx, scene, opt);
         }
         if (opt.correct) {
           ctx.state.completed[scene.id] = true;
@@ -434,6 +442,7 @@
       $("#feedback").className = "feedback show " + (ok ? "ok" : "warn");
       $("#feedback").textContent = ok ? scene.success : scene.failure;
       record(ctx, scene, ok, value, scene.placeholder);
+      if (!ok) afterMiss(ctx, scene, { correct: false });
       if (ok) {
         ctx.state.completed[scene.id] = true;
         markRepairPlanStepComplete(ctx, scene);
@@ -473,6 +482,7 @@
         if (!ctx.state.attempts[scene.id + pair.id]) {
           record(ctx, scene, ok, (ctx.state.selectedLeft ? ctx.state.selectedLeft.left : "") + " → " + pair.right, pair.left + " → " + pair.right);
           ctx.state.attempts[scene.id + pair.id] = true;
+          if (!ok) afterMiss(ctx, scene, { correct: false });
         }
         if (ok) {
           r.classList.add("matched");
@@ -522,6 +532,7 @@
       if (!ctx.state.attempts[scene.id] || (ok && ctx.state.attempts[scene.id] !== "correct")) {
         record(ctx, scene, ok, scene.prefix + " " + value, scene.prefix + " + action");
         ctx.state.attempts[scene.id] = ok ? "correct" : "tried";
+        if (!ok) afterMiss(ctx, scene, { correct: false });
       }
       if (ok) {
         ctx.state.completed[scene.id] = true;
@@ -639,6 +650,7 @@
           record(ctx, scene, !!opt.correct, opt.label, correctLabel(scene.options || []), opt);
           applyEffects(ctx.state, opt.effects);
           ctx.state.attempts[scene.id + opt.id] = true;
+          if (!opt.correct) afterMiss(ctx, scene, opt);
         }
         if (opt.correct) {
           ctx.state.completed[scene.id] = true;
@@ -711,7 +723,7 @@
       }));
     }
 
-    html += "<div class='lesson-actions'><a class='primary link-button' href='../../'>Back to trainers</a><button class='ghost' id='again' type='button'>Run again</button></div>";
+    html += "<div class='lesson-actions'><a class='primary link-button' href='../../'>Back to practice</a><button class='ghost' id='again' type='button'>Run again</button></div>";
     ctx.sceneEl.innerHTML = html;
 
     $("#again").addEventListener("click", function () {
@@ -824,6 +836,7 @@
       routeEl: $("#route"),
       countEl: $("#scene-count"),
       varsEl: $("#variables-display"),
+      rootPrefix: "../../",
       renderSidebar: function () {
         renderRoute(lesson, ctx.state, ctx.routeEl, ctx.countEl, function () { renderScene(ctx); });
         renderVariables(ctx.lesson, ctx.state, ctx.varsEl);

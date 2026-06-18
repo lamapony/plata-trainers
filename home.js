@@ -233,11 +233,22 @@
     var activePlan = activePlanRecommendation(stats);
     if (activePlan) return activePlan;
 
+    var active = stats.filter(function (item) { return item.hasProgress; });
+    if (!active.length) {
+      var starter = trainerById("lesson-01-arrival") || trainers()[0];
+      return {
+        mode: "start",
+        trainer: starter,
+        title: "First visit?",
+        copy: "Take one short tutorial lesson to see how Platå works — choices, feedback, and local progress.",
+        cta: "Start tutorial",
+        meta: "No account. Progress stays in this browser."
+      };
+    }
+
     var planner = window.PlataPlanner;
     if (planner && planner.rankDashboardDecisions) {
-      var activeStats = stats.filter(function (item) { return item.hasProgress; });
-      var pool = activeStats.length ? activeStats : stats;
-      var ranked = planner.rankDashboardDecisions(pool.map(function (item) {
+      var ranked = planner.rankDashboardDecisions(active.map(function (item) {
         return {
           trainer: item.trainer,
           stats: item,
@@ -248,18 +259,6 @@
       if (ranked.length) return recommendationFromDecision(ranked[0]);
     }
 
-    var active = stats.filter(function (item) { return item.hasProgress; });
-    if (!active.length) {
-      var starter = trainerById("lesson-01-arrival") || trainers()[0];
-      return {
-        mode: "start",
-        trainer: starter,
-        title: "New here?",
-        copy: "Take one short story lesson first. It shows how choices, feedback, and local progress work.",
-        cta: "Start Lesson 01",
-        meta: "No account. Progress stays in this browser."
-      };
-    }
     active.sort(function (a, b) {
       var aDate = a.lastSessionDate ? new Date(a.lastSessionDate).getTime() : 0;
       var bDate = b.lastSessionDate ? new Date(b.lastSessionDate).getTime() : 0;
@@ -286,9 +285,9 @@
         mode: "start",
         trainer: trainer,
         href: decision.primaryHref,
-        title: "New here?",
-        copy: "Take one short story lesson first. It shows how choices, feedback, and local progress work.",
-        cta: "Start Lesson 01",
+        title: "First visit?",
+        copy: "Take one short tutorial lesson to see how Platå works — choices, feedback, and local progress.",
+        cta: "Start tutorial",
         meta: "Planner pick: best first session. No account; progress stays in this browser."
       };
     }
@@ -317,7 +316,7 @@
       link.href = recommendation.href || recommendation.trainer.path;
       link.textContent = recommendation.cta;
     }
-    if (primary) {
+    if (primary && recommendation.mode !== "start") {
       primary.href = recommendation.href || recommendation.trainer.path;
       primary.textContent = recommendation.cta;
     }
@@ -365,6 +364,13 @@
     tag.textContent = g.tag || (trainer.type === "lesson" ? "Narrative lesson" : "Drill");
     article.appendChild(tag);
 
+    if (g.featured) {
+      var featured = document.createElement("span");
+      featured.className = "gallery-featured";
+      featured.textContent = "Featured";
+      article.appendChild(featured);
+    }
+
     if (g.status) {
       var status = document.createElement("span");
       status.className = "gallery-status gallery-status-" + g.status;
@@ -408,22 +414,31 @@
     return article;
   }
 
-  function renderGallerySection(containerSelector, filterFn) {
+  function gallerySequenceSort(a, b) {
+    return ((a.gallery && a.gallery.sequence) || 99) - ((b.gallery && b.gallery.sequence) || 99);
+  }
+
+  function galleryFeaturedFirstSort(a, b) {
+    var aFeatured = a.gallery && a.gallery.featured ? 0 : 1;
+    var bFeatured = b.gallery && b.gallery.featured ? 0 : 1;
+    if (aFeatured !== bFeatured) return aFeatured - bFeatured;
+    return gallerySequenceSort(a, b);
+  }
+
+  function renderGallerySection(containerSelector, filterFn, sortFn) {
     var container = $(containerSelector);
     if (!container) return;
     while (container.firstChild) container.removeChild(container.firstChild);
     trainers()
       .filter(filterFn)
-      .sort(function (a, b) {
-        return ((a.gallery && a.gallery.sequence) || 99) - ((b.gallery && b.gallery.sequence) || 99);
-      })
+      .sort(sortFn || gallerySequenceSort)
       .forEach(function (trainer) {
         container.appendChild(buildGalleryCard(trainer));
       });
   }
 
   function renderGalleries() {
-    renderGallerySection("#narrative-gallery", function (trainer) { return trainer.type === "lesson"; });
+    renderGallerySection("#narrative-gallery", function (trainer) { return trainer.type === "lesson"; }, galleryFeaturedFirstSort);
     renderGallerySection("#drill-gallery", function (trainer) { return trainer.type === "drill"; });
   }
 

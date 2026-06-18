@@ -330,7 +330,7 @@ function runDashboardDecisionSmoke(context) {
   assert(repair.trace.inputs.selectedMemoryFacts.some(fact => fact.id === "mem-trap-passive-agency"), "dashboard repair trace cites selected memory facts");
   assert(repair.trace.scoreBreakdown.some(part => part.label === "root competency boost"), "dashboard repair trace records competency score boost");
   assert(repair.trace.scoreBreakdown.some(part => part.label === "memory recurring_trap boost"), "dashboard repair trace records memory score boost");
-  assert(repair.memoryFacts.some(fact => fact.kind === "recurring_trap"), "dashboard repair decision keeps memory facts for explanation");
+  assert(repair.drillRepair && repair.drillRepair.href.includes("register-drill"), "dashboard repair exposes register drill follow-up");
   const repairExplanation = planner.explainDecision(repair, { total: 1, correct: 0, accuracy: 0, today: 1 });
   assert(repairExplanation.copy.includes("highest open mastery signal"), "planner explains why repair was chosen");
   assert(repairExplanation.facts.some(fact => fact.includes("Root skill: Agency and responsibility")), "planner explanation includes root skill evidence");
@@ -370,8 +370,19 @@ function runDashboardDecisionSmoke(context) {
     weakTags: [],
     index: 3
   });
-  assert(lessonStart.score > start.score, "Lesson 01 should be the preferred empty-profile starter");
-  assert(lessonStart.trace.rule === "dashboard.start.preferred-entry", "preferred starter carries a trace rule");
+  assert(lessonStart.score > start.score, "Lesson 01 should rank above generic empty-profile starters");
+  assert(lessonStart.trace.rule === "dashboard.start.tutorial-option", "tutorial starter carries a trace rule");
+
+  const jobFollowupStart = planner.dashboardDecision({
+    trainer: { id: "lesson-b2-job-followup", name: "Efter interviews — tone, tak, og tålmodighed", type: "lesson", path: "./lessons/lesson-b2-job-followup/", description: "Post-interview follow-up" },
+    state: kernel.freshState("lesson-b2-job-followup"),
+    stats: { total: 0, correct: 0, accuracy: null, today: 0, lastSessionDate: "" },
+    weakMastery: [],
+    weakTags: [],
+    index: 5
+  });
+  assert(jobFollowupStart.score > lessonStart.score, "B2 job-followup should be the preferred empty-profile starter");
+  assert(jobFollowupStart.trace.rule === "dashboard.start.preferred-entry", "preferred starter carries a trace rule");
 
   const memoryReview = planner.dashboardDecision({
     trainer,
@@ -408,9 +419,12 @@ function runDashboardDecisionSmoke(context) {
     { trainer: { id: "lesson-01-arrival", name: "Lesson 01", type: "lesson", path: "./lessons/lesson-01/", description: "Story", icon: "🌅" }, decision: lessonStart, index: 3 }
   ], { limit: 3 });
   assert(plan.kind === "repair", "practice plan starts with repair when repair is open");
-  assert(plan.steps.length === 1, "practice plan does not pad repair work with starter tasks");
+  assert(plan.steps.length === 2, "practice plan adds drill follow-up after narrative repair");
   assert(plan.steps[0].competency.id === "agency", "practice plan keeps root competency on repair step");
   assert(plan.steps[0].primaryHref.includes("mode=repair"), "practice plan repair step links to repair mode");
+  assert(plan.steps[1].kind === "drill-repair", "practice plan second step is mapped drill repair");
+  assert(plan.steps[1].primaryHref.includes("register-drill"), "practice plan drill step links register drill");
+  assert(plan.steps[1].primaryHref.includes("signal=passive-agency"), "practice plan drill step keeps signal deep link");
   assert(plan.steps[0].explanation.copy.includes("highest open mastery signal"), "practice plan stores planner explanation on repair step");
   assert(plan.steps[0].explanation.facts.some(fact => fact.includes("Root skill: Agency and responsibility")), "practice plan explanation stores root evidence");
   assert(plan.steps[0].trace.rule === "dashboard.repair.highest-open-mastery", "practice plan stores planner trace on repair step");

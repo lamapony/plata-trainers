@@ -111,10 +111,10 @@ const capabilitySpecs = [
     stage: "shipped",
     userValue: "Important lessons are not just authored pages: they carry sources, mastery signals, simulations, remediation, endings, and comic prompt coverage.",
     surfaces: ["Gold narrative lessons", "Flagship exercise chains", "quality.html", "reports/quality.json", "reports/exercise-value.json"],
-    proofGates: ["check:lessons", "check:lesson-engine", "check:exercise-value-report", "check:gold-lessons", "check:counterfactuals", "check:comic-prompts", "check:quality-report", "check:quality-mutations", "check:quality-diff", "check:quality-page"],
+    proofGates: ["check:lessons", "check:lesson-engine", "check:repair-bridge", "check:exercise-value-report", "check:gold-lessons", "check:counterfactuals", "check:comic-prompts", "check:quality-report", "check:quality-mutations", "check:quality-diff", "check:quality-page"],
     publicReports: ["quality", "exercise-value", "skill-coverage", "project-health"],
     docs: ["docs/GOLD_LESSON_QUALITY_ENGINE.md", "docs/LESSON_SCHEMA.md", "docs/lessons/lesson-b2-radiator-register.md"],
-    sourcePaths: ["scripts/build-quality-report.js", "scripts/build-exercise-value-report.js", "scripts/smoke-exercise-value-report.js", "scripts/simulate-gold-lessons.js", "scripts/counterfactual-learner-simulator.js", "scripts/generate-comic-assets-openrouter.js", "lessons/lesson-b2-radiator/data.js", "lessons/lesson-b2-job-followup/data.js"],
+    sourcePaths: ["scripts/build-quality-report.js", "scripts/build-exercise-value-report.js", "scripts/smoke-exercise-value-report.js", "scripts/smoke-repair-bridge.js", "scripts/simulate-gold-lessons.js", "scripts/counterfactual-learner-simulator.js", "scripts/generate-comic-assets-openrouter.js", "shared/plata-repair-bridge.js", "lessons/lesson-b2-radiator/data.js", "lessons/lesson-b2-job-followup/data.js"],
     contracts: [
       "Gold scenes must have source refs, learning goals, mastery tags, simulation paths, remediation targets, and comic storyboard coverage.",
       "Flagship exercise chains must prove consequence, grammatical near-miss, repair ladder, channel transfer, memory recurrence, and explain-your-choice evidence.",

@@ -890,9 +890,9 @@ function resolveTodayProgramState(options) {
     return Object.assign(base, {
       kind: "onboarding",
       eyebrow: "First session",
-      headline: step && step.title || "Start Lesson 01",
-      message: step && step.copy || "Begin with the first short story lesson so the system can build an evidence trail.",
-      why: "There is no local progress yet, so the planner starts with the smallest useful entry point and avoids pretending to personalize.",
+      headline: step && step.title || "Start B2 job follow-up",
+      message: step && step.copy || "Begin with the B2 job-follow-up lesson so the system can build an evidence trail. Lesson 01 is an optional first-visit tutorial.",
+      why: "There is no local progress yet, so the planner starts with the B2 follow-up entry for plateau learners and avoids pretending to personalize.",
       actionLabel: step ? "Start first session" : base.actionLabel,
       routeMeta: "No local history yet",
       tags: ["Onboarding", "Planner route"]

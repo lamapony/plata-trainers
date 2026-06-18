@@ -291,13 +291,13 @@ function runEmptyDashboardSmoke() {
   assert(env.elements["#trainer-cards"].children.length === 8, "dashboard renders all trainer cards");
   assert(/Planner route/.test(env.elements["#today-program"].innerHTML), "dashboard renders Today program shell for starter routes");
   assert(/First session/.test(env.elements["#today-program"].innerHTML), "dashboard labels the empty profile as a first session");
-  assert(/Start Lesson 01/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes the starter step");
+  assert(/job-followup|follow-up/i.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes the B2 follow-up starter step");
   assert(/0%/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell shows route progress");
   assert(/onboarding/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell exposes the onboarding state");
   assert(/First run/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell shows the program state strip");
   assert(/Local progress/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell labels local-progress recommendations");
   assert(/Walkthrough|Guided session/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard renders guided session shell");
-  assert(/Start Lesson 01|Same step as/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session promotes the starter outcome");
+  assert(/job-followup|follow-up|Same step as/i.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session promotes the B2 follow-up starter outcome");
   assert(/Outcome receipt/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session renders an outcome receipt");
   assert(/No model call/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session renders model guardrail");
   assert(/No raw answers/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session renders raw-answer guardrail");
@@ -306,7 +306,7 @@ function runEmptyDashboardSmoke() {
   assert(/Starter plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders starter practice plan");
   assert(/Active plan/.test(env.elements["#practice-plan"].innerHTML), "dashboard labels the current tracked plan");
   assert(/plan-step-status open/.test(env.elements["#practice-plan"].innerHTML), "dashboard marks starter plan step as open");
-  assert(/Start Lesson 01/.test(env.elements["#practice-plan"].innerHTML), "dashboard starter plan includes first lesson");
+  assert(/job-followup|follow-up/i.test(env.elements["#practice-plan"].innerHTML), "dashboard starter plan includes B2 follow-up lesson");
   assert(/plan=/.test(env.elements["#practice-plan"].innerHTML), "dashboard plan links carry active plan token");
   assert(/step=/.test(env.elements["#practice-plan"].innerHTML), "dashboard plan links carry step route id");
   assert(/Why this step/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders planner explanations in the practice plan");

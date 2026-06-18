@@ -11,6 +11,8 @@ const competencySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-co
 const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
 const guidedSessionSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-guided-session.js"), "utf8");
 const nextStepSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-next-step.js"), "utf8");
+const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catalog.js"), "utf8");
+const repairBridgeSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-repair-bridge.js"), "utf8");
 const engineSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-lesson-engine.js"), "utf8");
 
 function assert(condition, message) {
@@ -166,6 +168,19 @@ function makeContext(locationOverrides) {
   }
 
   elements["#scene"] = makeElement("section", "#scene");
+  elements["#scene"].querySelector = function (sel) {
+    if (sel === "#feedback") return elements["#feedback"] || null;
+    if (sel === "#miss-repair-panel") return elements["#miss-repair-panel"] || null;
+    if (sel === "#exercise-body") return elements["#exercise-body"] || null;
+    return null;
+  };
+  elements["#scene"].appendChild = function (child) {
+    if (child && (child.id === "miss-repair-panel" || String(child.className || "").indexOf("miss-repair-panel") !== -1)) {
+      elements["#miss-repair-panel"] = child;
+    }
+    this.children.push(child);
+    return child;
+  };
   elements["#route"] = makeElement("nav", "#route");
   elements["#scene-count"] = makeElement("span", "#scene-count");
   elements["#variables-display"] = makeElement("div", "#variables-display");
@@ -254,6 +269,8 @@ function loadRuntime(lesson, locationOverrides, beforeRun) {
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(guidedSessionSource, env.context, { filename: "shared/plata-guided-session.js" });
   vm.runInContext(nextStepSource, env.context, { filename: "shared/plata-next-step.js" });
+  vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(repairBridgeSource, env.context, { filename: "shared/plata-repair-bridge.js" });
   vm.runInContext(engineSource, env.context, { filename: "shared/plata-lesson-engine.js" });
   env.lesson = lesson;
   if (beforeRun) beforeRun(env);
@@ -497,6 +514,20 @@ function runPlanContextSmoke(lesson) {
   assert(/ledger-return=/.test(completedContext), "completed active plan context carries a dashboard return marker");
 }
 
+function runMissRepairSmoke(lesson) {
+  const env = loadRuntime(lesson, { hash: "#official-reply-passive" });
+  const scene = lesson.scenes.find(item => item.id === "official-reply-passive");
+  const wrong = scene.options.find(item => item.id === "too-trusting");
+  const button = findChildByText(env.elements["#exercise-body"].children, wrong.label, scene.id);
+  button.click();
+  assert(env.elements["#miss-repair-panel"], "wrong choice mounts miss repair panel");
+  assert(/register-drill/.test(env.elements["#miss-repair-panel"].innerHTML), "miss repair panel links register drill");
+  assert(/signal=passive-agency/.test(env.elements["#miss-repair-panel"].innerHTML), "miss repair panel keeps signal deep link");
+  const plan = env.context.PlataPlanner.readPracticePlan();
+  assert(plan && plan.steps.length === 2, "miss repair saves scene + drill plan");
+  assert(plan.steps[1].kind === "drill-repair", "miss repair plan adds drill follow-up");
+}
+
 function runGoldRuntimePathSmoke(lessons) {
   lessons.forEach(lesson => {
     lesson.simulation.paths.forEach(pathSpec => assertRuntimePath(lesson, pathSpec));
@@ -513,11 +544,13 @@ function run() {
     runRepairAttemptSmoke(radiatorLesson);
     runHashNavigationSmoke(radiatorLesson);
     runPlanContextSmoke(radiatorLesson);
+    runMissRepairSmoke(radiatorLesson);
   }
   runGoldRuntimePathSmoke(lessons);
   if (!file) console.log("ok - lesson engine records repair attempts");
   if (!file) console.log("ok - lesson engine follows hash navigation");
   if (!file) console.log("ok - lesson engine renders active practice-plan context");
+  if (!file) console.log("ok - lesson engine mounts narrative-to-drill repair bridge");
   console.log("ok - lesson engine replays gold simulation paths");
 }
 

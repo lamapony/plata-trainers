@@ -129,11 +129,11 @@
     if (status === "empty") {
       return {
         kind: "onboarding",
-        title: "Create the first evidence trail",
+        title: "Start B2 job follow-up",
         signal: "starter-route",
-        trainerId: "",
+        trainerId: "lesson-b2-job-followup",
         rootCompetency: "",
-        reason: "No local progress exists yet, so the useful goal is a small first session that creates evidence."
+        reason: "No local progress exists yet. The B2 job-follow-up lesson is the primary first action for plateau learners."
       };
     }
     if (status === "complete") {
@@ -149,11 +149,11 @@
     if (plan && plan.kind === "starter") {
       return {
         kind: "onboarding",
-        title: step && step.title || "Start first session",
+        title: step && step.title || "Start B2 job follow-up",
         signal: "starter-route",
-        trainerId: stringOr(step && step.trainerId, ""),
+        trainerId: stringOr(step && step.trainerId, "lesson-b2-job-followup"),
         rootCompetency: "",
-        reason: "There is no local progress yet, so this session starts small and creates the first evidence trail."
+        reason: "There is no local progress yet. The B2 follow-up lesson is the primary first action; Lesson 01 remains an optional first-visit tutorial."
       };
     }
     var kind = step && step.kind || plan && plan.kind || "continue";

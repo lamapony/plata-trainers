@@ -266,7 +266,12 @@ async function renderHomeRuntime(baseUrl) {
   const storage = {};
   const writes = [];
   const ids = {
-    "#home-primary-action": makeElement("a", "#home-primary-action"),
+    "#home-primary-action": (function () {
+      const el = makeElement("a", "#home-primary-action");
+      el.textContent = "Try B2 follow-up lesson";
+      el.href = "./lessons/lesson-b2-job-followup/";
+      return el;
+    })(),
     "#home-start-title": makeElement("h2", "#home-start-title"),
     "#home-start-copy": makeElement("p", "#home-start-copy"),
     "#home-start-link": makeElement("a", "#home-start-link"),
@@ -356,8 +361,11 @@ async function renderHomeRuntime(baseUrl) {
   });
   await waitFor(() => ids["#home-start-title"].textContent, "home runtime did not render a recommendation");
 
-  assert(ids["#home-start-title"].textContent === "New here?", "home runtime did not render the first-visit recommendation");
+  assert(ids["#home-start-title"].textContent === "First visit?", "home runtime did not render the first-visit recommendation");
   assert(ids["#home-start-link"].href === "./lessons/lesson-01/", "home runtime starter link drifted");
+  assert(ids["#home-start-link"].textContent === "Start tutorial", "home runtime tutorial CTA drifted");
+  assert(ids["#home-primary-action"].textContent === "Try B2 follow-up lesson", "home runtime hero CTA should stay on B2 lesson");
+  assert(ids["#home-primary-action"].href === "./lessons/lesson-b2-job-followup/", "home runtime hero link should stay on B2 job follow-up");
   assert(ids["#evaluate"].scrollIntoViewCalls && ids["#evaluate"].scrollIntoViewCalls.length >= 1, "home runtime did not restore #evaluate hash");
   const meaningfulWrites = writes.filter(item => item.key !== "plata:storage-probe");
   assert(meaningfulWrites.length === 0, `home first-visit runtime wrote localStorage: ${meaningfulWrites.map(item => item.key).join(", ")}`);

@@ -135,6 +135,30 @@ h3 { margin: 0 0 14px; font-size: 1rem; }
 .feedback.show { display: block; }
 .feedback.ok { background: rgba(130,150,170,0.22); border: 1px solid rgba(70,90,110,.4); }
 .feedback.warn { background: rgba(196,146,60,0.14); border: 1px solid rgba(150,110,40,.4); }
+.miss-repair-panel {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.45);
+}
+.miss-repair-panel h3 {
+  margin: 6px 0 8px;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 1.15rem;
+}
+.miss-repair-copy,
+.miss-repair-meta {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.miss-repair-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
 .lesson-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; }
 button:disabled { opacity: .4; cursor: not-allowed; }
 

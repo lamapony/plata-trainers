@@ -31,7 +31,7 @@
       spec.meta ? "<p class='next-step-meta'>" + escapeHtml(spec.meta) + "</p>" : "",
       "<div class='next-step-actions'>",
       "<a class='primary btn btn-primary link-button' href='" + escapeHtml(spec.primaryHref) + "'>" + escapeHtml(spec.primaryLabel) + "</a>",
-      spec.secondaryHref ? "<a class='ghost btn btn-ghost link-button' href='" + escapeHtml(spec.secondaryHref) + "'>" + escapeHtml(spec.secondaryLabel) + "</a>" : "",
+      spec.secondaryHref ? "<a class='ghost btn btn-ghost link-button gym-link' href='" + escapeHtml(spec.secondaryHref) + "'>" + escapeHtml(spec.secondaryLabel) + "</a>" : "",
       spec.vocabRepair && spec.vocabRepair.href ? "<a class='ghost btn btn-ghost link-button' href='" + escapeHtml(spec.vocabRepair.href) + "'>" + escapeHtml(spec.vocabRepair.cta) + "</a>" : "",
       "</div>",
       "</section>"
