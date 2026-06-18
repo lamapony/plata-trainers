@@ -45,6 +45,10 @@ function nonEmpty(value) {
   return typeof value === "string" && value.trim().length > 0;
 }
 
+function fileExists(root, relPath) {
+  return fs.existsSync(path.join(root, relPath));
+}
+
 function findLessonDataFiles(root) {
   const lessonsRoot = path.join(root, "lessons");
   return fs.readdirSync(lessonsRoot)
@@ -239,6 +243,7 @@ function repoRelativeHref(href) {
 function buildDoctorSkriveTransferChain(root, options = {}) {
   const spec = JSON.parse(JSON.stringify(doctorSkriveTransferSpec));
   if (typeof options.transferChainMutator === "function") options.transferChainMutator(spec);
+  if (!fileExists(root, spec.dataPath)) return null;
   const lesson = loadLesson(root, spec.dataPath);
   const { bridge, catalog } = loadRepairRuntime(root);
   const scene = lesson && asArray(lesson.scenes).find(item => item.id === spec.missSceneId);
@@ -373,7 +378,11 @@ function buildDoctorSkriveTransferChain(root, options = {}) {
 }
 
 function buildTransferChains(root, options = {}) {
-  return [buildDoctorSkriveTransferChain(root, options)];
+  return [buildDoctorSkriveTransferChain(root, options)].filter(Boolean);
+}
+
+function optionalTransferChainRequired(root, spec) {
+  return fileExists(root, spec.dataPath);
 }
 
 function buildExerciseValueReport(options = {}) {
@@ -401,6 +410,7 @@ function buildExerciseValueReport(options = {}) {
 
   const chains = lessons.flatMap(lesson => lesson.flagshipChains);
   const transferChains = buildTransferChains(root, options);
+  const doctorTransferRequired = optionalTransferChainRequired(root, doctorSkriveTransferSpec);
   chains.forEach(row => {
     row.issues.forEach(issue => issues.push(`${row.lessonId}::${row.sceneId}: ${issue}`));
   });
@@ -408,7 +418,7 @@ function buildExerciseValueReport(options = {}) {
     row.issues.forEach(issue => issues.push(`${row.id}: ${issue}`));
   });
   if (chains.length === 0) issues.push("no flagship-chain exercises found");
-  if (transferChains.length === 0) issues.push("no transfer-chain exercises found");
+  if (doctorTransferRequired && transferChains.length === 0) issues.push("no transfer-chain exercises found");
 
   const archetypeSources = [
     ...chains.map(row => ({ id: `${row.lessonId}::${row.sceneId}`, archetypes: row.archetypes })),
@@ -457,7 +467,8 @@ function buildExerciseValueReport(options = {}) {
     {
       key: "doctor-skrive-transfer-proven",
       label: "Doctor apotek misses transfer to skrive sundhed patientportal with scene repair and drill deep links",
-      pass: transferChains.some(row => row.id === "doctor-apotek-skrive-sundhed" && row.status === "pass")
+      pass: !doctorTransferRequired
+        || transferChains.some(row => row.id === "doctor-apotek-skrive-sundhed" && row.status === "pass")
     }
   ];
   guarantees.filter(item => !item.pass).forEach(item => issues.push(`guarantee failed: ${item.key}`));

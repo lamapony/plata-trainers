@@ -76,6 +76,26 @@ function runCli(args) {
   });
 }
 
+function runArchiveBaseBuild() {
+  const archiveDir = fs.mkdtempSync(path.join(os.tmpdir(), "plata-guided-base-"));
+  const extract = spawnSync("sh", ["-c", `git archive main | tar -x -C ${JSON.stringify(archiveDir)}`], {
+    cwd: repoRoot,
+    encoding: "utf8"
+  });
+  assert(extract.status === 0, `main archive extract should succeed\n${extract.stderr}`);
+  const build = spawnSync(process.execPath, [
+    path.join(repoRoot, "scripts", "build-guided-session-report.js"),
+    "--root",
+    archiveDir,
+    "--json"
+  ], { cwd: repoRoot, encoding: "utf8" });
+  assert(build.status === 0, `guided session report should build against main archive\n${build.stderr}`);
+  const report = JSON.parse(build.stdout);
+  assert(report.schemaVersion === 1, "archive base report should include schemaVersion");
+  fs.rmSync(archiveDir, { recursive: true, force: true });
+  return report;
+}
+
 const base = buildGuidedSessionReport();
 const same = compareGuidedSessionReports(base, clone(base));
 assert(same.status === "unchanged", "unchanged guided reports should stay unchanged");
@@ -127,7 +147,10 @@ try {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
+runArchiveBaseBuild();
+
 console.log("ok - guided session diff detects unchanged reports");
 console.log("ok - guided session diff summarizes review-only receipt drift");
 console.log("ok - guided session diff marks lost status, citations, guardrails, and outcome receipts as regressions");
 console.log("ok - guided session diff CLI supports JSON and fail modes");
+console.log("ok - guided session report builds against main archive without missing lesson ENOENT");
