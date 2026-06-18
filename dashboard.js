@@ -1779,6 +1779,159 @@ function renderWeakList() {
 }
 
 // Data tools
+function profilePortabilitySnapshot(stateMap, practicePlan) {
+  const all = stateMap || (isDemoMode() ? demoTrainerStates() : collectTrainerStates());
+  let plan = practicePlan;
+  if (plan === undefined) {
+    plan = isDemoMode()
+      ? (resolvePracticePlan(dashboardCandidates()).plan || null)
+      : currentPracticePlan();
+  }
+  const memoryBundle = buildMemoryFacts(all, plan);
+  const guided = window.PlataGuidedSession && window.PlataGuidedSession.readOutcomeLedger
+    ? window.PlataGuidedSession.readOutcomeLedger()
+    : null;
+  const guidedOutcomes = guided && guided.totals
+    ? guided.totals.outcomes
+    : (guided && Array.isArray(guided.outcomes) ? guided.outcomes.length : 0);
+  return {
+    trainerCount: Object.keys(all).length,
+    planSteps: plan && Array.isArray(plan.steps) ? plan.steps.length : 0,
+    planPreserved: !!(plan && Array.isArray(plan.steps) && plan.steps.length),
+    vaultFacts: memoryBundle.visibleFacts.length,
+    memoryCorrections: memoryBundle.corrections.length,
+    guidedOutcomes
+  };
+}
+
+function summarizeExportPayload(payload) {
+  payload = payload && typeof payload === "object" ? payload : {};
+  const trainerCount = payload.trainers && typeof payload.trainers === "object"
+    ? Object.keys(payload.trainers).length
+    : 0;
+  const plan = payload.practicePlan;
+  const planSteps = plan && Array.isArray(plan.steps) ? plan.steps.length : 0;
+  const vaultFacts = payload.memoryVault && typeof payload.memoryVault.factCount === "number"
+    ? payload.memoryVault.factCount
+    : (payload.memory && Array.isArray(payload.memory.facts) ? payload.memory.facts.length : 0);
+  const guidedOutcomes = payload.guidedSessionOutcomes && payload.guidedSessionOutcomes.totals
+    ? payload.guidedSessionOutcomes.totals.outcomes
+    : (payload.guidedSessionOutcomes && Array.isArray(payload.guidedSessionOutcomes.outcomes)
+      ? payload.guidedSessionOutcomes.outcomes.length
+      : 0);
+  return {
+    operation: "export",
+    trainerCount,
+    planPreserved: planSteps > 0,
+    planSteps,
+    vaultFacts,
+    memoryCorrections: payload.memory && Array.isArray(payload.memory.correctionRecords)
+      ? payload.memory.correctionRecords.length
+      : 0,
+    guidedOutcomes,
+    standaloneVault: payload.vaultType === "plata.memory-vault",
+    exportedAt: payload.exportedAt || null
+  };
+}
+
+function summarizeImportResult(result) {
+  result = result && typeof result === "object" ? result : {};
+  return {
+    operation: "import",
+    trainerCount: Number(result.imported || 0),
+    skippedTrainers: Number(result.skipped || 0),
+    planPreserved: !!result.restoredPlan,
+    planSteps: Number(result.planSteps || 0),
+    vaultFacts: Number(result.vaultFacts || 0),
+    memoryCorrections: Number(result.memoryCorrections || 0),
+    guidedOutcomes: Number(result.guidedOutcomes || 0),
+    standaloneVault: !!result.standaloneVault
+  };
+}
+
+function profilePortabilityInventoryHtml(snapshot) {
+  snapshot = snapshot || profilePortabilitySnapshot();
+  const planDetail = snapshot.planPreserved
+    ? `${snapshot.planSteps} step(s) in current profile`
+    : "none in current profile";
+  return `
+    <ul class="profile-portability-inventory narrative">
+      <li><strong>Trainer states</strong> — progress, weak tags, and review timers for each lesson or drill you have started (${snapshot.trainerCount} trainer(s) now).</li>
+      <li><strong>Practice plan</strong> — your active route, step status, and completion receipts (${planDetail}).</li>
+      <li><strong>Memory vault summary</strong> — derived learner-memory facts and corrections only; raw answer text stays out of this dashboard view (${snapshot.vaultFacts} visible fact(s) now).</li>
+      <li><strong>Guided outcomes</strong> — walkthrough completion receipts when present (${snapshot.guidedOutcomes} receipt(s) now).</li>
+    </ul>
+  `;
+}
+
+function profilePortabilityDiagnosticsHtml(summary) {
+  if (!summary) {
+    return '<p class="narrative">Run Export or Import above to see a diagnostic summary here.</p>';
+  }
+  const rows = [];
+  if (summary.operation === "export") {
+    rows.push(["Exported trainers", summary.trainerCount]);
+    rows.push(["Plan steps in file", summary.planPreserved ? summary.planSteps : "not included"]);
+    rows.push(["Memory vault facts", summary.vaultFacts]);
+    rows.push(["Memory corrections", summary.memoryCorrections]);
+    rows.push(["Guided outcomes", summary.guidedOutcomes]);
+    if (summary.exportedAt) rows.push(["Exported at", formatPlanDateTime(summary.exportedAt) || summary.exportedAt]);
+  } else {
+    rows.push(["Imported trainers", summary.trainerCount]);
+    if (summary.skippedTrainers) rows.push(["Skipped trainers", summary.skippedTrainers]);
+    rows.push(["Plan preserved", summary.planPreserved ? `yes (${summary.planSteps} step(s))` : "no"]);
+    rows.push(["Vault facts merged", summary.vaultFacts]);
+    rows.push(["Memory corrections restored", summary.memoryCorrections]);
+    rows.push(["Guided outcomes restored", summary.guidedOutcomes]);
+    if (summary.standaloneVault) rows.push(["Import kind", "memory vault only"]);
+  }
+  const label = summary.operation === "export" ? "Last export" : "Last import";
+  const errorNote = summary.error
+    ? `<p class="narrative" style="color: var(--ember);">${escapeHtml(summary.error)}</p>`
+    : "";
+  return `
+    <div class="profile-portability-result">
+      <p class="eyebrow">${escapeHtml(label)}</p>
+      <dl class="headroom-technical profile-portability-metrics">
+        ${rows.map(([dt, dd]) => `<div><dt>${escapeHtml(dt)}</dt><dd>${escapeHtml(String(dd))}</dd></div>`).join("")}
+      </dl>
+      ${errorNote}
+    </div>
+  `;
+}
+
+function openProfilePortabilityDrawer() {
+  const drawer = $("#profile-portability-drawer");
+  if (drawer) drawer.open = true;
+}
+
+function renderProfilePortabilityDrawer(lastSummary) {
+  const inventory = $("#profile-portability-inventory");
+  const diagnostics = $("#profile-portability-diagnostics");
+  const demoNote = $("#profile-portability-demo-note");
+  if (!inventory || !diagnostics) return;
+
+  inventory.innerHTML = profilePortabilityInventoryHtml(profilePortabilitySnapshot());
+  diagnostics.innerHTML = profilePortabilityDiagnosticsHtml(lastSummary);
+
+  if (demoNote) {
+    if (isDemoMode()) {
+      demoNote.hidden = false;
+      demoNote.textContent = "Demo mode is read-only. You can export the sample JSON, but import stays disabled so your real browser progress is never overwritten.";
+    } else {
+      demoNote.hidden = true;
+      demoNote.textContent = "";
+    }
+  }
+}
+
+function renderProfilePortabilityDiagnostics(summary) {
+  const diagnostics = $("#profile-portability-diagnostics");
+  if (!diagnostics) return;
+  diagnostics.innerHTML = profilePortabilityDiagnosticsHtml(summary);
+  openProfilePortabilityDrawer();
+}
+
 function exportAll() {
   const all = collectTrainerStates();
   const kernel = window.PlataKernel;
@@ -1851,6 +2004,7 @@ function exportAll() {
   a.download = `plata-backup-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
+  renderProfilePortabilityDiagnostics(summarizeExportPayload(payload));
 }
 
 function importAll() {
@@ -1931,10 +2085,40 @@ function importAll() {
           ? `Merged memory vault (${mergedVault.factCount} fact(s)). Refresh to see changes.`
           : `Imported ${imported} trainer state(s)${skipped ? `, skipped ${skipped}` : ""}${planText}${vaultText}. Refresh to see changes.`;
         statusEl.style.color = "var(--green)";
+        renderProfilePortabilityDiagnostics(summarizeImportResult({
+          imported,
+          skipped,
+          restoredPlan,
+          planSteps: restoredPlan && payload.practicePlan && Array.isArray(payload.practicePlan.steps)
+            ? payload.practicePlan.steps.length
+            : 0,
+          vaultFacts: mergedVault ? mergedVault.factCount : 0,
+          memoryCorrections: payload.memory && Array.isArray(payload.memory.correctionRecords)
+            ? payload.memory.correctionRecords.length
+            : 0,
+          guidedOutcomes: !standaloneVaultImport && hasGuidedOutcomes && payload.guidedSessionOutcomes
+            ? (payload.guidedSessionOutcomes.totals
+              ? payload.guidedSessionOutcomes.totals.outcomes
+              : (Array.isArray(payload.guidedSessionOutcomes.outcomes) ? payload.guidedSessionOutcomes.outcomes.length : 0))
+            : 0,
+          standaloneVault: standaloneVaultImport
+        }));
         setTimeout(() => { statusEl.textContent = ""; }, 5000);
       } catch (err) {
         $("#import-status").textContent = "Invalid JSON: " + err.message;
         $("#import-status").style.color = "var(--ember)";
+        renderProfilePortabilityDiagnostics({
+          operation: "import",
+          trainerCount: 0,
+          skippedTrainers: 0,
+          planPreserved: false,
+          planSteps: 0,
+          vaultFacts: 0,
+          memoryCorrections: 0,
+          guidedOutcomes: 0,
+          standaloneVault: false,
+          error: err.message
+        });
       }
     };
     reader.readAsText(file);
@@ -2040,6 +2224,7 @@ function renderDashboard() {
   renderCompetencyList();
   renderMasteryList();
   renderWeakList();
+  renderProfilePortabilityDrawer();
 }
 
 // Init

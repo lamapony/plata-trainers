@@ -83,7 +83,12 @@ function makeContext(initialStorage, options) {
     "#export-all": makeElement("button"),
     "#import-trigger": makeElement("button"),
     "#import-file": makeElement("input"),
-    "#import-status": makeElement("p")
+    "#import-status": makeElement("p"),
+    "#profile-portability-drawer": Object.assign(makeElement("details"), { open: false }),
+    "#profile-portability-panel": makeElement("div"),
+    "#profile-portability-inventory": makeElement("div"),
+    "#profile-portability-diagnostics": makeElement("div"),
+    "#profile-portability-demo-note": makeElement("p")
   };
 
   const context = {
@@ -326,6 +331,8 @@ function runEmptyDashboardSmoke() {
   assert(/No root-skill pattern needs attention yet/.test(env.elements["#competency-list"].innerHTML), "dashboard renders empty competency graph state");
   assert(/No repair pattern is active yet/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders empty mastery state");
   assert(/No raw weak tags yet/.test(env.elements["#weak-list"].innerHTML), "dashboard renders empty raw weak-tag state");
+  assert(/Trainer states/.test(env.elements["#profile-portability-inventory"].innerHTML), "dashboard portability drawer explains trainer states");
+  assert(/Run Export or Import/.test(env.elements["#profile-portability-diagnostics"].innerHTML), "dashboard portability drawer starts with empty diagnostics");
 }
 
 function runDemoLearnerSmoke() {
@@ -347,6 +354,8 @@ function runDemoLearnerSmoke() {
   assert(/Review due:/.test(env.elements["#memory-facts"].innerHTML), "dashboard demo mode renders due-review memory facts");
   assert(/Needs attention/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard demo mode renders evidence ledger rows");
   assert(env.elements["#import-trigger"].disabled === true, "dashboard demo mode disables profile import");
+  assert(/Demo mode is read-only/.test(env.elements["#profile-portability-demo-note"].textContent), "dashboard demo portability drawer explains read-only import");
+  assert(/Memory vault summary/.test(env.elements["#profile-portability-inventory"].innerHTML), "dashboard demo portability drawer explains memory vault contents");
 
   const memoryBundle = invokeDashboardFunction(env, "buildMemoryFacts");
   assert(memoryBundle.visibleFacts.length >= 4, "dashboard demo mode compiles a rich memory bundle");
@@ -750,6 +759,12 @@ function runPortableProfileSmoke() {
 
   invokeDashboardFunction(exportEnv, "exportAll");
   const payload = parseLastExport(exportEnv);
+  assert(exportEnv.elements["#profile-portability-drawer"].open === true, "dashboard export opens portability diagnostics drawer");
+  assert(/Last export/.test(exportEnv.elements["#profile-portability-diagnostics"].innerHTML), "dashboard export renders portability diagnostics");
+  assert(/Exported trainers/.test(exportEnv.elements["#profile-portability-diagnostics"].innerHTML), "dashboard export diagnostics include trainer count");
+  assert(/Plan steps in file/.test(exportEnv.elements["#profile-portability-diagnostics"].innerHTML), "dashboard export diagnostics include plan step count");
+  assert(/Memory vault facts/.test(exportEnv.elements["#profile-portability-diagnostics"].innerHTML), "dashboard export diagnostics include vault fact count");
+  assert(/Guided outcomes/.test(exportEnv.elements["#profile-portability-diagnostics"].innerHTML), "dashboard export diagnostics include guided outcome count");
   assert(payload.profileSchemaVersion === 1, "dashboard export marks profile schema version");
   assert(payload.practicePlan && payload.practicePlan.steps.length, "dashboard export includes active practice plan");
   assert(payload.practicePlan.steps[0].completedAt === plan.steps[0].completedAt, "dashboard export includes plan execution ledger");
@@ -831,6 +846,11 @@ function runPortableProfileSmoke() {
   invokeDashboardFunction(importEnv, "importAll");
   importEnv.elements["#import-file"].files = [{ content: JSON.stringify(correctedPayload) }];
   importEnv.elements["#import-file"].onchange();
+  assert(importEnv.elements["#profile-portability-drawer"].open === true, "dashboard import opens portability diagnostics drawer");
+  assert(/Last import/.test(importEnv.elements["#profile-portability-diagnostics"].innerHTML), "dashboard import renders portability diagnostics");
+  assert(/Imported trainers/.test(importEnv.elements["#profile-portability-diagnostics"].innerHTML), "dashboard import diagnostics include trainer count");
+  assert(/Plan preserved/.test(importEnv.elements["#profile-portability-diagnostics"].innerHTML), "dashboard import diagnostics include plan preservation");
+  assert(/Vault facts merged/.test(importEnv.elements["#profile-portability-diagnostics"].innerHTML), "dashboard import diagnostics include vault merge count");
   const importedPlan = importEnv.context.PlataPlanner.readPracticePlan();
   assert(importedPlan && importedPlan.steps.length, "dashboard import restores active practice plan");
   assert(importedPlan.steps[0].completedAt === correctedPayload.practicePlan.steps[0].completedAt, "dashboard import restores plan execution ledger");
