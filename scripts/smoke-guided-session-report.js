@@ -26,7 +26,7 @@ function runCli(args) {
 function runBaseSmoke() {
   const report = buildGuidedSessionReport();
   assert(report.status === "pass", `guided session report should pass:\n${report.issues.join("\n")}`);
-  assert(report.totals.scenarios === 7, "guided session report should cover seven core scenarios");
+  assert(report.totals.scenarios === 9, "guided session report should cover nine core scenarios");
   ["active", "complete", "ready"].forEach(status => {
     assert(report.statuses.includes(status), `guided session report should include ${status}`);
   });
@@ -63,6 +63,16 @@ function runBaseSmoke() {
 
   const jobFollowup = report.scenarios.find(item => item.id === "job-followup-gold-continue");
   assert(jobFollowup && jobFollowup.session.goal.trainerId === "lesson-b2-job-followup", "job follow-up scenario should target gold lesson");
+
+  const bolig = report.scenarios.find(item => item.id === "bolig-gold-repair");
+  assert(bolig && bolig.session.goal.trainerId === "lesson-b1-bolig", "bolig scenario should target bolig gold lesson");
+  assert(bolig.session.goal.signal === "agency-without-pressure", "bolig scenario should preserve agency-without-pressure signal");
+  assert(bolig.session.route.href.includes("lesson-b1-bolig"), "bolig scenario should link bolig lesson repair");
+
+  const radiator = report.scenarios.find(item => item.id === "radiator-gold-repair");
+  assert(radiator && radiator.session.goal.trainerId === "register", "radiator scenario should target register drill");
+  assert(radiator.session.goal.signal === "formal-register-control", "radiator scenario should preserve formal-register-control signal");
+  assert(radiator.session.route.href.includes("register-drill"), "radiator scenario should link register drill");
 
   const completed = report.scenarios.find(item => item.id === "completed-route");
   assert(completed && completed.session.status === "complete", "completed route should report complete");

@@ -2,12 +2,12 @@ window.PLATA_LESSON_B1_BOLIG = {
   id: "lesson-b1-bolig",
   level: "B1",
   title: "Bolig: når noget går i stykker",
-  subtitle: "Tenant rights, repair requests, and polite persistence without passive Danish",
+  subtitle: "Indflytning, depositum og rolig dialog med udlejeren",
   estimatedMinutes: 12,
   qualityTier: "gold",
-  editorialFocus: "Housing pressure: repair requests to udlejer with tenant rights visible, calm register, and concrete next steps.",
+  editorialFocus: "Housing pressure: dokumentér skader efter indflytningssyn, bed om næste skridt hos udlejeren, og hold tonen rolig uden passiv dansk.",
   comicStoryboard: {
-    style: "Quiet editorial comic, warm ink linework, muted modern Danish interiors, natural light, expressive body language, no readable text, no speech bubbles, no UI screenshots.",
+    style: "Quiet editorial comic, warm ink linework, muted modern Danish apartment interiors, moving boxes and inspection notes, natural light, expressive body language, no readable text, no speech bubbles, no UI screenshots.",
     aspectRatio: "16:9",
     imageSize: "1K",
     panels: [
@@ -15,55 +15,55 @@ window.PLATA_LESSON_B1_BOLIG = {
         id: "read-context",
         sceneId: "read-context",
         assetPath: "./assets/comic/read-context.png",
-        alt: "A learner pauses before answering a professional message in a calm Danish office setting.",
-        prompt: "Create a quiet editorial comic panel set in a modern Danish office. A learner sits at a desk, pausing before answering a professional message, with calm posture and visible reflection. The image should show situation reading before wording, with no readable screen text or speech bubbles.",
+        alt: "A new tenant pauses with an indflytningssyn protocol before answering the landlord.",
+        prompt: "Create a quiet editorial comic panel in a Danish rental apartment with moving boxes still visible. A new tenant sits at a kitchen table with an indflytningssyn protocol and phone, pausing before replying to the landlord. Wall cracks and floor marks are visible but not dramatic. The mood is calm assessment, not anger. No readable text or speech bubbles.",
         sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
         masteryTags: ["context-reading"],
-        mustInclude: ["learner pausing before writing", "calm professional setting"],
+        mustInclude: ["indflytningssyn notes", "tenant pausing before writing", "visible apartment defects"],
         avoid: ["readable text on screens", "dramatic conflict or anger"]
       },
       {
         id: "register-signals",
         sceneId: "register-signals",
         assetPath: "./assets/comic/register-signals.png",
-        alt: "A desk scene uses visual tokens to separate acknowledgement, action, and next step signals.",
-        prompt: "Create a quiet editorial comic panel where three visual tokens on a desk represent acknowledgement, owned action, and next step. A learner compares the tokens while a colleague waits neutrally nearby. The composition should make small phrase signals feel meaningful without using readable text, logos, or interface elements.",
+        alt: "A tenant compares acknowledgement, action, and next-step phrases before emailing the landlord.",
+        prompt: "Create a quiet editorial comic panel where a tenant at a small desk compares three abstract note cards representing acknowledgement, owned action, and next step while drafting a landlord email. A calm apartment entryway and inspection folder are visible. No readable text, logos, or interface elements.",
         sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Dansk Sproghistorie: dialogiske partikler"],
         masteryTags: ["register-signal-control"],
-        mustInclude: ["three distinct visual tokens", "learner comparing social signals"],
+        mustInclude: ["three distinct visual tokens", "tenant comparing social signals", "inspection folder"],
         avoid: ["word labels inside the image", "cartoonish exaggeration"]
       },
       {
         id: "professional-response",
         sceneId: "professional-response",
         assetPath: "./assets/comic/professional-response.png",
-        alt: "A learner writes with agency while keeping the conversation open and low pressure.",
-        prompt: "Create a quiet editorial comic panel showing a learner drafting a professional response with steady posture and open body language. The scene should contrast agency without pressure: one hand points to a next step, while the conversation space remains open and calm. No readable text, no speech bubbles, no brand logos.",
+        alt: "A tenant drafts a polite but active reply about deposit and repair documentation.",
+        prompt: "Create a quiet editorial comic panel showing a tenant drafting a landlord email with steady posture and open body language. One hand points to a next-step gesture while photos from indflytningssyn sit nearby. The scene should show agency without pressure in a Danish rental context. No readable text, no speech bubbles, no brand logos.",
         sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
         masteryTags: ["agency-without-pressure"],
-        mustInclude: ["visible next-step gesture", "low-pressure professional mood"],
+        mustInclude: ["visible next-step gesture", "inspection photos", "low-pressure tenant mood"],
         avoid: ["aggressive pointing or confrontation", "overly formal ceremony"]
       },
       {
         id: "next-step",
         sceneId: "next-step",
         assetPath: "./assets/comic/next-step.png",
-        alt: "A calendar and simple process cue make the next professional action visible.",
-        prompt: "Create a quiet editorial comic panel where a learner turns a polite answer into a concrete next step. Show a simple calendar shape, a small process marker, and a calm desk arrangement, but keep all text unreadable or abstract. The image should communicate action plus timing without becoming a UI screenshot.",
+        alt: "A calendar and inspection photos make the tenant's next action visible.",
+        prompt: "Create a quiet editorial comic panel where a tenant turns a polite landlord reply into a concrete next step. Show an abstract calendar cue, inspection photos, and a calm desk arrangement in a Danish apartment, but keep all text unreadable or abstract. The image should communicate documentation plus timing.",
         sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
         masteryTags: ["concrete-next-step"],
-        mustInclude: ["abstract calendar cue", "clear action-to-next-step composition"],
+        mustInclude: ["abstract calendar cue", "inspection photos", "clear action-to-next-step composition"],
         avoid: ["readable dates or words", "busy dashboard interface"]
       },
       {
         id: "principle",
         sceneId: "principle",
         assetPath: "./assets/comic/principle.png",
-        alt: "A calm professional exchange shows that wording affects both outcome and relationship.",
-        prompt: "Create a quiet editorial comic panel showing the final principle: professional wording moves the task and the relationship at the same time. Two people leave a conversation with neutral trust and a visible next step between them. Use modern Danish workplace cues, natural light, and no readable text or speech bubbles.",
+        alt: "A calm tenant-landlord exchange shows that wording affects both deposit clarity and the relationship.",
+        prompt: "Create a quiet editorial comic panel showing the final principle: tenant wording moves the deposit case and the landlord relationship at the same time. A tenant and landlord figure leave a doorway conversation with neutral trust and a visible next step between them. Use modern Danish rental cues, natural light, and no readable text or speech bubbles.",
         sourceRefs: ["Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
         masteryTags: ["consequence-aware-register"],
-        mustInclude: ["two people with workable trust", "visual next-step cue between them"],
+        mustInclude: ["tenant and landlord with workable trust", "visual next-step cue between them"],
         avoid: ["celebration pose", "literal written lesson slogan"]
       }
     ]
@@ -72,40 +72,40 @@ window.PLATA_LESSON_B1_BOLIG = {
     "context-reading": {
       competencyId: "process-control",
       label: "Read the situation",
-      evidence: "The learner identifies what the professional situation requires before choosing words.",
+      evidence: "The learner names the housing situation — indflytningssyn, skader, depositum — before choosing tone.",
       remediation: {
         sceneId: "read-context",
         cta: "Review Scene 1",
-        action: "Rerun the opening decision and name the situation, audience, and pressure before choosing a phrase."
+        action: "Rerun the opening decision and name the apartment, the inspection findings, and what you still need from udlejeren before choosing a phrase."
       },
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"]
     },
     "register-signal-control": {
       competencyId: "register-control",
       label: "Control register signals",
-      evidence: "The learner recognizes which Danish phrases signal acknowledgement, action, and next step.",
+      evidence: "The learner recognizes which Danish phrases signal acknowledgement, action, and next step in tenant-landlord writing.",
       remediation: {
         sceneId: "register-signals",
         cta: "Rematch register signals",
-        action: "Rerun the matching scene and explain what each phrase does socially before moving on."
+        action: "Rerun the matching scene and explain what each phrase does socially before you write the full reply."
       },
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Dansk Sproghistorie: dialogiske partikler"]
     },
     "agency-without-pressure": {
       competencyId: "agency",
       label: "Use agency without pressure",
-      evidence: "The learner writes an active professional response without over-demanding or hiding behind vague politeness.",
+      evidence: "The learner writes an active tenant reply about deposit or repair follow-up without over-demanding or hiding behind vague politeness.",
       remediation: {
         sceneId: "professional-response",
         cta: "Repair the response",
-        action: "Rerun the response scene and keep both parts: an active proposal and a low-pressure next step."
+        action: "Rerun the response scene and keep both parts: an active proposal and a low-pressure next step overfor udlejeren."
       },
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"]
     },
     "concrete-next-step": {
       competencyId: "process-control",
       label: "Give a concrete next step",
-      evidence: "The learner completes a sentence with both an action and a time or next-step signal.",
+      evidence: "The learner completes a sentence with both an action and a time or next-step signal about documentation or follow-up.",
       remediation: {
         sceneId: "next-step",
         cta: "Repair the next step",
@@ -116,11 +116,11 @@ window.PLATA_LESSON_B1_BOLIG = {
     "consequence-aware-register": {
       competencyId: "consequence-awareness",
       label: "Name the register principle",
-      evidence: "The learner names why tone, clarity, and relationship cost belong together.",
+      evidence: "The learner names why tone, clarity, and relationship cost belong together in tenant communication.",
       remediation: {
         sceneId: "principle",
         cta: "Review the principle",
-        action: "Rerun the final choice and choose the principle that keeps clarity without adding social pressure."
+        action: "Rerun the final choice and choose the principle that keeps deposit clarity without adding social pressure."
       },
       sourceRefs: ["Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"]
     }
@@ -186,18 +186,19 @@ window.PLATA_LESSON_B1_BOLIG = {
   variableLabels: {
     relationshipTension: "Relationship tension",
     clarity: "Clarity",
-    professionalTrust: "Professional trust"
+    professionalTrust: "Landlord trust"
   },
   variableDescriptions: {
-    relationshipTension: ["low — the relationship stayed workable", "visible — the room felt tighter", "high — the wording created friction"],
-    clarity: ["unclear — the next step is still vague", "adequate — the message can move", "clear — the action and next step are visible"],
-    professionalTrust: ["weakened — the tone cost confidence", "neutral — correct but low-signal", "strong — you sounded reliable under pressure"]
+    relationshipTension: ["low — lejeforholdet stayed workable", "visible — rummet mellem jer føltes smallere", "high — ordene skabte friktion med udlejeren"],
+    clarity: ["unclear — næste skridt om depositum or repairs is still vague", "adequate — beskeden kan flytte sagen", "clear — handling og næste skridt are visible"],
+    professionalTrust: ["weakened — tonen kostede tillid", "neutral — korrekt but low-signal", "strong — du lød pålidelig under boligpres"]
   },
   languagePhenomena: [
-    { item: "kort og konkret", function: "professional Danish values concise, concrete wording" },
-    { item: "jeg foreslår", function: "active proposal without demanding" },
-    { item: "næste skridt", function: "turns politeness into an actionable process" },
-    { item: "partikler: jo/da/nok", function: "small words can soften, pressure, or position the speaker socially" }
+    { item: "indflytningssyn", function: "documents apartment condition at move-in; protects deposit disputes" },
+    { item: "kort og konkret", function: "tenant Danish stays actionable without sounding cold" },
+    { item: "jeg foreslår", function: "active proposal to udlejeren without demanding" },
+    { item: "næste skridt", function: "turns politeness into a follow-up process" },
+    { item: "jeg sender billeder", function: "tenant-owned action that makes the case move" }
   ],
   sourceNotes: [
     {
@@ -215,116 +216,116 @@ window.PLATA_LESSON_B1_BOLIG = {
     {
       id: "read-context",
       type: "choice",
-      eyebrow: "Scene 1 · Situationen",
-      title: "The room changes before the sentence does.",
-      learningGoal: "Read the professional situation before choosing register and pressure.",
+      eyebrow: "Scene 1 · Indflytningssynet",
+      title: "Depositum står stadig på spil, selv når svaret lyder venligt.",
+      learningGoal: "Read the tenant situation before choosing register and pressure.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["context-reading"],
-      pressure: "Radiatoren har været kold i tre dage. Udlejeren skrev 'Sagen er noteret.' Du skal svare på dansk — ikke for aggressivt, ikke passivt accepterende.",
-      narrative: "Du bor i lejlighed 4B. Vinteren er kold, og svaret føles som passiv afvisning. Første risiko er tone: for blød lyder du som om du accepterer ventetid; for hård kan skade lejeforholdet.",
-      dialogue: [{ speaker: "You", line: "Hvad er situationen, og hvor meget pres kan min dansk bære overfor udlejeren?" }],
-      notice: "Start med fakta: problem, adresse/lejlighed, varighed. Kort og konkret betyder ikke kold — læseren skal kunne handle.",
-      targetPhrases: ["kort og konkret", "hvad er situationen", "skriv med ro"],
-      prompt: "What is the professional first move?",
+      pressure: "Indflytningssyn var i mandags. I protokollen står revner i væggen og ridser i gulvet. Udlejeren skrev: 'Vi har noteret jeres bemærkninger.' Du skal svare — roligt, men ikke passivt.",
+      narrative: "Du er ny lejer i 4B. Depositum er stadig på udlejerens konto, og svaret lyder som om sagen er lukket. For blød accepterer du ventetid; for hård kan du skade lejeforholdet overfor udlejeren.",
+      dialogue: [{ speaker: "You", line: "Hvad er situationen, og hvor meget kan jeg bede om uden at lyde aggressiv?" }],
+      notice: "Start med fakta: lejlighed, indflytningssyn, skader. Kort og konkret betyder ikke kold — udlejeren skal kunne handle. Du beder om næste skridt, ikke meget mere end nødvendigt.",
+      targetPhrases: ["indflytningssyn", "depositum", "kort og konkret", "hvad er situationen"],
+      prompt: "What is the tenant's first move?",
       options: [
-        { id: "read-calmly", diagnostic: "reads-context-before-writing", label: "Skriv kort og konkret: hvad er situationen, og hvad beder du om?", detail: "clear and calm", correct: true, effects: { clarity: 1, professionalTrust: 1 }, feedback: "Diagnostic: you read the room first. The message can be direct without sounding pressured." },
-        { id: "wait-vaguely", diagnostic: "hides-the-request", label: "Skriv meget forsigtigt og håb, at de forstår resten.", detail: "too vague", correct: false, effects: { clarity: -1 }, feedback: "Diagnostic: vague politeness hides the request. The reader cannot act on what you did not say." },
-        { id: "overreact", diagnostic: "adds-pressure-before-facts", label: "Skriv hårdt med det samme, så de forstår alvoren.", detail: "too much force", correct: false, effects: { relationshipTension: 1, clarity: -1 }, feedback: "Diagnostic: you added pressure before the facts were clear. That can make the relationship cost higher than the problem." }
+        { id: "read-calmly", diagnostic: "reads-context-before-writing", label: "Skriv kort og konkret: hvad er situationen, og hvad beder du om?", detail: "names facts before tone", correct: true, effects: { clarity: 1, professionalTrust: 1 }, feedback: "Diagnostic: you read the room first. Name indflytningssyn, skader, and depositum before you choose how much pressure the relationship can bære." },
+        { id: "wait-vaguely", diagnostic: "hides-the-request", label: "Skriv meget forsigtigt og håb, at udlejeren forstår resten.", detail: "too vague", correct: false, effects: { clarity: -1 }, feedback: "Diagnostic: vague politeness hides the request. Udlejeren cannot act on what you did not say about dokumentation or næste skridt." },
+        { id: "overreact", diagnostic: "adds-pressure-before-facts", label: "Skriv hårdt med det samme, så udlejeren forstår alvoren.", detail: "too much force", correct: false, effects: { relationshipTension: 1, clarity: -1 }, feedback: "Diagnostic: you added pressure before the facts were clear. That can make the relationship cost higher than the deposit problem." }
       ],
-      carry: "Carry-forward: skriv med ro, kort og konkret. First name hvad er situationen, then choose how much pressure the relationship can carry.",
-      tags: ["B2", "register", "professional-writing", "context"]
+      carry: "Carry-forward: skriv med ro, kort og konkret. First name hvad indflytningssyn viste, then choose how much you beder om overfor udlejeren without making it større end nødvendigt.",
+      tags: ["B1", "register", "housing", "context"]
     },
     {
       id: "register-signals",
       type: "match",
       eyebrow: "Scene 2 · Signaler",
-      title: "Small phrases do social work.",
-      learningGoal: "Recognize the social function of common professional Danish phrases.",
+      title: "Tre små sætninger bærer hele lejer-mailen.",
+      learningGoal: "Recognize the social function of common tenant-landlord Danish phrases.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Dansk Sproghistorie: dialogiske partikler"],
       masteryTags: ["register-signal-control"],
-      pressure: "The phrases look simple. The mistake is treating them as decoration instead of register control.",
-      narrative: "Before you write the full reply, you isolate three phrase types: acknowledgement, action, and next step.",
-      dialogue: [{ speaker: "Colleague", line: "Tak for din besked. Jeg vender tilbage, når vi kan aftale næste skridt." }],
-      notice: "A professional reply often combines acknowledgement, action, and process. Missing one part changes the social reading.",
-      targetPhrases: ["tak for din besked", "jeg vender tilbage", "aftale næste skridt"],
+      pressure: "Du skal svare om depositum og skader. Sætningerne ser simple ud — men de styrer, om udlejeren læser dig som aktiv eller passiv.",
+      narrative: "Før du skriver hele mailen, isolerer du tre fraser: anerkendelse, handling og næste skridt.",
+      dialogue: [{ speaker: "Udlejer", line: "Tak for jeres besked om indflytningssynet. Vi vender tilbage, når vi kan aftale næste skridt." }],
+      notice: "En lejer-mail kombinerer ofte tak for svar, jeg sender dokumentation, og kan vi aftale næste skridt. Mangler ét led, bliver tonen svagere.",
+      targetPhrases: ["tak for jeres svar", "jeg sender billeder", "aftale næste skridt"],
       prompt: "Match each phrase to the job it does.",
       pairs: [
-        { id: "acknowledge", left: "Tak for din besked.", right: "acknowledges contact", feedback: "Tak for din besked confirms receipt without adding pressure." },
-        { id: "action", left: "Jeg vender tilbage.", right: "owns the next action", feedback: "Jeg vender tilbage keeps agency with the writer." },
-        { id: "next-step", left: "Kan vi aftale næste skridt?", right: "turns politeness into process", feedback: "Næste skridt moves the exchange from goodwill to action." }
+        { id: "acknowledge", left: "Tak for jeres svar.", right: "acknowledges contact", feedback: "Tak for jeres svar bekræfter modtagelse uden at gøre sagen større end nødvendigt." },
+        { id: "action", left: "Jeg sender billeder fra indflytningssynet.", right: "owns the next action", feedback: "Jeg sender billeder giver dig agency: du flytter sagen, ikke bare ventetiden." },
+        { id: "next-step", left: "Kan vi aftale næste skridt?", right: "turns politeness into process", feedback: "Næste skridt gør depositum og opfølgning testbar i stedet for høflig tålmodighed." }
       ],
-      carry: "Carry-forward: tak for din besked opens the door, jeg vender tilbage owns action, and aftale næste skridt makes the process visible.",
-      tags: ["B2", "phrases", "register", "process-language"]
+      carry: "Carry-forward: tak for jeres svar åbner døren, jeg sender billeder ejer handlingen, og aftale næste skridt gør depositum-processen synlig.",
+      tags: ["B1", "phrases", "register", "housing"]
     },
     {
       id: "professional-response",
       type: "choice",
-      eyebrow: "Scene 3 · Svaret",
-      title: "Now write with agency, not pressure.",
-      learningGoal: "Choose an active professional sentence that proposes a next step without escalating tone.",
+      eyebrow: "Scene 3 · Svaret til udlejeren",
+      title: "Nu skal du skrive aktivt — uden at gøre det større end nødvendigt.",
+      learningGoal: "Choose an active tenant sentence that proposes a next step without escalating tone.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["agency-without-pressure"],
-      pressure: "You need the message to move, but you also need the relationship to survive the sentence.",
-      narrative: "This is where B2 Danish stops being vocabulary and becomes judgement: agency without pressure.",
+      pressure: "Du skal have svar om depositum og opfølgning på skaderne, men lejeforholdet skal stadig kunne bære næste samtale.",
+      narrative: "Her bliver B1-dansk vurdering: agency uden pres overfor udlejeren.",
       dialogue: [{ speaker: "You", line: "Jeg foreslår, at vi aftaler næste skridt uden at gøre det større end nødvendigt." }],
-      notice: "Jeg foreslår is active but not demanding. Uden pres keeps the door open while the next step stays concrete.",
-      targetPhrases: ["jeg foreslår", "næste skridt", "uden pres"],
+      notice: "Jeg foreslår er aktivt uden at være krævende. Uden pres holder du døren åben, mens næste skridt om dokumentation forbliver konkret.",
+      targetPhrases: ["jeg foreslår", "næste skridt", "uden pres", "depositum"],
       prompt: "Choose the sentence that keeps agency without pressure.",
       options: [
-        { id: "active-low-pressure", diagnostic: "active-low-pressure-next-step", label: "Jeg foreslår, at vi aftaler næste skridt, når det passer jer.", detail: "active and workable", correct: true, effects: { relationshipTension: -1, clarity: 1, professionalTrust: 1 }, feedback: "Diagnostic: strong B2 move. Jeg foreslår gives agency, and når det passer jer lowers pressure without losing the next step." },
-        { id: "too-soft", diagnostic: "softness-removes-action", label: "Det er helt fint, hvis det måske kan vente lidt.", detail: "too soft", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "Diagnostic: the tone is friendly, but the action disappeared. The reader cannot see what should happen next." },
-        { id: "pressure", diagnostic: "pressure-replaces-agency", label: "Jeg forventer, at I svarer hurtigt, for det her kan ikke vente.", detail: "too forceful", correct: false, effects: { relationshipTension: 2, professionalTrust: -1 }, feedback: "Diagnostic: you replaced agency with pressure. That may be justified in some cases, but it is not the default professional register." }
+        { id: "active-low-pressure", diagnostic: "active-low-pressure-next-step", label: "Jeg foreslår, at vi aftaler næste skridt, når det passer jer.", detail: "active and workable", correct: true, effects: { relationshipTension: -1, clarity: 1, professionalTrust: 1 }, feedback: "Diagnostic: strong B1 move. Jeg foreslår giver agency, and når det passer jer sænker presset uden at droppe næste skridt om depositum." },
+        { id: "too-soft", diagnostic: "softness-removes-action", label: "Det er helt fint, hvis det måske kan vente lidt.", detail: "too soft", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "Diagnostic: the tone is friendly, but the action disappeared. Udlejeren cannot see what should happen next with dokumentation or reparation." },
+        { id: "pressure", diagnostic: "pressure-replaces-agency", label: "Jeg forventer, at I svarer hurtigt, for depositum kan ikke vente.", detail: "too forceful", correct: false, effects: { relationshipTension: 2, professionalTrust: -1 }, feedback: "Diagnostic: you replaced agency with pressure. Depositum is real, but forventer og kan ikke vente raises tension before the facts do the work." }
       ],
-      carry: "Carry-forward: jeg foreslår plus næste skridt gives agency without pressure. The sentence should move the case without closing the room.",
-      tags: ["B2", "agency", "professional-register", "next-step"]
+      carry: "Carry-forward: jeg foreslår plus næste skridt giver agency uden pres. Sætningen skal flytte depositum-sagen uden at gøre tonen større end nødvendigt.",
+      tags: ["B1", "agency", "housing", "next-step"]
     },
     {
       id: "next-step",
       type: "completion",
-      eyebrow: "Scene 4 · Konkrethed",
-      title: "A next step must be visible enough to test.",
-      learningGoal: "Complete a professional sentence with both an agency verb and a time or next-step signal.",
+      eyebrow: "Scene 4 · Konkret opfølgning",
+      title: "Et næste skridt skal være synligt nok til at teste.",
+      learningGoal: "Complete a tenant sentence with both an agency verb and a time or next-step signal.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["concrete-next-step"],
-      pressure: "A polite sentence can still fail if nobody knows who does what next.",
-      narrative: "You write the last line. It needs to be short, concrete, and socially usable.",
-      dialogue: [{ speaker: "You", line: "Jeg kan sende et kort forslag ..." }],
-      notice: "Concrete Danish does not need to be long. It needs an action and a next-step signal.",
-      targetPhrases: ["jeg kan sende", "et kort forslag", "inden fredag", "næste skridt"],
+      pressure: "En høflig sætning kan stadig fejle, hvis udlejeren ikke ved, hvem gør hvad — og hvornår.",
+      narrative: "Du afslutter mailen om indflytningssynet. Den skal være kort, konkret og brugbar for udlejeren.",
+      dialogue: [{ speaker: "You", line: "Jeg kan sende billeder og protokollen ..." }],
+      notice: "Konkret dansk behøver ikke være lang. Den skal have en handling og et næste skridt — fx inden fredag og aftale næste skridt.",
+      targetPhrases: ["jeg kan sende", "billeder og protokollen", "inden fredag", "næste skridt"],
       prompt: "Complete the sentence with one agency signal and one time or next-step signal.",
-      prefix: "Jeg kan sende et kort forslag",
+      prefix: "Jeg kan sende billeder og protokollen",
       placeholder: "inden fredag og aftale næste skridt",
       acceptKeywordGroups: [
         { name: "agency verb", keywords: ["sende", "skrive", "foreslå", "aftale"] },
         { name: "time or next step", keywords: ["fredag", "næste", "skridt", "tid", "dato"] }
       ],
-      success: "Good. The sentence contains both an action and a visible next step.",
+      success: "Good. Sætningen har både handling og et synligt næste skridt for udlejeren.",
       failure: "Include both parts: an agency verb (sende/skrive/foreslå/aftale) and a time or next-step word (fredag/næste/skridt/tid/dato).",
       effects: { clarity: 1 },
-      carry: "Carry-forward: jeg kan sende et kort forslag is only complete when the reader also sees inden fredag or another concrete next step.",
-      tags: ["B2", "completion", "concrete-language", "process"]
+      carry: "Carry-forward: jeg kan sende billeder og protokollen er først færdig, når udlejeren også ser inden fredag eller et andet konkret næste skridt.",
+      tags: ["B1", "completion", "concrete-language", "housing"]
     },
     {
       id: "principle",
       type: "choice",
       eyebrow: "Final · Princip",
-      title: "The wording writes the relationship before the decision.",
-      learningGoal: "Name the B2 principle that clarity and relationship control belong together.",
+      title: "Ordene skriver lejeforholdet, før depositum er afgjort.",
+      learningGoal: "Name the B1 principle that clarity and relationship control belong together in tenant communication.",
       sourceRefs: ["Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["consequence-aware-register"],
-      pressure: "The exchange ends. What remains is not only the answer, but the way you were read.",
-      narrative: "A gold lesson should end by naming the transferable principle, not by celebrating a one-off correct answer.",
-      dialogue: [{ speaker: "Internal note", line: "Tone er handling, især når relationen stadig skal bruges." }],
-      notice: "Professionel dansk is concrete without pressure. The principle transfers across email, chat, workplace, and public-service writing.",
-      targetPhrases: ["professionel dansk", "konkret uden pres", "tone er handling"],
+      pressure: "Udvekslingen slutter. Tilbage er ikke kun svaret om skaderne, men hvordan udlejeren læser dig.",
+      narrative: "Et stærkt bolig-forløb ender med et princip, der kan bruges igen: indflytning, depositum, reparationer.",
+      dialogue: [{ speaker: "Internal note", line: "Tone er handling, især når lejeforholdet stadig skal bruges." }],
+      notice: "Lejer-dansk er konkret uden pres. Principet gælder mail til udlejeren, opfølgning efter indflytningssyn og rolig pushback.",
+      targetPhrases: ["lejer-dansk", "konkret uden pres", "tone er handling"],
       prompt: "Which principle should this lesson teach?",
       options: [
-        { id: "clarity-with-relationship", diagnostic: "names-clarity-relationship-principle", label: "Professionel dansk er konkret uden pres: tone er handling.", detail: "transferable principle", correct: true, feedback: "Diagnostic: yes. The wording makes the next step visible while protecting the relationship." },
-        { id: "maximum-politeness", diagnostic: "confuses-register-with-politeness", label: "Professionel dansk er altid så høfligt som muligt.", detail: "over-formal", correct: false, feedback: "Diagnostic: maximum politeness can create distance. The goal is useful clarity, not ceremonial language." },
-        { id: "maximum-force", diagnostic: "confuses-clarity-with-force", label: "Professionel dansk er tydeligst, når presset er maksimalt.", detail: "too forceful", correct: false, feedback: "Diagnostic: pressure is not the same as clarity. The relationship cost can become the message." }
+        { id: "clarity-with-relationship", diagnostic: "names-clarity-relationship-principle", label: "Lejer-dansk er konkret uden pres: tone er handling.", detail: "transferable principle", correct: true, feedback: "Diagnostic: yes. Wording makes næste skridt visible while protecting the relationship with udlejeren." },
+        { id: "maximum-politeness", diagnostic: "confuses-register-with-politeness", label: "Lejer-dansk er altid så høfligt som muligt.", detail: "over-formal", correct: false, feedback: "Diagnostic: maximum politeness can create distance. The goal is useful clarity about depositum and skader, not ceremonial language." },
+        { id: "maximum-force", diagnostic: "confuses-clarity-with-force", label: "Lejer-dansk er tydeligst, når presset er maksimalt.", detail: "too forceful", correct: false, feedback: "Diagnostic: pressure is not the same as clarity. The relationship cost can become the message before depositum moves." }
       ],
-      carry: "Unlocked B2 theme: professionel dansk is konkret uden pres. Tone er handling because language moves both the case and the relationship.",
-      tags: ["B2", "principle", "consequence", "register"]
+      carry: "Unlocked B1 theme: lejer-dansk is konkret uden pres. Tone er handling because language moves both depositum-sagen and lejeforholdet.",
+      tags: ["B1", "principle", "consequence", "housing"]
     }
   ],
   endingLogic: {
@@ -335,24 +336,24 @@ window.PLATA_LESSON_B1_BOLIG = {
   endings: [
     {
       id: "strong",
-      title: "Clear and trusted",
-      narrative: "The reply is specific and human. The next step is agreed without extra friction, and your Danish reads as calm professional judgement.",
-      danish: "Du gjorde sagen tydelig uden at gøre relationen mindre.",
-      carry: "B1 unlocked: clarity and relationship control can reinforce each other."
+      title: "Klart og brugbart",
+      narrative: "Udlejeren svarer med en dato for opfølgning. Du har sendt billeder og protokollen, og næste skridt om depositum er aftalt uden unødig friktion. Din dansk lyder rolig, aktiv og pålidelig.",
+      danish: "Du gjorde sagen tydelig uden at gøre lejeforholdet mindre.",
+      carry: "B1 unlocked: klarhed og relation kan forstærke hinanden i bolig-sager."
     },
     {
       id: "strained",
-      title: "Clear cost",
-      narrative: "The message gets attention, but the tone becomes the story. The next step happens with less trust than before.",
+      title: "Sagen bevæger sig — med pris",
+      narrative: "Udlejeren reagerer, men tonen i svaret er køligere. Du fik opmærksomhed på skaderne, men presset blev en del af historien. Næste skridt kommer — med mindre tillid.",
       danish: "Du fik svar, men presset blev husket.",
-      carry: "B1 unlocked: force can solve the immediate case while damaging the room."
+      carry: "B1 unlocked: hård tone kan flytte sagen og samtidig gøre næste samtale sværere."
     },
     {
       id: "neutral",
-      title: "Correct but low-signal",
-      narrative: "The exchange stays polite and functional. Nothing breaks, but your Danish does not add much confidence either.",
+      title: "Korrekt, men svagt signal",
+      narrative: "Udlejeren svarer høfligt, men uden klar dato. Intet går i stykker, men depositum og opfølgning bliver ved med at glide. Din dansk var fin — bare ikke stærk nok til at sætte tempo.",
       danish: "Det var korrekt, men ikke stærkt.",
-      carry: "B1 unlocked: correct language keeps the process alive; concrete agency makes it useful."
+      carry: "B1 unlocked: korrekt sprog holder processen i live; konkret agency gør den brugbar."
     }
   ]
 };

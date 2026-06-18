@@ -489,6 +489,109 @@ function buildGuidedSessionReport(options = {}) {
       })
     },
     {
+      id: "bolig-gold-repair",
+      title: "Bolig gold lesson guided scene repair",
+      expectedStatus: "ready",
+      requiresAction: true,
+      requiresCitations: true,
+      input: () => {
+        const boligFact = fact({
+          id: "mem-agency-without-pressure",
+          signal: "agency-without-pressure",
+          trainerId: "lesson-b1-bolig",
+          competencyId: "agency",
+          sourceFingerprint: "memsrc-bolig-agency"
+        });
+        const boligStep = planStep({
+          kind: "repair",
+          trainerId: "lesson-b1-bolig",
+          trainerName: "Bolig og udlejer",
+          title: "Repair agency-without-pressure",
+          copy: "Rerun the bolig response scene and keep both agency and a low-pressure next step.",
+          primaryLabel: "Open repair",
+          primaryHref: "./lessons/lesson-b1-bolig/?mode=repair&signal=agency-without-pressure#professional-response",
+          signalTag: "agency-without-pressure",
+          routeId: "s1-bolig-agency",
+          competency: { id: "agency", label: "Agency and responsibility" },
+          minutes: "12 min"
+        });
+        const boligPlan = plan({ kind: "repair", title: "Bolig repair", planToken: "plan-bolig-agency", fingerprint: "plan-bolig-agency-fp" }, boligStep);
+        return {
+          plan: boligPlan,
+          step: boligPlan.steps[0],
+          advisorReceipt: advisorReceipt(boligPlan.steps[0], boligFact, {
+            actionHref: "./lessons/lesson-b1-bolig/?mode=repair&signal=agency-without-pressure&plan=plan-bolig-agency&step=s1-bolig-agency#professional-response",
+            advice: {
+              title: "Repair agency-without-pressure",
+              advice: "Keep this session on the bolig response scene and cited weak signal.",
+              citedFacts: [boligFact],
+              trace: { fingerprint: "adv-bolig-agency", rule: "weak-signal" },
+              guardrails: {
+                deterministic: true,
+                requiresModel: false,
+                usesOnlyCitedFacts: true,
+                containsRawAnswerText: false
+              }
+            },
+            companion: null
+          }),
+          memoryFacts: [boligFact]
+        };
+      }
+    },
+    {
+      id: "radiator-gold-repair",
+      title: "Radiator gold lesson guided register drill repair",
+      expectedStatus: "ready",
+      requiresAction: true,
+      requiresCitations: true,
+      input: () => {
+        const radFact = fact({
+          id: "mem-formal-register",
+          signal: "formal-register-control",
+          trainerId: "lesson-b2-radiator-register",
+          competencyId: "register-control",
+          sourceFingerprint: "memsrc-formal-register"
+        });
+        const radStep = planStep({
+          kind: "drill-repair",
+          trainerId: "register",
+          trainerName: "Register drill",
+          title: "Run Register drill",
+          copy: "Repair formal register control with a short register session mapped from the radiator narrative miss.",
+          primaryLabel: "Open drill",
+          primaryHref: "./register-drill/?signal=formal-register-control&from=lesson-b2-radiator-register&cat=channel",
+          signalTag: "formal-register-control",
+          routeId: "s1-formal-register",
+          badge: "Gym",
+          minutes: "5-8 min",
+          competency: { id: "register-control", label: "Register control" }
+        });
+        const radPlan = plan({ kind: "repair", title: "Radiator register repair", planToken: "plan-formal-register", fingerprint: "plan-formal-register-fp" }, radStep);
+        return {
+          plan: radPlan,
+          step: radPlan.steps[0],
+          advisorReceipt: advisorReceipt(radPlan.steps[0], radFact, {
+            actionHref: "./register-drill/?signal=formal-register-control&from=lesson-b2-radiator-register&cat=channel&plan=plan-formal-register&step=s1-formal-register",
+            advice: {
+              title: "Repair formal-register-control",
+              advice: "Keep this session on the mapped register channel category.",
+              citedFacts: [radFact],
+              trace: { fingerprint: "adv-formal-register", rule: "weak-signal" },
+              guardrails: {
+                deterministic: true,
+                requiresModel: false,
+                usesOnlyCitedFacts: true,
+                containsRawAnswerText: false
+              }
+            },
+            companion: null
+          }),
+          memoryFacts: [radFact]
+        };
+      }
+    },
+    {
       id: "completed-route",
       title: "Completed route outcome receipt",
       expectedStatus: "complete",

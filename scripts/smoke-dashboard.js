@@ -26,13 +26,15 @@ const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "
 const lesson01Source = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-01", "data.js"), "utf8");
 const ordstillingLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-ordstilling", "data.js"), "utf8");
 const boligLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b1-bolig", "data.js"), "utf8");
+const borgerserviceLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b1-borgerservice", "data.js"), "utf8");
 const dashboardSource = fs.readFileSync(path.join(repoRoot, "dashboard.js"), "utf8");
 const dynamicLessonSources = {
   "./lessons/lesson-b2-radiator/data.js": radiatorLessonSource,
   "./lessons/lesson-b2-job-followup/data.js": jobFollowupLessonSource,
   "./lessons/lesson-01/data.js": lesson01Source,
   "./lessons/lesson-b2-ordstilling/data.js": ordstillingLessonSource,
-  "./lessons/lesson-b1-bolig/data.js": boligLessonSource
+  "./lessons/lesson-b1-bolig/data.js": boligLessonSource,
+  "./lessons/lesson-b1-borgerservice/data.js": borgerserviceLessonSource
 };
 
 function assert(condition, message) {
@@ -182,6 +184,7 @@ function loadKernelAndDashboard(env) {
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(ordstillingLessonSource, env.context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(boligLessonSource, env.context, { filename: "lessons/lesson-b1-bolig/data.js" });
+  vm.runInContext(borgerserviceLessonSource, env.context, { filename: "lessons/lesson-b1-borgerservice/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
@@ -291,7 +294,7 @@ function runEmptyDashboardSmoke() {
   const env = makeContext();
   loadKernelAndDashboard(env);
 
-  assert(env.elements["#trainer-cards"].children.length === 10, "dashboard renders all trainer cards");
+  assert(env.elements["#trainer-cards"].children.length === 11, "dashboard renders all trainer cards");
   assert(/Planner route/.test(env.elements["#today-program"].innerHTML), "dashboard renders Today program shell for starter routes");
   assert(/First session/.test(env.elements["#today-program"].innerHTML), "dashboard labels the empty profile as a first session");
   assert(/job-followup|follow-up/i.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes the B2 follow-up starter step");
@@ -364,6 +367,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(ordstillingLessonSource, env.context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(boligLessonSource, env.context, { filename: "lessons/lesson-b1-bolig/data.js" });
+  vm.runInContext(borgerserviceLessonSource, env.context, { filename: "lessons/lesson-b1-borgerservice/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
@@ -375,7 +379,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(headroomSource, env.context, { filename: "shared/plata-headroom.js" });
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
-  assert(env.context.PlataCatalog.trainers.length === 10, "dashboard reads trainer catalog");
+  assert(env.context.PlataCatalog.trainers.length === 11, "dashboard reads trainer catalog");
   assert(/Read passive agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders weak mastery label");
   assert(/passive-agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders mastery tag key");
   assert(/registration\/process language/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders lesson-owned mastery evidence");
@@ -479,6 +483,7 @@ function runStartedPlanSmoke() {
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(ordstillingLessonSource, env.context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(boligLessonSource, env.context, { filename: "lessons/lesson-b1-bolig/data.js" });
+  vm.runInContext(borgerserviceLessonSource, env.context, { filename: "lessons/lesson-b1-borgerservice/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
@@ -564,6 +569,7 @@ function runPlanReturnReceiptSmoke() {
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(ordstillingLessonSource, env.context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(boligLessonSource, env.context, { filename: "lessons/lesson-b1-bolig/data.js" });
+  vm.runInContext(borgerserviceLessonSource, env.context, { filename: "lessons/lesson-b1-borgerservice/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
@@ -627,6 +633,7 @@ function runDueReviewProgramSmoke() {
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(ordstillingLessonSource, env.context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(boligLessonSource, env.context, { filename: "lessons/lesson-b1-bolig/data.js" });
+  vm.runInContext(borgerserviceLessonSource, env.context, { filename: "lessons/lesson-b1-borgerservice/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });
@@ -657,6 +664,7 @@ function runClosedMasterySmoke() {
   vm.runInContext(jobFollowupLessonSource, env.context, { filename: "lessons/lesson-b2-job-followup/data.js" });
   vm.runInContext(ordstillingLessonSource, env.context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(boligLessonSource, env.context, { filename: "lessons/lesson-b1-bolig/data.js" });
+  vm.runInContext(borgerserviceLessonSource, env.context, { filename: "lessons/lesson-b1-borgerservice/data.js" });
   vm.runInContext(competencySource, env.context, { filename: "shared/plata-competencies.js" });
   vm.runInContext(plannerSource, env.context, { filename: "shared/plata-planner.js" });
   vm.runInContext(evidenceSource, env.context, { filename: "shared/plata-evidence.js" });

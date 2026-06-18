@@ -16,6 +16,7 @@ const sources = [
   "lessons/lesson-b2-job-followup/data.js",
   "lessons/lesson-b2-ordstilling/data.js",
   "lessons/lesson-b1-bolig/data.js",
+  "lessons/lesson-b1-borgerservice/data.js",
   "shared/plata-competencies.js",
   "shared/plata-planner.js",
   "shared/plata-evidence.js",

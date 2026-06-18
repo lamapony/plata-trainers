@@ -12,7 +12,7 @@
       id: "agency",
       label: "Agency and responsibility",
       copy: "Can name who acts, own the next move, and avoid hiding behind vague or passive wording.",
-      tags: ["passive-agency", "understatement-with-agency", "professional-email-agency", "agency-without-pressure", "identity-chunk"]
+      tags: ["passive-agency", "understatement-with-agency", "professional-email-agency", "agency-without-pressure", "identity-chunk", "clarification-without-panic"]
     },
     {
       id: "register-control",

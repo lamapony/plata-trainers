@@ -299,6 +299,70 @@ function runGoldLessonSmoke(api) {
   });
   assert(followSession.status === "ready", "job follow-up continue should produce ready guided session");
   assert(followSession.goal.trainerId === "lesson-b2-job-followup", "job follow-up guided session should target gold lesson");
+
+  const boligFact = memoryFact({
+    id: "mem-agency-without-pressure",
+    signal: "agency-without-pressure",
+    trainerId: "lesson-b1-bolig",
+    competencyId: "agency",
+    sourceFingerprint: "memsrc-bolig-agency"
+  });
+  const boligStep = {
+    kind: "repair",
+    trainerId: "lesson-b1-bolig",
+    trainerName: "Bolig og udlejer",
+    title: "Repair agency-without-pressure",
+    primaryHref: "./lessons/lesson-b1-bolig/?mode=repair&signal=agency-without-pressure#professional-response",
+    signalTag: "agency-without-pressure",
+    routeId: "s1-bolig-agency"
+  };
+  const boligSession = api.buildSession({
+    plan: repairPlan(boligStep, {
+      kind: "repair",
+      planToken: "plan-bolig-agency",
+      fingerprint: "plan-bolig-agency-fp"
+    }),
+    step: repairPlan(boligStep).steps[0],
+    advisorReceipt: advisorReceipt(repairPlan(boligStep).steps[0], boligFact),
+    memoryFacts: [boligFact],
+    actionHref: "./lessons/lesson-b1-bolig/?mode=repair&signal=agency-without-pressure&plan=plan-bolig-agency&step=s1-bolig-agency#professional-response",
+    now: "2026-06-08T09:00:00.000Z"
+  });
+  assert(boligSession.status === "ready", "bolig scene repair should produce ready guided session");
+  assert(boligSession.goal.trainerId === "lesson-b1-bolig", "bolig guided session should target bolig gold lesson");
+  assert(boligSession.route.href.includes("lesson-b1-bolig"), "bolig guided session route should open bolig lesson repair");
+
+  const radFact = memoryFact({
+    id: "mem-formal-register",
+    signal: "formal-register-control",
+    trainerId: "lesson-b2-radiator-register",
+    competencyId: "register-control",
+    sourceFingerprint: "memsrc-formal-register"
+  });
+  const radStep = {
+    kind: "drill-repair",
+    trainerId: "register",
+    trainerName: "Register drill",
+    title: "Run Register drill",
+    primaryHref: "./register-drill/?signal=formal-register-control&from=lesson-b2-radiator-register&cat=channel",
+    signalTag: "formal-register-control",
+    routeId: "s1-formal-register"
+  };
+  const radSession = api.buildSession({
+    plan: repairPlan(radStep, {
+      kind: "repair",
+      planToken: "plan-formal-register",
+      fingerprint: "plan-formal-register-fp"
+    }),
+    step: repairPlan(radStep).steps[0],
+    advisorReceipt: advisorReceipt(repairPlan(radStep).steps[0], radFact),
+    memoryFacts: [radFact],
+    actionHref: "./register-drill/?signal=formal-register-control&from=lesson-b2-radiator-register&cat=channel&plan=plan-formal-register&step=s1-formal-register",
+    now: "2026-06-08T09:00:00.000Z"
+  });
+  assert(radSession.status === "ready", "radiator register drill repair should produce ready guided session");
+  assert(radSession.goal.trainerId === "register", "radiator guided session should target register drill");
+  assert(radSession.route.href.includes("register-drill"), "radiator guided session route should open register drill");
 }
 
 function run() {
@@ -313,7 +377,7 @@ function run() {
   console.log("ok - guided session builds deterministic learner-facing sessions");
   console.log("ok - guided session tracks ready, active, complete, and empty states");
   console.log("ok - guided session records portable outcome receipts");
-  console.log("ok - guided session covers ordstilling and job-followup gold routes");
+  console.log("ok - guided session covers ordstilling, job-followup, bolig, and radiator gold routes");
   console.log("ok - guided session rejects raw learner answer leaks");
 }
 

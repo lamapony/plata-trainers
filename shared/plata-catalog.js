@@ -230,6 +230,30 @@
           sequence: 4,
           featured: false
         }
+      },
+      {
+        id: "lesson-b1-borgerservice",
+        name: "Når systemet siger nej",
+        type: "lesson",
+        path: "./lessons/lesson-b1-borgerservice/",
+        lessonGlobal: "PLATA_LESSON_B1_BORGERSERVICE",
+        lessonDataPath: "./lessons/lesson-b1-borgerservice/data.js",
+        description: "Book or fix a Borgerservice/MitID/CPR appointment without panic or passive Danish.",
+        icon: "🏛",
+        gallery: {
+          tag: "B1 public service",
+          level: "B1",
+          status: "gold",
+          signalFamily: "polite-persistence · system-navigation · register-control",
+          estimatedMinutes: 14,
+          outcomes: [
+            "Use polite request chunks at Borgerservice counters",
+            "Clarify system rejections without panic or aggression",
+            "Book appointments with date and time precision"
+          ],
+          sequence: 5,
+          featured: false
+        }
       }
     ],
     drillForSignal: function (signalTag) {
