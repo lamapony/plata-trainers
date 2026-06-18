@@ -133,6 +133,30 @@
         }
       },
       {
+        id: "lesson-a2-doctor",
+        name: "Hvor længe har du haft det sådan?",
+        type: "lesson",
+        path: "./lessons/lesson-a2-doctor/",
+        lessonGlobal: "PLATA_LESSON_A2_DOCTOR",
+        lessonDataPath: "./lessons/lesson-a2-doctor/data.js",
+        description: "Describe symptoms to læge or apotek with duration, severity, and calm clarification — language practice only.",
+        icon: "🩺",
+        gallery: {
+          tag: "A2 everyday health",
+          level: "A2",
+          status: "gold",
+          signalFamily: "symptom-duration · severity · clarification",
+          estimatedMinutes: 12,
+          outcomes: [
+            "State duration with i to dage and siden i går",
+            "Calibrate lidt, ret, and meget without drama",
+            "Ask hvad skal jeg gøre nu after describing symptoms"
+          ],
+          sequence: 2,
+          featured: false
+        }
+      },
+      {
         id: "lesson-b2-radiator-register",
         name: "Det afhænger af, hvordan du siger det",
         type: "lesson",
@@ -153,7 +177,7 @@
             "Read modal particles as social stance",
             "Transfer tone across email, chat, and workplace"
           ],
-          sequence: 2,
+          sequence: 3,
           featured: false
         }
       },
@@ -203,7 +227,7 @@
             "Distinguish fordi + subordinate clause from derfor + inversion",
             "Transfer correct word order across email, chat, and spoken Danish"
           ],
-          sequence: 3,
+          sequence: 4,
           featured: false
         }
       },
@@ -227,7 +251,7 @@
             "Keep tenant rights visible without aggression",
             "Agree concrete next steps with udlejer"
           ],
-          sequence: 4,
+          sequence: 5,
           featured: false
         }
       },
@@ -251,7 +275,7 @@
             "Clarify system rejections without panic or aggression",
             "Book appointments with date and time precision"
           ],
-          sequence: 5,
+          sequence: 6,
           featured: false
         }
       }

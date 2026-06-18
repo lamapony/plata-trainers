@@ -395,6 +395,38 @@ function runGoldLessonSmoke(api) {
   assert(bsSession.status === "ready", "borgerservice scene repair should produce ready guided session");
   assert(bsSession.goal.trainerId === "lesson-b1-borgerservice", "borgerservice guided session should target borgerservice gold lesson");
   assert(bsSession.route.href.includes("lesson-b1-borgerservice"), "borgerservice guided session route should open borgerservice lesson repair");
+
+  const docFact = memoryFact({
+    id: "mem-symptom-duration",
+    signal: "symptom-duration",
+    trainerId: "lesson-a2-doctor",
+    competencyId: "process-control",
+    sourceFingerprint: "memsrc-doctor-duration"
+  });
+  const docStep = {
+    kind: "repair",
+    trainerId: "lesson-a2-doctor",
+    trainerName: "Hvor længe har du haft det sådan?",
+    title: "Repair symptom-duration",
+    primaryHref: "./lessons/lesson-a2-doctor/?mode=repair&signal=symptom-duration#symptom-duration",
+    signalTag: "symptom-duration",
+    routeId: "s1-doctor-duration"
+  };
+  const docSession = api.buildSession({
+    plan: repairPlan(docStep, {
+      kind: "repair",
+      planToken: "plan-doctor-duration",
+      fingerprint: "plan-doctor-duration-fp"
+    }),
+    step: repairPlan(docStep).steps[0],
+    advisorReceipt: advisorReceipt(repairPlan(docStep).steps[0], docFact),
+    memoryFacts: [docFact],
+    actionHref: "./lessons/lesson-a2-doctor/?mode=repair&signal=symptom-duration&plan=plan-doctor-duration&step=s1-doctor-duration#symptom-duration",
+    now: "2026-06-08T09:00:00.000Z"
+  });
+  assert(docSession.status === "ready", "doctor scene repair should produce ready guided session");
+  assert(docSession.goal.trainerId === "lesson-a2-doctor", "doctor guided session should target doctor gold lesson");
+  assert(docSession.route.href.includes("lesson-a2-doctor"), "doctor guided session route should open doctor lesson repair");
 }
 
 function run() {
@@ -409,7 +441,7 @@ function run() {
   console.log("ok - guided session builds deterministic learner-facing sessions");
   console.log("ok - guided session tracks ready, active, complete, and empty states");
   console.log("ok - guided session records portable outcome receipts");
-  console.log("ok - guided session covers all five gold lesson repair and continue routes");
+  console.log("ok - guided session covers all six gold lesson repair and continue routes");
   console.log("ok - guided session rejects raw learner answer leaks");
 }
 

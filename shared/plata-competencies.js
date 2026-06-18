@@ -30,7 +30,7 @@
       id: "process-control",
       label: "Process and next-step control",
       copy: "Can separate anxiety from process, then make the next step visible enough to act on.",
-      tags: ["process-patience", "concrete-next-step", "context-reading", "signage-direction"]
+      tags: ["process-patience", "concrete-next-step", "context-reading", "signage-direction", "symptom-duration", "symptom-severity"]
     },
     {
       id: "consequence-awareness",

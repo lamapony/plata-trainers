@@ -26,7 +26,7 @@ function runCli(args) {
 function runBaseSmoke() {
   const report = buildGuidedSessionReport();
   assert(report.status === "pass", `guided session report should pass:\n${report.issues.join("\n")}`);
-  assert(report.totals.scenarios === 10, "guided session report should cover ten core scenarios");
+  assert(report.totals.scenarios === 11, "guided session report should cover eleven core scenarios");
   ["active", "complete", "ready"].forEach(status => {
     assert(report.statuses.includes(status), `guided session report should include ${status}`);
   });
@@ -78,6 +78,11 @@ function runBaseSmoke() {
   assert(borgerservice && borgerservice.session.goal.trainerId === "lesson-b1-borgerservice", "borgerservice scenario should target borgerservice gold lesson");
   assert(borgerservice.session.goal.signal === "clarification-without-panic", "borgerservice scenario should preserve clarification-without-panic signal");
   assert(borgerservice.session.route.href.includes("lesson-b1-borgerservice"), "borgerservice scenario should link borgerservice lesson repair");
+
+  const doctor = report.scenarios.find(item => item.id === "doctor-gold-repair");
+  assert(doctor && doctor.session.goal.trainerId === "lesson-a2-doctor", "doctor scenario should target doctor gold lesson");
+  assert(doctor.session.goal.signal === "symptom-duration", "doctor scenario should preserve symptom-duration signal");
+  assert(doctor.session.route.href.includes("lesson-a2-doctor"), "doctor scenario should link doctor lesson repair");
 
   const completed = report.scenarios.find(item => item.id === "completed-route");
   assert(completed && completed.session.status === "complete", "completed route should report complete");

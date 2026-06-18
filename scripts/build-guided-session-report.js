@@ -643,6 +643,57 @@ function buildGuidedSessionReport(options = {}) {
       }
     },
     {
+      id: "doctor-gold-repair",
+      title: "Doctor gold lesson guided scene repair",
+      expectedStatus: "ready",
+      requiresAction: true,
+      requiresCitations: true,
+      input: () => {
+        const docFact = fact({
+          id: "mem-symptom-duration",
+          signal: "symptom-duration",
+          trainerId: "lesson-a2-doctor",
+          competencyId: "process-control",
+          sourceFingerprint: "memsrc-doctor-duration"
+        });
+        const docStep = planStep({
+          kind: "repair",
+          trainerId: "lesson-a2-doctor",
+          trainerName: "Hvor længe har du haft det sådan?",
+          title: "Repair symptom-duration",
+          copy: "Rerun the duration scene and pair i to dage or siden i går with what they tell the listener.",
+          primaryLabel: "Open repair",
+          primaryHref: "./lessons/lesson-a2-doctor/?mode=repair&signal=symptom-duration#symptom-duration",
+          signalTag: "symptom-duration",
+          routeId: "s1-doctor-duration",
+          competency: { id: "process-control", label: "Process and next-step control" },
+          minutes: "12 min"
+        });
+        const docPlan = plan({ kind: "repair", title: "Doctor duration repair", planToken: "plan-doctor-duration", fingerprint: "plan-doctor-duration-fp" }, docStep);
+        return {
+          plan: docPlan,
+          step: docPlan.steps[0],
+          advisorReceipt: advisorReceipt(docPlan.steps[0], docFact, {
+            actionHref: "./lessons/lesson-a2-doctor/?mode=repair&signal=symptom-duration&plan=plan-doctor-duration&step=s1-doctor-duration#symptom-duration",
+            advice: {
+              title: "Repair symptom-duration",
+              advice: "Keep this session on the duration matching scene and cited weak signal.",
+              citedFacts: [docFact],
+              trace: { fingerprint: "adv-doctor-duration", rule: "weak-signal" },
+              guardrails: {
+                deterministic: true,
+                requiresModel: false,
+                usesOnlyCitedFacts: true,
+                containsRawAnswerText: false
+              }
+            },
+            companion: null
+          }),
+          memoryFacts: [docFact]
+        };
+      }
+    },
+    {
       id: "completed-route",
       title: "Completed route outcome receipt",
       expectedStatus: "complete",

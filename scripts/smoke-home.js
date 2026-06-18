@@ -16,6 +16,7 @@ const lesson01Source = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-01
 const ordstillingLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-ordstilling", "data.js"), "utf8");
 const boligLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b1-bolig", "data.js"), "utf8");
 const borgerserviceLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b1-borgerservice", "data.js"), "utf8");
+const doctorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-a2-doctor", "data.js"), "utf8");
 const homeSource = fs.readFileSync(path.join(repoRoot, "home.js"), "utf8");
 const indexHtml = fs.readFileSync(path.join(repoRoot, "index.html"), "utf8");
 const dynamicLessonSources = {
@@ -24,7 +25,8 @@ const dynamicLessonSources = {
   "./lessons/lesson-01/data.js": lesson01Source,
   "./lessons/lesson-b2-ordstilling/data.js": ordstillingLessonSource,
   "./lessons/lesson-b1-bolig/data.js": boligLessonSource,
-  "./lessons/lesson-b1-borgerservice/data.js": borgerserviceLessonSource
+  "./lessons/lesson-b1-borgerservice/data.js": borgerserviceLessonSource,
+  "./lessons/lesson-a2-doctor/data.js": doctorLessonSource
 };
 
 function assert(condition, message) {
@@ -294,7 +296,7 @@ async function runEmptyHomeSmoke() {
   env.ids["#evaluate"].scrollIntoViewCalls = [];
   env.eventListeners.hashchange();
   assert(env.ids["#evaluate"].scrollIntoViewCalls.length === 1, "home hashchange listener scrolls to the evaluator path");
-  assert(env.galleryCards.filter(card => card.parentElement === env.ids["#narrative-gallery"]).length === 6, "home renders six narrative lessons from catalog");
+  assert(env.galleryCards.filter(card => card.parentElement === env.ids["#narrative-gallery"]).length === 7, "home renders seven narrative lessons from catalog");
   assert(env.galleryCards.filter(card => card.parentElement === env.ids["#drill-gallery"]).length === 5, "home renders five drills from catalog");
   const lessonCard = env.galleryCards.find(card => card.trainerId === "lesson-01-arrival");
   assert(lessonCard, "home renders narrative gallery cards from catalog");
