@@ -2,6 +2,22 @@
 (function (root) {
   "use strict";
 
+  function buildDrillAction(signalTag, sourceTrainerId, drill, repairs) {
+    if (sourceTrainerId === "lesson-a2-doctor" && drill && drill.id === "skrive") {
+      var spokenToWritten = {
+        "symptom-duration": "You missed duration in the apotek scene (i to dage / siden i går). Transfer that reflex to patientportalen: write a clear timeline before symptoms blur together.",
+        "symptom-severity": "You missed severity calibration (lidt / ret) in the apotek scene. In writing, name how strong symptoms feel — without drama or vague 'ikke så godt'.",
+        "concrete-next-step": "You missed the next step in the apotek scene. End the patientportal message with what you need from lægen or what you will do."
+      };
+      if (spokenToWritten[signalTag]) return spokenToWritten[signalTag];
+      return "Match → Gym: transfer what you missed at apotek into written Danish in patientportalen — same competency, new channel.";
+    }
+    if (repairs) {
+      return "You missed this in a story. Repair the reflex with a short drill: " + repairs + ".";
+    }
+    return "You missed this in a story. A short drill session repairs the reflex faster than rereading the scene.";
+  }
+
   root.PlataCatalog = {
     trainers: [
       {
@@ -103,7 +119,7 @@
           theme: "Skrive under rubric",
           estimatedMinutes: 10,
           repairs: "email · bolig · arbejde · sundhed · self-grade rubric",
-          repairSignals: [],
+          repairSignals: ["symptom-duration", "symptom-severity", "concrete-next-step"],
           sequence: 5
         }
       },
@@ -367,15 +383,15 @@
         linkOptions = { cat: "channel" };
       } else if (sourceTrainerId === "lesson-b2-job-followup" && signalTag === "consequence-aware-tone") {
         linkOptions = { cat: "deadline" };
+      } else if (sourceTrainerId === "lesson-a2-doctor" && drill.id === "skrive") {
+        linkOptions = { cat: "sundhed" };
       } else if (drill.id === "ordstilling" && ordstillingCatMap[signalTag]) {
         linkOptions = { cat: ordstillingCatMap[signalTag] };
       }
       return {
         kind: "drill",
         cta: "Run " + drill.name,
-        action: repairs
-          ? "You missed this in a story. Repair the reflex with a short drill: " + repairs + "."
-          : "You missed this in a story. A short drill session repairs the reflex faster than rereading the scene.",
+        action: buildDrillAction(signalTag, sourceTrainerId, drill, repairs),
         href: this.drillRepairLink(drill, signalTag, sourceTrainerId, linkOptions),
         trainerIcon: drill.icon,
         trainerName: drill.name,

@@ -12,6 +12,7 @@ const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-plann
 const bridgeSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-repair-bridge.js"), "utf8");
 const radiatorSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const ordstillingSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-ordstilling", "data.js"), "utf8");
+const doctorSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-a2-doctor", "data.js"), "utf8");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -49,6 +50,7 @@ function loadContext() {
   vm.runInContext(bridgeSource, context, { filename: "shared/plata-repair-bridge.js" });
   vm.runInContext(radiatorSource, context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(ordstillingSource, context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
+  vm.runInContext(doctorSource, context, { filename: "lessons/lesson-a2-doctor/data.js" });
   return { context, storage };
 }
 
@@ -100,6 +102,25 @@ function run() {
   assert(ordBundle.drillRepair.href.includes("cat=inversion"), "ordstilling drill href carries category deep link");
   const ordPlan = bridge.persistMissPlan({ lesson: ordLesson, scene: ordScene, signalTag: ordSignal, rootPrefix: "../../" });
   assert(ordPlan && ordPlan.steps.length === 2, "ordstilling miss plan includes scene + drill steps");
+
+  const docLesson = context.PLATA_LESSON_A2_DOCTOR;
+  const docScene = docLesson.scenes.find(item => item.id === "symptom-severity");
+  assert(docScene, "doctor severity scene missing for bridge smoke");
+  const docOption = docScene.options.find(item => item.id === "too-vague");
+  assert(docOption, "doctor severity miss option missing");
+  const docSignal = bridge.resolveMissSignal(docLesson, docScene, docOption);
+  assert(docSignal === "symptom-severity", "doctor miss resolves symptom-severity signal");
+  const docBundle = bridge.remediationBundle(docLesson, docScene, docSignal, "../../");
+  assert(docBundle && docBundle.drillRepair, "symptom-severity maps to skrive drill repair");
+  assert(docBundle.drillRepair.href.includes("../../skrive-drill/"), "doctor drill href targets skrive drill");
+  assert(docBundle.drillRepair.href.includes("cat=sundhed"), "doctor drill href opens sundhed category");
+  assert(docBundle.drillRepair.href.includes("from=lesson-a2-doctor"), "doctor drill href cites source lesson");
+  assert(/patientportalen|apotek/i.test(docBundle.drillRepair.action), "doctor drill action explains spoken-to-written transfer");
+  const docPanel = bridge.renderMissRepairPanel({ lesson: docLesson, scene: docScene, signalTag: docSignal, rootPrefix: "../../" });
+  assert(/skrive-drill/.test(docPanel), "doctor miss repair panel links skrive drill");
+  const docPlan = bridge.persistMissPlan({ lesson: docLesson, scene: docScene, signalTag: docSignal, rootPrefix: "../../" });
+  assert(docPlan && docPlan.steps.length === 2, "doctor miss plan includes scene + skrive drill steps");
+  assert(docPlan.steps[1].primaryHref.includes("skrive-drill"), "doctor saved drill step keeps skrive href");
 
   console.log("ok - repair bridge resolves miss signals and drill deep links");
   console.log("ok - repair bridge persists scene + drill practice plans");

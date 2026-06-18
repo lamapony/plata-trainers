@@ -694,6 +694,57 @@ function buildGuidedSessionReport(options = {}) {
       }
     },
     {
+      id: "doctor-skrive-repair",
+      title: "Doctor gold lesson guided skrive transfer repair",
+      expectedStatus: "ready",
+      requiresAction: true,
+      requiresCitations: true,
+      input: () => {
+        const docFact = fact({
+          id: "mem-symptom-severity",
+          signal: "symptom-severity",
+          trainerId: "lesson-a2-doctor",
+          competencyId: "process-control",
+          sourceFingerprint: "memsrc-doctor-severity"
+        });
+        const docStep = planStep({
+          kind: "drill-repair",
+          trainerId: "skrive",
+          trainerName: "Skrive drill",
+          title: "Transfer apotek miss to patientportal",
+          copy: "You missed severity calibration in the apotek scene. Write the same precision in patientportalen — lidt, ret, timeline, next step.",
+          primaryLabel: "Open skrive drill",
+          primaryHref: "./skrive-drill/?signal=symptom-severity&from=lesson-a2-doctor&cat=sundhed",
+          signalTag: "symptom-severity",
+          routeId: "s1-doctor-skrive",
+          badge: "Gym",
+          minutes: "8 min"
+        });
+        const docPlan = plan({ kind: "repair", title: "Doctor skrive transfer", planToken: "plan-doctor-skrive", fingerprint: "plan-doctor-skrive-fp" }, docStep);
+        return {
+          plan: docPlan,
+          step: docPlan.steps[0],
+          advisorReceipt: advisorReceipt(docPlan.steps[0], docFact, {
+            actionHref: "./skrive-drill/?signal=symptom-severity&from=lesson-a2-doctor&cat=sundhed&plan=plan-doctor-skrive&step=s1-doctor-skrive",
+            advice: {
+              title: "Repair symptom-severity in writing",
+              advice: "Keep this session on sundhed prompts and transfer spoken calibration into patientportal Danish.",
+              citedFacts: [docFact],
+              trace: { fingerprint: "adv-doctor-skrive", rule: "weak-signal-channel-transfer" },
+              guardrails: {
+                deterministic: true,
+                requiresModel: false,
+                usesOnlyCitedFacts: true,
+                containsRawAnswerText: false
+              }
+            },
+            companion: null
+          }),
+          memoryFacts: [docFact]
+        };
+      }
+    },
+    {
       id: "completed-route",
       title: "Completed route outcome receipt",
       expectedStatus: "complete",

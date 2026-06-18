@@ -13,6 +13,7 @@ const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catal
 const radiatorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
 const ordstillingLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-ordstilling", "data.js"), "utf8");
 const jobFollowupLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-job-followup", "data.js"), "utf8");
+const doctorLessonSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-a2-doctor", "data.js"), "utf8");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -52,6 +53,7 @@ function makeContext() {
   vm.runInContext(radiatorLessonSource, context, { filename: "lessons/lesson-b2-radiator/data.js" });
   vm.runInContext(ordstillingLessonSource, context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   vm.runInContext(jobFollowupLessonSource, context, { filename: "lessons/lesson-b2-job-followup/data.js" });
+  vm.runInContext(doctorLessonSource, context, { filename: "lessons/lesson-a2-doctor/data.js" });
   return context;
 }
 
@@ -226,6 +228,33 @@ function runDrillRepairRoutingSmoke(context) {
   const vocabRemediation = catalog.buildVocabRemediation("lesson-b2-job-followup", "email-closing");
   assert(vocabRemediation && vocabRemediation.kind === "vocab", "job follow-up closing scene should offer vocab remediation");
   assert(vocabRemediation.href.includes("proces") === false, "vocab remediation href uses query params not inline words");
+
+  const skriveDrill = catalog.drillForSignal("symptom-severity");
+  assert(skriveDrill && skriveDrill.id === "skrive", "catalog maps symptom-severity to skrive drill");
+  const skriveRemediation = catalog.drillRemediation("symptom-duration", "lesson-a2-doctor");
+  assert(skriveRemediation && skriveRemediation.href.includes("skrive-drill"), "doctor duration miss should open skrive drill");
+  assert(skriveRemediation.href.includes("cat=sundhed"), "doctor skrive remediation opens sundhed category");
+  assert(skriveRemediation.href.includes("from=lesson-a2-doctor"), "doctor skrive remediation carries source lesson");
+  assert(/patientportalen|i to dage/i.test(skriveRemediation.action), "doctor skrive remediation explains spoken-to-written transfer");
+
+  const docState = kernel.freshState("lesson-a2-doctor");
+  kernel.recordAttempt(docState, {
+    itemId: "symptom-severity-too-vague",
+    correct: false,
+    tags: ["A2", "symptom-severity"],
+    mode: "lesson",
+    expected: "Ret ondt i halsen, især om morgenen.",
+    given: "Ikke så godt, tror jeg."
+  });
+  const docDecision = context.PlataPlanner.lessonDecision({
+    lesson: context.PLATA_LESSON_A2_DOCTOR,
+    state: docState,
+    rootPrefix: "../../"
+  });
+  assert(docDecision.kind === "repair", "doctor severity miss should recommend repair");
+  assert(docDecision.secondaryHref.includes("skrive-drill"), "doctor lesson repair should offer skrive drill secondary");
+  assert(docDecision.secondaryHref.includes("cat=sundhed"), "doctor drill secondary opens sundhed category");
+  assert(docDecision.secondaryHref.includes("signal=symptom-severity"), "doctor drill secondary carries signal");
 }
 
 function runDrillDecisionSmoke(context) {
@@ -519,6 +548,7 @@ function run() {
   console.log("ok - planner routes weak word-order signals to ordstilling drill repair");
   console.log("ok - planner routes job follow-up closing signals to register deadline drill");
   console.log("ok - planner routes weak scene vocabulary to vocab SR repair");
+  console.log("ok - planner routes doctor health signals to skrive sundhed drill");
   console.log("ok - planner routes passive-agency signals to register drill repair");
   console.log("ok - planner ranks drill repeat, continue, and enough decisions");
   console.log("ok - planner ranks dashboard decisions from the same contract");

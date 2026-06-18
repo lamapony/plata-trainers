@@ -119,6 +119,35 @@ body {
 }
 .plan-context-link { color: var(--fg); font-weight: 700; text-decoration-color: var(--accent); text-underline-offset: 4px; }
 
+.repair-context-card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid oklch(0.62 0.12 25);
+  border-radius: var(--radius-sm);
+  background: oklch(0.62 0.12 25 / 0.08);
+  display: grid;
+  gap: 8px;
+}
+.repair-context-card .eyebrow {
+  margin: 0;
+  font-family: var(--mono-stack);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: oklch(0.52 0.12 25);
+}
+.repair-context-card h3 { margin: 0; font-family: var(--display-stack); font-size: 22px; line-height: 1.14; color: var(--fg); }
+.repair-context-card p { margin: 0; color: var(--muted); line-height: 1.55; }
+.repair-context-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.repair-context-meta span {
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: var(--mono-stack);
+  font-size: 11px;
+  color: oklch(0.52 0.12 25);
+}
+
 .card {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   padding: 28px 24px; box-shadow: var(--shadow);

@@ -263,7 +263,50 @@
   function applyCategoryFromUrl() {
     const params = new URLSearchParams(window.location.search);
     const catParam = params.get("cat");
-    if (catParam && ["bolig", "arbejde", "sundhed", "blandet"].includes(catParam)) category = catParam;
+    if (catParam && ["bolig", "arbejde", "sundhed", "blandet"].includes(catParam)) {
+      category = catParam;
+      return;
+    }
+    const fromLesson = params.get("from") || "";
+    const signal = params.get("signal") || "";
+    if (fromLesson === "lesson-a2-doctor" && signal) {
+      category = "sundhed";
+    }
+  }
+
+  const DOCTOR_REPAIR_COPY = {
+    "symptom-duration": "Du missede varighed i apotek-scenen. Skriv nu til lægen med tydelig timeline — i to dage, siden i går.",
+    "symptom-severity": "Du missede styrke (lidt / ret) i apotek-scenen. Skriv symptomer konkret i patientportalen — uden drama eller 'ikke så godt'.",
+    "concrete-next-step": "Du missede næste skridt i apotek-scenen. Afslut patientportal-beskeden med hvad du skal gøre nu."
+  };
+
+  function renderRepairContextBanner() {
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get("from") || "";
+    const signal = params.get("signal") || "";
+    if (from !== "lesson-a2-doctor") return;
+    const copy = DOCTOR_REPAIR_COPY[signal] || "Overfør apotek-samtalen til skriftlig dansk: timeline, styrke og næste skridt i patientportalen.";
+    const existing = document.querySelector(".repair-context-slot");
+    const html = [
+      "<aside class='repair-context-card' aria-label='Repair context from doctor lesson'>",
+      "<p class='eyebrow'>Match → Gym · apotek → patientportal</p>",
+      "<h3>Samme kompetence, nyt kanal</h3>",
+      "<p>" + escapeHtml(copy) + "</p>",
+      "<div class='repair-context-meta'>",
+      "<span>spoken miss</span>",
+      "<span>written repair</span>",
+      signal ? "<span>" + escapeHtml(signal) + "</span>" : "",
+      "</div>",
+      "</aside>"
+    ].join("");
+    if (existing) {
+      existing.innerHTML = html;
+      return;
+    }
+    const slot = document.createElement("div");
+    slot.className = "repair-context-slot";
+    slot.innerHTML = html;
+    els.stats.insertAdjacentElement("afterend", slot);
   }
 
   function syncCategoryChips() {
@@ -348,6 +391,7 @@
     window.PLATA_DATA.skrive.forEach((it) => ensureItemRecord(itemIdFor(it), ["skrive", it.cat]));
     applyCategoryFromUrl();
     syncCategoryChips();
+    renderRepairContextBanner();
     saveState();
     renderPlanContext();
     startNewSession();
