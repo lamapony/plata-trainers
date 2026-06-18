@@ -147,7 +147,9 @@
       demo: data.demo,
       journey: data.journey,
       health: data.health,
-      capabilities: data.capabilities
+      capabilities: data.capabilities,
+      guided: data.guided,
+      exerciseValue: data.exerciseValue
     });
     container.hidden = false;
     container.innerHTML = layer.renderBar(snapshot);

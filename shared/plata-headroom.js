@@ -249,6 +249,33 @@
     });
   }
 
+  function healthGatePass(health, gateId) {
+    var gates = (health && health.gates) || [];
+    for (var i = 0; i < gates.length; i++) {
+      if (gates[i].id === gateId && gates[i].status === "pass") return true;
+    }
+    return false;
+  }
+
+  function proofOfflineDistributionAllowed(health, journey) {
+    if (healthGatePass(health, "check:distribution")) return true;
+    var guarantees = (journey && journey.guarantees) || [];
+    for (var i = 0; i < guarantees.length; i++) {
+      if (guarantees[i].key === "distribution-proof-targeted" && guarantees[i].pass) return true;
+    }
+    return false;
+  }
+
+  function proofDoctorSkriveTransferAllowed(exerciseValue) {
+    exerciseValue = exerciseValue || {};
+    if (exerciseValue.status !== "pass") return false;
+    var chains = exerciseValue.transferChains || [];
+    for (var i = 0; i < chains.length; i++) {
+      if (chains[i].id === "doctor-apotek-skrive-sundhed" && chains[i].status === "pass") return true;
+    }
+    return false;
+  }
+
   function compressProofSnapshot(payload) {
     payload = payload || {};
     var digest = payload.digest || {};
@@ -256,6 +283,12 @@
     var journey = payload.journey || {};
     var health = payload.health || {};
     var capabilities = payload.capabilities || {};
+    var guided = payload.guided || {};
+    var exerciseValue = payload.exerciseValue || {};
+    var guidedCount = Number(guided.totals && guided.totals.scenarios || 0);
+    var journeyStages = Number(journey.totals && journey.totals.stages || 0);
+    var offlineProof = proofOfflineDistributionAllowed(health, journey);
+    var doctorSkrive = proofDoctorSkriveTransferAllowed(exerciseValue);
     var issueCount = Number(health.totals && health.totals.issues || 0)
       + Number(capabilities.totals && capabilities.totals.issues || 0);
     if (!payload.passing) {
@@ -271,21 +304,41 @@
         appendix: [
           ["Digest", digest.status || "unknown"],
           ["Demo learner", demo.status || "unknown"],
-          ["Journey", journey.status || "unknown"]
+          ["Journey", journey.status || "unknown"],
+          ["Guided scenarios", guidedCount || "—"],
+          ["Offline ZIP", offlineProof ? "gate pass" : "—"]
         ]
       });
     }
+    var saw = journeyStages >= 6
+      ? "The " + journeyStages + "-step reviewer route covers Demo → Today → Guided"
+        + (guidedCount ? " (" + guidedCount + " scenarios)" : "")
+        + " → Offline ZIP → Quality → Capability map"
+      : "Demo learner → Today step → guided session → outcome receipt"
+        + (guidedCount ? " (" + guidedCount + " guided scenarios)" : "")
+        + (offlineProof ? " plus offline distribution proof" : "");
+    saw += ", traced as one deterministic journey (" + (journey.traceId || "trace") + ").";
+    var meansBits = ["personalization"];
+    if (offlineProof) meansBits.unshift("offline distribution");
+    if (guidedCount) meansBits.push(guidedCount + " guided scenarios");
+    if (doctorSkrive) meansBits.push("doctor→skrive channel transfer");
+    var nextStep = journeyStages >= 6
+      ? "Follow the 6-step reviewer path (including Offline ZIP), then open quality and JSON reports for source gates."
+      : "Walk the 60-second path, then open quality and JSON reports for source gates.";
     return interpretationFromParts({
       verdict: digest.headline || "Public proof is passing",
-      saw: "Demo learner → Today step → guided session → outcome receipt is checked as one deterministic journey (" + (journey.traceId || "trace") + ").",
-      means: "A reviewer can verify personalization without accounts, raw learner answers, or hidden model calls.",
-      nextStep: "Walk the 60-second path, then open quality and JSON reports for source gates.",
+      saw: saw,
+      means: "A reviewer can verify " + meansBits.join(", ") + " without accounts, raw learner answers, or hidden model calls.",
+      nextStep: nextStep,
       nextHref: "#proof-walkthrough",
       nextLabel: "Follow reviewer path",
       appendix: [
         ["Health gates", health.totals && health.totals.gates || 0],
         ["Capabilities", capabilities.totals && capabilities.totals.capabilities || 0],
-        ["Journey stages", journey.totals && journey.totals.stages || 0]
+        ["Reviewer steps", journeyStages || 0],
+        ["Guided scenarios", guidedCount || 0],
+        ["Offline ZIP", offlineProof ? "passing gate" : "—"],
+        ["Doctor→skrive", doctorSkrive ? "exercise value pass" : "—"]
       ]
     });
   }
