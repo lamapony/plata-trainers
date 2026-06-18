@@ -41,6 +41,9 @@ try {
   assert(proof.commands.includes("npm run check"), "quickstart proof should include full QA command");
   assert(proof.artifacts.length === 7, "quickstart proof should list every written artifact");
   assert(proof.checks.every(item => item.status === "pass"), "quickstart proof checks should pass");
+  assert(proof.checks.some(item => item.id === "week4-guided-scenarios" && item.status === "pass"), "quickstart proof should cover 12 guided scenarios");
+  assert(proof.checks.some(item => item.id === "week4-doctor-skrive-chain" && item.status === "pass"), "quickstart proof should cover doctor skrive transfer chain");
+  assert(proof.checks.some(item => item.id === "week4-distribution-gate" && item.status === "pass"), "quickstart proof should cover distribution gate");
 
   const demoFile = assertFile(tmp, "demo-learner.json");
   const capabilitiesFile = assertFile(tmp, "capabilities.json");
@@ -73,4 +76,5 @@ try {
 
 console.log("ok - contributor quickstart proof builds core artifacts");
 console.log("ok - contributor quickstart proof links commands, checks, and reviewer surfaces");
+console.log("ok - contributor quickstart proof covers Week 4 public surfaces");
 console.log("ok - contributor quickstart proof CLI supports JSON and text modes");

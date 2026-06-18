@@ -1,9 +1,9 @@
 # Platå Product Track Plan (7-Day & 30-Day)
 
-Date: 2026-06-14  
+Date: 2026-06-18  
 Issue: PLA-14 / PLATA-PRODUCT-002  
-Status: Active  
-Scope: Local static repo only. No external sends, endpoints, or deployments.
+Status: Active — 7-day polish track and Week 4 RC complete; follow-up from `plans/EXERCISE_BACKLOG.md`  
+Scope: Local static repo only. No external sends, endpoints, or deployments. Active work is backlog exercise chains and remaining 30-day polish, not backend or deploy.
 
 ---
 
@@ -62,6 +62,18 @@ Platå trains learners to survive real Danish situational pressure through highl
   * *Owner*: QA Engineer (`590879fe-8061-4068-a046-cafa03b5e72e`)
   * *Verification*: `npm run proof:quickstart` && `npm run check`
 
+#### 7-Day completion status
+
+| Day | Deliverable | Status | Verification |
+| --- | --- | --- | --- |
+| 1 | PWA status & confidence UI | ✅ | `npm run check:pwa` && `npm run check:pages` |
+| 2 | Narrative gallery product spine | ✅ | `npm run check:home` && `npm run check:catalog` |
+| 3 | Today shell learner-first re-ordering | ✅ | `npm run check:dashboard` && `npm run check:today-program-report` |
+| 4 | Contributor preflight command docs | ✅ | `npm run check:lessons` && `npm run check:quality-report` |
+| 5 | Proof page route cohesion | ✅ | `npm run check:proof-page` && `npm run check:program-page` |
+| 6 | First exercise backlog thin slice | ✅ | `npm run check:planner` && `npm run check:exercise-value-report` |
+| 7 | Release candidate & review proof | ✅ | `npm run proof:quickstart` && `npm run check` |
+
 ---
 
 ### B. The 30-Day Product Track (Expansion & Maturity)
@@ -107,6 +119,18 @@ Platå trains learners to survive real Danish situational pressure through highl
         *   *Owner*: QA Engineer (`590879fe-8061-4068-a046-cafa03b5e72e`)
         *   *Verification*: `npm run check`
 
+#### Week 4 completion status
+
+| Deliverable | Status | Verification |
+| --- | --- | --- |
+| Doctor/pharmacy precision lesson (`lesson-a2-doctor`) | ✅ | `npm run check:lessons` && `npm run check:gold-lessons` |
+| Doctor → skrive bridge (`doctor-apotek-skrive-sundhed`) | ✅ | `npm run check:exercise-value-report` |
+| 12 guided scenarios in guided-session report | ✅ | `npm run check:guided-session-report` |
+| Exercise value transfer chains (doctor, register, B2) | ✅ | `npm run check:exercise-value-report` |
+| Offline distribution ZIP + proof section | ✅ | `npm run build:distribution` && `npm run check:distribution` |
+| Profile portability export/import drawer | ✅ | `npm run check:profile-portability` && `npm run check:pwa` |
+| Home / program / proof reviewer route cohesion | ✅ | `npm run check:home` && `npm run check:program-page` && `npm run check:evaluator-journey` |
+
 ---
 
 ## 3. Product Features & Verification Summary
@@ -119,6 +143,9 @@ Platå trains learners to survive real Danish situational pressure through highl
 | **Guided Session** | Consolidated 4-step execution wrapper from memory to outcome. | `npm run check:guided-session-report` | `shared/plata-guided-session.js` |
 | **Outcome Ledger** | Compact, non-leaking local completion receipts. | `npm run check:guided-session-diff` | `dashboard.js`, `reports/guided-session.json` |
 | **Public Proof** | Zero-leak capability-to-verification transparency for reviewers. | `npm run check:proof-page` | `proof.html`, `reports/capabilities.json` |
+| **Distribution** | Offline ZIP bundle for backend-free review. | `npm run check:distribution` | `.dist/plata-offline-bundle.zip`, `proof.html#proof-distribution` |
+| **Exercise Value** | Flagship narrative-to-drill transfer chains. | `npm run check:exercise-value-report` | `reports/exercise-value.json` |
+| **Profile Portability** | Import/export diagnostics drawer on dashboard. | `npm run check:profile-portability` | `dashboard.html`, `reports/profile-portability.json` |
 
 ---
 

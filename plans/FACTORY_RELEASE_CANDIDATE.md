@@ -36,6 +36,24 @@ Status: **green** — `npm run check` passes; Pages artifact and offline ZIP reb
 
 ---
 
+## Day 7: Release candidate proof
+
+Day 7 closes the 7-day polish track with a rebuildable contributor proof bundle:
+
+```bash
+npm run proof:quickstart
+npm run check:quickstart-proof
+npm run check
+```
+
+**Output path:** `.dist/quickstart-proof/` — seven artifacts (`demo-learner.json`, `capabilities.json`, `project-health.json`, `review-report.json`, `review-summary.md`, `quickstart.json`, `quickstart.md`).
+
+**Gate count:** project health manifest reports **72** required gates in `npm run check` (see `project-health.json` inside the quickstart bundle). Quickstart also asserts Week 4 public surfaces: 12 guided scenarios, `doctor-apotek-skrive-sundhed` transfer chain, and `check:distribution`.
+
+Full RC criteria remain in the Week 4 definition-of-done table below.
+
+---
+
 ## Proof commands (run from repo root)
 
 ### Fast contributor path

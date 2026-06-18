@@ -6,6 +6,8 @@ const path = require("node:path");
 const { buildDemoLearnerReport } = require("./build-demo-learner-report.js");
 const { buildCapabilityMap } = require("./build-capability-map.js");
 const { buildProjectHealthManifest } = require("./build-project-health-manifest.js");
+const { buildGuidedSessionReport } = require("./build-guided-session-report.js");
+const { buildExerciseValueReport } = require("./build-exercise-value-report.js");
 const {
   buildReviewReport,
   formatReviewMarkdown
@@ -85,7 +87,9 @@ function buildGoldenReview(root) {
   return { report, markdown };
 }
 
-function checkRows(demoLearner, capabilityMap, projectHealth, goldenReview, goldenMarkdown) {
+function checkRows(demoLearner, capabilityMap, projectHealth, goldenReview, goldenMarkdown, guidedSession, exerciseValue) {
+  const doctorChain = exerciseValue.transferChains.find(row => row.id === "doctor-apotek-skrive-sundhed");
+  const distributionGate = projectHealth.gates.find(row => row.id === "check:distribution");
   return [
     {
       id: "demo-learner",
@@ -109,6 +113,25 @@ function checkRows(demoLearner, capabilityMap, projectHealth, goldenReview, gold
         && goldenReview.summary.regressions === 10
         && goldenMarkdown.includes("+8 more in JSON artifact")),
       detail: `${goldenReview.summary.changes} change(s), ${goldenReview.summary.regressions} regression(s), ${goldenReview.summary.reviewChanges} review change(s)`
+    },
+    {
+      id: "week4-guided-scenarios",
+      status: status(guidedSession.status === "pass" && guidedSession.totals.scenarios === 12),
+      detail: `${guidedSession.totals.scenarios} guided scenario(s), ${guidedSession.totals.outcomeReceipts} outcome receipt(s)`
+    },
+    {
+      id: "week4-doctor-skrive-chain",
+      status: status(exerciseValue.status === "pass" && doctorChain && doctorChain.status === "pass"),
+      detail: doctorChain
+        ? `${doctorChain.id} transfer chain (${doctorChain.channels.length} channel(s))`
+        : "doctor-apotek-skrive-sundhed transfer chain missing"
+    },
+    {
+      id: "week4-distribution-gate",
+      status: status(Boolean(distributionGate && distributionGate.status === "pass" && distributionGate.checkOrder !== null)),
+      detail: distributionGate
+        ? `${distributionGate.id} in npm run check (${projectHealth.totals.gates} gate(s) total)`
+        : "check:distribution gate missing from project health"
     }
   ];
 }
@@ -145,8 +168,18 @@ function writeQuickstartProof(outDir, options = {}) {
   const demoLearner = buildDemoLearnerReport({ root });
   const capabilityMap = buildCapabilityMap({ root });
   const projectHealth = buildProjectHealthManifest({ root });
+  const guidedSession = buildGuidedSessionReport({ root });
+  const exerciseValue = buildExerciseValueReport({ root });
   const golden = buildGoldenReview(root);
-  const checks = checkRows(demoLearner, capabilityMap, projectHealth, golden.report, golden.markdown);
+  const checks = checkRows(
+    demoLearner,
+    capabilityMap,
+    projectHealth,
+    golden.report,
+    golden.markdown,
+    guidedSession,
+    exerciseValue
+  );
   const overallStatus = checks.every(item => item.status === "pass") ? "pass" : "fail";
   const artifacts = [
     artifact("demo-learner", "demo-learner.json", demoLearner.status, "Read-only rich learner profile and privacy guarantees"),
