@@ -54,6 +54,9 @@ async function run() {
   assert(proofHtml.includes("Follow reviewer path"), "proof page should expose reviewer path hero action");
   assert(proofHtml.includes("id=\"proof-evaluator\""), "proof page should expose the evaluator path report target");
   assert(proofHtml.includes("id=\"proof-capability-matrix\""), "proof page should expose the capability proof matrix target");
+  assert(proofHtml.includes("id=\"proof-distribution\""), "proof page should expose the offline distribution proof target");
+  assert(proofHtml.includes("id=\"proof-distribution-title\""), "proof page should expose the offline distribution hash target");
+  assert(proofHtml.includes("Standalone ZIP for backend-free review"), "proof page should explain the offline distribution bundle");
   assert(!proofHtml.includes("href=\"./reports/"), "proof page should not break root static QA with pre-build report links");
 
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "plata-proof-page-"));
@@ -96,6 +99,7 @@ async function run() {
       "#proof-evaluator",
       "#proof-artifacts",
       "#proof-surfaces",
+      "#proof-distribution",
       "#proof-capability-matrix",
       "#proof-guided",
       "#proof-health",
@@ -111,7 +115,8 @@ async function run() {
       "#proof-quickstart-link",
       "#proof-walkthrough-title",
       "#proof-evaluator-title",
-      "#proof-guided-title"
+      "#proof-guided-title",
+      "#proof-distribution-title"
     ].forEach(selector => {
       elements[selector] = makeElement(selector);
     });
@@ -202,6 +207,16 @@ async function run() {
     assert(elements["#proof-surfaces"].innerHTML.includes("exercise-value.json"), "proof page did not link exercise value report");
     assert(elements["#proof-surfaces"].innerHTML.includes("Capability map"), "proof page did not render capability map surface");
     assert(elements["#proof-surfaces"].innerHTML.includes("Golden review fixture"), "proof page did not render golden review surface");
+    assert(elements["#proof-distribution"].innerHTML.includes("Offline ZIP bundle"), "proof page did not render offline distribution summary");
+    assert(elements["#proof-distribution"].innerHTML.includes("plata-offline-bundle.zip"), "proof page did not render distribution zip path");
+    assert(elements["#proof-distribution"].innerHTML.includes("110 files"), "proof page did not render distribution file count");
+    assert(elements["#proof-distribution"].innerHTML.includes("v0.4.0"), "proof page did not render distribution version");
+    assert(elements["#proof-distribution"].innerHTML.includes("check:distribution"), "proof page did not render distribution gate");
+    assert(elements["#proof-distribution"].innerHTML.includes("no backend"), "proof page did not render backend-free proof");
+    assert(elements["#proof-distribution"].innerHTML.includes("PWA-ready"), "proof page did not render PWA-ready proof");
+    assert(elements["#proof-distribution"].innerHTML.includes("precache-manifest.json"), "proof page did not render distribution required entries");
+    assert(elements["#proof-distribution"].innerHTML.includes("npm run build:distribution"), "proof page did not render distribution build command");
+    assert(elements["#proof-distribution"].innerHTML.includes("build-distribution-bundle.js"), "proof page did not link distribution bundle builder");
     assert(elements["#proof-capability-matrix"].innerHTML.includes("10 capabilities"), "proof page did not render capability matrix summary");
     assert(elements["#proof-capability-matrix"].innerHTML.includes("Static, forkable trainer runtime"), "proof page did not render capability rows");
     assert(elements["#proof-capability-matrix"].innerHTML.includes("Public GitHub proof surface"), "proof page did not render public proof capability row");

@@ -4,6 +4,20 @@
 
   var repoBase = "https://github.com/lamapony/plata-trainers/blob/main/";
   var quickstartBase = "./reports/quickstart-proof/";
+  var distributionProof = {
+    zipPath: ".dist/plata-offline-bundle.zip",
+    manifestPath: ".dist/plata-offline-bundle.manifest.json",
+    fileCount: 110,
+    version: "0.4.0",
+    requiredEntries: [
+      "index.html",
+      "sw.js",
+      "precache-manifest.json",
+      "reports/project-health.json",
+      "reports/quality.json"
+    ]
+  };
+
   var proofSources = {
     digest: "./reports/proof-digest.json",
     demo: "./reports/demo-learner.json",
@@ -500,6 +514,53 @@
     return (items || []).filter(function (item) { return item.id === id; })[0] || null;
   }
 
+  function findGate(health, gateId) {
+    return findById(health && health.gates, gateId) || null;
+  }
+
+  function renderDistribution(data) {
+    var container = $("#proof-distribution");
+    if (!container) return;
+    var gate = findGate(data.health, "check:distribution");
+    var gatePass = gate && gate.status === "pass";
+    var entryChips = distributionProof.requiredEntries.map(function (entry) {
+      return chip(entry, "pass");
+    }).join("");
+    container.innerHTML =
+      "<article class=\"proof-guided-card " + escapeHtml(gatePass ? "pass" : "fail") + "\">" +
+        "<div class=\"quality-card-head\"><span class=\"quality-key\">" + escapeHtml(gatePass ? "pass" : "fail") + "</span><span class=\"quality-state\">publish gate</span></div>" +
+        "<h3>Offline ZIP bundle</h3>" +
+        "<p>`" + escapeHtml(distributionProof.zipPath) + "` packages the built Pages artifact (~" + escapeHtml(distributionProof.fileCount) + " files) as a backend-free, PWA-ready static site. Unzip anywhere and open `index.html` — no account, API, or build step required on the reviewer machine.</p>" +
+        "<div class=\"program-proof-strip\">" +
+          chip("v" + distributionProof.version, "mastery") +
+          chip(countLabel(distributionProof.fileCount, "file", "files"), "pass") +
+          chip("no backend", "pass") +
+          chip("PWA-ready", "pass") +
+          chip(gate ? gate.id : "check:distribution", gatePass ? "pass" : "fail") +
+        "</div>" +
+      "</article>" +
+      "<article class=\"proof-guided-card pass\">" +
+        "<div class=\"quality-card-head\"><span class=\"quality-key\">manifest</span><span class=\"quality-state\">checked</span></div>" +
+        "<h3>What the smoke verifies</h3>" +
+        "<p>The distribution gate rebuilds or reuses `" + escapeHtml(distributionProof.manifestPath) + "` with version, file count, and SHA-256 of the ZIP. Extracting the archive must include the service worker shell and core public reports.</p>" +
+        "<div class=\"program-proof-block\"><strong>Required entries</strong><div class=\"program-proof-strip\">" + entryChips + "</div></div>" +
+        "<div class=\"program-proof-block\"><strong>Build locally</strong><div class=\"program-proof-strip\">" +
+          chip("npm run build:distribution", "mastery") +
+          chip("npm run check:distribution", "pass") +
+        "</div></div>" +
+      "</article>" +
+      "<article class=\"proof-guided-card pass\">" +
+        "<div class=\"quality-card-head\"><span class=\"quality-key\">contract</span><span class=\"quality-state\">" + escapeHtml(gate && gate.category || "publish") + "</span></div>" +
+        "<h3>Why reviewers care</h3>" +
+        "<p>" + escapeHtml(gate && gate.contract || "Offline ZIP distribution bundle packages the Pages artifact for backend-free operation.") + "</p>" +
+        "<div class=\"program-proof-strip\">" +
+          sourceChip("scripts/build-distribution-bundle.js", "bundle builder") +
+          sourceChip("scripts/smoke-distribution-bundle.js", "distribution smoke") +
+          linkChip(proofSources.health, "project-health.json", "pass") +
+        "</div>" +
+      "</article>";
+  }
+
   function sourceChip(path, label) {
     return linkChip(repoBase + encodeURIComponent(path).replace(/%2F/g, "/"), label || shortPath(path), "");
   }
@@ -689,6 +750,8 @@
     $("#proof-evaluator").innerHTML = "";
     $("#proof-artifacts").innerHTML = "<article class=\"proof-command-card fail\"><h3>Proof artifacts missing</h3><p>Run npm run build:pages to generate reports.</p></article>";
     $("#proof-surfaces").innerHTML = "";
+    var distribution = $("#proof-distribution");
+    if (distribution) distribution.innerHTML = "";
     $("#proof-capability-matrix").innerHTML = "";
     $("#proof-guided").innerHTML = "";
     $("#proof-health").innerHTML = "";
@@ -730,6 +793,7 @@
     renderEvaluatorPath(data);
     renderArtifacts(data);
     renderSurfaces(data);
+    renderDistribution(data);
     renderCapabilityMatrix(data);
     renderGuidedContract(data);
     renderHealth(data);
