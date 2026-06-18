@@ -140,6 +140,12 @@
     }) || null;
   }
 
+  function findJobFollowupLesson(report) {
+    return (report.lessons || []).find(function (lesson) {
+      return lesson.id === "lesson-b2-job-followup";
+    }) || null;
+  }
+
   function renderChannelCallout(report) {
     var container = $("#quality-channel-callout");
     if (!container) return;
@@ -168,10 +174,40 @@
       (doctor.catalog ? "<a class=\"card-link\" href=\"" + escapeHtml(doctor.catalog.path) + "\">Open lesson →</a>" : "");
   }
 
+  function renderBojningCallout(report) {
+    var container = $("#quality-bojning-callout");
+    if (!container) return;
+    var jobFollowup = findJobFollowupLesson(report);
+    if (!jobFollowup) {
+      container.innerHTML =
+        "<h2>Not in report</h2>" +
+        "<p>lesson-b2-job-followup is missing from the generated quality report.</p>";
+      return;
+    }
+    var statusLabel = jobFollowup.status === "pass" ? "Passing" : "Needs attention";
+    var statusClass = jobFollowup.status === "pass" ? "quality-pass" : "quality-fail";
+    var mastery = jobFollowup.masterySignals.map(function (signal) {
+      return chip(signal.key, "mastery");
+    }).join("");
+    container.innerHTML =
+      "<h2 class=\"" + statusClass + "\">" + escapeHtml(statusLabel) + "</h2>" +
+      "<ul>" +
+        "<li><span>Gold lesson</span><strong>" + escapeHtml(jobFollowup.id) + "</strong></li>" +
+        "<li><span>Scenes</span><strong>" + escapeHtml(jobFollowup.counts.scenes) + "</strong></li>" +
+        "<li><span>Simulation paths</span><strong>" + escapeHtml(jobFollowup.counts.simulationPaths) + "</strong></li>" +
+        "<li><span>Repair ladder</span><strong>email trap → bøjning categories</strong></li>" +
+      "</ul>" +
+      "<p>" + escapeHtml(jobFollowup.title || jobFollowup.id) + "</p>" +
+      (mastery ? "<div class=\"quality-chip-row\">" + mastery + "</div>" : "") +
+      (jobFollowup.catalog ? "<a class=\"card-link\" href=\"" + escapeHtml(jobFollowup.catalog.path) + "\">Open lesson →</a>" : "");
+  }
+
   function sortLessons(lessons) {
     return lessons.slice().sort(function (a, b) {
       if (a.id === "lesson-a2-doctor") return -1;
       if (b.id === "lesson-a2-doctor") return 1;
+      if (a.id === "lesson-b2-job-followup") return -1;
+      if (b.id === "lesson-b2-job-followup") return 1;
       if (a.qualityTier === "gold" && b.qualityTier !== "gold") return -1;
       if (a.qualityTier !== "gold" && b.qualityTier === "gold") return 1;
       return String(a.id).localeCompare(String(b.id));
@@ -241,6 +277,7 @@
       renderEvidence(report);
       renderLessons(report);
       renderChannelCallout(report);
+      renderBojningCallout(report);
     })
     .catch(renderError);
 })();

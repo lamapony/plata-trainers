@@ -37,6 +37,8 @@ async function run() {
   assert(programHtml.includes("proof.html#proof-distribution-title"), "program page should link offline distribution proof");
   assert(programHtml.includes("reports/exercise-value.json"), "program page should link exercise value report");
   assert(/apotek.*patientportal|patientportal.*apotek/i.test(programHtml), "program page should describe apotek to patientportal channel transfer");
+  assert(programHtml.includes("job-followup-bojning-gender-trap"), "program page should cite bojning trap repair chain");
+  assert(programHtml.includes("proof.html#proof-capability-title"), "program page should link proof capability matrix for bojning trap chain");
   assert(programHtml.includes("Demo learner → Today → guided session → gates"), "program page should expose the reviewer path headline");
 
   const elements = {};
