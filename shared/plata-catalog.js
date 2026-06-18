@@ -63,7 +63,10 @@
             "passive-agency",
             "formal-register-control",
             "understatement-with-agency",
-            "consequence-aware-tone"
+            "consequence-aware-tone",
+            "agency-without-pressure",
+            "concrete-next-step",
+            "context-reading"
           ],
           sequence: 3
         }
@@ -84,6 +87,24 @@
           repairs: "recognition · recall gaps from scenes",
           repairSignals: [],
           sequence: 4
+        }
+      },
+      {
+        id: "skrive",
+        name: "Skriveøvelser",
+        type: "drill",
+        path: "./skrive-drill/",
+        description: "Short written production prompts with a self-grade rubric — practice register and agency under real channels.",
+        icon: "✍️",
+        gallery: {
+          tag: "Written production",
+          role: "repair",
+          level: "B1–B2",
+          theme: "Skrive under rubric",
+          estimatedMinutes: 10,
+          repairs: "email · bolig · arbejde · sundhed · self-grade rubric",
+          repairSignals: [],
+          sequence: 5
         }
       },
       {
@@ -183,6 +204,30 @@
             "Transfer correct word order across email, chat, and spoken Danish"
           ],
           sequence: 3,
+          featured: false
+        }
+      },
+      {
+        id: "lesson-b1-bolig",
+        name: "Bolig og udlejer",
+        type: "lesson",
+        path: "./lessons/lesson-b1-bolig/",
+        lessonGlobal: "PLATA_LESSON_B1_BOLIG",
+        lessonDataPath: "./lessons/lesson-b1-bolig/data.js",
+        description: "Navigate housing repairs and tenant communication without sounding passive or aggressive.",
+        icon: "🏠",
+        gallery: {
+          tag: "B1 housing",
+          level: "B1",
+          status: "gold",
+          signalFamily: "tenant-register",
+          estimatedMinutes: 12,
+          outcomes: [
+            "Write repair requests without passive Danish",
+            "Keep tenant rights visible without aggression",
+            "Agree concrete next steps with udlejer"
+          ],
+          sequence: 4,
           featured: false
         }
       }

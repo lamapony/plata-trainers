@@ -11,6 +11,7 @@ const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel
 const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
 const bridgeSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-repair-bridge.js"), "utf8");
 const radiatorSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-radiator", "data.js"), "utf8");
+const ordstillingSource = fs.readFileSync(path.join(repoRoot, "lessons", "lesson-b2-ordstilling", "data.js"), "utf8");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -47,6 +48,7 @@ function loadContext() {
   vm.runInContext(plannerSource, context, { filename: "shared/plata-planner.js" });
   vm.runInContext(bridgeSource, context, { filename: "shared/plata-repair-bridge.js" });
   vm.runInContext(radiatorSource, context, { filename: "lessons/lesson-b2-radiator/data.js" });
+  vm.runInContext(ordstillingSource, context, { filename: "lessons/lesson-b2-ordstilling/data.js" });
   return { context, storage };
 }
 
@@ -86,6 +88,18 @@ function run() {
   assert(ordLink.includes("signal=v2-placement"), "catalog drill link preserves signal param");
   assert(ordLink.includes("cat=v2"), "catalog drill link preserves category param");
   assert(ordLink.includes("from=lesson-b2-ordstilling"), "catalog drill link preserves source lesson");
+
+  const ordLesson = context.PLATA_LESSON_B2_ORDSTILLING;
+  const ordScene = ordLesson.scenes.find(item => item.id === "signup-email");
+  assert(ordScene, "ordstilling scene missing for bridge smoke");
+  const ordSignal = bridge.resolveMissSignal(ordLesson, ordScene, { correct: false, id: "no-inversion" });
+  assert(ordSignal === "inversion-fronted-adverbial", "ordstilling miss resolves inversion-fronted-adverbial signal");
+  const ordBundle = bridge.remediationBundle(ordLesson, ordScene, ordSignal, "../../");
+  assert(ordBundle && ordBundle.drillRepair, "inversion-fronted-adverbial maps to ordstilling drill repair");
+  assert(ordBundle.drillRepair.href.includes("../../ordstilling-drill/"), "ordstilling drill href is prefixed");
+  assert(ordBundle.drillRepair.href.includes("cat=inversion"), "ordstilling drill href carries category deep link");
+  const ordPlan = bridge.persistMissPlan({ lesson: ordLesson, scene: ordScene, signalTag: ordSignal, rootPrefix: "../../" });
+  assert(ordPlan && ordPlan.steps.length === 2, "ordstilling miss plan includes scene + drill steps");
 
   console.log("ok - repair bridge resolves miss signals and drill deep links");
   console.log("ok - repair bridge persists scene + drill practice plans");

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Lesson B1 · Bolig: når noget går i stykker · Platå</title>
+  <meta name="description" content="Tenant rights, repair requests, and polite persistence without passive Danish" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="lesson-shell">
+    <nav class="topnav" aria-label="Lesson navigation">
+      <a class="brand" href="../../"><span>⛰</span> platå</a>
+      <div class="nav-meta"><span id="scene-count">1 / 5</span><button id="reset-lesson" type="button">Reset</button></div>
+    </nav>
+
+    <header class="lesson-hero">
+      <p class="eyebrow">Narrative lesson · B1</p>
+      <h1>Bolig: når noget går i stykker</h1>
+      <p>Tenant rights, repair requests, and polite persistence without passive Danish</p>
+    </header>
+
+    <section class="lesson-grid" aria-label="Interactive lesson">
+      <aside class="map-card" aria-label="Route progress">
+        <p class="eyebrow">Scenario path</p>
+        <div class="map-illustration" aria-hidden="true">
+          <span class="pin wait">Read</span>
+          <span class="pin email">Match</span>
+          <span class="pin linkedin">Act</span>
+          <span class="pin reply">Step</span>
+          <span class="pin outcome">End</span>
+          <svg viewBox="0 0 320 120" role="img" aria-label="A stylized path through the lesson">
+            <path d="M24 80 C 70 20, 130 100, 170 40 S 250 60, 290 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 10" />
+          </svg>
+        </div>
+        <div id="route" class="route-list"></div>
+        <div id="variables-display" class="variables-display" aria-label="Lesson variables"></div>
+      </aside>
+
+      <article id="scene" class="scene-card" aria-live="polite"></article>
+    </section>
+  </main>
+
+  <script src="../../shared/plata-kernel.js"></script>
+  <script src="../../shared/plata-catalog.js"></script>
+  <script src="../../shared/plata-repair-bridge.js"></script>
+  <script src="../../shared/plata-planner.js"></script>
+  <script src="../../shared/plata-next-step.js"></script>
+  <script src="../../shared/plata-lesson-engine.js"></script>
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

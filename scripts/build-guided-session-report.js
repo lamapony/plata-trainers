@@ -425,6 +425,70 @@ function buildGuidedSessionReport(options = {}) {
       })
     },
     {
+      id: "ordstilling-gold-repair",
+      title: "Ordstilling gold lesson guided drill repair",
+      expectedStatus: "ready",
+      requiresAction: true,
+      requiresCitations: true,
+      input: () => {
+        const ordFact = fact({
+          id: "mem-v2-placement",
+          signal: "v2-placement",
+          trainerId: "lesson-b2-ordstilling",
+          competencyId: "register-control",
+          sourceFingerprint: "memsrc-v2"
+        });
+        const ordStep = planStep({
+          kind: "drill-repair",
+          trainerId: "ordstilling",
+          trainerName: "Ordstilling drill",
+          title: "Run Ordstilling drill",
+          copy: "Repair V2 placement with a short ordstilling session mapped from the narrative miss.",
+          primaryLabel: "Open drill",
+          primaryHref: "./ordstilling-drill/?signal=v2-placement&from=lesson-b2-ordstilling&cat=v2",
+          signalTag: "v2-placement",
+          routeId: "s1-v2",
+          badge: "Gym",
+          minutes: "5-8 min"
+        });
+        const ordPlan = plan({ kind: "repair", title: "Ordstilling repair", planToken: "plan-v2", fingerprint: "plan-v2-fp" }, ordStep);
+        return {
+          plan: ordPlan,
+          step: ordPlan.steps[0],
+          advisorReceipt: advisorReceipt(ordPlan.steps[0], ordFact, {
+            actionHref: "./ordstilling-drill/?signal=v2-placement&from=lesson-b2-ordstilling&cat=v2&plan=plan-v2&step=s1-v2",
+            advice: {
+              title: "Repair v2-placement",
+              advice: "Keep this session on the mapped ordstilling category.",
+              citedFacts: [ordFact],
+              trace: { fingerprint: "adv-v2", rule: "weak-signal" },
+              guardrails: {
+                deterministic: true,
+                requiresModel: false,
+                usesOnlyCitedFacts: true,
+                containsRawAnswerText: false
+              }
+            },
+            companion: null
+          }),
+          memoryFacts: [ordFact]
+        };
+      }
+    },
+    {
+      id: "job-followup-gold-continue",
+      title: "Job follow-up gold lesson guided continue route",
+      expectedStatus: "ready",
+      requiresAction: true,
+      requiresCitations: false,
+      input: () => ({
+        plan: starterPlan(),
+        step: starterPlan().steps[0],
+        memoryFacts: [],
+        actionHref: "./lessons/lesson-b2-job-followup/?plan=plan-starter&step=s1-start"
+      })
+    },
+    {
       id: "completed-route",
       title: "Completed route outcome receipt",
       expectedStatus: "complete",

@@ -244,17 +244,76 @@ function runOutcomeLedgerSmoke(api) {
   assert(api.readOutcomeLedger().totals.outcomes === 0, "outcome ledger read should hide invalid receipts");
 }
 
+function runGoldLessonSmoke(api) {
+  const ordFact = memoryFact({
+    id: "mem-v2-placement",
+    signal: "v2-placement",
+    trainerId: "lesson-b2-ordstilling",
+    competencyId: "register-control",
+    sourceFingerprint: "memsrc-v2"
+  });
+  const ordStep = {
+    kind: "drill-repair",
+    trainerId: "ordstilling",
+    trainerName: "Ordstilling drill",
+    title: "Run Ordstilling drill",
+    primaryHref: "./ordstilling-drill/?signal=v2-placement&from=lesson-b2-ordstilling&cat=v2",
+    signalTag: "v2-placement",
+    routeId: "s1-v2"
+  };
+  const ordSession = api.buildSession({
+    plan: repairPlan(ordStep, {
+      kind: "repair",
+      planToken: "plan-v2",
+      fingerprint: "plan-v2-fp"
+    }),
+    step: repairPlan(ordStep).steps[0],
+    advisorReceipt: advisorReceipt(repairPlan(ordStep).steps[0], ordFact),
+    memoryFacts: [ordFact],
+    actionHref: "./ordstilling-drill/?signal=v2-placement&from=lesson-b2-ordstilling&cat=v2&plan=plan-v2&step=s1-v2",
+    now: "2026-06-08T09:00:00.000Z"
+  });
+  assert(ordSession.status === "ready", "ordstilling drill repair should produce ready guided session");
+  assert(ordSession.goal.trainerId === "ordstilling", "ordstilling guided session should target ordstilling drill");
+  assert(ordSession.route.href.includes("ordstilling-drill"), "ordstilling guided session route should open ordstilling drill");
+
+  const followStep = {
+    kind: "continue",
+    trainerId: "lesson-b2-job-followup",
+    trainerName: "Efter interviews",
+    title: "Continue job follow-up",
+    primaryHref: "./lessons/lesson-b2-job-followup/",
+    signalTag: "",
+    routeId: "s1-follow"
+  };
+  const followSession = api.buildSession({
+    plan: repairPlan(followStep, {
+      kind: "continue",
+      planToken: "plan-follow",
+      fingerprint: "plan-follow-fp"
+    }),
+    step: repairPlan(followStep).steps[0],
+    memoryFacts: [],
+    actionHref: "./lessons/lesson-b2-job-followup/?plan=plan-follow&step=s1-follow",
+    now: "2026-06-08T09:00:00.000Z"
+  });
+  assert(followSession.status === "ready", "job follow-up continue should produce ready guided session");
+  assert(followSession.goal.trainerId === "lesson-b2-job-followup", "job follow-up guided session should target gold lesson");
+}
+
 function run() {
   const api = loadApi();
   assert(api && api.buildSession, "PlataGuidedSession API should load");
   runReadyRepairSmoke(api);
   runActiveAndCompleteSmoke(api);
   runEmptySmoke(api);
+  runGoldLessonSmoke(api);
   runRawLeakSmoke(api);
   runOutcomeLedgerSmoke(api);
   console.log("ok - guided session builds deterministic learner-facing sessions");
   console.log("ok - guided session tracks ready, active, complete, and empty states");
   console.log("ok - guided session records portable outcome receipts");
+  console.log("ok - guided session covers ordstilling and job-followup gold routes");
   console.log("ok - guided session rejects raw learner answer leaks");
 }
 

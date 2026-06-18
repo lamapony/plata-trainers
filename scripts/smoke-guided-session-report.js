@@ -26,7 +26,7 @@ function runCli(args) {
 function runBaseSmoke() {
   const report = buildGuidedSessionReport();
   assert(report.status === "pass", `guided session report should pass:\n${report.issues.join("\n")}`);
-  assert(report.totals.scenarios === 5, "guided session report should cover five core scenarios");
+  assert(report.totals.scenarios === 7, "guided session report should cover seven core scenarios");
   ["active", "complete", "ready"].forEach(status => {
     assert(report.statuses.includes(status), `guided session report should include ${status}`);
   });
@@ -56,6 +56,13 @@ function runBaseSmoke() {
   const active = report.scenarios.find(item => item.id === "active-saved-route");
   assert(active && active.session.status === "active", "active route scenario should stay active");
   assert(active.session.steps.some(step => step.status === "active"), "active route should mark a step active");
+
+  const ordstilling = report.scenarios.find(item => item.id === "ordstilling-gold-repair");
+  assert(ordstilling && ordstilling.session.goal.trainerId === "ordstilling", "ordstilling scenario should target ordstilling drill");
+  assert(ordstilling.session.route.href.includes("ordstilling-drill"), "ordstilling scenario should link ordstilling drill");
+
+  const jobFollowup = report.scenarios.find(item => item.id === "job-followup-gold-continue");
+  assert(jobFollowup && jobFollowup.session.goal.trainerId === "lesson-b2-job-followup", "job follow-up scenario should target gold lesson");
 
   const completed = report.scenarios.find(item => item.id === "completed-route");
   assert(completed && completed.session.status === "complete", "completed route should report complete");

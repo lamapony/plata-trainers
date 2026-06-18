@@ -108,10 +108,38 @@ if (!vocab || !Array.isArray(vocab.vocab)) {
   });
 }
 
+const skrive = loadData("skrive-drill/data.js");
+if (!skrive || !Array.isArray(skrive.skrive)) {
+  fail("skrive: missing skrive array");
+} else {
+  unique(skrive.skrive, (item) => item.id, "skrive.items");
+  const skCats = new Set();
+  skrive.skrive.forEach((item, i) => {
+    if (!nonEmptyString(item.id)) fail(`skrive[${i}]: missing id`);
+    if (!nonEmptyString(item.cat)) fail(`skrive[${i}]: missing cat`);
+    else skCats.add(item.cat);
+    if (!nonEmptyString(item.channel)) fail(`skrive[${i}]: missing channel`);
+    if (!nonEmptyString(item.prompt)) fail(`skrive[${i}]: missing prompt`);
+    if (!Array.isArray(item.rubric) || item.rubric.length < 3) fail(`skrive[${i}]: expected at least 3 rubric rows`);
+    else {
+      item.rubric.forEach((row, j) => {
+        for (const key of ["id", "label", "detail"]) {
+          if (!nonEmptyString(row[key])) fail(`skrive[${i}].rubric[${j}]: missing ${key}`);
+        }
+      });
+    }
+    if (!nonEmptyString(item.note)) fail(`skrive[${i}]: missing note`);
+  });
+  for (const expected of ["bolig", "arbejde", "sundhed"]) {
+    if (!skCats.has(expected)) fail(`skrive: missing category ${expected}`);
+  }
+  if (skrive.skrive.length < 5) fail("skrive: expected at least 5 production prompts");
+}
+
 if (issues.length) {
   console.error(`data QA failed: ${issues.length} issue(s)`);
   for (const issue of issues) console.error("- " + issue);
   process.exit(1);
 }
 
-console.log(`data QA passed: ${bojning.verber.length} verbs, ${bojning.substantiver.length} nouns, ${ord.ordstilling.length} word-order items, ${reg.register.length} register items, ${vocab.vocab.length} vocab items`);
+console.log(`data QA passed: ${bojning.verber.length} verbs, ${bojning.substantiver.length} nouns, ${ord.ordstilling.length} word-order items, ${reg.register.length} register items, ${vocab.vocab.length} vocab items, ${skrive.skrive.length} skrive prompts`);

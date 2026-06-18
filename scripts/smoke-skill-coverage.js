@@ -72,8 +72,8 @@ function runBaseCoverageSmoke() {
   assert(agency.signalCount >= 3, "agency should include cross-lesson signals");
   assert(agency.lessonCount >= 2, "agency should span multiple gold lessons");
   assert(agency.signals.some(signal => signal.tag === "passive-agency"), "agency should include passive-agency");
-  assert(agency.uncoveredGraphTags.includes("agency-without-pressure"), "planned graph tags should stay visible");
-  assert(report.warnings.some(warning => warning.includes("agency-without-pressure")), "planned-only graph tag should warn without failing");
+  assert(agency.signals.some(signal => signal.tag === "agency-without-pressure"), "agency should include bolig gold lesson signal");
+  assert(!agency.uncoveredGraphTags.includes("agency-without-pressure"), "agency-without-pressure should be covered by bolig gold lesson");
 
   const formatted = formatSkillCoverageReport(report);
   assert(formatted.includes("Skill Graph Coverage Report"), "formatter should include title");
