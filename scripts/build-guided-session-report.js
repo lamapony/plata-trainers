@@ -592,6 +592,57 @@ function buildGuidedSessionReport(options = {}) {
       }
     },
     {
+      id: "borgerservice-gold-repair",
+      title: "Borgerservice gold lesson guided scene repair",
+      expectedStatus: "ready",
+      requiresAction: true,
+      requiresCitations: true,
+      input: () => {
+        const bsFact = fact({
+          id: "mem-clarification-without-panic",
+          signal: "clarification-without-panic",
+          trainerId: "lesson-b1-borgerservice",
+          competencyId: "agency",
+          sourceFingerprint: "memsrc-borgerservice-clarify"
+        });
+        const bsStep = planStep({
+          kind: "repair",
+          trainerId: "lesson-b1-borgerservice",
+          trainerName: "Når systemet siger nej",
+          title: "Repair clarification-without-panic",
+          copy: "Rerun the Borgerservice clarification scene and ask one precise check before accepting rejection.",
+          primaryLabel: "Open repair",
+          primaryHref: "./lessons/lesson-b1-borgerservice/?mode=repair&signal=clarification-without-panic#clarify-misunderstanding",
+          signalTag: "clarification-without-panic",
+          routeId: "s1-borgerservice-clarify",
+          competency: { id: "agency", label: "Agency and responsibility" },
+          minutes: "14 min"
+        });
+        const bsPlan = plan({ kind: "repair", title: "Borgerservice repair", planToken: "plan-borgerservice-clarify", fingerprint: "plan-borgerservice-clarify-fp" }, bsStep);
+        return {
+          plan: bsPlan,
+          step: bsPlan.steps[0],
+          advisorReceipt: advisorReceipt(bsPlan.steps[0], bsFact, {
+            actionHref: "./lessons/lesson-b1-borgerservice/?mode=repair&signal=clarification-without-panic&plan=plan-borgerservice-clarify&step=s1-borgerservice-clarify#clarify-misunderstanding",
+            advice: {
+              title: "Repair clarification-without-panic",
+              advice: "Keep this session on the Borgerservice clarification scene and cited weak signal.",
+              citedFacts: [bsFact],
+              trace: { fingerprint: "adv-borgerservice-clarify", rule: "weak-signal" },
+              guardrails: {
+                deterministic: true,
+                requiresModel: false,
+                usesOnlyCitedFacts: true,
+                containsRawAnswerText: false
+              }
+            },
+            companion: null
+          }),
+          memoryFacts: [bsFact]
+        };
+      }
+    },
+    {
       id: "completed-route",
       title: "Completed route outcome receipt",
       expectedStatus: "complete",

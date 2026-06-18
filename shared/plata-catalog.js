@@ -117,9 +117,9 @@
         description: "Arrive in Copenhagen, meet Lene, read signs, and say your first useful Danish sentence. Exercises are embedded as story actions.",
         icon: "🌅",
         gallery: {
-          tag: "Tutorial · onboarding",
+          tag: "Optional tutorial",
           level: "A0/A1",
-          theme: "First arrival",
+          theme: "Mechanics demo",
           status: "starter",
           estimatedMinutes: 10,
           signalFamily: "signage · identity · courtesy",

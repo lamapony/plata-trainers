@@ -235,14 +235,23 @@
 
     var active = stats.filter(function (item) { return item.hasProgress; });
     if (!active.length) {
-      var starter = trainerById("lesson-01-arrival") || trainers()[0];
+      var plannerForStart = window.PlataPlanner;
+      if (plannerForStart && plannerForStart.rankDashboardDecisions) {
+        var startRanked = plannerForStart.rankDashboardDecisions(plannerItems(stats), 1);
+        if (startRanked.length) {
+          var startRec = recommendationFromDecision(startRanked[0]);
+          if (startRec) return startRec;
+        }
+      }
+      var plateauStarter = trainerById("lesson-b2-job-followup") || trainers()[0];
       return {
         mode: "start",
-        trainer: starter,
-        title: "First visit?",
-        copy: "Take one short tutorial lesson to see how Platå works — choices, feedback, and local progress.",
-        cta: "Start tutorial",
-        meta: "No account. Progress stays in this browser."
+        trainer: plateauStarter,
+        href: plateauStarter.path,
+        title: "Start at the plateau",
+        copy: "You are past beginner Danish. Start with real B2 pressure — follow-up tone, register, and social stakes — not a course from zero.",
+        cta: "Start B2 lesson",
+        meta: "Optional tutorial: Lesson 01 shows mechanics in 10 min. No account; progress stays in this browser."
       };
     }
 
@@ -280,15 +289,27 @@
     var trainer = item.trainer || item.stats && item.stats.trainer;
     if (!decision || !trainer) return null;
 
+    if (decision.kind === "start" && trainer.id === "lesson-b2-job-followup") {
+      return {
+        mode: "start",
+        trainer: trainer,
+        href: decision.primaryHref || trainer.path,
+        title: "Start at the plateau",
+        copy: decision.copy || "Start with real B2 pressure — follow-up tone, register, and social stakes.",
+        cta: "Start B2 lesson",
+        meta: "Optional tutorial: Lesson 01 shows mechanics in 10 min. No account; progress stays in this browser."
+      };
+    }
+
     if (decision.kind === "start" && trainer.id === "lesson-01-arrival") {
       return {
         mode: "start",
         trainer: trainer,
         href: decision.primaryHref,
-        title: "First visit?",
-        copy: "Take one short tutorial lesson to see how Platå works — choices, feedback, and local progress.",
-        cta: "Start tutorial",
-        meta: "Planner pick: best first session. No account; progress stays in this browser."
+        title: "Optional tutorial",
+        copy: "Short arrival story for first-time visitors who want to see choices, feedback, and local progress before B2 situations.",
+        cta: "Open Lesson 01",
+        meta: "Tutorial only — not the main plateau path. No account; progress stays in this browser."
       };
     }
 

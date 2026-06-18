@@ -283,9 +283,9 @@ async function runEmptyHomeSmoke() {
   loadKernelAndCatalog(env);
   await runHome(env);
 
-  assert(env.ids["#home-start-title"].textContent === "First visit?", "home start card recommends tutorial for new users");
-  assert(env.ids["#home-start-link"].href === "./lessons/lesson-01/", "home starter link points to Lesson 01");
-  assert(env.ids["#home-start-link"].textContent === "Start tutorial", "home start card CTA opens tutorial");
+  assert(env.ids["#home-start-title"].textContent === "Start at the plateau", "home start card recommends B2 plateau entry for new users");
+  assert(env.ids["#home-start-link"].href === "./lessons/lesson-b2-job-followup/", "home starter link points to B2 job follow-up");
+  assert(env.ids["#home-start-link"].textContent === "Start B2 lesson", "home start card CTA opens B2 plateau lesson");
   assert(env.ids["#home-primary-action"].textContent === "Try B2 follow-up lesson", "home hero primary CTA stays on B2 lesson for new users");
   assert(env.ids["#home-primary-action"].href === "./lessons/lesson-b2-job-followup/", "home hero primary CTA links to B2 job follow-up");
   assert(env.ids["#evaluate"].scrollIntoViewCalls && env.ids["#evaluate"].scrollIntoViewCalls.length === 1, "home restores hash scroll after dynamic launcher rendering");

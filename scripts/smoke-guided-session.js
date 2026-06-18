@@ -363,6 +363,38 @@ function runGoldLessonSmoke(api) {
   assert(radSession.status === "ready", "radiator register drill repair should produce ready guided session");
   assert(radSession.goal.trainerId === "register", "radiator guided session should target register drill");
   assert(radSession.route.href.includes("register-drill"), "radiator guided session route should open register drill");
+
+  const bsFact = memoryFact({
+    id: "mem-clarification-without-panic",
+    signal: "clarification-without-panic",
+    trainerId: "lesson-b1-borgerservice",
+    competencyId: "agency",
+    sourceFingerprint: "memsrc-borgerservice-clarify"
+  });
+  const bsStep = {
+    kind: "repair",
+    trainerId: "lesson-b1-borgerservice",
+    trainerName: "Når systemet siger nej",
+    title: "Repair clarification-without-panic",
+    primaryHref: "./lessons/lesson-b1-borgerservice/?mode=repair&signal=clarification-without-panic#clarify-misunderstanding",
+    signalTag: "clarification-without-panic",
+    routeId: "s1-borgerservice-clarify"
+  };
+  const bsSession = api.buildSession({
+    plan: repairPlan(bsStep, {
+      kind: "repair",
+      planToken: "plan-borgerservice-clarify",
+      fingerprint: "plan-borgerservice-clarify-fp"
+    }),
+    step: repairPlan(bsStep).steps[0],
+    advisorReceipt: advisorReceipt(repairPlan(bsStep).steps[0], bsFact),
+    memoryFacts: [bsFact],
+    actionHref: "./lessons/lesson-b1-borgerservice/?mode=repair&signal=clarification-without-panic&plan=plan-borgerservice-clarify&step=s1-borgerservice-clarify#clarify-misunderstanding",
+    now: "2026-06-08T09:00:00.000Z"
+  });
+  assert(bsSession.status === "ready", "borgerservice scene repair should produce ready guided session");
+  assert(bsSession.goal.trainerId === "lesson-b1-borgerservice", "borgerservice guided session should target borgerservice gold lesson");
+  assert(bsSession.route.href.includes("lesson-b1-borgerservice"), "borgerservice guided session route should open borgerservice lesson repair");
 }
 
 function run() {
@@ -377,7 +409,7 @@ function run() {
   console.log("ok - guided session builds deterministic learner-facing sessions");
   console.log("ok - guided session tracks ready, active, complete, and empty states");
   console.log("ok - guided session records portable outcome receipts");
-  console.log("ok - guided session covers ordstilling, job-followup, bolig, and radiator gold routes");
+  console.log("ok - guided session covers all five gold lesson repair and continue routes");
   console.log("ok - guided session rejects raw learner answer leaks");
 }
 

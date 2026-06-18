@@ -361,9 +361,9 @@ async function renderHomeRuntime(baseUrl) {
   });
   await waitFor(() => ids["#home-start-title"].textContent, "home runtime did not render a recommendation");
 
-  assert(ids["#home-start-title"].textContent === "First visit?", "home runtime did not render the first-visit recommendation");
-  assert(ids["#home-start-link"].href === "./lessons/lesson-01/", "home runtime starter link drifted");
-  assert(ids["#home-start-link"].textContent === "Start tutorial", "home runtime tutorial CTA drifted");
+  assert(ids["#home-start-title"].textContent === "Start at the plateau", "home runtime did not render the plateau entry recommendation");
+  assert(ids["#home-start-link"].href === "./lessons/lesson-b2-job-followup/", "home runtime starter link drifted");
+  assert(ids["#home-start-link"].textContent === "Start B2 lesson", "home runtime plateau CTA drifted");
   assert(ids["#home-primary-action"].textContent === "Try B2 follow-up lesson", "home runtime hero CTA should stay on B2 lesson");
   assert(ids["#home-primary-action"].href === "./lessons/lesson-b2-job-followup/", "home runtime hero link should stay on B2 job follow-up");
   assert(ids["#evaluate"].scrollIntoViewCalls && ids["#evaluate"].scrollIntoViewCalls.length >= 1, "home runtime did not restore #evaluate hash");
