@@ -117,7 +117,7 @@ function checkRows(demoLearner, capabilityMap, projectHealth, goldenReview, gold
     },
     {
       id: "week4-guided-scenarios",
-      status: status(guidedSession.status === "pass" && guidedSession.totals.scenarios === 13),
+      status: status(guidedSession.status === "pass" && guidedSession.totals.scenarios === 15),
       detail: `${guidedSession.totals.scenarios} guided scenario(s), ${guidedSession.totals.outcomeReceipts} outcome receipt(s)`
     },
     {

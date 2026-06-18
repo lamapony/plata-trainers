@@ -26,7 +26,7 @@ function runCli(args) {
 function runBaseSmoke() {
   const report = buildGuidedSessionReport();
   assert(report.status === "pass", `guided session report should pass:\n${report.issues.join("\n")}`);
-  assert(report.totals.scenarios === 13, "guided session report should cover thirteen core scenarios");
+  assert(report.totals.scenarios === 15, "guided session report should cover fifteen core scenarios");
   ["active", "complete", "ready"].forEach(status => {
     assert(report.statuses.includes(status), `guided session report should include ${status}`);
   });
@@ -71,6 +71,18 @@ function runBaseSmoke() {
   assert(jobBojning.session.route.href.includes("cat=common-gender"), "job follow-up bojning scenario should open common-gender trap category");
   assert(jobBojning.session.outcomeReceipt.citedFacts.some(fact => fact.trainerId === "lesson-b2-job-followup"), "job follow-up bojning scenario should cite job follow-up memory");
   assert(jobBojning.session.guardrails.deterministic === true, "job follow-up bojning scenario should use deterministic guardrails");
+
+  const jobBojningPlural = report.scenarios.find(item => item.id === "job-followup-bojning-plural-repair");
+  assert(jobBojningPlural && jobBojningPlural.session.goal.trainerId === "bojning", "job follow-up bojning plural scenario should target bojning drill");
+  assert(jobBojningPlural.session.goal.signal === "irregular-plural-noun", "job follow-up bojning plural scenario should preserve irregular-plural-noun signal");
+  assert(jobBojningPlural.session.route.href.includes("cat=irregular-plural"), "job follow-up bojning plural scenario should open irregular-plural trap category");
+  assert(jobBojningPlural.session.outcomeReceipt.citedFacts.some(fact => fact.trainerId === "lesson-b2-job-followup"), "job follow-up bojning plural scenario should cite job follow-up memory");
+
+  const jobBojningVerb = report.scenarios.find(item => item.id === "job-followup-bojning-verb-repair");
+  assert(jobBojningVerb && jobBojningVerb.session.goal.trainerId === "bojning", "job follow-up bojning verb scenario should target bojning drill");
+  assert(jobBojningVerb.session.goal.signal === "strong-verb-past", "job follow-up bojning verb scenario should preserve strong-verb-past signal");
+  assert(jobBojningVerb.session.route.href.includes("cat=strong-verb"), "job follow-up bojning verb scenario should open strong-verb trap category");
+  assert(jobBojningVerb.session.outcomeReceipt.citedFacts.some(fact => fact.trainerId === "lesson-b2-job-followup"), "job follow-up bojning verb scenario should cite job follow-up memory");
 
   const bolig = report.scenarios.find(item => item.id === "bolig-gold-repair");
   assert(bolig && bolig.session.goal.trainerId === "lesson-b1-bolig", "bolig scenario should target bolig gold lesson");

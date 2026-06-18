@@ -85,7 +85,7 @@ function run() {
       gates: [{ id: "check:distribution", status: "pass" }]
     },
     capabilities: { totals: { capabilities: 10, issues: 0 } },
-    guided: { status: "pass", totals: { scenarios: 13 } },
+    guided: { status: "pass", totals: { scenarios: 15 } },
     exerciseValue: {
       status: "pass",
       transferChains: [{ id: "doctor-apotek-skrive-sundhed", status: "pass" }],
@@ -94,14 +94,14 @@ function run() {
   });
   assert(proof.verdict.includes("coherent"), "proof verdict uses digest headline");
   assert(proof.saw.includes("6-step reviewer route"), "proof saw mentions six-step reviewer route");
-  assert(proof.saw.includes("13 scenarios"), "proof saw mentions guided scenario count");
+  assert(proof.saw.includes("15 scenarios"), "proof saw mentions guided scenario count");
   assert(proof.saw.includes("Offline ZIP"), "proof saw mentions offline distribution proof");
   assert(proof.means.includes("offline distribution"), "proof means mentions offline distribution");
-  assert(proof.means.includes("13 guided scenarios"), "proof means mentions guided scenario count");
+  assert(proof.means.includes("15 guided scenarios"), "proof means mentions guided scenario count");
   assert(proof.means.includes("doctor→skrive channel transfer"), "proof means mentions doctor skrive transfer");
   assert(proof.nextStep.includes("6-step reviewer path"), "proof next step mentions six-step reviewer path");
   assert(proof.nextHref === "#proof-walkthrough", "proof next links to walkthrough");
-  assert(proof.appendix.some(function (row) { return row[0] === "Guided scenarios" && row[1] === 13; }), "proof appendix records guided scenario count");
+  assert(proof.appendix.some(function (row) { return row[0] === "Guided scenarios" && row[1] === 15; }), "proof appendix records guided scenario count");
   assert(proof.appendix.some(function (row) { return row[0] === "Offline ZIP" && row[1] === "passing gate"; }), "proof appendix records offline distribution gate");
   assert(proof.appendix.some(function (row) { return row[0] === "Doctor→skrive" && row[1] === "exercise value pass"; }), "proof appendix records doctor skrive transfer");
 

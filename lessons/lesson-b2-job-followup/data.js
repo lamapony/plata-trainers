@@ -113,6 +113,28 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       },
       sourceRefs: ["Den Danske Ordbog / ordnet.dk"]
     },
+    "irregular-plural-noun": {
+      competencyId: "register-control",
+      label: "Irregular plural noun forms",
+      evidence: "The learner keeps irregular plurals like møder (meetings) distinct from verb forms like mødes in formal follow-up email.",
+      remediation: {
+        sceneId: "email-closing",
+        cta: "Repair the email closing",
+        action: "Rerun the closing scene and check irregular plurals — møde becomes møder, not mødes — before the hiring manager forwards your mail."
+      },
+      sourceRefs: ["Den Danske Ordbog / ordnet.dk"]
+    },
+    "strong-verb-past": {
+      competencyId: "register-control",
+      label: "Strong verb past forms",
+      evidence: "The learner uses strong verb past forms like skrev when referring to a completed dialog, not infinitive skrive in professional email.",
+      remediation: {
+        sceneId: "email-register",
+        cta: "Repair the email opening",
+        action: "Rerun the email scene and use past tense for completed events — jeg skrev, not jeg skrive — before you send professional Danish."
+      },
+      sourceRefs: ["Den Danske Ordbog / ordnet.dk"]
+    },
     "consequence-aware-tone": {
       competencyId: "consequence-awareness",
       label: "Close without bulldozing or disappearing",
@@ -191,6 +213,36 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         actions: [
           { sceneId: "silence-pressure", optionId: "wait-calm", expectCorrect: true },
           { sceneId: "email-register", optionId: "gender-trap", expectCorrect: false },
+          { sceneId: "email-closing", optionId: "closing-balanced", expectCorrect: true },
+          { sceneId: "linkedin-choice", optionId: "linkedin-generic", expectCorrect: false },
+          { sceneId: "reply-consequence", answer: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt", expectCorrect: true },
+          { sceneId: "epilogue", optionId: "principle-owned", expectCorrect: true }
+        ]
+      },
+      {
+        id: "plural-trap",
+        expectedEndingId: "acceptable",
+        expectedVariables: { employerTone: 1, desperation: 0, professionalism: 1, networkTrust: 1 },
+        expectedCorrect: 4,
+        expectedWeakMastery: ["consequence-aware-tone", "irregular-plural-noun", "platform-register-shift"],
+        actions: [
+          { sceneId: "silence-pressure", optionId: "wait-calm", expectCorrect: true },
+          { sceneId: "email-register", optionId: "formal-warm", expectCorrect: true },
+          { sceneId: "email-closing", optionId: "plural-trap", expectCorrect: false },
+          { sceneId: "linkedin-choice", optionId: "linkedin-generic", expectCorrect: false },
+          { sceneId: "reply-consequence", answer: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt", expectCorrect: true },
+          { sceneId: "epilogue", optionId: "principle-owned", expectCorrect: true }
+        ]
+      },
+      {
+        id: "verb-trap",
+        expectedEndingId: "acceptable",
+        expectedVariables: { employerTone: 1, desperation: 0, professionalism: 1, networkTrust: 0 },
+        expectedCorrect: 4,
+        expectedWeakMastery: ["platform-register-shift", "professional-email-agency", "strong-verb-past"],
+        actions: [
+          { sceneId: "silence-pressure", optionId: "wait-calm", expectCorrect: true },
+          { sceneId: "email-register", optionId: "verb-trap", expectCorrect: false },
           { sceneId: "email-closing", optionId: "closing-balanced", expectCorrect: true },
           { sceneId: "linkedin-choice", optionId: "linkedin-generic", expectCorrect: false },
           { sceneId: "reply-consequence", answer: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt", expectCorrect: true },
@@ -319,7 +371,8 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         { id: "formal-warm", diagnostic: "formal-warm-agency", label: "Kære [Navn],\n\nJeg tager stilling til jeres henvendelse og vil takke for en god dialog i torsdags.", detail: "formal, warm, owns the follow-up", correct: true, effects: { employerTone: 1, professionalism: 1, networkTrust: 1 }, feedback: "Diagnostic: strong. Kære sets the register, jeg tager stilling til gives agency, and god dialog makes the thanks specific." },
         { id: "casual-generic", diagnostic: "casual-self-minimising", label: "Hej [Navn],\n\nTak for snakken i torsdags! Bare en hurtig opfølgning — jeg er super interesseret.", detail: "too casual, 'bare' weakens", correct: false, effects: { employerTone: -1, professionalism: -1, desperation: 1 }, feedback: "Diagnostic: bare en hurtig opfølgning minimises your own message, and super interesseret sounds junior in this channel." },
         { id: "stiff-passive", diagnostic: "passive-agency-removal", label: "Kære [Navn],\n\nDer gives besked om, at jeg fortsat er interesseret i stillingen.", detail: "passive, evasive", correct: false, effects: { employerTone: -1, professionalism: 0 }, feedback: "Diagnostic: der gives besked hides the actor. You sound like a form letter, not like a candidate owning the follow-up." },
-        { id: "gender-trap", diagnostic: "common-gender-noun-trap", label: "Kære [Navn],\n\nMit store interesse i stillingen gør, at jeg følger op på vores dialog.", detail: "wrong gender on interesse", correct: false, weakTags: ["common-gender-noun"], effects: { employerTone: -1, professionalism: -1 }, feedback: "Diagnostic: interesse is common gender (en interesse). Write min interesse or min store interesse — not mit interesse." }
+        { id: "gender-trap", diagnostic: "common-gender-noun-trap", label: "Kære [Navn],\n\nMit store interesse i stillingen gør, at jeg følger op på vores dialog.", detail: "wrong gender on interesse", correct: false, weakTags: ["common-gender-noun"], effects: { employerTone: -1, professionalism: -1 }, feedback: "Diagnostic: interesse is common gender (en interesse). Write min interesse or min store interesse — not mit interesse." },
+        { id: "verb-trap", diagnostic: "strong-verb-past-trap", label: "Kære [Navn],\n\nJeg skrive for at følge op på vores dialog i torsdags og vise min fortsatte interesse.", detail: "infinitive instead of past skrev", correct: false, weakTags: ["strong-verb-past"], effects: { employerTone: -1, professionalism: -1 }, feedback: "Diagnostic: dialog i torsdags calls for past tense — jeg skrev, not jeg skrive. Strong verbs like skrive → skrev signal written fluency in formal email." }
       ],
       carry: "Carry-forward: 'Kære' signalerer formalitet; 'vi lægger vægt på', 'jeg tager stilling til', 'jeres henvendelse', 'takke', and a concrete reference to folk writing professionelt på dansk create professional warmth.",
       tags: ["B2", "formal-email", "register", "tage-stilling-til", "particles"]
@@ -344,7 +397,8 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       options: [
         { id: "closing-balanced", diagnostic: "process-aware-closing", label: "Jeg ser frem til at høre om næste skridt i processen og står naturligvis til rådighed, hvis I har brug for yderligere oplysninger.", detail: "process + availability, no ultimatum", correct: true, effects: { professionalism: 1, employerTone: 1 }, feedback: "Diagnostic: strong. You name the process, offer availability, and stay calm — no deadline weapon, no disappearing act." },
         { id: "closing-pushy", diagnostic: "deadline-pressure-closing", label: "Jeg forventer svar senest fredag, da jeg har andre processer kørende.", detail: "ultimatum + competing processes", correct: false, weakTags: ["consequence-aware-tone"], effects: { desperation: 2, employerTone: -1, professionalism: -1 }, feedback: "Diagnostic: senest fredag turns follow-up into pressure, and andre processer kørende signals you are already shopping exits. That reads junior, not colleague-ready." },
-        { id: "closing-vague", diagnostic: "deferential-vanishing-closing", label: "Hvis det passer jer, må I endelig vende tilbage, når det er muligt.", detail: "over-deferential, hides agency", correct: false, weakTags: ["professional-email-agency"], effects: { professionalism: -1, employerTone: -1 }, feedback: "Diagnostic: må I endelig vende tilbage makes you disappear behind politeness. You opened with agency — the closing should not surrender it." }
+        { id: "closing-vague", diagnostic: "deferential-vanishing-closing", label: "Hvis det passer jer, må I endelig vende tilbage, når det er muligt.", detail: "over-deferential, hides agency", correct: false, weakTags: ["professional-email-agency"], effects: { professionalism: -1, employerTone: -1 }, feedback: "Diagnostic: må I endelig vende tilbage makes you disappear behind politeness. You opened with agency — the closing should not surrender it." },
+        { id: "plural-trap", diagnostic: "irregular-plural-noun-trap", label: "Jeg ser frem til næste skridt efter vores to mødes og den gode dialog.", detail: "mødes instead of møder", correct: false, weakTags: ["irregular-plural-noun"], effects: { professionalism: -1, employerTone: -1 }, feedback: "Diagnostic: møde becomes møder in plural — not mødes (reflexive verb form). Irregular plural errors break credibility when the hiring manager forwards your mail." }
       ],
       carry: "Carry-forward: close with næste skridt / processen plus til rådighed — not senest fredag ultimatums or må I endelig vanishing acts.",
       tags: ["B2", "formal-email", "closing", "process-language", "consequence-tone"]

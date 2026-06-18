@@ -540,6 +540,108 @@ function buildGuidedSessionReport(options = {}) {
       }
     },
     {
+      id: "job-followup-bojning-plural-repair",
+      title: "Job follow-up guided bojning irregular-plural repair",
+      expectedStatus: "ready",
+      requiresAction: true,
+      requiresCitations: true,
+      input: () => {
+        const pluralFact = fact({
+          id: "mem-irregular-plural-noun",
+          signal: "irregular-plural-noun",
+          trainerId: "lesson-b2-job-followup",
+          competencyId: "register-control",
+          sourceFingerprint: "memsrc-irregular-plural"
+        });
+        const pluralStep = planStep({
+          kind: "drill-repair",
+          trainerId: "bojning",
+          trainerName: "Bojning drill",
+          title: "Run Bojning drill",
+          copy: "Repair irregular plural noun forms with a short bojning session mapped from the follow-up email closing miss.",
+          primaryLabel: "Open drill",
+          primaryHref: "./bojning-drill/?signal=irregular-plural-noun&from=lesson-b2-job-followup&cat=irregular-plural",
+          signalTag: "irregular-plural-noun",
+          routeId: "s1-irregular-plural",
+          badge: "Gym",
+          minutes: "5-8 min"
+        });
+        const pluralPlan = plan({ kind: "repair", title: "Job follow-up bojning plural repair", planToken: "plan-irregular-plural", fingerprint: "plan-irregular-plural-fp" }, pluralStep);
+        return {
+          plan: pluralPlan,
+          step: pluralPlan.steps[0],
+          advisorReceipt: advisorReceipt(pluralPlan.steps[0], pluralFact, {
+            actionHref: "./bojning-drill/?signal=irregular-plural-noun&from=lesson-b2-job-followup&cat=irregular-plural&plan=plan-irregular-plural&step=s1-irregular-plural",
+            advice: {
+              title: "Repair irregular-plural-noun",
+              advice: "Keep this session on the mapped irregular-plural trap category.",
+              citedFacts: [pluralFact],
+              trace: { fingerprint: "adv-irregular-plural", rule: "weak-signal" },
+              guardrails: {
+                deterministic: true,
+                requiresModel: false,
+                usesOnlyCitedFacts: true,
+                containsRawAnswerText: false
+              }
+            },
+            companion: null
+          }),
+          memoryFacts: [pluralFact]
+        };
+      }
+    },
+    {
+      id: "job-followup-bojning-verb-repair",
+      title: "Job follow-up guided bojning strong-verb repair",
+      expectedStatus: "ready",
+      requiresAction: true,
+      requiresCitations: true,
+      input: () => {
+        const verbFact = fact({
+          id: "mem-strong-verb-past",
+          signal: "strong-verb-past",
+          trainerId: "lesson-b2-job-followup",
+          competencyId: "register-control",
+          sourceFingerprint: "memsrc-strong-verb"
+        });
+        const verbStep = planStep({
+          kind: "drill-repair",
+          trainerId: "bojning",
+          trainerName: "Bojning drill",
+          title: "Run Bojning drill",
+          copy: "Repair strong verb past forms with a short bojning session mapped from the follow-up email opening miss.",
+          primaryLabel: "Open drill",
+          primaryHref: "./bojning-drill/?signal=strong-verb-past&from=lesson-b2-job-followup&cat=strong-verb",
+          signalTag: "strong-verb-past",
+          routeId: "s1-strong-verb",
+          badge: "Gym",
+          minutes: "5-8 min"
+        });
+        const verbPlan = plan({ kind: "repair", title: "Job follow-up bojning verb repair", planToken: "plan-strong-verb", fingerprint: "plan-strong-verb-fp" }, verbStep);
+        return {
+          plan: verbPlan,
+          step: verbPlan.steps[0],
+          advisorReceipt: advisorReceipt(verbPlan.steps[0], verbFact, {
+            actionHref: "./bojning-drill/?signal=strong-verb-past&from=lesson-b2-job-followup&cat=strong-verb&plan=plan-strong-verb&step=s1-strong-verb",
+            advice: {
+              title: "Repair strong-verb-past",
+              advice: "Keep this session on the mapped strong-verb trap category.",
+              citedFacts: [verbFact],
+              trace: { fingerprint: "adv-strong-verb", rule: "weak-signal" },
+              guardrails: {
+                deterministic: true,
+                requiresModel: false,
+                usesOnlyCitedFacts: true,
+                containsRawAnswerText: false
+              }
+            },
+            companion: null
+          }),
+          memoryFacts: [verbFact]
+        };
+      }
+    },
+    {
       id: "bolig-gold-repair",
       title: "Bolig gold lesson guided scene repair",
       expectedStatus: "ready",

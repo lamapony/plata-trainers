@@ -426,6 +426,10 @@ function buildJobFollowupBojningGenderTrapChain(root, options = {}) {
   const scene = lesson && asArray(lesson.scenes).find(item => item.id === spec.missSceneId);
   const missOption = scene && asArray(scene.options).find(item => item.id === spec.missOptionId);
   if (!missOption) return null;
+  const closingScene = lesson && asArray(lesson.scenes).find(item => item.id === "email-closing");
+  const pluralTrapOption = closingScene && asArray(closingScene.options).find(item => item.id === "plural-trap");
+  const registerScene = lesson && asArray(lesson.scenes).find(item => item.id === spec.missSceneId);
+  const verbTrapOption = registerScene && asArray(registerScene.options).find(item => item.id === "verb-trap");
   const { bridge, catalog } = loadRepairRuntime(root);
   const resolvedSignal = bridge.resolveMissSignal(lesson, scene, missOption);
   const bundle = lesson && spec.signal ? bridge.remediationBundle(lesson, scene, spec.signal, "") : null;
@@ -518,6 +522,18 @@ function buildJobFollowupBojningGenderTrapChain(root, options = {}) {
       alternateMisses.some(item => item.signal === "irregular-plural-noun" && item.drillRepairHref.includes("cat=irregular-plural"))
         && alternateMisses.some(item => item.signal === "strong-verb-past" && item.drillRepairHref.includes("cat=strong-verb")),
       "alternate bojning trap signals do not map to trap categories"
+    ),
+    check(
+      "plural-trap-option",
+      "Irregular-plural trap option exists in email-closing",
+      Boolean(pluralTrapOption && asArray(pluralTrapOption.weakTags).includes("irregular-plural-noun")),
+      "plural-trap option missing or does not tag irregular-plural-noun"
+    ),
+    check(
+      "verb-trap-option",
+      "Strong-verb-past trap option exists in email-register",
+      Boolean(verbTrapOption && asArray(verbTrapOption.weakTags).includes("strong-verb-past")),
+      "verb-trap option missing or does not tag strong-verb-past"
     )
   ];
 
