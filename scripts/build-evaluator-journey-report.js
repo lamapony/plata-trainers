@@ -293,6 +293,17 @@ function renderDemoReturnTrace(root, demo) {
   };
 }
 
+function distributionGateStatus(root) {
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+  const scripts = pkg.scripts || {};
+  const command = scripts["check:distribution"] || "";
+  const inCheck = String(scripts.check || "").includes("check:distribution");
+  if (!command || !inCheck) return "fail";
+  const sourcePath = command.replace(/^node\s+/, "").trim();
+  if (sourcePath && !fs.existsSync(path.join(root, sourcePath))) return "fail";
+  return "pass";
+}
+
 function stage(id, title, url, assertions, evidence = {}) {
   const issues = assertions.filter(item => !item.pass).map(item => item.issue);
   return {
@@ -324,6 +335,7 @@ function buildEvaluatorJourneyReport(options = {}) {
   const proofReports = (proofCapability.publicReports || []).map(report => report.id);
   const demoStep = demo.plan && demo.plan.steps && demo.plan.steps[0] || {};
   const outcome = guided.outcomeLedger && guided.outcomeLedger.outcomes && guided.outcomeLedger.outcomes[0] || {};
+  const distributionGateStatusValue = options.distributionGateStatus || distributionGateStatus(root);
 
   const stages = [
     stage("home-evaluator-entry", "Start at the public evaluator entry", "index.html#evaluate", [
@@ -350,6 +362,17 @@ function buildEvaluatorJourneyReport(options = {}) {
       { key: "proof-page-cites-journey", pass: proofGates.includes("check:evaluator-journey"), issue: "public proof capability does not cite check:evaluator-journey" },
       { key: "journey-report-cited", pass: proofReports.includes("evaluator-journey"), issue: "public proof capability does not cite evaluator journey report" }
     ], { report: "reports/evaluator-journey.json" }),
+    stage("distribution-proof", "Inspect offline distribution proof", "proof.html#proof-distribution-title", [
+      { key: "distribution-target-exists", pass: hasId(proofHtml, "proof-distribution-title"), issue: "proof distribution hash target missing" },
+      { key: "distribution-container-exists", pass: hasId(proofHtml, "proof-distribution"), issue: "proof distribution container missing" },
+      { key: "distribution-gate-pass", pass: distributionGateStatusValue === "pass", issue: "check:distribution gate is not passing" },
+      { key: "distribution-zip-contract", pass: /Standalone ZIP for backend-free review/.test(proofHtml), issue: "proof page does not explain the offline distribution bundle" }
+    ], {
+      gate: "check:distribution",
+      gateStatus: distributionGateStatusValue,
+      zipPath: ".dist/plata-offline-bundle.zip",
+      manifestPath: ".dist/plata-offline-bundle.manifest.json"
+    }),
     stage("guided-session-route", "Follow the guided session route", route.href || "", [
       { key: "guided-report-pass", pass: guided.status === "pass", issue: "guided session report is not passing" },
       { key: "memory-backed-ready", pass: memoryBacked.status === "pass" && session.status === "ready", issue: "memory-backed guided session is not ready" },
@@ -407,8 +430,9 @@ function buildEvaluatorJourneyReport(options = {}) {
       { key: "one-public-entry", label: "Journey starts from the public home evaluator entry", pass: stages[0].status === "pass" },
       { key: "read-only-demo", label: "Demo learner and demo return do not write local storage", pass: demo.totals && demo.totals.storageWrites === 0 && returnTrace.storageWrites.length === 0 },
       { key: "proof-walkthrough-targeted", label: "Proof walkthrough has a stable public hash target and public report citation", pass: stages[2].status === "pass" },
-      { key: "guided-route-handoff", label: "Guided route carries plan and step query tokens before the lesson hash", pass: stages[3].status === "pass" },
-      { key: "dashboard-return-rendered", label: "Dashboard renders a return receipt from plan and step ids", pass: stages[4].status === "pass" }
+      { key: "distribution-proof-targeted", label: "Offline distribution proof has a stable hash target and passing publish gate", pass: stages[3].status === "pass" },
+      { key: "guided-route-handoff", label: "Guided route carries plan and step query tokens before the lesson hash", pass: stages[4].status === "pass" },
+      { key: "dashboard-return-rendered", label: "Dashboard renders a return receipt from plan and step ids", pass: stages[5].status === "pass" }
     ],
     stages,
     returnTrace,

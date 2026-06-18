@@ -1,35 +1,38 @@
-# Platå Factory Week — Release Candidate
+# Platå Factory Week 4 — Release Candidate
 
-Date: 2026-06-13  
-Plan: `plans/FACTORY_NEXT.md` (Days 5–7)  
-Status: **green** — `npm run check` passes; Pages artifact rebuilds from source.
+Date: 2026-06-18  
+Plan: `plans/PRODUCT_TRACK.md` (Week 4, Days 22–30)  
+Status: **green** — `npm run check` passes; Pages artifact and offline ZIP rebuild from source.
 
 ---
 
 ## What changed for learners and reviewers
 
-### Public proof (Day 5)
+### Doctor lesson + skrive bridge (Week 4)
 
-- **Proof page** (`proof.html`) — hero CTA «Follow reviewer path» scrolls to `#proof-walkthrough`; headroom bar shows compressed proof snapshot; reviewer route strip links Demo → Today → Guided → Quality → Capability map.
+- **New gold lesson** — `lessons/lesson-a2-doctor/` (symptom severity, duration, polite clarifications at apotek/læge).
+- **Doctor → skrive bridge** — apotek near-miss routes to `skrive-drill/?cat=sundhed` with scene repair deep links; exercise value chain `doctor-apotek-skrive-sundhed` proves channel transfer and repair ladder.
+- **Guided session** — two doctor scenarios (`doctor-gold-repair`, `doctor-skrive-repair`) join the report; **12 scenarios** total in `reports/guided-session.json`.
+
+### Distribution proof + reviewer route (Week 4)
+
+- **Offline ZIP** — `.dist/plata-offline-bundle.zip` packages the Pages artifact (~**110 files**, v0.4.0) for backend-free review; `check:distribution` verifies manifest SHA-256 and required entries (`index.html`, `sw.js`, `precache-manifest.json`, core reports).
+- **Proof page** — `#proof-distribution` section documents the bundle; reviewer route strip on `#proof-walkthrough` links **Demo → Today → Guided → Offline ZIP → Quality → Capability map**.
+- **Evaluator journey** — new `distribution-proof` stage checks `proof.html#proof-distribution-title` and the publish gate.
+
+### Dashboard export drawer (Week 4)
+
+- **Profile portability drawer** — dashboard import/export diagnostics with trace-backed verification; `check:profile-portability` guards export/import/replay contract.
+
+### Exercise value chain (Week 4)
+
+- **Flagship chains** — doctor transfer, register drill, and existing B2 chains traced in `reports/exercise-value.json`; `check:exercise-value-report` enforces archetype coverage.
+
+### Public proof (prior weeks, still in RC)
+
+- **Proof page** — hero CTA «Follow reviewer path» scrolls to `#proof-walkthrough`; headroom bar shows compressed proof snapshot.
 - **Program page** — «Reviewer walkthrough» links to `proof.html#proof-walkthrough`.
-- **Shared** — `compressProofSnapshot()` exported from `shared/plata-headroom.js`.
-
-### Exercise backlog + register drill (Day 6)
-
-- **New drill** — `register-drill/` (12 MC items: passive agency, deadline, escalation).
-- **Catalog** — `register` trainer with repair signals for passive-agency and register-tone families; planner routes weak passive-agency to register drill.
-- **Backlog** — `plans/EXERCISE_BACKLOG.md` ranks six concrete learner situations; item #2 shipped.
-
-### Learner-first polish (Days 3–5 regressions fixed)
-
-- Demo learner report gates use full stripped Today HTML (not a 420-char slice); rendered Today preview widened to 900 chars.
-- Evaluator journey accepts `Walkthrough|Guided session` companion mode labels.
-
-### Infra touched for release
-
-- Home and dashboard smokes expect **4 drills** and **8 trainers** (register drill added).
-- `scaffold-gold-lesson.js` inserts into catalog before `drillForSignal` helpers.
-- Dashboard recommendations fixture refreshed: `scripts/fixtures/dashboard-recommendations.snapshot.json`.
+- **Register drill** — `register-drill/` (12 MC items: passive agency, deadline, escalation).
 
 ---
 
@@ -44,7 +47,20 @@ npm run check:quickstart-proof
 
 Artifacts land in `.dist/quickstart-proof/` (demo learner, capability map, project health, golden review JSON, capped Markdown summary).
 
-### Full gate
+### Contributor preflight (Day 4 — before full `npm run check`)
+
+Run focused gates while iterating on lessons, portability, or distribution:
+
+```bash
+npm run check:lessons
+npm run check:gold-lessons
+npm run check:profile-portability
+npm run check:distribution
+npm run check:proof-page
+npm run check:evaluator-journey
+```
+
+Full gate still required before merge:
 
 ```bash
 npm run check
@@ -55,9 +71,11 @@ npm run check
 ```bash
 npm run build:pages
 npm run check:pages
+npm run build:distribution
+npm run check:distribution
 ```
 
-Output: `.dist/pages/` (97 files, precache manifest, generated reports under `reports/`).
+Output: `.dist/pages/` (~110 files, precache manifest, generated reports under `reports/`) plus `.dist/plata-offline-bundle.zip`.
 
 ### Surface-specific checks (Factory week)
 
@@ -68,6 +86,9 @@ npm run check:headroom
 npm run check:planner
 npm run check:catalog
 npm run check:public-runtime
+npm run check:evaluator-path
+npm run check:evaluator-journey
+npm run check:exercise-value-report
 ```
 
 ### Review diffs (compare saved baseline JSON to current build)
@@ -92,10 +113,11 @@ Golden synthetic fixtures for the review renderer live under `scripts/fixtures/r
 
 1. Home → **Evaluate in 60 seconds** (`#evaluate`)
 2. `dashboard.html?demo=learner` — read-only rich profile
-3. `proof.html#proof-walkthrough` — reviewer path + headroom
-4. `proof.html#proof-guided-title` — guided session proof
-5. `program.html` — capability map / learning program
+3. `proof.html#proof-walkthrough` — reviewer strip: Demo → Today → Guided → Offline ZIP → Quality → Capability map
+4. `proof.html#proof-distribution-title` — offline ZIP bundle proof
+5. `proof.html#proof-guided-title` — guided session proof (12 scenarios)
 6. `quality.html` — gold lesson contracts
+7. `program.html` — capability map / learning program
 
 ---
 
@@ -113,13 +135,16 @@ No backend, auth, analytics, or framework rewrite in this week.
 
 ---
 
-## Day 7 definition of done
+## Week 4 definition of done
 
 | Criterion | Status |
 | --- | --- |
 | `npm run check` passes | ✅ |
-| `npm run proof:quickstart` + `check:quickstart-proof` | ✅ |
-| `npm run build:pages` + `check:pages` | ✅ |
-| Public artifacts rebuild from source | ✅ |
+| Doctor lesson + skrive bridge in exercise value | ✅ |
+| Guided session report: 12 scenarios | ✅ |
+| Offline ZIP ~110 files + `check:distribution` | ✅ |
+| Reviewer route includes distribution proof | ✅ |
+| Profile portability drawer + `check:profile-portability` | ✅ |
+| Contributor preflight documented in README | ✅ |
 | Release note names changes + proof commands | ✅ (this file) |
 | Unfinished backlog documented | ✅ (`EXERCISE_BACKLOG.md`) |

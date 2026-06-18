@@ -422,13 +422,15 @@
       "</article>";
     }).join("");
 
+    var distributionHref = localPageHref("proof.html#proof-distribution-title");
     $("#proof-walkthrough").innerHTML =
       "<nav class=\"proof-reviewer-route\" aria-label=\"Reviewer path at a glance\">" +
         linkChip(dashboardHref, "1 · Demo learner", "mastery") +
         linkChip(routeHref, "2 · Today step", "pass") +
         linkChip(localPageHref(route.href || "dashboard.html?demo=learner"), "3 · Guided session", "pass") +
-        linkChip(localPageHref("quality.html"), "4 · Quality gates", "pass") +
-        linkChip(proofSources.capabilities, "5 · Capability map", "pass") +
+        linkChip(distributionHref, "4 · Offline ZIP", "pass") +
+        linkChip(localPageHref("quality.html"), "5 · Quality gates", "pass") +
+        linkChip(proofSources.capabilities, "6 · Capability map", "pass") +
       "</nav>" +
       "<article class=\"proof-walkthrough-summary " + escapeHtml(data.guided.status === "pass" && demo.status === "pass" && journey.status === "pass" ? "pass" : "fail") + "\">" +
         "<div>" +

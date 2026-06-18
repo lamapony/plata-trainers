@@ -153,7 +153,20 @@ npm run check:quality-mutations   # negative contract tests
 npm run check:quality-diff        # review diff regression check
 ```
 
-Full suite still required before merge:
+Contributor preflight (Day 4 PRODUCT_TRACK — isolated checks before `npm run check`):
+
+```bash
+npm run check:lessons             # lesson data + scene schema
+npm run check:gold-lessons        # gold lesson simulation paths
+npm run check:profile-portability # export/import/replay trace
+npm run check:distribution        # offline ZIP bundle + manifest
+npm run check:proof-page          # public proof surface render
+npm run check:evaluator-journey   # demo → proof → distribution → guided → return
+npm run check:evaluator-path      # home evaluator CTA contract
+npm run check:exercise-value-report  # flagship chains (doctor→skrive, etc.)
+```
+
+Use these while iterating locally; they catch lesson regressions, portability drift, and distribution packaging failures in under a minute each. Full suite still required before merge:
 
 ```bash
 npm run check

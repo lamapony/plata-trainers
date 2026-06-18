@@ -175,6 +175,10 @@ async function run() {
     assert(elements["#proof-walkthrough"].innerHTML.includes("One inspectable loop from recommendation to receipt"), "proof page did not render walkthrough summary");
     assert(elements["#proof-walkthrough"].innerHTML.includes("proof-reviewer-route"), "proof page did not render reviewer route strip");
     assert(elements["#proof-walkthrough"].innerHTML.includes("1 · Demo learner"), "proof page did not render reviewer route demo link");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("4 · Offline ZIP"), "proof page did not render offline ZIP in reviewer route");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("proof-distribution-title"), "proof page did not link distribution proof from reviewer route");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("5 · Quality gates"), "proof page did not render quality gates in reviewer route");
+    assert(elements["#proof-walkthrough"].innerHTML.includes("6 · Capability map"), "proof page did not render capability map in reviewer route");
     assert(elements["#proof-walkthrough"].innerHTML.includes("quality.html"), "proof page did not link quality report from reviewer route");
     assert(elements["#proof-walkthrough"].innerHTML.includes("evaljourney-"), "proof page did not render evaluator journey trace");
     assert(elements["#proof-walkthrough"].innerHTML.includes("evaluator-journey.json"), "proof page did not link evaluator journey report");

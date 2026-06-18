@@ -39,11 +39,16 @@ function runBaseSmoke() {
   const report = buildEvaluatorJourneyReport();
   assert(report.status === "pass", `evaluator journey should pass:\n${report.issues.join("\n")}`);
   assert(report.traceId.startsWith("evaljourney-"), "evaluator journey should expose a stable trace id");
-  assert(report.totals.stages === 5, "evaluator journey should cover the five public acceptance stages");
-  assert(report.totals.passedStages === 5, "all evaluator journey stages should pass");
+  assert(report.totals.stages === 6, "evaluator journey should cover the six public acceptance stages");
+  assert(report.totals.passedStages === 6, "all evaluator journey stages should pass");
   assert(report.returnTrace.storageWrites.length === 0, "demo journey return should stay read-only");
   assert(report.exit.includes("demo=learner"), "journey exit should preserve the demo learner route");
   assert(report.exit.includes("ledger-return=1"), "journey exit should preserve the dashboard return marker");
+
+  const distribution = stage(report, "distribution-proof");
+  assert(distribution.url === "proof.html#proof-distribution-title", "distribution stage should link the offline proof hash target");
+  assert(distribution.evidence.gate === "check:distribution", "distribution stage should cite the publish gate");
+  assert(distribution.evidence.zipPath === ".dist/plata-offline-bundle.zip", "distribution stage should cite the offline bundle path");
 
   const guided = stage(report, "guided-session-route");
   assert(guided.evidence.planToken && guided.evidence.stepRouteId, "guided route stage should expose route tokens");
@@ -66,6 +71,12 @@ function runMutationSmoke() {
   });
   assert(proofTargetMissing.status === "fail", "evaluator journey should fail when proof walkthrough target drifts");
   assert(proofTargetMissing.issues.some(issue => issue.includes("proof walkthrough target missing")), "evaluator journey should explain missing proof target");
+
+  const distributionTargetMissing = buildEvaluatorJourneyReport({
+    proofHtml: fs.readFileSync(path.join(repoRoot, "proof.html"), "utf8").replace('id="proof-distribution-title"', 'id="proof-distribution-title-mutated"')
+  });
+  assert(distributionTargetMissing.status === "fail", "evaluator journey should fail when distribution proof target drifts");
+  assert(distributionTargetMissing.issues.some(issue => issue.includes("proof distribution hash target missing")), "evaluator journey should explain missing distribution target");
 
   const demo = buildDemoLearnerReport();
   const demoWrites = buildEvaluatorJourneyReport({
@@ -108,6 +119,7 @@ function runCliSmoke() {
     const report = JSON.parse(fs.readFileSync(out, "utf8"));
     assert(report.status === "pass", "CLI output report should pass");
     assert(report.stages.some(item => item.id === "dashboard-return"), "CLI output should include dashboard-return stage");
+    assert(report.stages.some(item => item.id === "distribution-proof"), "CLI output should include distribution-proof stage");
 
     const json = runCli(["--json"]);
     assert(json.status === 0, `CLI JSON should pass\n${json.stdout}\n${json.stderr}`);
