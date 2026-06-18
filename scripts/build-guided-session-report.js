@@ -489,6 +489,57 @@ function buildGuidedSessionReport(options = {}) {
       })
     },
     {
+      id: "job-followup-bojning-repair",
+      title: "Job follow-up guided bojning form-trap repair",
+      expectedStatus: "ready",
+      requiresAction: true,
+      requiresCitations: true,
+      input: () => {
+        const bojFact = fact({
+          id: "mem-common-gender-noun",
+          signal: "common-gender-noun",
+          trainerId: "lesson-b2-job-followup",
+          competencyId: "register-control",
+          sourceFingerprint: "memsrc-common-gender"
+        });
+        const bojStep = planStep({
+          kind: "drill-repair",
+          trainerId: "bojning",
+          trainerName: "Bojning drill",
+          title: "Run Bojning drill",
+          copy: "Repair common-gender noun agreement with a short bojning session mapped from the follow-up email miss.",
+          primaryLabel: "Open drill",
+          primaryHref: "./bojning-drill/?signal=common-gender-noun&from=lesson-b2-job-followup&cat=common-gender",
+          signalTag: "common-gender-noun",
+          routeId: "s1-common-gender",
+          badge: "Gym",
+          minutes: "5-8 min"
+        });
+        const bojPlan = plan({ kind: "repair", title: "Job follow-up bojning repair", planToken: "plan-common-gender", fingerprint: "plan-common-gender-fp" }, bojStep);
+        return {
+          plan: bojPlan,
+          step: bojPlan.steps[0],
+          advisorReceipt: advisorReceipt(bojPlan.steps[0], bojFact, {
+            actionHref: "./bojning-drill/?signal=common-gender-noun&from=lesson-b2-job-followup&cat=common-gender&plan=plan-common-gender&step=s1-common-gender",
+            advice: {
+              title: "Repair common-gender-noun",
+              advice: "Keep this session on the mapped common-gender trap category.",
+              citedFacts: [bojFact],
+              trace: { fingerprint: "adv-common-gender", rule: "weak-signal" },
+              guardrails: {
+                deterministic: true,
+                requiresModel: false,
+                usesOnlyCitedFacts: true,
+                containsRawAnswerText: false
+              }
+            },
+            companion: null
+          }),
+          memoryFacts: [bojFact]
+        };
+      }
+    },
+    {
       id: "bolig-gold-repair",
       title: "Bolig gold lesson guided scene repair",
       expectedStatus: "ready",
