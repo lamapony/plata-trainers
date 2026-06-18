@@ -89,6 +89,7 @@ function buildGoldenReview(root) {
 
 function checkRows(demoLearner, capabilityMap, projectHealth, goldenReview, goldenMarkdown, guidedSession, exerciseValue) {
   const doctorChain = exerciseValue.transferChains.find(row => row.id === "doctor-apotek-skrive-sundhed");
+  const bojningChain = exerciseValue.transferChains.find(row => row.id === "job-followup-bojning-gender-trap");
   const distributionGate = projectHealth.gates.find(row => row.id === "check:distribution");
   return [
     {
@@ -125,6 +126,13 @@ function checkRows(demoLearner, capabilityMap, projectHealth, goldenReview, gold
       detail: doctorChain
         ? `${doctorChain.id} transfer chain (${doctorChain.channels.length} channel(s))`
         : "doctor-apotek-skrive-sundhed transfer chain missing"
+    },
+    {
+      id: "week4-bojning-trap-chain",
+      status: status(!bojningChain || (exerciseValue.status === "pass" && bojningChain.status === "pass")),
+      detail: bojningChain
+        ? `${bojningChain.id} repair chain (${bojningChain.channels.length} trap category(ies))`
+        : "job-followup-bojning-gender-trap repair chain skipped (gender-trap option not on branch)"
     },
     {
       id: "week4-distribution-gate",

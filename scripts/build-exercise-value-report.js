@@ -83,6 +83,47 @@ function loadRepairRuntime(root) {
   };
 }
 
+const jobFollowupBojningGenderTrapSpec = {
+  id: "job-followup-bojning-gender-trap",
+  lessonId: "lesson-b2-job-followup",
+  dataPath: "lessons/lesson-b2-job-followup/data.js",
+  missSceneId: "email-register",
+  missOptionId: "gender-trap",
+  signal: "common-gender-noun",
+  alternateSignals: ["irregular-plural-noun", "strong-verb-past"],
+  intent: "Route common-gender noun misses from professional follow-up email to targeted bojning drill without losing register context.",
+  archetypes: ["near-miss", "repair-ladder", "memory-backed-recurrence"],
+  memoryCue: {
+    signal: "common-gender-noun",
+    copy: "Memory-backed recurrence: mit interesse on en-ord in follow-up email must become min interesse after bojning common-gender drill."
+  },
+  trapCategories: [
+    {
+      id: "common-gender",
+      label: "Common gender trap (en-ord)",
+      sample: "Min store interesse i stillingen — not mit interesse.",
+      risk: "Wrong mit on en-words like interesse reads unprofessional in formal email."
+    },
+    {
+      id: "irregular-plural",
+      label: "Irregular plural trap",
+      sample: "To dage med møder — not mødes.",
+      risk: "Irregular plurals break credibility when the hiring manager forwards your mail."
+    },
+    {
+      id: "strong-verb",
+      label: "Strong verb past trap",
+      sample: "Jeg skrev til jer — not jeg skrive.",
+      risk: "Strong verb past forms signal written fluency in professional Danish."
+    }
+  ],
+  repairLadder: [
+    { stage: "email miss", text: "Mit store interesse i stillingen gør, at jeg følger op på vores dialog." },
+    { stage: "scene repair", text: "Min store interesse i stillingen gør, at jeg følger op på vores dialog." },
+    { stage: "bojning drill ready", text: "Min interesse / mit projekt — common-gender en-ord forms drilled in bojning category." }
+  ]
+};
+
 const doctorSkriveTransferSpec = {
   id: "doctor-apotek-skrive-sundhed",
   lessonId: "lesson-a2-doctor",
@@ -377,12 +418,159 @@ function buildDoctorSkriveTransferChain(root, options = {}) {
   };
 }
 
+function buildJobFollowupBojningGenderTrapChain(root, options = {}) {
+  const spec = JSON.parse(JSON.stringify(jobFollowupBojningGenderTrapSpec));
+  if (typeof options.transferChainMutator === "function") options.transferChainMutator(spec);
+  if (!fileExists(root, spec.dataPath)) return null;
+  const lesson = loadLesson(root, spec.dataPath);
+  const scene = lesson && asArray(lesson.scenes).find(item => item.id === spec.missSceneId);
+  const missOption = scene && asArray(scene.options).find(item => item.id === spec.missOptionId);
+  if (!missOption) return null;
+  const { bridge, catalog } = loadRepairRuntime(root);
+  const resolvedSignal = bridge.resolveMissSignal(lesson, scene, missOption);
+  const bundle = lesson && spec.signal ? bridge.remediationBundle(lesson, scene, spec.signal, "") : null;
+  const genderRemediation = catalog.drillRemediation(spec.signal, spec.lessonId);
+  const sceneRepairHref = bundle && bundle.sceneRepair && bundle.sceneRepair.href
+    ? lessonHref(spec.lessonId, bundle.sceneRepair.href)
+    : "";
+  const drillRepairHref = genderRemediation && genderRemediation.href
+    ? repoRelativeHref(genderRemediation.href)
+    : "";
+  const drillAction = genderRemediation ? genderRemediation.action || "" : "";
+  const alternateMisses = asArray(spec.alternateSignals).map(signal => {
+    const altRemediation = catalog.drillRemediation(signal, spec.lessonId);
+    return {
+      signal,
+      drillRepairHref: altRemediation && altRemediation.href
+        ? repoRelativeHref(altRemediation.href)
+        : ""
+    };
+  });
+  const weakTags = asArray(missOption.weakTags);
+  const checks = [
+    check(
+      "lesson-present",
+      "Job follow-up gold lesson data resolves",
+      Boolean(lesson && lesson.id === spec.lessonId),
+      "lesson-b2-job-followup data is missing"
+    ),
+    check(
+      "miss-scene-present",
+      "Miss scene exists in lesson data",
+      Boolean(scene && scene.id === spec.missSceneId),
+      "email-register scene is missing"
+    ),
+    check(
+      "miss-option-present",
+      "Gender-trap miss option exists in lesson data",
+      Boolean(missOption && missOption.id === spec.missOptionId),
+      "gender-trap miss option is missing"
+    ),
+    check(
+      "near-miss-tagged",
+      "Gender-trap option tags common-gender-noun weak mastery",
+      weakTags.includes(spec.signal),
+      "gender-trap option does not tag common-gender-noun"
+    ),
+    check(
+      "scene-repair-linked",
+      "Scene repair deep link is wired for common-gender-noun",
+      nonEmpty(sceneRepairHref) && sceneRepairHref.includes("mode=repair") && sceneRepairHref.includes(`signal=${spec.signal}`),
+      "scene repair href is missing or incomplete"
+    ),
+    check(
+      "bojning-drill-linked",
+      "Bojning common-gender drill deep link is wired via catalog",
+      nonEmpty(drillRepairHref)
+        && drillRepairHref.includes("./bojning-drill/")
+        && drillRepairHref.includes("cat=common-gender")
+        && drillRepairHref.includes(`signal=${spec.signal}`)
+        && drillRepairHref.includes(`from=${spec.lessonId}`),
+      "bojning common-gender drill href is missing or incomplete"
+    ),
+    check(
+      "catalog-authoritative",
+      "Catalog drill href differs from resolveMissSignal when scene tag would win",
+      resolvedSignal !== spec.signal ? nonEmpty(drillRepairHref) : true,
+      "catalog drill href should be used when resolveMissSignal returns a scene tag"
+    ),
+    check(
+      "bojning-drill-action",
+      "Drill action explains email miss to bojning transfer",
+      /interesse|bojning|common-gender|en-ord/i.test(drillAction),
+      "drill action does not explain email miss to bojning transfer"
+    ),
+    check(
+      "repair-ladder",
+      "Carries email miss -> scene repair -> bojning drill ladder",
+      asArray(spec.repairLadder).length >= 3,
+      "bojning trap repair ladder is incomplete"
+    ),
+    check(
+      "memory-backed-recurrence",
+      "Names the recurring common-gender-noun signal",
+      spec.memoryCue && nonEmpty(spec.memoryCue.signal) && nonEmpty(spec.memoryCue.copy),
+      "bojning trap memory cue is missing"
+    ),
+    check(
+      "alternate-signal-mapped",
+      "irregular-plural-noun and strong-verb-past map to bojning trap categories",
+      alternateMisses.some(item => item.signal === "irregular-plural-noun" && item.drillRepairHref.includes("cat=irregular-plural"))
+        && alternateMisses.some(item => item.signal === "strong-verb-past" && item.drillRepairHref.includes("cat=strong-verb")),
+      "alternate bojning trap signals do not map to trap categories"
+    )
+  ];
+
+  return {
+    id: spec.id,
+    kind: "repair-chain",
+    lessonId: spec.lessonId,
+    lessonTitle: lesson && (lesson.title || lesson.id) || spec.lessonId,
+    dataPath: spec.dataPath,
+    missSceneId: spec.missSceneId,
+    missOptionId: spec.missOptionId,
+    signal: spec.signal,
+    resolvedMissSignal: resolvedSignal,
+    title: "Email gender miss → scene repair → bojning common-gender",
+    learningGoal: "Repair common-gender noun agreement in professional follow-up email with scene rerun and targeted bojning drill.",
+    userValue: "Shows why plateau B2 practice must catch en-ord traps in formal email: mit interesse becomes min interesse with scene repair and bojning category drill.",
+    intent: spec.intent,
+    memoryCue: spec.memoryCue,
+    archetypes: asArray(spec.archetypes),
+    channels: asArray(spec.trapCategories).map(category => ({
+      id: category.id || "",
+      label: category.label || "",
+      sample: category.sample || "",
+      risk: category.risk || ""
+    })),
+    repairLadder: asArray(spec.repairLadder),
+    sceneRepairHref,
+    drillRepairHref,
+    drillAction,
+    alternateMisses,
+    checks,
+    status: checks.every(item => item.pass) ? "pass" : "fail",
+    issues: checks.filter(item => !item.pass).map(item => item.issue)
+  };
+}
+
 function buildTransferChains(root, options = {}) {
-  return [buildDoctorSkriveTransferChain(root, options)].filter(Boolean);
+  return [
+    buildDoctorSkriveTransferChain(root, options),
+    buildJobFollowupBojningGenderTrapChain(root, options)
+  ].filter(Boolean);
 }
 
 function optionalTransferChainRequired(root, spec) {
   return fileExists(root, spec.dataPath);
+}
+
+function optionalBojningTrapChainRequired(root, spec) {
+  if (!fileExists(root, spec.dataPath)) return false;
+  const lesson = loadLesson(root, spec.dataPath);
+  const scene = lesson && asArray(lesson.scenes).find(item => item.id === spec.missSceneId);
+  const missOption = scene && asArray(scene.options).find(item => item.id === spec.missOptionId);
+  return Boolean(missOption);
 }
 
 function buildExerciseValueReport(options = {}) {
@@ -411,6 +599,7 @@ function buildExerciseValueReport(options = {}) {
   const chains = lessons.flatMap(lesson => lesson.flagshipChains);
   const transferChains = buildTransferChains(root, options);
   const doctorTransferRequired = optionalTransferChainRequired(root, doctorSkriveTransferSpec);
+  const bojningTrapRequired = optionalBojningTrapChainRequired(root, jobFollowupBojningGenderTrapSpec);
   chains.forEach(row => {
     row.issues.forEach(issue => issues.push(`${row.lessonId}::${row.sceneId}: ${issue}`));
   });
@@ -418,7 +607,12 @@ function buildExerciseValueReport(options = {}) {
     row.issues.forEach(issue => issues.push(`${row.id}: ${issue}`));
   });
   if (chains.length === 0) issues.push("no flagship-chain exercises found");
-  if (doctorTransferRequired && transferChains.length === 0) issues.push("no transfer-chain exercises found");
+  if (doctorTransferRequired && !transferChains.some(row => row.id === "doctor-apotek-skrive-sundhed")) {
+    issues.push("doctor transfer chain missing");
+  }
+  if (bojningTrapRequired && !transferChains.some(row => row.id === "job-followup-bojning-gender-trap")) {
+    issues.push("bojning trap repair chain missing");
+  }
 
   const archetypeSources = [
     ...chains.map(row => ({ id: `${row.lessonId}::${row.sceneId}`, archetypes: row.archetypes })),
@@ -469,6 +663,12 @@ function buildExerciseValueReport(options = {}) {
       label: "Doctor apotek misses transfer to skrive sundhed patientportal with scene repair and drill deep links",
       pass: !doctorTransferRequired
         || transferChains.some(row => row.id === "doctor-apotek-skrive-sundhed" && row.status === "pass")
+    },
+    {
+      key: "job-followup-bojning-trap-proven",
+      label: "Job follow-up gender trap misses route to bojning common-gender drill with scene repair deep links",
+      pass: !bojningTrapRequired
+        || transferChains.some(row => row.id === "job-followup-bojning-gender-trap" && row.status === "pass")
     }
   ];
   guarantees.filter(item => !item.pass).forEach(item => issues.push(`guarantee failed: ${item.key}`));
@@ -569,5 +769,7 @@ module.exports = {
   formatExerciseValueReport,
   writeExerciseValueReport,
   requiredArchetypes,
-  doctorSkriveTransferSpec
+  doctorSkriveTransferSpec,
+  jobFollowupBojningGenderTrapSpec,
+  optionalBojningTrapChainRequired
 };
