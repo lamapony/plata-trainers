@@ -53,14 +53,66 @@ function findLessonDataFiles(root) {
     .filter(relPath => fs.existsSync(path.join(root, relPath)));
 }
 
-function loadLesson(root, relPath) {
+function loadWindowScript(root, relPath) {
   const context = { window: {} };
   context.globalThis = context.window;
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(path.join(root, relPath), "utf8"), context, { filename: relPath });
-  const key = Object.keys(context.window).find(name => name.startsWith("PLATA_LESSON_"));
-  return key ? context.window[key] : null;
+  return context.window;
 }
+
+function loadLesson(root, relPath) {
+  const win = loadWindowScript(root, relPath);
+  const key = Object.keys(win).find(name => name.startsWith("PLATA_LESSON_"));
+  return key ? win[key] : null;
+}
+
+function loadRepairRuntime(root) {
+  const context = { window: {}, console, Date, JSON, Object, Math, String, Array, encodeURIComponent };
+  context.globalThis = context.window;
+  vm.createContext(context);
+  vm.runInContext(fs.readFileSync(path.join(root, "shared/plata-catalog.js"), "utf8"), context, { filename: "shared/plata-catalog.js" });
+  vm.runInContext(fs.readFileSync(path.join(root, "shared/plata-repair-bridge.js"), "utf8"), context, { filename: "shared/plata-repair-bridge.js" });
+  return {
+    bridge: context.window.PlataRepairBridge,
+    catalog: context.window.PlataCatalog
+  };
+}
+
+const doctorSkriveTransferSpec = {
+  id: "doctor-apotek-skrive-sundhed",
+  lessonId: "lesson-a2-doctor",
+  dataPath: "lessons/lesson-a2-doctor/data.js",
+  missSceneId: "symptom-severity",
+  missOptionId: "too-vague",
+  signal: "symptom-severity",
+  alternateSignals: ["symptom-duration"],
+  intent: "Transfer symptom precision from apotek speech to patientportal writing without losing duration, severity, or next-step clarity.",
+  archetypes: ["same-intent-different-channel", "repair-ladder", "memory-backed-recurrence"],
+  memoryCue: {
+    signal: "symptom-severity",
+    copy: "Memory-backed recurrence: vague severity at apotek (ikke så godt) must become testable lidt/ret detail in patientportalen."
+  },
+  channelVersions: [
+    {
+      id: "apotek-spoken",
+      label: "Apotek counter (spoken)",
+      sample: "Ret ondt i halsen, især om morgenen.",
+      risk: "Vague spoken severity hides testable detail the pharmacist needs."
+    },
+    {
+      id: "patientportal-written",
+      label: "Patientportal (written)",
+      sample: "Jeg har hoste i to dage med ret ondt i halsen. Hvad skal jeg gøre nu?",
+      risk: "Written Danish needs explicit timeline and severity — paper words blur together."
+    }
+  ],
+  repairLadder: [
+    { stage: "apotek miss", text: "Ikke så godt, tror jeg." },
+    { stage: "scene repair", text: "Ret ondt i halsen, især om morgenen." },
+    { stage: "patientportal ready", text: "Jeg har hoste i to dage med ret ondt i halsen. Hvad skal jeg gøre nu?" }
+  ]
+};
 
 function check(key, label, pass, issue) {
   return { key, label, pass: !!pass, issue: pass ? "" : issue };
@@ -173,6 +225,157 @@ function flagshipSceneRow(lesson, dataPath, scene) {
   };
 }
 
+function lessonHref(lessonId, suffix) {
+  return `./lessons/${lessonId}/${suffix || ""}`;
+}
+
+function repoRelativeHref(href) {
+  const raw = String(href || "");
+  if (!raw) return "";
+  if (raw.startsWith("./") || raw.startsWith("http")) return raw;
+  return `./${raw}`;
+}
+
+function buildDoctorSkriveTransferChain(root, options = {}) {
+  const spec = JSON.parse(JSON.stringify(doctorSkriveTransferSpec));
+  if (typeof options.transferChainMutator === "function") options.transferChainMutator(spec);
+  const lesson = loadLesson(root, spec.dataPath);
+  const { bridge, catalog } = loadRepairRuntime(root);
+  const scene = lesson && asArray(lesson.scenes).find(item => item.id === spec.missSceneId);
+  const missOption = scene && asArray(scene.options).find(item => item.id === spec.missOptionId);
+  const resolvedSignal = lesson && scene && missOption ? bridge.resolveMissSignal(lesson, scene, missOption) : "";
+  const bundle = lesson && resolvedSignal ? bridge.remediationBundle(lesson, scene, resolvedSignal, "") : null;
+  const sceneRepairHref = bundle && bundle.sceneRepair && bundle.sceneRepair.href
+    ? lessonHref(spec.lessonId, bundle.sceneRepair.href)
+    : "";
+  const drillRepairHref = bundle && bundle.drillRepair && bundle.drillRepair.href
+    ? repoRelativeHref(bundle.drillRepair.href)
+    : "";
+  const drillAction = bundle && bundle.drillRepair ? bundle.drillRepair.action || "" : "";
+  const alternateMisses = asArray(spec.alternateSignals).map(signal => {
+    const altScene = signal === "symptom-duration"
+      ? asArray(lesson && lesson.scenes).find(item => item.id === "symptom-duration")
+      : scene;
+    const altBundle = lesson && signal ? bridge.remediationBundle(lesson, altScene, signal, "") : null;
+    return {
+      signal,
+      sceneId: altScene && altScene.id || "",
+      sceneRepairHref: altBundle && altBundle.sceneRepair && altBundle.sceneRepair.href
+        ? lessonHref(spec.lessonId, altBundle.sceneRepair.href)
+        : "",
+      drillRepairHref: altBundle && altBundle.drillRepair && altBundle.drillRepair.href
+        ? repoRelativeHref(altBundle.drillRepair.href)
+        : ""
+    };
+  });
+  const checks = [
+    check(
+      "lesson-present",
+      "Doctor gold lesson data resolves",
+      Boolean(lesson && lesson.id === spec.lessonId),
+      "lesson-a2-doctor data is missing"
+    ),
+    check(
+      "miss-scene-present",
+      "Miss scene exists in lesson data",
+      Boolean(scene && scene.id === spec.missSceneId),
+      "symptom-severity scene is missing"
+    ),
+    check(
+      "miss-option-present",
+      "Miss option exists in lesson data",
+      Boolean(missOption && missOption.id === spec.missOptionId),
+      "too-vague miss option is missing"
+    ),
+    check(
+      "signal-resolves",
+      "Repair bridge resolves symptom-severity from the miss",
+      resolvedSignal === spec.signal,
+      "miss does not resolve to symptom-severity"
+    ),
+    check(
+      "scene-repair-linked",
+      "Scene repair deep link is wired",
+      nonEmpty(sceneRepairHref) && sceneRepairHref.includes("mode=repair") && sceneRepairHref.includes(`signal=${spec.signal}`),
+      "scene repair href is missing or incomplete"
+    ),
+    check(
+      "skrive-drill-linked",
+      "Skrive sundhed drill deep link is wired",
+      nonEmpty(drillRepairHref)
+        && drillRepairHref.includes("./skrive-drill/")
+        && drillRepairHref.includes("cat=sundhed")
+        && drillRepairHref.includes("from=lesson-a2-doctor"),
+      "skrive sundhed drill href is missing or incomplete"
+    ),
+    check(
+      "spoken-to-written-copy",
+      "Drill action explains apotek to patientportal transfer",
+      /apotek|patientportal/i.test(drillAction),
+      "drill action does not explain spoken-to-written transfer"
+    ),
+    check(
+      "same-intent-channel-transfer",
+      "Documents spoken apotek and written patientportal channels",
+      asArray(spec.channelVersions).length >= 2,
+      "fewer than two channel versions for doctor transfer"
+    ),
+    check(
+      "repair-ladder",
+      "Carries apotek miss -> scene repair -> patientportal ladder",
+      asArray(spec.repairLadder).length >= 3,
+      "doctor transfer repair ladder is incomplete"
+    ),
+    check(
+      "memory-backed-recurrence",
+      "Names the recurring symptom-severity signal",
+      spec.memoryCue && nonEmpty(spec.memoryCue.signal) && nonEmpty(spec.memoryCue.copy),
+      "doctor transfer memory cue is missing"
+    ),
+    check(
+      "alternate-signal-mapped",
+      "symptom-duration also maps to skrive sundhed",
+      alternateMisses.some(item => item.signal === "symptom-duration" && item.drillRepairHref.includes("cat=sundhed")),
+      "symptom-duration does not map to skrive sundhed"
+    )
+  ];
+
+  return {
+    id: spec.id,
+    kind: "transfer-chain",
+    lessonId: spec.lessonId,
+    lessonTitle: lesson && (lesson.title || lesson.id) || spec.lessonId,
+    dataPath: spec.dataPath,
+    missSceneId: spec.missSceneId,
+    missOptionId: spec.missOptionId,
+    signal: spec.signal,
+    title: "Apotek miss → scene repair → skrive sundhed",
+    learningGoal: "Transfer the same symptom intent from spoken apotek to written patientportal without losing duration or severity precision.",
+    userValue: "Shows why plateau health practice must cross channels: a vague apotek answer becomes a written patientportal message with testable timeline and severity.",
+    intent: spec.intent,
+    memoryCue: spec.memoryCue,
+    archetypes: asArray(spec.archetypes),
+    channels: asArray(spec.channelVersions).map(channel => ({
+      id: channel.id || "",
+      label: channel.label || "",
+      sample: channel.sample || "",
+      risk: channel.risk || ""
+    })),
+    repairLadder: asArray(spec.repairLadder),
+    sceneRepairHref,
+    drillRepairHref,
+    drillAction,
+    alternateMisses,
+    checks,
+    status: checks.every(item => item.pass) ? "pass" : "fail",
+    issues: checks.filter(item => !item.pass).map(item => item.issue)
+  };
+}
+
+function buildTransferChains(root, options = {}) {
+  return [buildDoctorSkriveTransferChain(root, options)];
+}
+
 function buildExerciseValueReport(options = {}) {
   const root = sourceRoot(options);
   const issues = [];
@@ -197,15 +400,24 @@ function buildExerciseValueReport(options = {}) {
   });
 
   const chains = lessons.flatMap(lesson => lesson.flagshipChains);
+  const transferChains = buildTransferChains(root, options);
   chains.forEach(row => {
     row.issues.forEach(issue => issues.push(`${row.lessonId}::${row.sceneId}: ${issue}`));
   });
+  transferChains.forEach(row => {
+    row.issues.forEach(issue => issues.push(`${row.id}: ${issue}`));
+  });
   if (chains.length === 0) issues.push("no flagship-chain exercises found");
+  if (transferChains.length === 0) issues.push("no transfer-chain exercises found");
 
+  const archetypeSources = [
+    ...chains.map(row => ({ id: `${row.lessonId}::${row.sceneId}`, archetypes: row.archetypes })),
+    ...transferChains.map(row => ({ id: row.id, archetypes: row.archetypes }))
+  ];
   const archetypeCoverage = requiredArchetypes.map(archetype => ({
     id: archetype,
-    scenes: chains.filter(row => row.archetypes.includes(archetype)).map(row => `${row.lessonId}::${row.sceneId}`),
-    pass: chains.some(row => row.archetypes.includes(archetype))
+    scenes: archetypeSources.filter(row => row.archetypes.includes(archetype)).map(row => row.id),
+    pass: archetypeSources.some(row => row.archetypes.includes(archetype))
   }));
   archetypeCoverage.filter(row => !row.pass).forEach(row => issues.push(`archetype ${row.id}: no scene coverage`));
 
@@ -241,6 +453,11 @@ function buildExerciseValueReport(options = {}) {
         row.checks.find(item => item.key === "memory-backed-recurrence").pass
         && row.checks.find(item => item.key === "explain-your-choice").pass
       ))
+    },
+    {
+      key: "doctor-skrive-transfer-proven",
+      label: "Doctor apotek misses transfer to skrive sundhed patientportal with scene repair and drill deep links",
+      pass: transferChains.some(row => row.id === "doctor-apotek-skrive-sundhed" && row.status === "pass")
     }
   ];
   guarantees.filter(item => !item.pass).forEach(item => issues.push(`guarantee failed: ${item.key}`));
@@ -248,10 +465,14 @@ function buildExerciseValueReport(options = {}) {
   const totals = {
     lessons: lessons.length,
     flagshipChains: chains.length,
+    transferChains: transferChains.length,
+    exerciseChains: chains.length + transferChains.length,
     archetypesCovered: archetypeCoverage.filter(row => row.pass).length,
-    channelVersions: chains.reduce((sum, row) => sum + row.channels.length, 0),
+    channelVersions: chains.reduce((sum, row) => sum + row.channels.length, 0)
+      + transferChains.reduce((sum, row) => sum + row.channels.length, 0),
     nearMisses: chains.reduce((sum, row) => sum + row.options.filter(option => option.nearMiss).length, 0),
-    repairLadders: chains.reduce((sum, row) => sum + row.options.filter(option => option.repairSteps >= 3).length, 0),
+    repairLadders: chains.reduce((sum, row) => sum + row.options.filter(option => option.repairSteps >= 3).length, 0)
+      + transferChains.filter(row => row.repairLadder.length >= 3).length,
     explainChoiceScenes: chains.filter(row => row.checks.some(item => item.key === "explain-your-choice" && item.pass)).length,
     issues: issues.length
   };
@@ -266,6 +487,7 @@ function buildExerciseValueReport(options = {}) {
     guarantees,
     archetypeCoverage,
     lessons,
+    transferChains,
     issues
   };
 }
@@ -275,6 +497,8 @@ function formatExerciseValueReport(report) {
     "Exercise Value Report",
     `status: ${report.status}`,
     `flagship chains: ${report.totals.flagshipChains}`,
+    `transfer chains: ${report.totals.transferChains}`,
+    `exercise chains: ${report.totals.exerciseChains}`,
     `archetypes covered: ${report.totals.archetypesCovered}/${report.requiredArchetypes.length}`,
     `near misses: ${report.totals.nearMisses}`,
     `repair ladders: ${report.totals.repairLadders}`,
@@ -287,6 +511,10 @@ function formatExerciseValueReport(report) {
   lines.push("", "Flagship chains:");
   report.lessons.forEach(lesson => {
     lesson.flagshipChains.forEach(chain => lines.push(`- ${chain.status} ${lesson.id}::${chain.sceneId} (${chain.archetypes.length} archetype(s))`));
+  });
+  lines.push("", "Transfer chains:");
+  asArray(report.transferChains).forEach(chain => {
+    lines.push(`- ${chain.status} ${chain.id} (${chain.archetypes.join(", ")})`);
   });
   lines.push("", "Issues:");
   if (report.issues.length) report.issues.forEach(issue => lines.push(`- ${issue}`));
@@ -306,7 +534,7 @@ function writeExerciseValueReport(outPath, options = {}) {
     process.exit(1);
   }
   if (!options.text) {
-    console.log(`exercise value report built: ${displayRel(outPath, root)} (${report.totals.flagshipChains} flagship chain(s))`);
+    console.log(`exercise value report built: ${displayRel(outPath, root)} (${report.totals.flagshipChains} flagship, ${report.totals.transferChains} transfer chain(s))`);
   }
   return report;
 }
@@ -329,5 +557,6 @@ module.exports = {
   buildExerciseValueReport,
   formatExerciseValueReport,
   writeExerciseValueReport,
-  requiredArchetypes
+  requiredArchetypes,
+  doctorSkriveTransferSpec
 };
