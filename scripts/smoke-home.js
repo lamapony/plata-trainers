@@ -392,6 +392,7 @@ function runHomeMarkupSmoke() {
   assert(indexHtml.includes("./dashboard.html?demo=learner"), "home evaluator path should link the demo learner dashboard");
   assert(indexHtml.includes("./proof.html#proof-walkthrough-title"), "home evaluator path should link the proof walkthrough");
   assert(indexHtml.includes("./proof.html#proof-guided-title"), "home evaluator path should link guided proof");
+  assert(indexHtml.includes("./proof.html#proof-distribution-title"), "home evaluator path should link offline distribution proof");
   assert(!indexHtml.includes("href=\"./reports/"), "home page should not link Pages-only reports from the root static page");
 }
 
