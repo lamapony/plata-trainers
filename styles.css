@@ -2488,7 +2488,6 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
 .today-citations,
 .today-facts-panel,
 .trainer-headroom,
-"WHAT WE SAW" {display:none!important;} /* comment */
 "WHAT IT MEANS",
 "NO LOCAL PROGRESS YET",
 "0% ROUTE COMPLETE",
@@ -2535,3 +2534,36 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
 .generic:contains("Professional variables") {
   display: none !important;
 }
+
+/* Looser breathing — added for design posvobodnee */
+.section { padding: 56px 0; }
+.section-head { margin-bottom: 32px; }
+article, .trainer-card, .today-program-card, .choice-card { padding: 24px 28px; margin-bottom: 20px; }
+.choice-list { gap: 18px; }
+.internal-voice, .notice { padding: 18px 20px; margin: 18px 0; }
+.trainer-grid { gap: 20px; }
+.narrative-grid { gap: 22px; }
+.today-program-card { padding: 36px 40px; }
+.lead, .narrative { line-height: 1.7; margin-bottom: 16px; }
+
+
+/* Strong hides for raw/technical in main learner view */
+.variables-display,
+[aria-label*="variables"],
+[aria-label*="Professional"],
+[aria-label*="Employer tone"],
+[aria-label*="Pressure"],
+[aria-label*="Professionalism"],
+.metrics, .tag[data-type="metric"],
+.headroom-saw, .headroom-means,
+"0% complete", "NO LOCAL HISTORY",
+"Technical details", .headroom-appendix {
+  display: none !important;
+}
+
+/* Embed section */
+.embed-section { background: rgba(126,155,143,0.04); }
+.embed-preview { margin: 18px 0; }
+.embed-code { background: #f1f3f0; padding: 12px; border-radius: 10px; font-size: 0.82rem; }
+.embed-code button { margin-left: 12px; padding: 4px 10px; font-size: 0.8rem; }
+
