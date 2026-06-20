@@ -2636,3 +2636,39 @@ article, .card, .trainer-card, .evaluator-card, .today-program-card { padding: 1
   margin: 0 auto;
 }
 
+/* Even more breathing in single-col */
+.hero { padding-bottom: 48px; }
+.hero .lead { font-size: 1.05rem; line-height: 1.7; max-width: 68ch; }
+.hero-actions { margin-top: 28px; gap: 14px; }
+.hero-grid .start-card {
+  margin-top: 36px;
+  padding: 24px 0 24px 24px;
+}
+.section { padding-top: 52px; padding-bottom: 52px; }
+/* Single-col hero breathing + dominant CTA */
+.hero-grid {
+  max-width: 860px;
+  padding: 0 12px;
+}
+.hero .lead {
+  font-size: 1.08rem;
+  line-height: 1.72;
+}
+.hero-actions .btn.primary {
+  padding: 14px 32px;
+  font-size: 1.05rem;
+}
+.hero-grid .start-card {
+  margin-top: 40px;
+  padding: 28px 0 28px 28px;
+  border-radius: 0 0 0 0;
+}
+
+.micro-loop {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin: 18px 0 8px;
+  padding-left: 4px;
+  border-left: 3px solid var(--ember);
+}
+
