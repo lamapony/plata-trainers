@@ -153,7 +153,7 @@
         signal: "starter-route",
         trainerId: stringOr(step && step.trainerId, "lesson-b2-job-followup"),
         rootCompetency: "",
-        reason: "There is no local progress yet. The B2 follow-up lesson is the primary first action; Lesson 01 remains an optional first-visit tutorial."
+        reason: "No history yet — the B2 follow-up is the best first action for most people hitting the plateau; Lesson 01 remains an optional first-visit tutorial."
       };
     }
     var kind = step && step.kind || plan && plan.kind || "continue";

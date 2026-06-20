@@ -120,8 +120,8 @@
     var stats = payload.stats || {};
     if (!stats.total) {
       return interpretationFromParts({
-        verdict: trainer.name ? trainer.name + " — not started" : "Not started",
-        saw: "No attempts recorded in this browser yet.",
+        verdict: trainer.name ? trainer.name + " — ready to begin" : "Not started",
+        saw: "Haven't tried this one yet.",
         means: "A single 10-item session is enough to unlock personalized routing.",
         nextStep: "Start one short session to build an evidence trail.",
         nextHref: trainer.path || "",

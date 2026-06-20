@@ -892,7 +892,7 @@ function resolveTodayProgramState(options) {
       eyebrow: "First session",
       headline: step && step.title || "Start B2 job follow-up",
       message: step && step.copy || "Begin with the B2 job-follow-up lesson so the system can build an evidence trail. Lesson 01 is an optional first-visit tutorial.",
-      why: "There is no local progress yet, so the planner starts with the B2 follow-up entry for plateau learners and avoids pretending to personalize.",
+      why: "No practice history yet — we start you with the strongest first plateau-breaker (B2 follow-up).",
       actionLabel: step ? "Start first session" : base.actionLabel,
       routeMeta: "No local history yet",
       tags: ["Onboarding", "Planner route"]

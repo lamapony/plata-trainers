@@ -27,12 +27,13 @@
       <aside class="map-card" aria-label="Route progress">
         <p class="eyebrow">Copenhagen route</p>
         <div class="map-illustration" aria-hidden="true">
-          <span class="pin airport">CPH</span>
-          <span class="pin station">HB</span>
-          <span class="pin room">204</span>
-          <svg viewBox="0 0 320 180" role="img" aria-label="A stylized route through Copenhagen">
-            <path d="M36 132 C 82 72, 136 146, 176 88 S 260 46, 292 96" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-dasharray="10 14" />
-          </svg>
+          <div class="timeline">
+            <div class="step"><span class="icon">✈️</span><span>Arrival</span></div>
+            <div class="line"></div>
+            <div class="step"><span class="icon">🚉</span><span>Station</span></div>
+            <div class="line"></div>
+            <div class="step"><span class="icon">🏨</span><span>Room</span></div>
+          </div>
         </div>
         <div id="route" class="route-list"></div>
       </aside>
