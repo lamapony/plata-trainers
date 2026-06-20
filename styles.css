@@ -2358,3 +2358,17 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
 #today-program {
   margin-top: 12px;
 }
+
+/* Compact overview for less raw density */
+#overview .trainer-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+#overview .trainer-card p,
+#overview .trainer-card .headroom-saw,
+#overview .trainer-card .headroom-means {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+#overview .trainer-card .headroom-verdict {
+  font-size: 1rem;
+}

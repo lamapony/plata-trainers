@@ -201,3 +201,15 @@
   <script src="./shared/plata-pwa.js"></script>
 </body>
 </html>
+
+<script>
+  // Close debug sections by default for clean learner view
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.inspect-drawer, .debug-group details').forEach(function (d) {
+      d.removeAttribute('open');
+    });
+    // Ensure Today is noticeable
+    var today = document.getElementById('today');
+    if (today) today.style.scrollMarginTop = '20px';
+  });
+</script>
