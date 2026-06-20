@@ -2567,3 +2567,32 @@ article, .trainer-card, .today-program-card, .choice-card { padding: 24px 28px; 
 .embed-code { background: #f1f3f0; padding: 12px; border-radius: 10px; font-size: 0.82rem; }
 .embed-code button { margin-left: 12px; padding: 4px 10px; font-size: 0.8rem; }
 
+/* More breathing + looser design */
+.hero, .section { padding-top: 2.8rem; padding-bottom: 3.2rem; }
+.lead { line-height: 1.65; }
+.trainer-grid, .evaluator-grid, .narrative-grid { gap: 1.6rem; }
+article, .card, .trainer-card, .evaluator-card, .today-program-card { padding: 1.4rem 1.6rem; }
+.choice-card { padding: 1.1rem 1.3rem; min-height: 92px; }
+.internal-voice, .notice, .carry-forward { padding: 1rem 1.2rem; margin: 1rem 0; }
+.map-illustration, .timeline { margin-bottom: 1rem; }
+.section-head { margin-bottom: 1.4rem; }
+.embed-preview { margin: 1.2rem 0; }
+.embed-section { background: #f8f9f7; border: 1px solid var(--line); border-radius: 16px; padding: 2rem; margin: 2rem 0; }
+.embed-preview iframe { border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+.embed-code { background: white; border: 1px solid var(--line); border-radius: 10px; padding: .8rem; font-family: var(--mono); font-size: .82rem; display: flex; align-items: center; gap: .6rem; }
+.embed-code button { white-space: nowrap; }
+/* Stronger hides for raw first-run dashboard view */
+.headroom-saw, .headroom-means,
+.today-progress-inline, .today-evidence-appendix,
+.today-facts-panel, .today-citations,
+[ class*="WHAT WE" ], [ class*="WHAT IT" ],
+"0% complete", "NO LOCAL HISTORY", "Program state",
+"Technical details", .headroom-appendix,
+.metrics, [data-metric], .tag[data-raw] {
+  display: none !important;
+  visibility: hidden !important;
+}
+.today-program-card.onboarding,
+.today-program-card.first {
+  border-left: 4px solid var(--ember);
+}
