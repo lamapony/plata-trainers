@@ -31,14 +31,17 @@
       <aside class="map-card" aria-label="Route progress">
         <p class="eyebrow">Scenario path</p>
         <div class="map-illustration" aria-hidden="true">
-          <span class="pin wait">⏳ Wait</span>
-          <span class="pin email">✉️ Email</span>
-          <span class="pin linkedin">💼 LinkedIn</span>
-          <span class="pin reply">📩 Reply</span>
-          <span class="pin outcome">🎯 Outcome</span>
-          <svg viewBox="0 0 320 120" role="img" aria-label="A stylized path through the B2 job scenario">
-            <path d="M24 80 C 70 20, 130 100, 170 40 S 250 60, 290 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 10" />
-          </svg>
+          <div class="timeline">
+            <div class="step"><span class="icon">⏳</span><span>Wait</span></div>
+            <div class="line"></div>
+            <div class="step"><span class="icon">✉️</span><span>Email</span></div>
+            <div class="line"></div>
+            <div class="step"><span class="icon">💼</span><span>LinkedIn</span></div>
+            <div class="line"></div>
+            <div class="step"><span class="icon">📩</span><span>Reply</span></div>
+            <div class="line"></div>
+            <div class="step"><span class="icon">🎯</span><span>Outcome</span></div>
+          </div>
         </div>
         <div id="route" class="route-list"></div>
         <div id="variables-display" class="variables-display" aria-label="Professional variables"></div>

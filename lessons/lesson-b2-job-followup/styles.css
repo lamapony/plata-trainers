@@ -282,3 +282,17 @@ button:disabled { opacity: .4; cursor: not-allowed; }
 .route-step.active {
   transform: translateX(2px);
 }
+/* Timeline polish */
+.map-illustration .timeline { display: flex; align-items: center; justify-content: space-between; padding: 10px 6px; background: #f4f8f6; border-radius: 16px; border: 1px solid var(--line); }
+.map-illustration .step { display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; color: var(--muted); width: 48px; gap: 2px; }
+.map-illustration .step .icon { font-size: 1rem; }
+.map-illustration .line { flex: 1; height: 2px; background: var(--line); margin: 0 3px; }
+.map-illustration .step.active { color: var(--forest); font-weight: 600; }
+
+/* Stronger choice states */
+.choice-card:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(32,42,36,0.15); border-color: var(--forest); }
+.choice-card.selected, .choice-card:focus { border-color: var(--ember); box-shadow: 0 0 0 3px rgba(185,101,69,0.15); }
+.choice-card .detail { font-size: 0.85rem; opacity: 0.8; }
+
+/* Hide debug variables */
+.variables-display { display: none !important; }
