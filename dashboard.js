@@ -889,9 +889,9 @@ function resolveTodayProgramState(options) {
   if (totalAttempts === 0 && visibleFacts.length === 0) {
     return Object.assign(base, {
       kind: "onboarding",
-      eyebrow: "First session",
-      headline: step && step.title || "Start B2 job follow-up",
-      message: step && step.copy || "Begin with the B2 job-follow-up lesson so the system can build an evidence trail. Lesson 01 is an optional first-visit tutorial.",
+      eyebrow: "Start here",
+      headline: "Your first real practice",
+      message: "A short realistic situation. Feel the pressure, make choices, get one precise repair, and know exactly what to practise next.",
       why: "No practice history yet — we start you with the strongest first plateau-breaker (B2 follow-up).",
       actionLabel: step ? "Start first session" : base.actionLabel,
       routeMeta: "No local history yet",
@@ -965,26 +965,9 @@ function renderTodayProgram(candidates, context) {
           </div>
           <p class="today-outcome">${escapeHtml(program.why)}</p>
         ` : `<p class="today-outcome">${escapeHtml(program.why)}</p>`}
-        <div class="today-progress-inline" aria-label="${progress}% complete">
-          <span><strong>${progress}%</strong> route complete</span>
-          <div><span style="width: ${progress}%"></span></div>
         </div>
       </div>
-      <details class="headroom-appendix today-evidence-appendix">
-        <summary>Route evidence and citations</summary>
-        <div class="today-context">
-          <div class="today-why">
-            <span class="eyebrow">Why this</span>
-            <p>${escapeHtml(program.why)}</p>
-            <div class="today-tags">${evidenceTagsHtml}</div>
-          </div>
-          <div class="today-facts-panel">
-            <span class="eyebrow">Session metrics</span>
-            <div class="today-facts">${todayFactsHtml}</div>
-          </div>
-        </div>
-        ${citationsHtml}
-      </details>
+      
       ${todayStageStripHtml(program.kind)}
     </article>
   `;

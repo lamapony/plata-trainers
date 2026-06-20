@@ -2372,3 +2372,108 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
 #overview .trainer-card .headroom-verdict {
   font-size: 1rem;
 }
+
+/* === IDEAL PREMIUM DASHBOARD === */
+
+/* Today as absolute hero */
+.today-section {
+  margin-bottom: 48px;
+}
+.today-program-card {
+  padding: 32px 28px;
+  border: 2px solid var(--forest);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(32,42,36,0.12);
+  background: linear-gradient(145deg, #f8f9f7, #f4f8f6);
+}
+.today-program-card .eyebrow {
+  color: var(--ember-deep);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+.today-program-card h3 {
+  font-size: 1.6rem;
+  margin: 8px 0 12px;
+  line-height: 1.25;
+}
+.today-program-card .today-message {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  max-width: 68ch;
+}
+.today-program-card .today-action .btn.primary {
+  padding: 14px 28px;
+  font-size: 1.05rem;
+  box-shadow: 0 10px 28px rgba(185,101,69,0.3);
+}
+.today-program-card .today-outcome {
+  margin-top: 16px;
+  font-size: 0.95rem;
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+/* Hide technical junk in default learner view */
+.today-evidence-appendix,
+.today-progress-inline,
+.today-citations,
+.today-facts-panel,
+.headroom-appendix,
+.trainer-headroom .headroom-technical,
+.trainer-headroom .headroom-saw,
+.trainer-headroom .headroom-means {
+  display: none !important;
+}
+
+/* Overview cards clean and consistent */
+#overview .trainer-card,
+#due .trainer-card {
+  padding: 18px 20px;
+}
+#overview .trainer-card .headroom-saw,
+#overview .trainer-card .headroom-means {
+  display: none;
+}
+#overview .trainer-card p {
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+/* Empty / first-run states - encouraging */
+.no-progress, .today-program-card.onboarding {
+  background: rgba(126,155,143,0.06);
+  border-color: var(--forest);
+}
+
+/* Hide any remaining raw variables in lessons */
+.variables-display,
+[aria-label*="Professional variables"],
+.professional-variables,
+.map-illustration .pin {
+  display: none !important;
+}
+
+/* Premium choice cards */
+.choice-card {
+  transition: all 0.2s ease;
+}
+.choice-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(32,42,36,0.14);
+  border-color: var(--forest);
+}
+.choice-card.selected {
+  border-color: var(--ember);
+  background: rgba(185,101,69,0.04);
+}
+
+/* Landing cards premium */
+.narrative-grid article,
+.trainer-grid article {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.narrative-grid article:hover,
+.trainer-grid article:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 44px rgba(32,42,36,0.13);
+}
