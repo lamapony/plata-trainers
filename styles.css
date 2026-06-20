@@ -2672,3 +2672,26 @@ article, .card, .trainer-card, .evaluator-card, .today-program-card { padding: 1
   border-left: 3px solid var(--ember);
 }
 
+/* Extra breathing for single-col */
+.section { padding: 64px 0; }
+.evaluator-grid { gap: 28px; }
+.trainer-grid, .narrative-grid { gap: 24px; }
+.card, .evaluator-card, article { padding: 24px; }
+.micro-loop { margin: 22px 0 12px; font-size: 1rem; }
+
+/* Hide remaining raw in lessons */
+.variables-display,
+[aria-label*="Professional variables"],
+[aria-label*="variables"] {
+  display: none !important;
+}
+/* Final breathing for gallery and cards */
+.trainer-grid article, .path-card {
+  padding: 26px 28px;
+}
+.narrative-grid {
+  gap: 26px;
+}
+.section-head {
+  margin-bottom: 32px;
+}
