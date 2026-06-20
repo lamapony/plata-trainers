@@ -55,12 +55,6 @@ code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monos
 .navlinks a { text-decoration: none; }
 .navlinks a:hover { color: var(--text); }
 
-.hero-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
-  gap: 28px;
-  align-items: stretch;
-}
 .eyebrow {
   margin: 0 0 14px;
   color: var(--ember);
@@ -456,8 +450,6 @@ details.inspect-drawer > :not(summary) { padding: 12px 14px; }
 .today-hero {
   display: grid;
   gap: 0;
-  max-width: 820px;
-}
 .today-hero h3,
 .today-main h3 {
   max-width: 760px;
@@ -2596,3 +2588,51 @@ article, .card, .trainer-card, .evaluator-card, .today-program-card { padding: 1
 .today-program-card.first {
   border-left: 4px solid var(--ember);
 }
+.hero-grid > div {
+  max-width: 100%;
+}
+.hero-grid .start-card {
+  margin-top: 32px;
+  max-width: 100%;
+  border-left: 4px solid var(--ember);
+  padding-left: 20px;
+}
+
+.hero-grid {
+  display: block;
+  max-width: 780px;
+  margin: 0 auto;
+}
+.hero-grid > div {
+  max-width: 100%;
+}
+.hero-grid .start-card {
+  margin-top: 32px;
+  max-width: 100%;
+  border-left: 4px solid var(--ember);
+  padding: 20px 0 20px 20px;
+  background: rgba(255,255,255,0.02);
+}
+
+
+/* Lessons: single column for breathing, map on top */
+.lesson-grid {
+  display: block;
+}
+.lesson-grid .map-card {
+  margin-bottom: 28px;
+  max-width: 100%;
+}
+.lesson-grid .scene-card {
+  max-width: 100%;
+}
+
+
+/* Dashboard hero also single-col breathing */
+.dashboard .hero-grid,
+#dashboard-hero {
+  display: block;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
