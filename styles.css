@@ -2477,3 +2477,61 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   transform: translateY(-4px);
   box-shadow: 0 16px 44px rgba(32,42,36,0.13);
 }
+
+/* Nuclear hide for any remaining raw technical text in main views */
+.headroom-saw,
+.headroom-means,
+[ class*="saw" ],
+[ class*="means" ],
+.today-progress-inline,
+.today-evidence-appendix,
+.today-citations,
+.today-facts-panel,
+.trainer-headroom,
+"WHAT WE SAW" {display:none!important;} /* comment */
+"WHAT IT MEANS",
+"NO LOCAL PROGRESS YET",
+"0% ROUTE COMPLETE",
+"Technical details",
+"Route evidence and citations",
+"Program state",
+"Guardrail",
+"Contract" {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Force clean Today card */
+.today-program-card {
+  padding: 36px !important;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.today-program-card h3 {
+  font-size: 1.75rem !important;
+}
+.today-program-card .today-message {
+  font-size: 1.1rem !important;
+}
+
+/* Lesson: completely hide any variables display */
+.variables-display,
+
+[aria-hidden="true"] ~ * {
+  display: none !important;
+}
+
+/* Clean premium overrides - remove raw technical leakage */
+.headroom-saw, .headroom-means,
+.today-progress-inline, .today-evidence-appendix, .today-citations, .today-facts-panel,
+.trainer-headroom {
+  display: none !important;
+}
+
+/* Lesson variables */
+.variables-display,
+.generic:contains("Professional variables") {
+  display: none !important;
+}
