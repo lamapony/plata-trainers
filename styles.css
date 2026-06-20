@@ -2309,3 +2309,52 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   color: var(--muted);
   font-size: 0.95rem;
 }
+
+/* Make Today the clear focus on dashboard */
+.today-section {
+  padding: 12px 0 28px;
+}
+#today-program {
+  margin-top: 8px;
+}
+#today-program .today-program-card {
+  border-width: 2px;
+  border-color: var(--forest);
+  box-shadow: 0 18px 48px rgba(32,42,36,0.15);
+  padding: 26px;
+}
+#today-program .today-program-card .eyebrow {
+  color: var(--ember-deep);
+  letter-spacing: 0.08em;
+}
+
+/* Group debug sections */
+.debug-group {
+  margin-top: 32px;
+  border-top: 1px dashed var(--line);
+  padding-top: 16px;
+}
+.debug-group summary {
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+
+/* Debug sections less raw */
+.debug-group {
+  margin-top: 40px;
+  opacity: 0.85;
+  font-size: 0.92rem;
+}
+.debug-group summary {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* Today even stronger */
+.today-section .section-head h2 {
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+}
+#today-program {
+  margin-top: 12px;
+}

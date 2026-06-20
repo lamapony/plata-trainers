@@ -360,12 +360,12 @@
       ? '<div class="headroom-technical">' + options.technicalHtml + "</div>"
       : (appendixRows ? "<dl>" + appendixRows + "</dl>" : "");
     var appendixHtml = technicalBlock
-      ? '<details class="headroom-appendix"><summary>Technical details</summary>' + technicalBlock + "</details>"
+      ? '<details class="headroom-appendix"><summary>Details</summary>' + technicalBlock + "</details>"
       : "";
     return '<article class="' + cls + '">' +
       '<p class="headroom-verdict">' + escapeHtml(interp.verdict) + "</p>" +
-      (interp.saw ? '<p class="headroom-saw"><span class="headroom-label">What we saw</span> ' + escapeHtml(interp.saw) + "</p>" : "") +
-      (interp.means ? '<p class="headroom-means"><span class="headroom-label">What it means</span> ' + escapeHtml(interp.means) + "</p>" : "") +
+      (interp.saw ? '<p class="headroom-saw"> <span class="headroom-label">Signal</span>  ' + escapeHtml(interp.saw) + "</p>" : "") +
+      (interp.means ? '<p class="headroom-means"> <span class="headroom-label">Impact</span>  ' + escapeHtml(interp.means) + "</p>" : "") +
       nextHtml +
       appendixHtml +
       "</article>";
