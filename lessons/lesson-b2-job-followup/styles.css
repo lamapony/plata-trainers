@@ -282,4 +282,3 @@ button:disabled { opacity: .4; cursor: not-allowed; }
 .route-step.active {
   transform: translateX(2px);
 }
->>>>>>> Stashed changes
