@@ -139,3 +139,28 @@ button { padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line);
 button.primary { background: var(--ember); color: #fff; border-color: transparent; }
 
 .variables-display, [aria-label*="Professional"], [aria-label*="variables"] { display: none !important; }
+
+/* Lesson hero visual slot - single column, breathing, premium */
+.lesson-hero-visual {
+  width: 100%;
+  margin-bottom: 28px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(251, 252, 248, 0.6);
+  border: 1px solid var(--line);
+}
+.lesson-hero-visual img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* Improve path visual when we have a real illustration */
+.scenario-path {
+  margin-bottom: 32px;
+}
+.horizontal-stepper {
+  padding: 12px 0;
+  opacity: 0.85;
+}
