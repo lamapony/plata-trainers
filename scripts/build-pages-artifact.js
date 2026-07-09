@@ -41,6 +41,7 @@ const rootFiles = [
   "site.webmanifest",
   "sitemap.xml",
   "styles.css",
+  "styles-core.css",
   "sw.js"
 ];
 

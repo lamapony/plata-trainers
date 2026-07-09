@@ -1,52 +1,49 @@
 /**
- * Platå design tokens — single source of truth.
- * Inspired by agent-ready systems (Astryx): semantic names, no glass,
- * no left-accent clichés, quiet radii, solid surfaces.
- *
- * Import once from pages/lessons/drills. Override locally only if needed.
+ * Platå visual system — editorial desk
+ * Warm paper, near-black ink, one restrained brick accent.
+ * No glass, no radial glow, no pill chrome, no AI-serif kits.
  */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* Surfaces */
-  --bg: oklch(0.16 0.015 150);
-  --bg-elev: oklch(0.19 0.016 150);
-  --surface: oklch(0.2 0.018 150);
-  --card: var(--surface);
+  --bg: #f4f1ea;
+  --bg-elev: #ebe6dc;
+  --surface: #faf8f4;
+  --card: #faf8f4;
 
-  /* Ink */
-  --text: oklch(0.92 0.02 82);
+  --text: #161513;
   --fg: var(--text);
-  --muted: oklch(0.72 0.02 82 / 0.82);
-  --ink: var(--text);
-  --forest: oklch(0.88 0.02 150);
+  --ink: #161513;
+  --muted: #5f5b54;
+  --forest: #161513;
 
-  /* Line / chrome */
-  --line: oklch(0.72 0.03 80 / 0.18);
+  --line: #d8d2c6;
   --border: var(--line);
 
-  /* Accent */
-  --ember: oklch(0.72 0.14 55);
+  /* Brick — used sparingly as text/underline, not as glow */
+  --ember: #9b4a2e;
   --accent: var(--ember);
-  --ember-soft: oklch(0.72 0.14 55 / 0.12);
-  --ember-deep: oklch(0.62 0.12 45);
-  --green: oklch(0.74 0.1 145);
-  --good: var(--green);
-  --bad: oklch(0.66 0.18 25);
-  --sage: oklch(0.7 0.05 160);
-  --cream: oklch(0.97 0.01 95);
+  --ember-soft: transparent;
+  --ember-deep: #7a3a24;
 
-  /* Effects (anti-cliché: none) */
+  --green: #2f6b45;
+  --good: var(--green);
+  --bad: #9b2e2e;
+  --sage: #5f5b54;
+  --cream: #faf8f4;
+
   --shadow: none;
   --soft-shadow: none;
-  --radius: 6px;
-  --radius-sm: 4px;
+  --radius: 2px;
+  --radius-sm: 2px;
 
-  /* Type */
-  --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+  --font-sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-serif: "Source Serif 4", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --display-stack: var(--font-serif);
+  --display-stack: var(--font-sans);
   --body-stack: var(--font-sans);
   --mono-stack: var(--font-mono);
+
+  --measure: 38rem;
+  --shell: 68rem;
 }
