@@ -82,41 +82,18 @@
       <div id="home-headroom" class="headroom-stack"></div>
     </section>
 
-    <section class="section" id="evaluate" aria-labelledby="evaluate-title">
-      <div class="section-head">
-        <p class="eyebrow">For reviewers</p>
-        <h2 id="evaluate-title">Evaluate in 60 seconds</h2>
-      </div>
-      <div class="evaluator-grid">
-        <article class="evaluator-card evaluator-lead">
-          <span class="tag">Read-only demo</span>
-          <h3>B2 learner profile</h3>
-          <p>Demo progress only. No account. No overwrite of your local data.</p>
-          <div class="evaluator-actions">
-            <a class="btn primary" href="./dashboard.html?demo=learner">Open demo learner</a>
-            <a class="btn" href="./proof.html#proof-walkthrough-title">Inspect proof loop</a>
-            <a class="btn" href="./proof.html#proof-distribution-title">Offline distribution proof</a>
-          </div>
-        </article>
-        <article class="evaluator-card">
-          <strong>1</strong>
-          <h3>Next action</h3>
-          <p>One recommendation from real misses.</p>
-          <a class="card-link" href="./dashboard.html?demo=learner">Demo dashboard →</a>
-        </article>
-        <article class="evaluator-card">
-          <strong>2</strong>
-          <h3>Guided repair</h3>
-          <p>Orient, practice, notice, receipt.</p>
-          <a class="card-link" href="./proof.html#proof-guided-title">Guided session proof →</a>
-        </article>
-        <article class="evaluator-card">
-          <strong>3</strong>
-          <h3>Audit trail</h3>
-          <p>Claims linked to CI gates and public reports.</p>
-          <a class="card-link" href="./proof.html#proof-walkthrough-title">Full proof →</a>
-        </article>
-      </div>
+    <section class="section evaluate-compact" id="evaluate" aria-labelledby="evaluate-title">
+      <h2 id="evaluate-title" class="visually-hidden">Evaluate in 60 seconds</h2>
+      <p class="evaluate-line">
+        <span class="evaluate-label">Reviewers</span>
+        <a href="./dashboard.html?demo=learner">Demo learner</a>
+        <span class="evaluate-sep" aria-hidden="true">·</span>
+        <a href="./proof.html#proof-walkthrough-title">Proof loop</a>
+        <span class="evaluate-sep" aria-hidden="true">·</span>
+        <a href="./proof.html#proof-guided-title">Guided session</a>
+        <span class="evaluate-sep" aria-hidden="true">·</span>
+        <a href="./proof.html#proof-distribution-title">Offline ZIP</a>
+      </p>
     </section>
 
     <section class="section" id="trainers" aria-labelledby="narrative-gallery-title">
@@ -127,18 +104,21 @@
           <p class="section-copy">Each story runs the pressure, notice, action, feedback loop. Drills only after a scene shows a gap.</p>
         </div>
       </div>
-      <div class="trainer-subhead" aria-labelledby="repair-paths-title">
-        <p class="eyebrow">Match → Gym</p>
-        <h3 id="repair-paths-title">Repair paths</h3>
-      </div>
-      <ul class="program-contracts" id="repair-paths">
-        <li><a href="./lessons/lesson-b2-radiator/">B2 radiator</a> → <a href="./register-drill/?signal=formal-register-control&from=lesson-b2-radiator-register&cat=channel">register drill · channel</a></li>
-        <li><a href="./lessons/lesson-b2-ordstilling/">B2 ordstilling</a> → <a href="./ordstilling-drill/?signal=v2-placement&from=lesson-b2-ordstilling&cat=v2">ordstilling drill · V2</a></li>
-        <li><a href="./lessons/lesson-b2-job-followup/">B2 job follow-up</a> → <a href="./register-drill/?signal=consequence-aware-tone&from=lesson-b2-job-followup&cat=deadline">register drill · deadline</a></li>
-        <li><a href="./lessons/lesson-b2-job-followup/">B2 job follow-up</a> → <a href="./bojning-drill/?signal=common-gender-noun&from=lesson-b2-job-followup&cat=common-gender">bøjning drill · gender traps</a></li>
-        <li><a href="./lessons/lesson-a2-doctor/">A2 doctor</a> → skrive sundhed</li>
-        <li><a href="./lessons/lesson-b2-job-followup/">B2 job follow-up</a> → <a href="./vocab-sr/?from=lesson-b2-job-followup&scene=email-closing">vocab SR · scene words</a></li>
-      </ul>
+      <details class="repair-paths-drawer">
+        <summary>Repair paths (lesson → drill)</summary>
+        <div class="trainer-subhead" aria-labelledby="repair-paths-title">
+          <p class="eyebrow">Match → Gym</p>
+          <h3 id="repair-paths-title">Prescribed repair</h3>
+        </div>
+        <ul class="program-contracts" id="repair-paths">
+          <li><a href="./lessons/lesson-b2-radiator/">B2 radiator</a> → <a href="./register-drill/?signal=formal-register-control&from=lesson-b2-radiator-register&cat=channel">register drill · channel</a></li>
+          <li><a href="./lessons/lesson-b2-ordstilling/">B2 ordstilling</a> → <a href="./ordstilling-drill/?signal=v2-placement&from=lesson-b2-ordstilling&cat=v2">ordstilling drill · V2</a></li>
+          <li><a href="./lessons/lesson-b2-job-followup/">B2 job follow-up</a> → <a href="./register-drill/?signal=consequence-aware-tone&from=lesson-b2-job-followup&cat=deadline">register drill · deadline</a></li>
+          <li><a href="./lessons/lesson-b2-job-followup/">B2 job follow-up</a> → <a href="./bojning-drill/?signal=common-gender-noun&from=lesson-b2-job-followup&cat=common-gender">bøjning drill · gender traps</a></li>
+          <li><a href="./lessons/lesson-a2-doctor/">A2 doctor</a> → skrive sundhed</li>
+          <li><a href="./lessons/lesson-b2-job-followup/">B2 job follow-up</a> → <a href="./vocab-sr/?from=lesson-b2-job-followup&scene=email-closing">vocab SR · scene words</a></li>
+        </ul>
+      </details>
       <div class="trainer-grid narrative-gallery" id="narrative-gallery"></div>
       <div class="trainer-subhead">
         <p class="eyebrow">Drills</p>
@@ -167,7 +147,7 @@
     </section>
 
     <footer class="footer">
-      <p>MIT · <a href="https://dmitrii.dk">Dmitrii Babinov</a> · <a href="./proof.html">Proof</a> · <a href="./quality.html">Quality</a></p>
+      <p>MIT · <a href="https://dmitrii.dk">Dmitrii Babinov</a> · <a href="./factory.html">Factory</a> · <a href="./proof.html">Proof</a> · <a href="./quality.html">Quality</a></p>
     </footer>
   </main>
   <script src="./shared/plata-kernel.js"></script>

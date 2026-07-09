@@ -2676,10 +2676,10 @@ article, .card, .trainer-card, .evaluator-card, .today-program-card { padding: 1
 }
 
 /* Extra breathing for single-col */
-.section { padding: 64px 0; }
-.evaluator-grid { gap: 28px; }
-.trainer-grid, .narrative-grid { gap: 24px; }
-.card, .evaluator-card, article { padding: 24px; }
+.section { padding: 36px 0; }
+.evaluator-grid { gap: 16px; }
+.trainer-grid, .narrative-grid { gap: 16px; }
+/* avoid blanket article padding */
 .micro-loop { margin: 22px 0 12px; font-size: 1rem; }
 
 /* Hide remaining raw in lessons */
@@ -2690,11 +2690,60 @@ article, .card, .trainer-card, .evaluator-card, .today-program-card { padding: 1
 }
 /* Final breathing for gallery and cards */
 .trainer-grid article, .path-card {
-  padding: 26px 28px;
+  padding: 20px;
 }
-.narrative-grid {
-  gap: 26px;
+.narrative-grid { gap: 16px; }
+.section-head { margin-bottom: 16px; }
+
+
+/* Compact evaluator strip (reviewer path without 4-card grid) */
+.evaluate-compact {
+  padding: 12px 0 8px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
-.section-head {
-  margin-bottom: 32px;
+.evaluate-line {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
+.evaluate-label {
+  color: var(--muted);
+  font-weight: 500;
+  margin-right: 4px;
+}
+.evaluate-line a {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.evaluate-line a:hover { border-bottom-color: var(--line); }
+.evaluate-sep { color: var(--line); }
+
+.repair-paths-drawer {
+  margin: 0 0 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  background: var(--surface);
+}
+.repair-paths-drawer summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.repair-paths-drawer[open] summary { margin-bottom: 10px; }
+.repair-paths-drawer .program-contracts {
+  margin: 0;
+  padding-left: 1.1em;
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.repair-paths-drawer .program-contracts a { color: var(--text); }

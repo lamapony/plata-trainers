@@ -27,6 +27,7 @@ const quickstartProofPublicIndex = "reports/quickstart-proof/quickstart.json";
 const rootFiles = [
   "404.html",
   "dashboard.html",
+  "factory.html",
   "dashboard.js",
   "home.js",
   "index.html",

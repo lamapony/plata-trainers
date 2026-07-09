@@ -11,4 +11,8 @@
   <url><loc>https://lamapony.github.io/plata-trainers/bojning-drill/</loc></url>
   <url><loc>https://lamapony.github.io/plata-trainers/ordstilling-drill/</loc></url>
   <url><loc>https://lamapony.github.io/plata-trainers/vocab-sr/</loc></url>
+  <url>
+    <loc>https://lamapony.github.io/plata-trainers/factory.html</loc>
+    <changefreq>weekly</changefreq>
+  </url>
 </urlset>
