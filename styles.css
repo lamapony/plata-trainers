@@ -1,16 +1,16 @@
 :root {
   color-scheme: dark;
-  --bg: oklch(0.18 0.02 150);
-  --bg-2: oklch(0.23 0.025 150);
-  --card: oklch(0.25 0.025 150 / 0.82);
-  --line: oklch(0.72 0.04 80 / 0.22);
-  --text: oklch(0.92 0.025 82);
-  --muted: oklch(0.76 0.025 82 / 0.78);
-  --ember: oklch(0.72 0.16 55);
-  --ember-soft: oklch(0.72 0.16 55 / 0.18);
-  --green: oklch(0.74 0.12 145);
-  --shadow: 0 24px 80px oklch(0.08 0.02 150 / 0.45);
-  --radius: 24px;
+  --bg: oklch(0.16 0.015 150);
+  --bg-2: oklch(0.2 0.018 150);
+  --card: oklch(0.2 0.018 150);
+  --line: oklch(0.72 0.03 80 / 0.18);
+  --text: oklch(0.92 0.02 82);
+  --muted: oklch(0.72 0.02 82 / 0.82);
+  --ember: oklch(0.72 0.14 55);
+  --ember-soft: oklch(0.72 0.14 55 / 0.12);
+  --green: oklch(0.74 0.1 145);
+  --shadow: none;
+  --radius: 10px;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -19,10 +19,7 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 18% 8%, var(--ember-soft), transparent 34rem),
-    radial-gradient(circle at 88% 18%, oklch(0.48 0.09 185 / 0.20), transparent 28rem),
-    linear-gradient(145deg, var(--bg), oklch(0.13 0.018 150));
+  background: var(--bg);
   color: var(--text);
 }
 
@@ -34,13 +31,13 @@ code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monos
   margin: 0 auto;
 }
 
-.hero { padding: 28px 0 56px; }
+.hero { padding: 20px 0 36px; }
 .topnav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 14px 0 52px;
+  padding: 12px 0 32px;
 }
 .brand {
   display: inline-flex;
@@ -50,51 +47,52 @@ code { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monos
   font-weight: 700;
   letter-spacing: -0.02em;
 }
-.brand span { filter: drop-shadow(0 0 16px var(--ember-soft)); }
+.brand span { filter: none; }
 .navlinks { display: flex; flex-wrap: wrap; gap: 16px; color: var(--muted); font-size: 14px; }
 .navlinks a { text-decoration: none; }
 .navlinks a:hover { color: var(--text); }
 
 .eyebrow {
-  margin: 0 0 14px;
-  color: var(--ember);
+  margin: 0 0 10px;
+  color: var(--muted);
   font-family: "JetBrains Mono", ui-monospace, monospace;
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.08em;
 }
 h1, h2, h3 {
   font-family: Fraunces, Georgia, serif;
   margin: 0;
-  letter-spacing: -0.045em;
-  line-height: 0.98;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
 }
-h1 { max-width: 780px; font-size: clamp(48px, 8vw, 96px); }
-h2 { font-size: clamp(32px, 4vw, 54px); }
-h3 { font-size: 30px; }
+h1 { max-width: 780px; font-size: clamp(36px, 6vw, 64px); }
+h2 { font-size: clamp(26px, 3.2vw, 40px); }
+h3 { font-size: 22px; }
 .lead {
-  max-width: 710px;
-  margin: 24px 0 0;
+  max-width: 560px;
+  margin: 16px 0 0;
   color: var(--muted);
-  font-size: clamp(18px, 2vw, 22px);
+  font-size: clamp(16px, 1.6vw, 18px);
   line-height: 1.55;
 }
-.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 46px;
-  padding: 0 18px;
+  min-height: 42px;
+  padding: 0 16px;
   border: 1px solid var(--line);
-  border-radius: 999px;
-  background: oklch(1 0 0 / 0.05);
+  border-radius: 8px;
+  background: transparent;
   color: var(--text);
   text-decoration: none;
-  font-weight: 700;
+  font-weight: 600;
 }
 .btn.primary { background: var(--ember); color: oklch(0.14 0.02 55); border-color: transparent; }
-.btn:hover { transform: translateY(-1px); }
+.btn:hover { background: oklch(1 0 0 / 0.04); }
+.btn.primary:hover { filter: brightness(1.05); background: var(--ember); }
 .btn:disabled,
 .btn[aria-disabled="true"] {
   cursor: not-allowed;
@@ -107,8 +105,8 @@ h3 { font-size: 30px; }
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--card);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  box-shadow: none;
+  backdrop-filter: none;
 }
 .status-card { padding: 24px; }
 .status-card h2 { font-size: 28px; }
@@ -173,10 +171,8 @@ h3 { font-size: 30px; }
   padding: 22px;
 }
 .evaluator-lead {
-  border-left: 4px solid var(--ember);
-  background:
-    linear-gradient(145deg, oklch(0.30 0.032 155 / 0.92), oklch(0.22 0.026 150 / 0.96)),
-    var(--card);
+  border-left: 3px solid var(--ember);
+  background: var(--card);
 }
 .evaluator-card > strong {
   display: grid;
@@ -2218,59 +2214,58 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   .proof-review-row { grid-template-columns: 1fr; }
 }
 
-/* Landing card variety + premium feel */
+/* Landing cards: flat, no glass */
 .narrative-grid article.gold {
-  border-left: 4px solid var(--ember);
-  background: linear-gradient(145deg, rgba(251,252,248,0.96), #f8f9f7);
+  border-left: 3px solid var(--ember);
+  background: var(--card);
 }
 .trainer-grid article.drill {
-  border-style: dashed;
-  opacity: 0.95;
+  border-style: solid;
+  opacity: 1;
 }
 .card-status {
   font-size: 0.72rem;
   padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(32,42,36,0.06);
+  border-radius: 4px;
+  background: oklch(1 0 0 / 0.05);
   color: var(--muted);
   display: inline-block;
 }
 .hero-actions .primary {
-  box-shadow: 0 10px 24px rgba(185,101,69,0.25);
+  box-shadow: none;
 }
 .hero-actions .primary:hover {
-  transform: translateY(-2px) scale(1.01);
+  transform: none;
 }
 .section-lead {
   color: var(--muted);
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
-/* Dashboard Today prominence */
+/* Dashboard Today: simple emphasis */
 #today-program, .today-program-card {
-  border: 2px solid var(--forest);
-  box-shadow: 0 18px 48px rgba(32,42,36,0.14);
+  border: 1px solid var(--line);
+  box-shadow: none;
 }
 .today-program-card .eyebrow {
-  color: var(--ember-deep);
+  color: var(--muted);
 }
 
-/* Dashboard product polish: Today dominant, less debug feel */
 .today-section {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 #today-program .today-program-card {
-  padding: 24px;
-  border: 2px solid var(--forest);
-  box-shadow: 0 16px 40px rgba(32,42,36,0.12);
-  background: var(--cream);
+  padding: 20px;
+  border: 1px solid var(--ember);
+  box-shadow: none;
+  background: var(--card);
 }
 #today-program .today-program-card h3 {
-  font-size: 1.35rem;
+  font-size: 1.25rem;
 }
 #today-program .today-program-card p {
-  font-size: 1rem;
-  line-height: 1.55;
+  font-size: 0.98rem;
+  line-height: 1.5;
 }
 
 /* Collapse debug/inspect sections visually for learner focus */
@@ -2302,22 +2297,21 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   font-size: 0.95rem;
 }
 
-/* Make Today the clear focus on dashboard */
 .today-section {
-  padding: 12px 0 28px;
+  padding: 8px 0 20px;
 }
 #today-program {
   margin-top: 8px;
 }
 #today-program .today-program-card {
-  border-width: 2px;
-  border-color: var(--forest);
-  box-shadow: 0 18px 48px rgba(32,42,36,0.15);
-  padding: 26px;
+  border-width: 1px;
+  border-color: var(--ember);
+  box-shadow: none;
+  padding: 20px;
 }
 #today-program .today-program-card .eyebrow {
-  color: var(--ember-deep);
-  letter-spacing: 0.08em;
+  color: var(--muted);
+  letter-spacing: 0.06em;
 }
 
 /* Group debug sections */
@@ -2365,38 +2359,36 @@ a.program-chip:hover { color: var(--text); border-color: var(--ember); }
   font-size: 1rem;
 }
 
-/* === IDEAL PREMIUM DASHBOARD === */
-
-/* Today as absolute hero */
+/* Dashboard focus without glass/glow */
 .today-section {
-  margin-bottom: 48px;
+  margin-bottom: 28px;
 }
 .today-program-card {
-  padding: 32px 28px;
-  border: 2px solid var(--forest);
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(32,42,36,0.12);
-  background: linear-gradient(145deg, #f8f9f7, #f4f8f6);
+  padding: 20px;
+  border: 1px solid var(--ember);
+  border-radius: var(--radius);
+  box-shadow: none;
+  background: var(--card);
 }
 .today-program-card .eyebrow {
-  color: var(--ember-deep);
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
 }
 .today-program-card h3 {
-  font-size: 1.6rem;
+  font-size: 1.35rem;
   margin: 8px 0 12px;
   line-height: 1.25;
 }
 .today-program-card .today-message {
-  font-size: 1.05rem;
+  font-size: 1rem;
   line-height: 1.5;
   max-width: 68ch;
 }
 .today-program-card .today-action .btn.primary {
-  padding: 14px 28px;
-  font-size: 1.05rem;
-  box-shadow: 0 10px 28px rgba(185,101,69,0.3);
+  padding: 12px 18px;
+  font-size: 1rem;
+  box-shadow: none;
 }
 .today-program-card .today-outcome {
   margin-top: 16px;

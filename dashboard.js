@@ -892,7 +892,7 @@ function resolveTodayProgramState(options) {
       eyebrow: "Start here",
       headline: "Your first real practice",
       message: "A short realistic situation. Feel the pressure, make choices, get one precise repair, and know exactly what to practise next.",
-      why: "No practice history yet — we start you with the strongest first plateau-breaker (B2 follow-up).",
+      why: "Chosen because this path has no local progress yet — we start you with the strongest first plateau-breaker (B2 follow-up).",
       actionLabel: step ? "Start first session" : base.actionLabel,
       routeMeta: "No local history yet",
       tags: ["Onboarding", "Planner route"]
@@ -968,6 +968,22 @@ function renderTodayProgram(candidates, context) {
         </div>
       </div>
       
+      <details class="headroom-appendix today-evidence-appendix" style="margin: 0 1.5rem 1.5rem 1.5rem; border-top:1px solid var(--line); padding-top:1rem;">
+        <summary style="cursor:pointer; font-size:0.85rem; color:var(--text-light); font-weight:500;">Route evidence and citations</summary>
+        <div class="today-context" style="margin-top:1rem;">
+          <div class="today-why">
+            <span class="eyebrow">Why this</span>
+            <p>${escapeHtml(program.why)}</p>
+            <div class="today-tags">${evidenceTagsHtml}</div>
+          </div>
+          <div class="today-facts-panel">
+            <span class="eyebrow">Session metrics</span>
+            <div class="today-facts">${todayFactsHtml}</div>
+          </div>
+        </div>
+        ${citationsHtml}
+      </details>
+
       ${todayStageStripHtml(program.kind)}
     </article>
   `;

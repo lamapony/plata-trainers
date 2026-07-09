@@ -304,7 +304,7 @@ function runEmptyDashboardSmoke() {
 
   assert(env.elements["#trainer-cards"].children.length === 12, "dashboard renders all trainer cards");
   assert(/Planner route/.test(env.elements["#today-program"].innerHTML), "dashboard renders Today program shell for starter routes");
-  assert(/First session/.test(env.elements["#today-program"].innerHTML), "dashboard labels the empty profile as a first session");
+  assert(/Start here/.test(env.elements["#today-program"].innerHTML), "dashboard labels the empty profile with Start here");
   assert(/job-followup|follow-up/i.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes the B2 follow-up starter step");
   assert(/0%/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell shows route progress");
   assert(/onboarding/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell exposes the onboarding state");

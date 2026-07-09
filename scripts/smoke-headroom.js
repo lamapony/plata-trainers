@@ -35,8 +35,8 @@ function run() {
   assert(mastery.nextHref.includes("passive-agency"), "mastery next href preserved");
 
   const card = layer.renderCard(mastery, { extraClass: "mastery-card", technicalHtml: "<span>passive-agency</span>" });
-  assert(/What we saw/.test(card), "renderCard includes saw label");
-  assert(/Technical details/.test(card), "renderCard nests technical appendix");
+  assert(/Signal/.test(card), "renderCard includes saw label");
+  assert(/Details/.test(card), "renderCard nests technical appendix");
   assert(/passive-agency/.test(card), "technical appendix keeps signal id");
 
   const today = layer.compressTodayProgram({
