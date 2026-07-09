@@ -363,6 +363,7 @@
   function galleryMetaLine(trainer) {
     var g = trainer.gallery || {};
     var parts = [];
+    if (g.level) parts.push(g.level);
     if (g.estimatedMinutes) parts.push(g.estimatedMinutes + " min");
     if (trainer.type === "lesson" && g.signalFamily) parts.push(g.signalFamily);
     if (trainer.type === "drill" && g.repairs) parts.push(g.repairs);
@@ -382,22 +383,10 @@
 
     var tag = document.createElement("span");
     tag.className = "tag";
-    tag.textContent = g.tag || (trainer.type === "lesson" ? "Narrative lesson" : "Drill");
+    tag.textContent = g.tag || (trainer.type === "lesson" ? "Lesson" : "Drill");
     article.appendChild(tag);
 
-    if (g.featured) {
-      var featured = document.createElement("span");
-      featured.className = "gallery-featured";
-      featured.textContent = "Featured";
-      article.appendChild(featured);
-    }
-
-    if (g.status) {
-      var status = document.createElement("span");
-      status.className = "gallery-status gallery-status-" + g.status;
-      status.textContent = g.status;
-      article.appendChild(status);
-    }
+    // No Featured/status pills — sort still uses gallery.featured.
 
     var title = document.createElement("h3");
     title.textContent = trainer.name;

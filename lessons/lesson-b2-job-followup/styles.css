@@ -47,7 +47,7 @@ h1 { font-size: clamp(2.6rem, 8vw, 5.2rem); }
 .scenario-path { margin-bottom: 28px; }
 .scenario-path .eyebrow { margin-bottom: 10px; }
 
-/* Clean horizontal stepper - premium, no two-col sidebar */
+/* Clean horizontal stepper - no two-col sidebar */
 .horizontal-stepper {
   display: flex;
   align-items: center;
@@ -99,15 +99,15 @@ h1 { font-size: clamp(2.6rem, 8vw, 5.2rem); }
   min-height: 420px;
 }
 
-/* Breathing + premium */
+/* Scene spacing */
 .pressure, .narrative { margin: 14px 0 18px; max-width: 68ch; color: var(--forest); font-size: 1.04rem; line-height: 1.65; }
 .dialogue { display: grid; gap: 10px; margin: 16px 0 12px; }
 .dialogue-line { display: grid; grid-template-columns: 82px 1fr; gap: 10px; align-items: start; }
-.dialogue-line span { font-family: "IBM Plex Mono", monospace; font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.02em; padding-top: 4px; }
+.dialogue-line span { font-family: "IBM Plex Mono", monospace; font-size: .7rem; color: var(--muted); text-transform: none; letter-spacing: 0.02em; padding-top: 4px; }
 .dialogue-line p { margin: 0; padding: 11px 14px; border: 1px solid var(--line); border-radius: 6px; background: #fff; line-height: 1.5; }
 .danish-line { display: inline-block; margin: 12px 0 18px; padding: 12px 15px; border-radius: 6px; background: var(--forest); color: var(--cream); font-family: "IBM Plex Mono", monospace; }
 .notice { margin: 14px 0 18px; padding: 14px 16px; border-top: 1px solid var(--line); background: rgba(126,155,143,.12); border-radius: 6px; }
-.notice strong { font-family: "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: 0.02em; font-size: .68rem; color: var(--ember-deep); }
+.notice strong { font-family: "IBM Plex Mono", monospace; text-transform: none; letter-spacing: 0.02em; font-size: .68rem; color: var(--ember-deep); }
 .carry-forward { margin: 18px 0 0; color: var(--muted); font-size: .95rem; line-height: 1.6; }
 
 .choice-list { display: grid; gap: 12px; margin: 18px 0; }
@@ -137,21 +137,6 @@ button.primary { background: var(--ember); color: #fff; border-color: transparen
 
 .variables-display, [aria-label*="Professional"], [aria-label*="variables"] { display: none !important; }
 
-/* Lesson hero visual slot - single column, breathing, premium */
-.lesson-hero-visual {
-  width: 100%;
-  margin-bottom: 28px;
-  border-radius: 6px;
-  overflow: hidden;
-  background: rgba(251, 252, 248, 0.6);
-  border: 1px solid var(--line);
-}
-.lesson-hero-visual img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
-}
 
 /* Improve path visual when we have a real illustration */
 .scenario-path {

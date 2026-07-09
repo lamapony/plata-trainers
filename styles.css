@@ -11,6 +11,11 @@
   --green: oklch(0.74 0.1 145);
   --shadow: none;
   --radius: 6px;
+  --forest: oklch(0.28 0.02 150);
+  --cream: oklch(0.97 0.01 95);
+  --surface: var(--card);
+  --ember-deep: oklch(0.55 0.12 45);
+  --text-light: var(--muted);
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -972,7 +977,7 @@ details.inspect-drawer > :not(summary) { padding: 12px 14px; }
 .practice-plan-head > span { padding: 7px 10px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); font-family: "IBM Plex Mono", monospace; font-size: 11px; white-space: nowrap; }
 .plan-primary-action { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; }
 .plan-primary-action .btn { margin-top: 0; }
-.plan-primary-action span { color: var(--muted); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0; }
+.plan-primary-action span { color: var(--muted); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; text-transform: none; letter-spacing: 0; }
 .plan-progress { height: 7px; margin: -2px 0 18px; overflow: hidden; border: 1px solid var(--line); border-radius: 4px; background: oklch(1 0 0 / 0.04); }
 .plan-progress span { display: block; height: 100%; border-radius: inherit; background: var(--ember); }
 .advisor-receipt {
@@ -1074,7 +1079,7 @@ details.inspect-drawer > :not(summary) { padding: 12px 14px; }
 .plan-return-receipt strong { color: var(--text); font-size: 14px; }
 .plan-return-receipt span { color: var(--muted); font-size: 13px; line-height: 1.4; }
 .plan-return-receipt .btn { min-height: 36px; padding: 0 12px; font-size: 13px; }
-.plan-return-next { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px !important; text-transform: uppercase; letter-spacing: 0; }
+.plan-return-next { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px !important; text-transform: none; letter-spacing: 0; }
 .plan-step-explanation {
   display: grid;
   gap: 7px;
@@ -1108,7 +1113,7 @@ details.inspect-drawer > :not(summary) { padding: 12px 14px; }
 .plan-steps { display: grid; gap: 10px; }
 .plan-step { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
 .plan-step-number { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ember-soft); color: var(--ember); font-family: "IBM Plex Mono", monospace; font-weight: 800; }
-.plan-step-meta { display: flex; flex-wrap: wrap; gap: 8px; color: var(--muted); font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0; }
+.plan-step-meta { display: flex; flex-wrap: wrap; gap: 8px; color: var(--muted); font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: none; letter-spacing: 0; }
 .plan-step-status { border: 1px solid var(--line); border-radius: 4px; padding: 2px 7px; color: var(--muted); }
 .plan-step-status.active { border-color: oklch(0.72 0.16 55 / 0.62); background: var(--ember-soft); color: var(--ember); }
 .plan-step-status.done { border-color: oklch(0.74 0.12 145 / 0.55); background: oklch(0.74 0.12 145 / 0.12); color: var(--green); }
@@ -1433,7 +1438,7 @@ details.inspect-drawer > :not(summary) { padding: 12px 14px; }
   display: block;
   font-size: 11px;
   letter-spacing: 0.02em;
-  text-transform: uppercase;
+  text-transform: none;
   color: var(--muted);
   margin-bottom: 4px;
 }
@@ -1507,7 +1512,7 @@ details.inspect-drawer > :not(summary) { padding: 12px 14px; }
 .headroom-appendix dt {
   font-size: 11px;
   letter-spacing: 0;
-  text-transform: uppercase;
+  text-transform: none;
   color: var(--muted);
 }
 
@@ -2455,7 +2460,7 @@ a.program-chip:hover { color: var(--text); border-color: var(--line); }
   background: rgba(185,101,69,0.04);
 }
 
-/* Landing cards premium */
+/* Landing cards */
 .narrative-grid article,
 .trainer-grid article {
   transition: transform 0.2s, box-shadow 0.2s;
@@ -2510,7 +2515,7 @@ a.program-chip:hover { color: var(--text); border-color: var(--line); }
   display: none !important;
 }
 
-/* Clean premium overrides - remove raw technical leakage */
+/* Quiet overrides */
 .headroom-saw, .headroom-means,
 .today-progress-inline, .today-evidence-appendix, .today-citations, .today-facts-panel,
 .trainer-headroom {
@@ -2607,7 +2612,7 @@ article, .card, .trainer-card, .evaluator-card, .today-program-card { padding: 1
   max-width: 100%;
   border-top: 1px solid var(--line);
   padding: 20px 0 20px 20px;
-  background: rgba(255,255,255,0.02);
+  background: transparent;
 }
 
 
