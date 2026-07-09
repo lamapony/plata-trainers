@@ -1313,7 +1313,7 @@ function renderTrainerCards() {
         <div class="stats-mini empty">No progress yet</div>
       `;
     card.innerHTML = `
-      <span class="tag">${trainer.icon} ${trainer.type === "lesson" ? "Narrative" : "Drill"}</span>
+      <span class="tag">${trainer.type === "lesson" ? "Lesson" : "Drill"}</span>
       <h3>${escapeHtml(trainer.name)}</h3>
       <p>${escapeHtml(trainer.description)}</p>
       ${headroomHtml}
@@ -1473,7 +1473,7 @@ function renderDueCards(candidates) {
     const decisionClass = String(decision.kind || "continue").replace(/[^a-z0-9-]/gi, "");
     card.className = `trainer-card due-card ${decisionClass}`;
     card.innerHTML = `
-      <span class="tag due">${trainer.icon} ${escapeHtml(decision.badge || "Practice now")}</span>
+      <span class="tag due">${escapeHtml(decision.badge || "Practice now")}</span>
       <h3>${escapeHtml(decision.title || trainer.name)}</h3>
       <p>${escapeHtml(decision.copy || trainer.description)}</p>
       ${headroomHtml}
@@ -1523,7 +1523,7 @@ function renderEvidenceLedger() {
         <h3>${escapeHtml(entry.title)}</h3>
         <p>${escapeHtml(entry.copy)}</p>
         <div class="ledger-facts">
-          <span>${escapeHtml(entry.trainer.icon)} ${escapeHtml(entry.trainer.name)}</span>
+          <span>${escapeHtml(entry.trainer.name)}</span>
           ${(entry.facts || []).slice(0, 4).map(fact => `<span>${escapeHtml(fact)}</span>`).join("")}
         </div>
       </div>
@@ -1721,7 +1721,7 @@ function renderMasteryList() {
         <p>${escapeHtml(signal.evidence)}</p>
         <div class="mastery-meta">
           <span>${escapeHtml(missTryText(signal.wrong, signal.total))}</span>
-          <span>${signal.trainers.map(t => `${t.icon} ${escapeHtml(t.name)}`).join(" · ")}</span>
+          <span>${signal.trainers.map(t => `${escapeHtml(t.name)}`).join(" · ")}</span>
         </div>
         ${signal.remediations.length ? signal.remediations.slice(0, 3).map(repair => repairBlockHtml(repair)).join("") : ""}
     `;
@@ -1767,7 +1767,7 @@ function renderWeakList() {
     <div class="weak-row">
       <div class="weak-main">
         <span class="weak-tag-large">${escapeHtml(w.tag)}</span>
-        <span class="weak-trainers">${w.trainers.map(t => `${t.icon} ${escapeHtml(t.name)}`).join(" · ")}</span>
+        <span class="weak-trainers">${w.trainers.map(t => `${escapeHtml(t.name)}`).join(" · ")}</span>
       </div>
       <div class="weak-stats">
         <span class="wrong">${escapeHtml(missTryText(w.wrong, w.total))}</span>

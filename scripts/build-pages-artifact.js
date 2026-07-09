@@ -49,6 +49,7 @@ const publicDirs = [
   "lessons",
   "ordstilling-drill",
   "register-drill",
+  "skrive-drill",
   "shared",
   "vocab-sr"
 ];

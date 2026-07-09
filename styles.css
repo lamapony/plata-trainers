@@ -1,3 +1,5 @@
+@import url("./shared/plata-tokens.css");
+
 :root {
   color-scheme: dark;
   --bg: oklch(0.16 0.015 150);
@@ -137,7 +139,7 @@ h3 { font-size: 22px; }
   font-size: 13px;
 }
 
-.section { padding: 46px 0; }
+.section { padding: 36px 0; }
 .section-head { display: flex; align-items: end; justify-content: space-between; margin-bottom: 20px; }
 .section-copy {
   max-width: 740px;
@@ -146,7 +148,7 @@ h3 { font-size: 22px; }
   line-height: 1.55;
 }
 .trainer-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.trainer-card { padding: 24px; min-height: 280px; display: flex; flex-direction: column; }
+.trainer-card { padding: 24px; min-height: 0; display: flex; flex-direction: column; }
 .trainer-card p { color: var(--muted); line-height: 1.55; }
 .trainer-subhead {
   margin: 30px 0 16px;
@@ -161,7 +163,7 @@ h3 { font-size: 22px; }
 @media (min-width: 1100px) {
   #learner-path .quick-start-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
-.path-card { padding: 22px; min-height: 250px; display: flex; flex-direction: column; }
+.path-card { padding: 22px; min-height: 0; display: flex; flex-direction: column; }
 .path-card p { color: var(--muted); line-height: 1.55; }
 .path-card .card-link { margin-top: auto; }
 .evaluator-grid {
@@ -172,7 +174,7 @@ h3 { font-size: 22px; }
 }
 .evaluator-card {
   display: flex;
-  min-height: 260px;
+  min-height: 0;
   flex-direction: column;
   padding: 22px;
 }
@@ -2186,7 +2188,7 @@ a.program-chip:hover { color: var(--text); border-color: var(--line); }
   line-height: 1.3;
 }
 .proof-summary-preview {
-  min-height: 260px;
+  min-height: 0;
   max-height: 420px;
   margin: 0;
   padding: 18px;

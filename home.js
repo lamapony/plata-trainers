@@ -404,16 +404,6 @@
     copy.textContent = trainer.description;
     article.appendChild(copy);
 
-    if (Array.isArray(g.outcomes) && g.outcomes.length) {
-      var list = document.createElement("ul");
-      list.className = "gallery-outcomes";
-      g.outcomes.slice(0, 3).forEach(function (outcome) {
-        var item = document.createElement("li");
-        item.textContent = outcome;
-        list.appendChild(item);
-      });
-      article.appendChild(list);
-    }
 
     var link = document.createElement("a");
     link.className = "card-link";
