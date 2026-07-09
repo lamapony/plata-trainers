@@ -9,8 +9,8 @@
   --sage: #7e9b8f;
   --cream: #fbfcf8;
   --line: rgba(29, 33, 31, 0.14);
-  --shadow: 0 22px 58px rgba(32, 42, 36, 0.11);
-  --soft-shadow: 0 12px 30px rgba(32, 42, 36, 0.10);
+  --shadow: none;
+  --soft-shadow: none;
   color-scheme: light;
 }
 
@@ -18,10 +18,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 16% 10%, rgba(126, 155, 143, 0.22), transparent 30rem),
-    radial-gradient(circle at 84% 18%, rgba(102, 132, 150, 0.18), transparent 34rem),
-    linear-gradient(135deg, var(--bg), var(--bg-2));
+  background: var(--bg);
   color: var(--ink);
   font-family: Inter, system-ui, sans-serif;
 }
@@ -34,13 +31,13 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 
 .topnav { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-bottom: 36px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--forest); text-decoration: none; font-weight: 800; letter-spacing: -0.02em; }
-.brand span { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 12px; background: var(--forest); color: var(--bg); }
-.nav-meta { display: flex; align-items: center; gap: 12px; font-family: "JetBrains Mono", monospace; font-size: 0.82rem; color: var(--muted); }
-.nav-meta button, .ghost { border: 1px solid var(--line); background: rgba(255,255,255,0.35); color: var(--forest); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.brand span { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 6px; background: var(--forest); color: var(--bg); }
+.nav-meta { display: flex; align-items: center; gap: 12px; font-family: "IBM Plex Mono", monospace; font-size: 0.82rem; color: var(--muted); }
+.nav-meta button, .ghost { border: 1px solid var(--line); background: #fff; color: var(--forest); border-radius: 4px; padding: 8px 14px; cursor: pointer; }
 
 .lesson-hero { max-width: 100%; margin-bottom: 32px; }
-.eyebrow { margin: 0 0 8px; font-family: "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: 0.11em; font-size: 0.72rem; color: var(--ember-deep); font-weight: 700; }
-h1, h2 { font-family: Fraunces, Georgia, serif; letter-spacing: -0.045em; line-height: 0.96; margin: 0; }
+.eyebrow { margin: 0 0 8px; font-family: Inter, system-ui, sans-serif; text-transform: none; letter-spacing: 0; font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+h1, h2 { font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif; letter-spacing: -0.01em; line-height: 0.96; margin: 0; }
 h1 { font-size: clamp(2.6rem, 8vw, 5.2rem); }
 .lesson-hero p { max-width: 68ch; font-size: 1.02rem; color: var(--muted); line-height: 1.68; }
 .lesson-hero .lesson-intro { font-size: 1.05rem; color: var(--forest); font-weight: 600; margin-bottom: 12px; }
@@ -71,10 +68,10 @@ h1 { font-size: clamp(2.6rem, 8vw, 5.2rem); }
 .hstep .num {
   width: 26px;
   height: 26px;
-  border-radius: 999px;
+  border-radius: 4px;
   background: var(--forest);
   color: var(--cream);
-  font-family: "JetBrains Mono", monospace;
+  font-family: "IBM Plex Mono", monospace;
   font-size: 0.7rem;
   display: grid;
   place-items: center;
@@ -90,14 +87,14 @@ h1 { font-size: clamp(2.6rem, 8vw, 5.2rem); }
 }
 
 .route-list { display: grid; gap: 8px; margin: 12px 0 20px; }
-.route-step { width: 100%; text-align: left; display: flex; align-items: center; gap: 10px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,0.55); color: var(--muted); cursor: pointer; font-size: 0.92rem; }
+.route-step { width: 100%; text-align: left; display: flex; align-items: center; gap: 10px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--muted); cursor: pointer; font-size: 0.92rem; }
 .route-step strong { color: var(--ink); }
 
 .scene-card {
-  background: rgba(251, 252, 248, 0.92);
+  background: var(--cream, #fbfcf8);
   border: 1px solid var(--line);
-  border-radius: 24px;
-  box-shadow: var(--shadow);
+  border-radius: 6px;
+  box-shadow: none;
   padding: 32px 36px;
   min-height: 420px;
 }
@@ -106,18 +103,18 @@ h1 { font-size: clamp(2.6rem, 8vw, 5.2rem); }
 .pressure, .narrative { margin: 14px 0 18px; max-width: 68ch; color: var(--forest); font-size: 1.04rem; line-height: 1.65; }
 .dialogue { display: grid; gap: 10px; margin: 16px 0 12px; }
 .dialogue-line { display: grid; grid-template-columns: 82px 1fr; gap: 10px; align-items: start; }
-.dialogue-line span { font-family: "JetBrains Mono", monospace; font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; padding-top: 4px; }
-.dialogue-line p { margin: 0; padding: 11px 14px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.6); line-height: 1.5; }
-.danish-line { display: inline-block; margin: 12px 0 18px; padding: 12px 15px; border-radius: 14px; background: var(--forest); color: var(--cream); font-family: "JetBrains Mono", monospace; }
-.notice { margin: 14px 0 18px; padding: 14px 16px; border-left: 3px solid var(--sage); background: rgba(126,155,143,.12); border-radius: 12px; }
-.notice strong { font-family: "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .08em; font-size: .68rem; color: var(--ember-deep); }
+.dialogue-line span { font-family: "IBM Plex Mono", monospace; font-size: .7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.02em; padding-top: 4px; }
+.dialogue-line p { margin: 0; padding: 11px 14px; border: 1px solid var(--line); border-radius: 6px; background: #fff; line-height: 1.5; }
+.danish-line { display: inline-block; margin: 12px 0 18px; padding: 12px 15px; border-radius: 6px; background: var(--forest); color: var(--cream); font-family: "IBM Plex Mono", monospace; }
+.notice { margin: 14px 0 18px; padding: 14px 16px; border-top: 1px solid var(--line); background: rgba(126,155,143,.12); border-radius: 6px; }
+.notice strong { font-family: "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: 0.02em; font-size: .68rem; color: var(--ember-deep); }
 .carry-forward { margin: 18px 0 0; color: var(--muted); font-size: .95rem; line-height: 1.6; }
 
 .choice-list { display: grid; gap: 12px; margin: 18px 0; }
 .choice-card {
   padding: 16px 18px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 6px;
   background: #fff;
   cursor: pointer;
   transition: all .1s ease;
@@ -128,14 +125,14 @@ h1 { font-size: clamp(2.6rem, 8vw, 5.2rem); }
 .next-step-card, .plan-context-card, .repair-closure {
   margin: 20px 0 0;
   padding: 16px 18px;
-  border-radius: 16px;
+  border-radius: 6px;
   border: 1px solid var(--line);
-  border-left: 4px solid var(--ember);
+  border-top: 1px solid var(--line);
   background: rgba(185,101,69,.08);
 }
 .next-step-card h3, .plan-context-card h3, .repair-closure h3 { font-size: 1.05rem; margin: 0 0 6px; }
 
-button { padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line); background: #fff; cursor: pointer; }
+button { padding: 9px 16px; border-radius: 4px; border: 1px solid var(--line); background: #fff; cursor: pointer; }
 button.primary { background: var(--ember); color: #fff; border-color: transparent; }
 
 .variables-display, [aria-label*="Professional"], [aria-label*="variables"] { display: none !important; }
@@ -144,7 +141,7 @@ button.primary { background: var(--ember); color: #fff; border-color: transparen
 .lesson-hero-visual {
   width: 100%;
   margin-bottom: 28px;
-  border-radius: 20px;
+  border-radius: 6px;
   overflow: hidden;
   background: rgba(251, 252, 248, 0.6);
   border: 1px solid var(--line);
