@@ -505,7 +505,7 @@ function renderIndex(options) {
       <div class="nav-meta"><span id="scene-count">1 / 5</span><button id="reset-lesson" type="button">Reset</button></div>
     </nav>
 
-    <header class="lesson-hero">
+    <header class="scene-card">
       <p class="eyebrow">Narrative lesson · ${html(options.level)}</p>
       <h1>${html(options.title)}</h1>
       <p>${html(options.subtitle)}</p>

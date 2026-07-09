@@ -341,7 +341,9 @@
       primary.href = recommendation.href || recommendation.trainer.path;
       primary.textContent = recommendation.cta;
     }
-    if (meta) meta.textContent = recommendation.meta;
+    if (meta && recommendation.mode && recommendation.mode !== "start") {
+      meta.textContent = recommendation.meta;
+    }
   }
 
   function renderHeadroomSnapshot(stats, recommendation) {

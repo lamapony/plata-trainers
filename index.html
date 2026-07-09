@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Platå · Break your Danish plateau</title>
-  <meta name="description" content="Break your Danish plateau. Open-source practice for A2–B2 learners stuck between knowing Danish and using it under pressure. Static, private, offline-friendly." />
+  <meta name="description" content="Open-source Danish practice for people who already know words but freeze under pressure. Situation → exact miss → short repair." />
   <meta name="author" content="Dmitrii Babinov" />
   <link rel="canonical" href="https://lamapony.github.io/plata-trainers/" />
   <meta property="og:title" content="Platå · Break your Danish plateau" />
-  <meta property="og:description" content="Short, repeatable Danish practice for learners who are no longer beginners but still freeze on forms, word order, tone, and social pressure." />
+  <meta property="og:description" content="Situation practice that shows the exact freeze, then a short drill that fixes it. Private, static, no account." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://lamapony.github.io/plata-trainers/" />
   <meta property="og:image" content="https://lamapony.github.io/plata-trainers/assets/og-plata.png" />
@@ -16,7 +16,7 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Platå · Break your Danish plateau" />
-  <meta name="twitter:description" content="A2–B2 Danish practice when you know the words but not the moment." />
+  <meta name="twitter:description" content="Situation → miss → repair. Offline Danish practice for the plateau." />
   <meta name="twitter:image" content="https://lamapony.github.io/plata-trainers/assets/og-plata.png" />
   <link rel="manifest" href="./site.webmanifest" />
   <link rel="icon" href="./assets/icons/icon-192.png" type="image/png" />
@@ -42,7 +42,7 @@
 </head>
 <body>
   <main class="site-shell">
-    <header class="hero">
+    <header class="hero hero-simple">
       <nav class="topnav" aria-label="Main navigation">
         <a class="brand" href="./" aria-label="Platå home">platå</a>
         <div class="navlinks">
@@ -53,30 +53,28 @@
         </div>
       </nav>
 
-      <section class="hero-grid">
-        <div>
-          <p class="eyebrow">A2–B2 · private · offline</p>
-          <h1>Break your Danish plateau.</h1>
-          <p class="lead">You already know words. You still freeze on tone, word order, or register. One situation, one gap, one short repair. Progress stays in this browser.</p>
-          <div class="hero-actions">
-            <a class="btn primary" id="home-primary-action" href="./lessons/lesson-b2-job-followup/">Start B2 lesson</a>
-            <a class="btn" href="./dashboard.html?demo=learner">Demo learner</a>
-            <a class="btn" href="#evaluate">Evaluate in 60 seconds</a>
-          </div>
+      <section class="hero-simple-body">
+        <p class="eyebrow">A2–B2 Danish · offline · no account</p>
+        <h1>You know the words.<br>You freeze when it matters.</h1>
+        <p class="lead">Platå drops you into a real Danish situation. Your choice shows the exact miss. Then you get one short repair drill — not another beginner course.</p>
+        <p class="pitch-line">Situation → miss → repair. That is the whole product.</p>
+        <div class="hero-actions">
+          <a class="btn primary" id="home-primary-action" href="./lessons/lesson-b2-job-followup/">Try the post-interview situation</a>
+          <a class="btn" href="./dashboard.html?demo=learner">See demo progress</a>
         </div>
-        <aside class="start-card" id="home-start-card" aria-label="Recommended start">
-          <p class="eyebrow">Start here</p>
+        <p class="start-meta" id="home-start-meta">Optional walkthrough: <a href="./lessons/lesson-01/">Lesson 01</a>. Progress stays in this browser.</p>
+        <!-- Hidden hooks used by home.js launcher (kept for CI + resume logic) -->
+        <div id="home-start-card" hidden aria-hidden="true">
           <h2 id="home-start-title">Efter interviews</h2>
-          <p id="home-start-copy">Post-interview follow-up. Choices change the reply. Weak spots open a short drill.</p>
-          <a class="btn primary" id="home-start-link" href="./lessons/lesson-b2-job-followup/">Open lesson</a>
-          <p class="start-meta" id="home-start-meta">First time with the UI? <a href="./lessons/lesson-01/">Lesson 01</a> is a short walkthrough. No account.</p>
-        </aside>
+          <p id="home-start-copy"></p>
+          <a id="home-start-link" href="./lessons/lesson-b2-job-followup/">Open lesson</a>
+        </div>
       </section>
     </header>
 
     <section class="section learner-headroom-section" id="your-practice" hidden aria-labelledby="your-practice-title">
       <div class="section-head">
-        <p class="eyebrow">Your practice</p>
+        <p class="eyebrow">Continue</p>
         <h2 id="your-practice-title">What to practice today</h2>
       </div>
       <div id="home-headroom" class="headroom-stack"></div>
@@ -85,14 +83,17 @@
     <section class="section evaluate-compact" id="evaluate" aria-labelledby="evaluate-title">
       <h2 id="evaluate-title" class="visually-hidden">Evaluate in 60 seconds</h2>
       <p class="evaluate-line">
-        <span class="evaluate-label">Reviewers</span>
+        <a href="#evaluate">Evaluate in 60 seconds</a>
+        <span class="evaluate-sep" aria-hidden="true">·</span>
         <a href="./dashboard.html?demo=learner">Demo learner</a>
         <span class="evaluate-sep" aria-hidden="true">·</span>
-        <a href="./proof.html#proof-walkthrough-title">Proof loop</a>
+        <a href="./proof.html#proof-walkthrough-title">Proof</a>
         <span class="evaluate-sep" aria-hidden="true">·</span>
-        <a href="./proof.html#proof-guided-title">Guided session</a>
+        <a href="./proof.html#proof-guided-title">Guided</a>
         <span class="evaluate-sep" aria-hidden="true">·</span>
         <a href="./proof.html#proof-distribution-title">Offline ZIP</a>
+        <span class="evaluate-sep" aria-hidden="true">·</span>
+        <a href="./factory.html">How lessons are built</a>
       </p>
     </section>
 
@@ -100,16 +101,13 @@
       <div class="section-head">
         <div>
           <p class="eyebrow">Narrative lesson gallery</p>
-          <h2 id="narrative-gallery-title">Situations that stall real learners</h2>
-          <p class="section-copy">Each story runs the pressure, notice, action, feedback loop. Drills only after a scene shows a gap.</p>
+          <h2 id="narrative-gallery-title">Start a situation</h2>
+          <p class="section-copy">Each story runs the pressure, notice, action, feedback loop.</p>
         </div>
       </div>
       <details class="repair-paths-drawer">
-        <summary>Repair paths (lesson → drill)</summary>
-        <div class="trainer-subhead" aria-labelledby="repair-paths-title">
-          <p class="eyebrow">Match → Gym</p>
-          <h3 id="repair-paths-title">Prescribed repair</h3>
-        </div>
+        <summary>If a scene exposes a gap → drill (Match → Gym)</summary>
+        <h3 id="repair-paths-title" class="visually-hidden">Repair paths</h3>
         <ul class="program-contracts" id="repair-paths">
           <li><a href="./lessons/lesson-b2-radiator/">B2 radiator</a> → <a href="./register-drill/?signal=formal-register-control&from=lesson-b2-radiator-register&cat=channel">register drill · channel</a></li>
           <li><a href="./lessons/lesson-b2-ordstilling/">B2 ordstilling</a> → <a href="./ordstilling-drill/?signal=v2-placement&from=lesson-b2-ordstilling&cat=v2">ordstilling drill · V2</a></li>
@@ -122,23 +120,9 @@
       <div class="trainer-grid narrative-gallery" id="narrative-gallery"></div>
       <div class="trainer-subhead">
         <p class="eyebrow">Drills</p>
-        <h3>Repair layer</h3>
+        <h3>Short repairs</h3>
       </div>
       <div class="trainer-grid drill-gallery" id="drill-gallery"></div>
-    </section>
-
-    <section class="section split" id="how" aria-labelledby="how-title">
-      <div>
-        <p class="eyebrow">How it works</p>
-        <h2 id="how-title">Match → Gym → Coach</h2>
-        <p>A scene under pressure. A short drill for the exact miss. One next step on the dashboard.</p>
-      </div>
-      <div class="steps">
-        <div><strong>1</strong><span><strong>Match</strong> — narrative under social pressure; choices change the outcome.</span></div>
-        <div><strong>2</strong><span><strong>Gym</strong> — prescribed 5–10 min drill when a reflex fails.</span></div>
-        <div><strong>3</strong><span><strong>Coach</strong> — Today picks one next action from local progress.</span></div>
-        <div><strong>4</strong><span><strong>Private</strong> — LocalStorage only; export JSON anytime.</span></div>
-      </div>
     </section>
 
     <section class="section pwa-section" aria-labelledby="pwa-status-title">

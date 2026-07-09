@@ -9,35 +9,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../shared/plata-tokens.css" />
-  <link rel="stylesheet" href="./styles.css?v=gold-ui" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <main class="lesson-shell">
     <nav class="topnav" aria-label="Lesson navigation">
       <a class="brand" href="../../">platå</a>
-      <div class="nav-meta"><span id="scene-count">1 / 5</span><button id="reset-lesson" type="button">Reset</button></div>
+      <div class="nav-meta"><span id="scene-count">1 / 1</span><button id="reset-lesson" type="button">Reset</button></div>
     </nav>
-
-    <header class="lesson-hero">
-      <p class="eyebrow">Narrative lesson · B2</p>
-      <h1>Det afhænger af, hvordan du siger det</h1>
-      <p>You already know the words. This lesson is about what the words do to people: passive voice that hides responsibility, particles that position you socially, and register shifts that keep doors open — or close them.</p>
-    </header>
-
-    <section class="lesson-grid" aria-label="Interactive lesson">
-      <aside class="map-card" aria-label="Route progress">
-        <p class="eyebrow">Scenario path</p>
-        <div class="map-illustration" aria-hidden="true">
-          <img src="./assets/scenario-path.png" alt="" width="900" height="420" />
-        </div>
-        <div id="route" class="route-list"></div>
-        <div id="variables-display" class="variables-display" aria-label="Social variables"></div>
-      </aside>
-
-      <article id="scene" class="scene-card" aria-live="polite"></article>
-    </section>
+    <div id="route" class="route-list" hidden></div>
+    <h1 class="lesson-page-title">Det afhænger af, hvordan du siger det</h1>
+    <article id="scene" class="scene-card" aria-live="polite"></article>
   </main>
-
   <script src="../../shared/plata-kernel.js"></script>
   <script src="../../shared/plata-competencies.js"></script>
   <script src="../../shared/plata-catalog.js"></script>

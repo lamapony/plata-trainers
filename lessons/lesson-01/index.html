@@ -15,34 +15,12 @@
   <main class="lesson-shell">
     <nav class="topnav" aria-label="Lesson navigation">
       <a class="brand" href="../../">platå</a>
-      <div class="nav-meta"><span id="scene-count">1 / 6</span><button id="reset-lesson" type="button">Reset</button></div>
+      <div class="nav-meta"><span id="scene-count">1 / 1</span><button id="reset-lesson" type="button">Reset</button></div>
     </nav>
-
-    <header class="lesson-hero">
-      <p class="eyebrow">Narrative lesson · A0/A1</p>
-      <h1>The First Morning in Copenhagen</h1>
-      <p>You are not studying a word list. You have just arrived, your phone is dying, and Danish is now the interface to the city.</p>
-    </header>
-
-    <section class="lesson-grid" aria-label="Interactive lesson">
-      <aside class="map-card" aria-label="Route progress">
-        <p class="eyebrow">Copenhagen route</p>
-        <div class="map-illustration" aria-hidden="true">
-          <div class="timeline">
-            <div class="step"><span class="icon">✈️</span><span>Arrival</span></div>
-            <div class="line"></div>
-            <div class="step"><span class="icon">🚉</span><span>Station</span></div>
-            <div class="line"></div>
-            <div class="step"><span class="icon">🏨</span><span>Room</span></div>
-          </div>
-        </div>
-        <div id="route" class="route-list"></div>
-      </aside>
-
-      <article id="scene" class="scene-card" aria-live="polite"></article>
-    </section>
+    <div id="route" class="route-list" hidden></div>
+    <h1 class="lesson-page-title">Lesson 01 · The First Morning in Copenhagen</h1>
+    <article id="scene" class="scene-card" aria-live="polite"></article>
   </main>
-
   <script src="../../shared/plata-kernel.js"></script>
   <script src="../../shared/plata-competencies.js"></script>
   <script src="../../shared/plata-catalog.js"></script>

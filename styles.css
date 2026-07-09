@@ -2747,3 +2747,25 @@ article, .card, .trainer-card, .evaluator-card, .today-program-card { padding: 1
   font-size: 0.9rem;
 }
 .repair-paths-drawer .program-contracts a { color: var(--text); }
+
+
+/* Simple landing pitch */
+.hero-simple { padding-bottom: 12px; }
+.hero-simple-body { max-width: 720px; padding: 8px 0 24px; }
+.hero-simple-body h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.12;
+  max-width: 16ch;
+}
+.pitch-line {
+  margin: 14px 0 0;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.hero-simple-body .lead { max-width: 48ch; }
+.hero-simple-body .start-meta {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
