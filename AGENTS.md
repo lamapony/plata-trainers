@@ -11,13 +11,14 @@ The repository supplies the runtime, scaffold, schemas, and gates. You are the a
 When the user asks for a new lesson:
 
 1. Read `docs/AGENT_LESSON_WORKFLOW.md`, `docs/lesson-pattern.md`, and the example in `examples/lesson-request.example.json`.
-2. Translate the user's words into a `plata.lesson-request` JSON brief. Do not make the user fill in JSON. Infer reasonable defaults; ask only when the missing choice would materially change the lesson.
+2. Translate the user's words into a topic, concrete learner goal, and pressure situation. Do not make the user fill in JSON. Infer reasonable defaults; ask only when the missing choice would materially change the lesson.
 3. Keep requests inside Platå's scope: Danish A2–B2, a real-life pressure situation, and a concrete communicative outcome. Explain the boundary before adapting requests outside that scope.
-4. Run `npm run lesson:new -- --request <request.json>`.
-5. Replace every generic scaffold scene. Research language and domain claims using authoritative Danish sources. Do not use plausible-sounding invented rules.
-6. Keep one active language/register objective per scene. Every diagnostic miss must map to a mastery tag and a precise remediation scene or existing drill.
-7. Complete `lessons/<slug>/lesson-request.json.delivery`. Never change `status` to `ready` until the content, request coverage, sources, and avoid-list have been reviewed.
-8. Run `npm run lesson:verify -- --lesson <slug>`, then `npm run check` before describing the lesson as publishable.
+4. Preview the normalized contract with `npm run lesson:new -- --topic "..." --goal "..." --situation "..." --preview`. Add `--level`, `--minutes`, repeatable `--include`, and repeatable `--avoid` when the request supplies them. Check the inferred slug, scope, defaults, and constraints before writing.
+5. Re-run the same command without `--preview` to create the working lesson. Use `--request <request.json>` only when a saved or externally generated brief must be replayed.
+6. Replace every generic scaffold scene. Research language and domain claims using authoritative Danish sources. Do not use plausible-sounding invented rules.
+7. Keep one active language/register objective per scene. Every diagnostic miss must map to a mastery tag and a precise remediation scene or existing drill.
+8. Complete `lessons/<slug>/lesson-request.json.delivery`. Never change `status` to `ready` until the content, request coverage, sources, and avoid-list have been reviewed.
+9. Run `npm run lesson:verify -- --lesson <slug>`, then `npm run check` before describing the lesson as publishable.
 
 ## Delivery contract
 

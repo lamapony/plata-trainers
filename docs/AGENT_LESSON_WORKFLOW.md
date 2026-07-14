@@ -10,7 +10,7 @@ A repository or project link gives an agent the specification. The agent still n
 
 ## 1. Capture the request
 
-Convert the user's request into JSON using `examples/lesson-request.example.json`. The machine-readable contract is `schemas/lesson-request.schema.json`.
+Extract the following intent from the user's normal-language request. The user does not need to create JSON.
 
 Required intent:
 
@@ -21,18 +21,40 @@ Required intent:
 
 Useful optional constraints are duration, interface language, must-include moments, avoid-list, and preferred sources. Do not collect personal identifiers or private learner history.
 
-## 2. Create the working lesson
+First preview the normalized request and planned files. This validates scope and exposes the agent's assumptions without changing the repository:
 
 ```bash
-npm run lesson:new -- --request /path/to/request.json
+npm run lesson:new -- \
+  --topic "A noisy neighbour" \
+  --goal "Ask for quieter evenings without sounding aggressive" \
+  --situation "Speak in the stairwell, then send a short follow-up" \
+  --level B1 \
+  --minutes 12 \
+  --include "a spoken opening" \
+  --include "a written follow-up" \
+  --avoid "legal advice" \
+  --preview
 ```
 
-This validates the request, derives a stable slug when needed, creates the gold lesson files, adds a catalog entry, and writes:
+Review the inferred title, slug, defaults, must-include items, avoid-list, and source preferences. If they match the request, re-run the same command without `--preview`.
+
+## 2. Create the working lesson
+
+The creation command validates the request, derives a stable slug when needed, creates the gold lesson files, adds a catalog entry, and writes:
 
 - `lesson-request.json` — stable input and delivery evidence;
 - `AUTHORING.md` — the request-specific checklist.
 
 The initial status is always `scaffold`. It is intentionally not deliverable.
+
+For a saved or machine-generated brief, the reproducible alternative remains:
+
+```bash
+npm run lesson:new -- --request /path/to/request.json --preview
+npm run lesson:new -- --request /path/to/request.json
+```
+
+The persisted contract is `schemas/lesson-request.schema.json`; `examples/lesson-request.example.json` is a complete example.
 
 ## 3. Author from evidence
 

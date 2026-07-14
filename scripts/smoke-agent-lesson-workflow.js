@@ -71,17 +71,51 @@ assert(normalized.slug === "lesson-b1-a-noisy-neighbour-in-an-apartment-building
 assert(normalized.delivery.status === "scaffold", "new requests must start as scaffold");
 assert(normalized.sourcePreferences.length >= 2, "default source preferences missing");
 
+const preview = run([
+  "scripts/create-lesson-from-request.js",
+  "--root", sandbox,
+  "--topic", input.topic,
+  "--goal", input.learnerGoal,
+  "--situation", input.situation,
+  "--level", input.level,
+  "--minutes", String(input.estimatedMinutes),
+  "--include", input.mustInclude[0],
+  "--avoid", input.avoid[0],
+  "--preview"
+]);
+assert(preview.stdout.includes('"requestType": "plata.lesson-request"'), "direct preview missing normalized request");
+assert(preview.stdout.includes(`lessons/${normalized.slug}/app.js`), "direct preview missing planned files");
+assert(preview.stdout.includes("delivery status: scaffold (not publishable)"), "direct preview missing delivery warning");
+assert(preview.stdout.includes("Preview complete. No files were written."), "direct preview missing no-write confirmation");
+assert(!fs.existsSync(path.join(sandbox, "lessons", normalized.slug)), "direct preview wrote a lesson folder");
+
 run([
   "scripts/create-lesson-from-request.js",
   "--root", sandbox,
-  "--request", requestPath
+  "--topic", input.topic,
+  "--goal", input.learnerGoal,
+  "--situation", input.situation,
+  "--level", input.level,
+  "--minutes", String(input.estimatedMinutes),
+  "--include", input.mustInclude[0],
+  "--avoid", input.avoid[0]
 ]);
 
 const lessonDir = path.join(sandbox, "lessons", normalized.slug);
 const manifestPath = path.join(lessonDir, "lesson-request.json");
 const dataPath = path.join(lessonDir, "data.js");
-assert(fs.existsSync(manifestPath), "request-based scaffold missing lesson-request.json");
-assert(fs.existsSync(path.join(lessonDir, "AUTHORING.md")), "request-based scaffold missing AUTHORING.md");
+assert(fs.existsSync(manifestPath), "direct brief scaffold missing lesson-request.json");
+assert(fs.existsSync(path.join(lessonDir, "AUTHORING.md")), "direct brief scaffold missing AUTHORING.md");
+
+run([
+  "scripts/create-lesson-from-request.js",
+  "--root", sandbox,
+  "--request", requestPath,
+  "--no-catalog",
+  "--force"
+]);
+
+assert(fs.existsSync(manifestPath), "saved request replay removed lesson-request.json");
 
 const scaffoldManifest = normalizeRequest(JSON.parse(fs.readFileSync(manifestPath, "utf8")));
 const loaded = loadLesson(dataPath);
@@ -139,5 +173,7 @@ assert(
 );
 
 console.log("ok - natural lesson brief normalizes into a deterministic scaffold request");
-console.log("ok - request workflow creates lesson files, catalog entry, manifest, and authoring checklist");
+console.log("ok - direct brief preview exposes assumptions and writes no files");
+console.log("ok - direct brief creates lesson files, catalog entry, manifest, and authoring checklist");
+console.log("ok - saved JSON requests remain replayable");
 console.log("ok - delivery gate rejects generic scaffolds and accepts reviewed request coverage");
