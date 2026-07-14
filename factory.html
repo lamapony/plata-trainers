@@ -32,14 +32,14 @@
           <div class="hero-actions">
             <a class="btn primary" href="./quality.html">Open quality report</a>
             <a class="btn" href="./proof.html">Open proof</a>
-            <a class="btn" href="https://github.com/lamapony/plata-trainers#gold-lesson-scaffold">Scaffold on GitHub</a>
+            <a class="btn" href="https://github.com/lamapony/plata-trainers#ask-an-agent-to-create-a-lesson">Create on GitHub</a>
           </div>
         </div>
         <aside class="start-card">
-          <p class="eyebrow">15-minute loop</p>
-          <h2>Contributor path</h2>
-          <p>Clone the repository, scaffold, replace scene data, run local checks, then publish through review. No account or backend is involved in the learner site.</p>
-          <a class="btn primary" href="https://github.com/lamapony/plata-trainers/blob/main/docs/GOLD_LESSON_QUALITY_ENGINE.md">Quality contract</a>
+          <p class="eyebrow">Checked workflow</p>
+          <h2>Agent authoring path</h2>
+          <p>Give an agent the repository link and describe the outcome in normal language. The agent previews its assumptions, authors and sources the lesson, runs the quality gates, then publishes through review.</p>
+          <a class="btn primary" href="https://github.com/lamapony/plata-trainers/blob/main/docs/AGENT_LESSON_WORKFLOW.md">Authoring contract</a>
         </aside>
       </section>
     </header>
@@ -50,8 +50,8 @@
         <h2 id="pipeline-title">What the factory checks</h2>
       </div>
       <div class="steps">
-        <div><strong>1</strong><span><strong>Brief</strong> — one situation, social stakes, target phrases, source notes.</span></div>
-        <div><strong>2</strong><span><strong>Scaffold</strong> — <code>npm run scaffold:gold -- --slug lesson-b2-topic --title "…"</code></span></div>
+        <div><strong>1</strong><span><strong>Brief</strong> — topic, learner outcome, real pressure situation, and boundaries in normal language.</span></div>
+        <div><strong>2</strong><span><strong>Preview</strong> — <code>lesson:new -- --topic "…" --goal "…" --situation "…" --preview</code> exposes assumptions without writing.</span></div>
         <div><strong>3</strong><span><strong>Teach</strong> — scene diagnostics, masteryMap, remediation links, flagship chain if needed.</span></div>
         <div><strong>4</strong><span><strong>Prove</strong> — simulator + counterfactuals + quality report. CI blocks broken contracts.</span></div>
       </div>
@@ -72,13 +72,12 @@
     <section class="section" aria-labelledby="cmd-title">
       <div class="section-head">
         <p class="eyebrow">Commands</p>
-        <h2 id="cmd-title">Local proof</h2>
+        <h2 id="cmd-title">From brief to proof</h2>
       </div>
       <div class="copy-block" style="padding:20px;">
-        <pre style="margin:0; white-space:pre-wrap; font-family:var(--font-mono); font-size:13px; line-height:1.5; color:var(--muted);"><code>npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic"
-npm run check:lessons
-npm run check:gold-lessons
-npm run check:quality-report
+        <pre style="margin:0; white-space:pre-wrap; font-family:var(--font-mono); font-size:13px; line-height:1.5; color:var(--muted);"><code>npm run lesson:new -- --topic "…" --goal "…" --situation "…" --preview
+# repeat without --preview, then author and source the real lesson
+npm run lesson:verify -- --lesson &lt;slug&gt;
 npm run check</code></pre>
       </div>
     </section>

@@ -47,13 +47,20 @@ Give a coding agent the repository link and describe the lesson in normal langua
 Repository-aware agents should automatically read [`AGENTS.md`](./AGENTS.md). That contract tells them to turn the request into a checked brief, author source-backed content, wire diagnostics and repair, and prove the result before delivery. The executable path is:
 
 ```bash
-npm run lesson:new -- --request examples/lesson-request.example.json
+npm run lesson:new -- \
+  --topic "A noisy neighbour" \
+  --goal "Ask for quieter evenings without sounding aggressive" \
+  --situation "Speak in the stairwell, then send a short follow-up" \
+  --level B1 --minutes 12 \
+  --include "a spoken opening" --include "a written follow-up" \
+  --avoid "legal advice" --preview
+# review the normalized request, then repeat without --preview
 # the agent replaces the generic scaffold and completes lesson-request.json.delivery
-npm run lesson:verify -- --lesson lesson-b1-a-noisy-neighbour-in-an-apartment-building
+npm run lesson:verify -- --lesson lesson-b1-a-noisy-neighbour
 npm run check
 ```
 
-See [`docs/AGENT_LESSON_WORKFLOW.md`](./docs/AGENT_LESSON_WORKFLOW.md) and the machine-readable [`lesson-request.schema.json`](./schemas/lesson-request.schema.json). The live Pages URL exposes [`llms.txt`](./llms.txt) for agent discovery, but the static site is read-only: an agent still needs repository write access to create and publish files.
+The command writes the normalized request to the new lesson folder, so JSON stays reproducible without becoming user input. See [`docs/AGENT_LESSON_WORKFLOW.md`](./docs/AGENT_LESSON_WORKFLOW.md) and the machine-readable [`lesson-request.schema.json`](./schemas/lesson-request.schema.json). The live Pages URL exposes [`llms.txt`](./llms.txt) for agent discovery, but the static site is read-only: an agent still needs repository write access to create and publish files.
 
 ## Available trainers
 

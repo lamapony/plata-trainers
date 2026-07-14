@@ -12,35 +12,134 @@ function usage() {
   return [
     "Usage:",
     "  npm run lesson:new -- --request examples/lesson-request.example.json [options]",
+    "  npm run lesson:new -- --topic \"...\" --goal \"...\" --situation \"...\" [options]",
+    "",
+    "Direct brief options:",
+    "  --topic TEXT           Lesson topic (required without --request)",
+    "  --goal TEXT            Concrete learner outcome (required without --request)",
+    "  --situation TEXT       Real pressure context (required without --request)",
+    "  --level A2|B1|B2      Learner level (default: B1)",
+    "  --title TEXT           Display title (default: topic)",
+    "  --slug SLUG            Stable lesson slug (default: derived)",
+    "  --minutes 8..25        Target duration (default: 14)",
+    "  --language en|da      Interface language (default: en)",
+    "  --include TEXT         Required moment; repeatable",
+    "  --avoid TEXT           Guardrail; repeatable",
+    "  --source TEXT          Preferred source; repeatable",
     "",
     "Options:",
     "  --root /path/to/repo   Target repo root (default: current repo)",
     "  --no-catalog           Do not update shared/plata-catalog.js",
-    "  --dry-run              Validate and print the planned scaffold",
+    "  --preview              Normalize the brief and print the plan without writing files",
+    "  --dry-run              Backwards-compatible alias for --preview",
     "  --force                Overwrite an existing lesson folder"
   ].join("\n");
 }
 
 function parseArgs(argv) {
-  const options = { root: repoRoot, updateCatalog: true, dryRun: false, force: false };
+  const options = {
+    root: repoRoot,
+    updateCatalog: true,
+    preview: false,
+    dryRun: false,
+    force: false,
+    mustInclude: [],
+    avoid: [],
+    sourcePreferences: []
+  };
+  const valueOptions = {
+    "--request": "request",
+    "--root": "root",
+    "--topic": "topic",
+    "--goal": "learnerGoal",
+    "--situation": "situation",
+    "--level": "level",
+    "--title": "title",
+    "--slug": "slug",
+    "--minutes": "estimatedMinutes",
+    "--language": "interfaceLanguage"
+  };
+  const repeatableOptions = {
+    "--include": "mustInclude",
+    "--avoid": "avoid",
+    "--source": "sourcePreferences"
+  };
   for (let i = 2; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--no-catalog") options.updateCatalog = false;
-    else if (arg === "--dry-run") options.dryRun = true;
+    else if (arg === "--preview" || arg === "--dry-run") {
+      options.preview = true;
+      options.dryRun = true;
+    }
     else if (arg === "--force") options.force = true;
-    else if (arg === "--request" || arg === "--root") {
+    else if (valueOptions[arg] || repeatableOptions[arg]) {
       const value = argv[i + 1];
       if (!value || value.startsWith("--")) throw new Error(`Missing value for ${arg}`);
-      options[arg.slice(2)] = value;
+      if (repeatableOptions[arg]) options[repeatableOptions[arg]].push(value);
+      else options[valueOptions[arg]] = value;
       i++;
     } else {
       throw new Error(`Unexpected argument: ${arg}`);
     }
   }
-  if (!options.request) throw new Error("--request is required");
+
+  const directFields = ["topic", "learnerGoal", "situation", "level", "title", "slug", "estimatedMinutes", "interfaceLanguage"];
+  const hasDirectBrief = directFields.some(field => options[field] !== undefined)
+    || options.mustInclude.length > 0
+    || options.avoid.length > 0
+    || options.sourcePreferences.length > 0;
+  if (options.request && hasDirectBrief) {
+    throw new Error("Use either --request or direct brief options, not both");
+  }
+  if (!options.request) {
+    if (!options.topic) throw new Error("--topic is required without --request");
+    if (!options.learnerGoal) throw new Error("--goal is required without --request");
+    if (!options.situation) throw new Error("--situation is required without --request");
+  }
   options.root = path.resolve(options.root);
-  options.request = path.resolve(options.request);
+  if (options.request) options.request = path.resolve(options.request);
   return options;
+}
+
+function requestInput(options) {
+  if (options.request) {
+    if (!fs.existsSync(options.request)) throw new Error(`Request file not found: ${options.request}`);
+    return JSON.parse(fs.readFileSync(options.request, "utf8"));
+  }
+  const input = {
+    topic: options.topic,
+    learnerGoal: options.learnerGoal,
+    situation: options.situation,
+    mustInclude: options.mustInclude,
+    avoid: options.avoid,
+    sourcePreferences: options.sourcePreferences
+  };
+  ["level", "title", "slug", "estimatedMinutes", "interfaceLanguage"].forEach(field => {
+    if (options[field] !== undefined) input[field] = field === "estimatedMinutes"
+      ? Number(options[field])
+      : options[field];
+  });
+  return input;
+}
+
+function previewText(request, options) {
+  const plannedFiles = [
+    `lessons/${request.slug}/index.html`,
+    `lessons/${request.slug}/app.js`,
+    `lessons/${request.slug}/data.js`,
+    `lessons/${request.slug}/styles.css`,
+    `lessons/${request.slug}/lesson-request.json`,
+    `lessons/${request.slug}/AUTHORING.md`
+  ];
+  return [
+    "Normalized lesson request:",
+    JSON.stringify(request, null, 2),
+    "",
+    "Planned scaffold:",
+    ...plannedFiles.map(file => `- ${file}`),
+    `- shared/plata-catalog.js: ${options.updateCatalog ? "update" : "unchanged"}`,
+    "- delivery status: scaffold (not publishable)"
+  ].join("\n");
 }
 
 function authoringGuide(request) {
@@ -111,16 +210,16 @@ function runScaffold(options, request) {
 function main() {
   try {
     const options = parseArgs(process.argv);
-    if (!fs.existsSync(options.request)) throw new Error(`Request file not found: ${options.request}`);
-    const raw = JSON.parse(fs.readFileSync(options.request, "utf8"));
+    const raw = requestInput(options);
     const request = normalizeRequest(raw, { resetDelivery: true });
 
     console.log(`Lesson request valid: ${request.slug}`);
     console.log(`Outcome: ${request.learnerGoal}`);
+    if (options.preview) console.log(`\n${previewText(request, options)}\n`);
     runScaffold(options, request);
 
     if (options.dryRun) {
-      console.log("Dry run only; lesson-request.json was not written.");
+      console.log("Preview complete. No files were written.");
       return;
     }
 
@@ -142,4 +241,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { authoringGuide, parseArgs };
+module.exports = { authoringGuide, parseArgs, previewText, requestInput };

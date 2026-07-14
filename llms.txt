@@ -8,10 +8,13 @@ Source repository: https://github.com/lamapony/plata-trainers
 For an agent asked to create a lesson:
 1. Clone or open the source repository with write and command access.
 2. Read AGENTS.md and docs/AGENT_LESSON_WORKFLOW.md.
-3. Turn the user's natural-language topic into a plata.lesson-request JSON brief using schemas/lesson-request.schema.json.
-4. Run: npm run lesson:new -- --request <request.json>
-5. Author source-backed Danish content and complete lesson-request.json.delivery.
-6. Run: npm run lesson:verify -- --lesson <slug>
-7. Run the full npm run check before calling the lesson publishable.
+3. Extract a topic, concrete learner goal, real pressure situation, level, and constraints from the user's normal-language request. Do not ask the user for JSON.
+4. Preview assumptions without writing: npm run lesson:new -- --topic "..." --goal "..." --situation "..." --preview
+5. Re-run the same command without --preview to persist the normalized plata.lesson-request contract and scaffold.
+6. Author source-backed Danish content and complete lesson-request.json.delivery.
+7. Run: npm run lesson:verify -- --lesson <slug>
+8. Run the full npm run check before calling the lesson publishable.
+
+For a saved reproducible brief, use: npm run lesson:new -- --request <request.json> --preview
 
 The live Pages site is read-only. It does not embed an autonomous model and cannot create or publish lesson files by itself.
