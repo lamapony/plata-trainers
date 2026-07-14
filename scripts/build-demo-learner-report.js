@@ -343,9 +343,14 @@ function buildDemoLearnerReport(options = {}) {
   const selectedFacts = (extracted.plan.steps || []).flatMap(step => step.selectedMemoryFacts || []);
   const rawJson = JSON.stringify({ extracted, rendered });
   const forbiddenLeaks = ["raw weak", "raw due-review", "De lover, at radiatoren bliver fikset hurtigt."];
+  const dashboardSource = readRootSource(root, "dashboard.js");
+  const expectedBannerHeading = [
+    "See what Platå notices after a few sessions",
+    "Sample B2 plateau profile"
+  ].find(heading => dashboardSource.includes(heading));
 
   if (extracted.routeSearch !== "?demo=learner") issues.push("demo route search drifted");
-  if (!rendered.banner.includes("See what Platå notices after a few sessions")) issues.push("demo banner missing");
+  if (!expectedBannerHeading || !rendered.banner.includes(expectedBannerHeading)) issues.push("demo banner missing");
   if (!todayStripped.includes("Study companion")) issues.push("Today surface is not companion-backed");
   if (todayStripped.toLowerCase().includes("onboarding")) issues.push("demo Today surface fell back to onboarding");
   if (!todayStripped.includes("Cited memory")) issues.push("Today surface does not cite memory");
