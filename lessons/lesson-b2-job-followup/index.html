@@ -11,12 +11,18 @@
 <body>
   <main class="lesson-shell">
     <nav class="topnav" aria-label="Lesson navigation">
-      <a class="brand" href="../../">platå</a>
-      <div class="nav-meta"><span id="scene-count">1 / 1</span><button id="reset-lesson" type="button">Reset</button></div>
+      <a class="brand" href="../../">Platå</a>
+      <div class="nav-meta"><span id="scene-count">Scene 1 of 1</span><button id="reset-lesson" type="button">Restart</button></div>
     </nav>
-    <div id="route" class="route-list" hidden></div>
-    <h1 class="lesson-page-title">Follow up after a job interview</h1>
-    <article id="scene" class="scene-card" aria-live="polite"></article>
+    <div class="story-layout">
+      <aside class="story-sidebar" aria-label="Story progress">
+        <p class="story-sidebar-label">Your story</p>
+        <h1 class="lesson-page-title">Follow up after a job interview</h1>
+        <div id="route" class="route-list" hidden></div>
+        <p class="story-sidebar-note">You can revisit any scene. Your answers stay with you.</p>
+      </aside>
+      <article id="scene" class="scene-card" aria-live="polite"></article>
+    </div>
   </main>
   <script src="../../shared/plata-kernel.js"></script>
   <script src="../../shared/plata-competencies.js"></script>

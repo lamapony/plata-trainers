@@ -394,7 +394,7 @@ function assertRuntimePath(lesson, pathSpec) {
     return sum + (scene && scene.type === "match" ? scene.pairs.length : 1);
   }, 0);
   pathSpec.actions.forEach((action, index) => {
-    assert(env.elements["#scene-count"].textContent === `${index + 1} / ${env.lesson.scenes.length}`, `${pathSpec.id}: wrong scene count before ${action.sceneId}`);
+    assert(env.elements["#scene-count"].textContent === `Scene ${index + 1} of ${env.lesson.scenes.length}`, `${pathSpec.id}: wrong scene count before ${action.sceneId}`);
     runSceneAction(env, action);
     clickNext(env);
   });
@@ -423,7 +423,7 @@ function runRepairAttemptSmoke(lesson) {
   assert(/repair-focus/.test(env.elements["#scene"].innerHTML), "repair URL renders repair focus");
   assert(/scene-comic/.test(env.elements["#scene"].innerHTML), "repair URL renders reviewed scene comic panel");
   assert(/assets\/comic\/official-reply-passive\.png/.test(env.elements["#scene"].innerHTML), "repair URL renders generated comic asset");
-  assert(env.elements["#scene-count"].textContent === "1 / 6", "repair URL opens the target scene");
+  assert(env.elements["#scene-count"].textContent === "Scene 1 of 6", "repair URL opens the target scene");
   assert(env.elements["#exercise-body"].children.length === 3, "choice scene renders options");
 
   env.elements["#exercise-body"].children[1].click();
@@ -449,20 +449,20 @@ function runHashNavigationSmoke(lesson) {
     hash: "#official-reply-passive"
   });
 
-  assert(env.elements["#scene-count"].textContent === "1 / 6", "hash navigation opens initial deep-linked scene");
+  assert(env.elements["#scene-count"].textContent === "Scene 1 of 6", "hash navigation opens initial deep-linked scene");
   assert(/Separate a registered case/.test(env.elements["#scene"].innerHTML), "hash navigation rendered the initial scene");
 
   env.context.location.hash = "#workplace-understatement";
   env.context.dispatchEvent({ type: "hashchange" });
 
-  assert(env.elements["#scene-count"].textContent === "5 / 6", "hashchange navigates to the requested scene");
+  assert(env.elements["#scene-count"].textContent === "Scene 5 of 6", "hashchange navigates to the requested scene");
   assert(/Open the call with the case/.test(env.elements["#scene"].innerHTML), "hashchange rendered the new scene");
   assert(!/assets\/comic\/workplace-understatement\.png/.test(env.elements["#scene"].innerHTML), "hashchange must not request an unreviewed comic asset");
 
   env.context.location.hash = "#missing-scene";
   env.context.dispatchEvent({ type: "hashchange" });
 
-  assert(env.elements["#scene-count"].textContent === "1 / 6", "unknown hash falls back to the first scene");
+  assert(env.elements["#scene-count"].textContent === "Scene 1 of 6", "unknown hash falls back to the first scene");
   assert(env.context.location.hash === "#official-reply-passive", "unknown hash is normalized to the rendered scene");
 }
 

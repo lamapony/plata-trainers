@@ -73,6 +73,15 @@ test.describe("public pages smoke", () => {
     await page.goto(FLAGSHIP);
     await page.waitForLoadState("networkidle");
     await expect(page.locator("main")).toBeVisible();
+    await expect(page.locator(".story-layout")).toBeVisible();
+    await expect(page.locator(".story-sidebar")).toContainText("Follow up after a job interview");
+    await expect(page.locator("#route")).toBeVisible();
+    await expect(page.locator(".route-step")).toHaveCount(6);
+    await expect(page.locator('.route-step[aria-current="step"]')).toHaveCount(1);
+    await expect(page.locator("#scene-count")).toHaveText("Scene 1 of 6");
+    await expect(page.locator(".scene-body")).toBeVisible();
+    await expect(page.locator(".exercise")).toBeVisible();
+    await expect(page.locator(".choice-card")).toHaveCount(3);
     const body = await page.locator("body").innerText();
     expect(body.length).toBeGreaterThan(40);
     await assertNoCriticalAxe(page, "flagship lesson");
@@ -87,6 +96,8 @@ test.describe("public pages smoke", () => {
       await page.waitForLoadState("networkidle");
       await expect(page.locator("main")).toBeVisible();
       await expect(page.locator("h1")).toBeVisible();
+      await expect(page.locator("#route")).toBeVisible();
+      await expect(page.locator('.route-step[aria-current="step"]')).toHaveCount(1);
       await assertNoHorizontalOverflow(page);
     }
     expect(runtimeProblems, "lesson library runtime failures").toEqual([]);
