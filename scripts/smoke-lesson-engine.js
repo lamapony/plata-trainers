@@ -421,7 +421,7 @@ function runRepairAttemptSmoke(lesson) {
   });
 
   assert(/repair-focus/.test(env.elements["#scene"].innerHTML), "repair URL renders repair focus");
-  assert(/scene-comic/.test(env.elements["#scene"].innerHTML), "repair URL renders scene comic panel");
+  assert(/scene-comic/.test(env.elements["#scene"].innerHTML), "repair URL renders reviewed scene comic panel");
   assert(/assets\/comic\/official-reply-passive\.png/.test(env.elements["#scene"].innerHTML), "repair URL renders generated comic asset");
   assert(env.elements["#scene-count"].textContent === "1 / 6", "repair URL opens the target scene");
   assert(env.elements["#exercise-body"].children.length === 3, "choice scene renders options");
@@ -457,7 +457,7 @@ function runHashNavigationSmoke(lesson) {
 
   assert(env.elements["#scene-count"].textContent === "5 / 6", "hashchange navigates to the requested scene");
   assert(/Honesty is not the same sentence/.test(env.elements["#scene"].innerHTML), "hashchange rendered the new scene");
-  assert(/assets\/comic\/workplace-understatement\.png/.test(env.elements["#scene"].innerHTML), "hashchange rendered the new scene comic contract");
+  assert(!/assets\/comic\/workplace-understatement\.png/.test(env.elements["#scene"].innerHTML), "hashchange must not request an unreviewed comic asset");
 
   env.context.location.hash = "#missing-scene";
   env.context.dispatchEvent({ type: "hashchange" });

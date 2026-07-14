@@ -66,9 +66,22 @@ assert(dataSource.includes("simulation:"), "generated lesson missing simulation 
 assert(dataSource.includes("masteryMap:"), "generated lesson missing mastery map");
 assert(dataSource.includes("comicStoryboard:"), "generated lesson missing comic storyboard");
 assert(dataSource.includes("./assets/comic/read-context.png"), "generated lesson missing comic asset path");
+assert(dataSource.includes("assetReady: false"), "generated lesson must not publish unreviewed comic assets");
+
+const invalidAssetPath = path.join(sandboxRoot, "lessons", "lesson-b2-scaffold-asset-missing", "data.js");
+fs.mkdirSync(path.dirname(invalidAssetPath), { recursive: true });
+fs.writeFileSync(invalidAssetPath, dataSource.replace("assetReady: false", "assetReady: true"));
+const invalidAssetResult = spawnSync(process.execPath, ["scripts/validate-lesson.js", "--file", invalidAssetPath], {
+  cwd: root,
+  encoding: "utf8",
+  stdio: "pipe"
+});
+assert(invalidAssetResult.status !== 0, "validator accepted assetReady=true without a committed asset");
+assert(`${invalidAssetResult.stdout}\n${invalidAssetResult.stderr}`.includes("true requires a non-empty committed file"), "validator did not explain the missing ready asset");
 
 console.log("ok - gold lesson scaffold generates a validator-clean lesson");
 console.log("ok - generated gold lesson passes simulator and runtime replay");
+console.log("ok - generated comic assets remain unpublished until reviewed and committed");
 
 fs.rmSync(catalogSandboxRoot, { recursive: true, force: true });
 fs.mkdirSync(path.join(catalogSandboxRoot, "lessons", "lesson-b2-job-followup"), { recursive: true });

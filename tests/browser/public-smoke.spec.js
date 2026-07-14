@@ -6,6 +6,18 @@ const FLAGSHIP = "/lessons/lesson-b2-job-followup/";
 const TODAY = "/dashboard.html";
 const DEMO = "/dashboard.html?demo=learner";
 
+function collectRuntimeProblems(page) {
+  const problems = [];
+  page.on("pageerror", error => problems.push(`pageerror: ${error.message}`));
+  page.on("console", message => {
+    if (message.type() === "error") problems.push(`console: ${message.text()}`);
+  });
+  page.on("response", response => {
+    if (response.status() >= 400) problems.push(`http ${response.status()}: ${response.url()}`);
+  });
+  return problems;
+}
+
 async function assertNoCriticalAxe(page, label) {
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
@@ -24,32 +36,44 @@ async function assertNoHorizontalOverflow(page) {
 
 test.describe("public pages smoke", () => {
   test("home shows flagship situation CTA", async ({ page }) => {
+    const runtimeProblems = collectRuntimeProblems(page);
     await page.goto("./");
+    await page.waitForLoadState("networkidle");
     await expect(page.locator("#home-primary-action")).toBeVisible();
     await expect(page.locator("#home-primary-action")).toHaveAttribute("href", /lesson-b2-job-followup/);
     await expect(page.getByText("Situation → miss → repair")).toBeVisible();
     await assertNoCriticalAxe(page, "home");
+    expect(runtimeProblems, "home runtime failures").toEqual([]);
   });
 
   test("flagship lesson loads and exposes scenes", async ({ page }) => {
+    const runtimeProblems = collectRuntimeProblems(page);
     await page.goto(FLAGSHIP);
+    await page.waitForLoadState("networkidle");
     await expect(page.locator("main")).toBeVisible();
     const body = await page.locator("body").innerText();
     expect(body.length).toBeGreaterThan(40);
     await assertNoCriticalAxe(page, "flagship lesson");
+    expect(runtimeProblems, "flagship runtime failures").toEqual([]);
   });
 
   test("Today first-run dashboard renders primary route", async ({ page }) => {
+    const runtimeProblems = collectRuntimeProblems(page);
     await page.goto(TODAY);
+    await page.waitForLoadState("networkidle");
     await expect(page.locator("#today-program")).toBeVisible({ timeout: 15_000 });
     await assertNoCriticalAxe(page, "today first-run");
+    expect(runtimeProblems, "Today runtime failures").toEqual([]);
   });
 
   test("demo learner route stays read-only and shows Today", async ({ page }) => {
+    const runtimeProblems = collectRuntimeProblems(page);
     await page.goto(DEMO);
+    await page.waitForLoadState("networkidle");
     await expect(page.locator("#today-program")).toBeVisible({ timeout: 15_000 });
     await expect(page.locator("body")).toContainText(/demo/i);
     await assertNoCriticalAxe(page, "demo learner");
+    expect(runtimeProblems, "demo runtime failures").toEqual([]);
   });
 
   test("360px viewports do not scroll horizontally", async ({ page }) => {
