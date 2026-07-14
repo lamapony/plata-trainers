@@ -382,8 +382,18 @@ function validateGoldComicStoryboard(lessonMeta, lesson, knownMasteryTags) {
       issue(`${prefix}.sceneId: unknown scene "${panel.sceneId}"`);
       return;
     }
-    if (!nonEmptyString(panel.assetPath) || !/^\.\/assets\/comic\/[a-z0-9-]+\.(png|webp|jpg|jpeg)$/i.test(panel.assetPath)) {
+    const validAssetPath = nonEmptyString(panel.assetPath) && /^\.\/assets\/comic\/[a-z0-9-]+\.(png|webp|jpg|jpeg)$/i.test(panel.assetPath);
+    if (!validAssetPath) {
       issue(`${prefix}.assetPath: must point to ./assets/comic/<panel>.png|webp|jpg|jpeg`);
+    }
+    if (panel.assetReady !== undefined && typeof panel.assetReady !== "boolean") {
+      issue(`${prefix}.assetReady: must be boolean when present`);
+    }
+    if (panel.assetReady === true && validAssetPath) {
+      const assetFile = path.resolve(path.dirname(resolveInputPath(lessonMeta.dataPath)), panel.assetPath);
+      if (!fs.existsSync(assetFile) || !fs.statSync(assetFile).isFile() || fs.statSync(assetFile).size === 0) {
+        issue(`${prefix}.assetReady: true requires a non-empty committed file at ${panel.assetPath}`);
+      }
     }
     if (!nonEmptyString(panel.alt) || panel.alt.trim().split(/\s+/).length < 8) {
       issue(`${prefix}.alt: required descriptive alt text with at least eight words`);

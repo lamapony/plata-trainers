@@ -323,7 +323,7 @@
 
   function renderComicPanel(lesson, scene) {
     var panel = findComicPanel(lesson, scene);
-    if (!panel || !panel.assetPath) return "";
+    if (!panel || !panel.assetPath || panel.assetReady !== true) return "";
     return [
       "<figure class='scene-comic' data-comic-panel='" + escapeHtml(panel.id || scene.id) + "'>",
       "<img src='" + escapeHtml(panel.assetPath) + "' alt='" + escapeHtml(panel.alt || "") + "' loading='eager' decoding='async' />",

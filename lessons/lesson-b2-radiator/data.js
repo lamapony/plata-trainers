@@ -15,6 +15,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
         id: "official-reply-passive",
         sceneId: "official-reply-passive",
         assetPath: "./assets/comic/official-reply-passive.png",
+        assetReady: true,
         alt: "A tenant studies a formal landlord email while a cold radiator sits in the background.",
         prompt: "A single comic panel in a quiet Copenhagen apartment. An adult tenant sits at a small table reading a formal landlord email on a laptop, while a cold radiator and winter window are visible behind them. The mood is polite but evasive: the email feels official, yet nobody is taking visible responsibility. No readable text, no labels, no speech bubbles.",
         sourceRefs: ["Lex: passiv", "sproget.dk: grammatiske betegnelser"],
