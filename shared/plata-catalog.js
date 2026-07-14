@@ -86,27 +86,29 @@
             "consequence-aware-tone",
             "agency-without-pressure",
             "concrete-next-step",
-            "context-reading"
+            "context-reading",
+            "professional-email-agency",
+            "platform-register-shift"
           ],
           sequence: 3
         }
       },
       {
         id: "vocab",
-        name: "Vocab SR",
+        name: "Vocab SR (DA↔RU)",
         type: "drill",
         path: "./vocab-sr/",
-        description: "Spaced-repetition vocabulary in Danish ↔ Russian, with aliases for common translation variants.",
+        description: "Optional Russian-speaker trainer: spaced-repetition vocabulary Danish ↔ Russian. Not part of the English flagship path.",
         icon: "🗂️",
         gallery: {
-          tag: "Vocabulary",
-          role: "repair",
+          tag: "Russian trainer",
+          role: "optional",
           level: "A2–B2",
-          theme: "Retrieval",
+          theme: "DA ↔ RU retrieval",
           estimatedMinutes: 5,
-          repairs: "recognition · recall gaps from scenes",
+          repairs: "optional vocabulary for Russian speakers",
           repairSignals: [],
-          sequence: 4
+          sequence: 90
         }
       },
       {
@@ -321,12 +323,7 @@
       var joiner = href.indexOf("?") === -1 ? "?" : "&";
       return href + joiner + params.join("&");
     },
-    vocabScenesByLesson: {
-      "lesson-b2-job-followup": {
-        "email-closing": ["proces", "opfølgning"],
-        "email-register": ["henvendelse", "opfølgning"]
-      }
-    },
+    vocabScenesByLesson: {},
     vocabFocusForScene: function (lessonId, sceneId) {
       if (!lessonId || !sceneId) return null;
       var lesson = this.vocabScenesByLesson && this.vocabScenesByLesson[lessonId];
@@ -340,40 +337,33 @@
       if (sceneId) params.push("scene=" + encodeURIComponent(sceneId));
       return href + "?" + params.join("&");
     },
-    vocabRemediation: function (sourceLessonId, sceneId, focusWords) {
-      if (!sourceLessonId || !sceneId || !focusWords || !focusWords.length) return null;
-      var vocabTrainer = null;
-      for (var i = 0; i < this.trainers.length; i++) {
-        if (this.trainers[i].id === "vocab") {
-          vocabTrainer = this.trainers[i];
-          break;
-        }
-      }
-      if (!vocabTrainer) return null;
-      var preview = focusWords.slice(0, 3).join(", ");
-      return {
-        kind: "vocab",
-        cta: "Review scene vocabulary",
-        action: "These words appeared in a weak scene (" + preview + "). A short SR pass keeps them retrievable before you forget them.",
-        href: this.vocabRepairLink(sourceLessonId, sceneId),
-        trainerIcon: vocabTrainer.icon,
-        trainerName: vocabTrainer.name,
-        sceneId: sceneId,
-        focus: focusWords.slice()
-      };
+    vocabRemediation: function () {
+      // Flagship path is English-first; DA↔RU vocab is optional and never auto-prescribed.
+      return null;
     },
-    buildVocabRemediation: function (sourceLessonId, sceneId) {
-      var focus = this.vocabFocusForScene(sourceLessonId, sceneId);
-      if (!focus || !focus.length) return null;
-      return this.vocabRemediation(sourceLessonId, sceneId, focus);
+    buildVocabRemediation: function () {
+      return null;
+    },
+    lessonPathById: function (lessonId) {
+      if (!lessonId) return "";
+      for (var i = 0; i < this.trainers.length; i++) {
+        var trainer = this.trainers[i];
+        if (trainer.id === lessonId && trainer.path) return trainer.path;
+      }
+      return "";
     },
     drillRemediation: function (signalTag, sourceTrainerId) {
       var drill = this.drillForSignal(signalTag);
       if (!drill) return null;
       var repairs = drill.gallery && drill.gallery.repairs ? drill.gallery.repairs : "";
+      var deadlineSignals = {
+        "consequence-aware-tone": true,
+        "professional-email-agency": true,
+        "concrete-next-step": true
+      };
       var channelSignals = {
         "formal-register-control": true,
-        "consequence-aware-tone": true,
+        "platform-register-shift": true,
         "understatement-with-agency": true
       };
       var ordstillingCatMap = {
@@ -388,10 +378,12 @@
         "strong-verb-past": "strong-verb"
       };
       var linkOptions = null;
-      if (sourceTrainerId === "lesson-b2-radiator-register" && channelSignals[signalTag]) {
-        linkOptions = { cat: "channel" };
-      } else if (sourceTrainerId === "lesson-b2-job-followup" && signalTag === "consequence-aware-tone") {
-        linkOptions = { cat: "deadline" };
+      if (drill.id === "register") {
+        if (deadlineSignals[signalTag]) {
+          linkOptions = { cat: "deadline" };
+        } else if (channelSignals[signalTag] || sourceTrainerId === "lesson-b2-radiator-register") {
+          linkOptions = { cat: "channel" };
+        }
       } else if (sourceTrainerId === "lesson-a2-doctor" && drill.id === "skrive") {
         linkOptions = { cat: "sundhed" };
       } else if (drill.id === "ordstilling" && ordstillingCatMap[signalTag]) {
@@ -406,7 +398,8 @@
         href: this.drillRepairLink(drill, signalTag, sourceTrainerId, linkOptions),
         trainerIcon: drill.icon,
         trainerName: drill.name,
-        drillId: drill.id
+        drillId: drill.id,
+        cat: linkOptions && linkOptions.cat ? linkOptions.cat : ""
       };
     }
   };

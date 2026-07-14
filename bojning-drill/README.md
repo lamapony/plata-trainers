@@ -1,6 +1,6 @@
 # bøjning-drill
 
-Open-source Danish bøjning drill. Verbs (nutid / datid / førnutid) + nouns (bestemt/ubestemt, ental/flertal). Lite SM-2 spaced repetition. Self-contained HTML/JS, no build, no backend.
+Open-source Danish bøjning drill. Verbs (nutid / datid / førnutid) + nouns (bestemt/ubestemt, ental/flertal). Leitner spaced review (1·2·4·7·14 days). Self-contained HTML/JS, no build, no backend.
 
 [Live demo](https://lamapony.github.io/plata-trainers/bojning-drill/) — when GitHub Pages is enabled.
 

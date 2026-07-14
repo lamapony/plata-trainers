@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lamapony.github.io/plata-trainers/schemas/lesson-request.schema.json",
+  "title": "Platå lesson request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "requestType", "topic", "learnerGoal", "situation", "level"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "requestType": { "const": "plata.lesson-request" },
+    "slug": { "type": "string", "pattern": "^lesson-(a2|b1|b2)-[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "title": { "type": "string", "minLength": 1 },
+    "topic": { "type": "string", "minLength": 3 },
+    "learnerGoal": { "type": "string", "minLength": 8 },
+    "situation": { "type": "string", "minLength": 8 },
+    "level": { "enum": ["A2", "B1", "B2"] },
+    "estimatedMinutes": { "type": "integer", "minimum": 8, "maximum": 25 },
+    "interfaceLanguage": { "enum": ["en", "da"] },
+    "mustInclude": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "avoid": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "sourcePreferences": {
+      "type": "array",
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "objectiveTags", "mustIncludeCoverage", "reviewedSourceUrls", "avoidReviewed", "reviewNotes"],
+      "properties": {
+        "status": { "enum": ["scaffold", "ready"] },
+        "objectiveTags": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "mustIncludeCoverage": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "maxItems": 8,
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        },
+        "reviewedSourceUrls": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": { "type": "string", "format": "uri", "pattern": "^https?://" }
+        },
+        "avoidReviewed": { "type": "boolean" },
+        "reviewNotes": { "type": "string" }
+      }
+    }
+  }
+}

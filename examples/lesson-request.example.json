@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "requestType": "plata.lesson-request",
+  "topic": "A noisy neighbour in an apartment building",
+  "learnerGoal": "Ask for quieter evenings without sounding aggressive or passive",
+  "situation": "The learner first speaks to a neighbour and then sends a short written follow-up",
+  "level": "B1",
+  "estimatedMinutes": 12,
+  "interfaceLanguage": "en",
+  "mustInclude": [
+    "a natural spoken opening",
+    "a written follow-up",
+    "one repair path for wording that sounds too aggressive"
+  ],
+  "avoid": [
+    "legal advice",
+    "invented claims about tenant rights"
+  ],
+  "sourcePreferences": [
+    "Sproget.dk / Dansk Sprognævn",
+    "Den Danske Ordbog",
+    "authoritative Danish housing communication guidance"
+  ]
+}

@@ -680,7 +680,7 @@
           "kind": "repair",
           "rule": "dashboard.repair.highest-open-mastery",
           "score": 196,
-          "traceFingerprint": "ptr-16ms5kt",
+          "traceFingerprint": "ptr-ucjz5w",
           "signalTag": "passive-agency",
           "selectedMemoryFacts": [
             {
@@ -919,7 +919,7 @@
           "kind": "repair",
           "rule": "dashboard.repair.highest-open-mastery",
           "score": 187,
-          "traceFingerprint": "ptr-6o3n17",
+          "traceFingerprint": "ptr-ck9v0g",
           "signalTag": "professional-email-agency",
           "selectedMemoryFacts": [
             {

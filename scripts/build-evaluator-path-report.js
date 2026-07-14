@@ -101,12 +101,11 @@ function buildEvaluatorPathReport(options = {}) {
   const evaluatorLinks = linkRows(evaluatorSection);
   const homeLinks = linkRows(indexHtml);
   const requiredHomeLinks = [
-    { href: "#evaluate", label: "home hero evaluator CTA" },
     { href: "./dashboard.html?demo=learner", label: "read-only demo learner" },
     { href: "./proof.html#proof-walkthrough-title", label: "proof walkthrough" },
     { href: "./proof.html#proof-guided-title", label: "guided proof" }
   ];
-  const requiredEvaluatorLinks = requiredHomeLinks.filter(item => item.href !== "#evaluate");
+  const requiredEvaluatorLinks = requiredHomeLinks;
   const routeTargets = [
     { href: "./dashboard.html?demo=learner", targetFile: "dashboard.html" },
     { href: "./proof.html#proof-walkthrough-title", targetFile: "proof.html", targetId: "proof-walkthrough-title" },

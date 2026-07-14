@@ -76,12 +76,12 @@
   }
 
   function renderStats() {
-    const view = dashboard.statsView(state);
-    els.statToday.textContent = view.today;
-    els.statCorrect.textContent = view.totalCorrect;
-    els.statAccuracy.textContent = view.accuracy;
-    els.statStreak.textContent = view.streak;
-    els.statMastered.textContent = view.mastered;
+    const stats = kernel.getStats(state);
+    els.statToday.textContent = String(stats.todayCount);
+    els.statCorrect.textContent = String(stats.totalAttempts);
+    els.statAccuracy.textContent = "n/a";
+    els.statStreak.textContent = "—";
+    els.statMastered.textContent = "—";
   }
 
   function renderRubric(prompt) {
@@ -100,9 +100,8 @@
       return;
     }
     const p = session[sessionPos];
-    const rec = state.byItemId[itemIdFor(p)] || { box: 1 };
     els.promptCounter.textContent = `${sessionPos + 1} / ${session.length}`;
-    els.promptBox.textContent = `box ${rec.box}${rec.mastered ? " · mastered" : ""}`;
+    els.promptBox.textContent = "self-report";
     els.promptCat.textContent = p.cat;
     els.promptChannel.textContent = p.channel;
     els.promptText.textContent = p.prompt;
@@ -137,11 +136,14 @@
     const minChars = Number(p.minChars || 24);
     const rubricOk = rubricComplete();
     const lengthOk = text.length >= minChars;
-    const correct = rubricOk && lengthOk;
-    const attemptTags = ["skrive", p.cat].concat(!correct ? ["self-grade-gap"] : []);
+    const completed = rubricOk && lengthOk;
+    const needsRevision = !completed;
+    const attemptTags = ["skrive", p.cat].concat(needsRevision ? ["self-grade-gap"] : []);
     kernel.recordAttempt(state, {
       itemId: itemIdFor(p),
-      correct,
+      assessmentKind: "self-report",
+      correct: null,
+      completed,
       tags: attemptTags,
       mode: p.cat,
       reason: "self-grade",
@@ -150,7 +152,7 @@
       lengthPassed: lengthOk,
       charCount: text.length
     });
-    if (!correct) {
+    if (needsRevision) {
       const insertAt = Math.min(session.length, sessionPos + 2);
       session.splice(insertAt, 0, p);
     }
@@ -158,26 +160,30 @@
       itemId: itemIdFor(p),
       prompt: p.prompt,
       note: p.note,
-      correct,
+      assessmentKind: "self-report",
+      completed,
+      needsRevision,
       rubricOk,
       lengthOk,
       charCount: text.length
     });
-    showFeedback(correct, p, { rubricOk, lengthOk, minChars });
+    showFeedback(completed, p, { rubricOk, lengthOk, minChars, charCount: text.length });
     awaitingCheck = false;
     els.submitBtn.textContent = "Næste →";
     saveState();
     renderStats();
   }
 
-  function showFeedback(ok, prompt, meta) {
+  function showFeedback(completed, prompt, meta) {
     els.feedback.classList.remove("hidden", "good", "bad");
-    els.feedback.classList.add(ok ? "good" : "bad");
+    els.feedback.classList.add(completed ? "good" : "bad");
     const parts = [];
-    if (ok) parts.push("✓ Rubric complete — production logged locally.");
-    else {
-      if (!meta.lengthOk) parts.push(`✗ Write at least ${meta.minChars} characters (${meta.charCount} now).`);
-      if (!meta.rubricOk) parts.push("✗ Check every rubric row before self-grading.");
+    if (completed) {
+      parts.push("✓ Completed — self-assessment logged (does not change accuracy or mastery).");
+    } else {
+      parts.push("Needs revision");
+      if (!meta.lengthOk) parts.push(`— write at least ${meta.minChars} characters (${meta.charCount} now).`);
+      if (!meta.rubricOk) parts.push("— check every rubric row before continuing.");
     }
     if (prompt.note) parts.push(`<div class="why">${escapeHtml(prompt.note)}</div>`);
     parts.push('<div class="next-hint">tryk Enter eller klik "Næste →"</div>');
@@ -188,26 +194,26 @@
     els.drillCard.classList.add("hidden");
     els.summaryCard.classList.remove("hidden");
     const total = sessionResults.length;
-    const correct = sessionResults.filter((r) => r.correct).length;
-    const acc = total > 0 ? Math.round((correct / total) * 100) + "%" : "—";
-    els.sumCorrect.textContent = correct;
+    const completed = sessionResults.filter((r) => r.completed).length;
+    const needsRevision = sessionResults.filter((r) => r.needsRevision).length;
+    els.sumCorrect.textContent = completed;
     els.sumTotal.textContent = total;
-    els.sumAccuracy.textContent = acc;
+    els.sumAccuracy.textContent = needsRevision ? `${needsRevision} needs revision` : "all completed";
     els.sumMistakes.innerHTML = "";
-    const gaps = sessionResults.filter((r) => !r.correct);
+    const gaps = sessionResults.filter((r) => r.needsRevision);
     if (gaps.length === 0) {
       const li = document.createElement("li");
       li.className = "empty";
-      li.textContent = "alle prompts self-graded — flot";
+      li.textContent = "all prompts completed — no accuracy claimed";
       els.sumMistakes.appendChild(li);
     } else {
       gaps.forEach((m) => {
         const li = document.createElement("li");
-        li.innerHTML = `<div>${escapeHtml(m.prompt)}</div><div class="given">${m.rubricOk ? "rubric ok" : "rubric incomplete"} · ${m.charCount} tegn</div>`;
+        li.innerHTML = `<div>${escapeHtml(m.prompt)}</div><div class="given">${m.rubricOk ? "rubric ok" : "rubric incomplete"} · ${m.charCount} tegn · needs revision</div>`;
         els.sumMistakes.appendChild(li);
       });
     }
-    markPlanStepComplete(total, correct);
+    markPlanStepComplete(total, completed);
     renderPlanContext();
     renderNextStep();
     renderStats();
@@ -219,6 +225,7 @@
       trainerId: TRAINER_ID,
       state,
       sessionResults,
+      assessmentKind: "self-report",
       rootPrefix: "../"
     }));
   }
@@ -241,17 +248,19 @@
     els.stats.insertAdjacentElement("afterend", slot);
   }
 
-  function markPlanStepComplete(total, correct) {
+  function markPlanStepComplete(total, completed) {
     if (!window.PlataPlanner || !window.PlataPlanner.markPracticePlanStepCompleted || total <= 0) return;
     window.PlataPlanner.markPracticePlanStepCompleted({
       trainerId: TRAINER_ID,
       evidence: {
-        reason: "skrive-session-complete",
+        reason: "self-report-session-complete",
+        assessmentKind: "self-report",
         mode: category,
         trainerId: TRAINER_ID,
         total,
-        correct,
-        accuracy: Math.round((correct / Math.max(1, total)) * 100)
+        completed,
+        needsRevision: Math.max(0, total - completed),
+        completionRate: Math.round((completed / Math.max(1, total)) * 100)
       }
     });
   }

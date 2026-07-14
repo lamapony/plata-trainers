@@ -13,6 +13,7 @@ const repoRoot = path.resolve(__dirname, "..");
 const fixedNow = "2026-06-08T09:00:00.000Z";
 const dashboardSources = [
   "shared/plata-kernel.js",
+  "shared/plata-profile.js",
   "shared/plata-catalog.js",
   "lessons/lesson-01/data.js",
   "lessons/lesson-b2-radiator/data.js",
@@ -195,6 +196,9 @@ function makeDashboardContext() {
         this.result = file ? (file.content || file.text || file.result || "") : "";
         if (typeof this.onload === "function") this.onload({ target: { result: this.result } });
       };
+    },
+    confirm() {
+      return true;
     },
     document: {
       readyState: "complete",
@@ -557,7 +561,7 @@ function buildProfilePortabilityReport(options = {}) {
       correctedFactId
     }),
     stage("export-payload", "Export the local profile as a portable backup", [
-      { key: "schema-version", pass: sourceSummary.profileSchemaVersion === 1, issue: "export payload profile schema version drifted" },
+      { key: "schema-version", pass: sourceSummary.profileSchemaVersion === 2, issue: "export payload profile schema version drifted" },
       { key: "event-log-present", pass: Boolean(sourceSummary.eventLog && sourceSummary.eventLog.fingerprint && sourceSummary.eventLog.events > 0), issue: "export payload lost the event log" },
       { key: "memory-present", pass: Boolean(sourceSummary.memory && sourceSummary.memory.fingerprint && sourceSummary.memory.visibleFacts > 0), issue: "export payload lost memory facts" },
       { key: "model-present", pass: Boolean(sourceSummary.learnerModel && sourceSummary.learnerModel.fingerprint), issue: "export payload lost learner model" },

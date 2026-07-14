@@ -15,11 +15,14 @@ Public helpers include:
 - `recordAttempt(state, attempt)`
 - `recordRepairClosure(state, closure)`
 - `getRepairClosure(state, signal)` and `isSignalResolved(state, signal)`
-- `getStats(state)`
-- `pickSessionItems(items, options)`
+- `getStats(state)` — includes `dueCount` from Leitner `nextDueAt`
+- `pickSessionItems(items, options)` — overdue → new → weakest
+- `intervalForBox(box)`, `isItemDue(rec)`, `countDueItems(state)`
 - `exportState(state)` and `importState(json, expectedTrainerId)`
 - `computeGate(state, gateSpec)`
 - `getWeakTags(state, limit, { includeResolved })`
+
+Spaced review is Leitner: boxes 1–5 map to intervals `1, 2, 4, 7, 14` days. Wrong answers reset to box 1 and schedule for tomorrow; drills also re-queue misses in the active session.
 
 Repair closure records retire lesson-owned weak signals after a correct repair attempt. By default `getWeakTags` returns only open weak signals; pass `{ includeResolved: true }` to inspect historical misses that have already been repaired.
 

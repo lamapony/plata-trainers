@@ -1,7 +1,7 @@
 /* platå · vocab-SR · app v0.1
  *
  * Spaced-repetition vocabulary drill. DA ↔ RU.
- * Lite SM-2 (same shape as bojning + ordstilling).
+ * Leitner spaced repetition (same shape as bojning + ordstilling).
  */
 
 (function () {

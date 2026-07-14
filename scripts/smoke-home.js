@@ -295,7 +295,7 @@ async function runEmptyHomeSmoke() {
   assert(typeof env.eventListeners.hashchange === "function", "home restores hash scroll after same-page hash changes");
   env.ids["#evaluate"].scrollIntoViewCalls = [];
   env.eventListeners.hashchange();
-  assert(env.ids["#evaluate"].scrollIntoViewCalls.length === 1, "home hashchange listener scrolls to the evaluator path");
+  assert(env.ids["#evaluate"].scrollIntoViewCalls.length === 1, "home hashchange listener scrolls to the reviewers section");
   assert(env.galleryCards.filter(card => card.parentElement === env.ids["#narrative-gallery"]).length === 7, "home renders seven narrative lessons from catalog");
   assert(env.galleryCards.filter(card => card.parentElement === env.ids["#drill-gallery"]).length === 5, "home renders five drills from catalog");
   const lessonCard = env.galleryCards.find(card => card.trainerId === "lesson-01-arrival");
@@ -309,7 +309,7 @@ async function runProgressHomeSmoke() {
   seedProgress(env, "vocab");
   await runHome(env);
 
-  assert(env.ids["#home-start-title"].textContent === "Continue Vocab SR", "home recommends continuing existing progress");
+  assert(env.ids["#home-start-title"].textContent === "Continue Vocab SR (DA↔RU)", "home recommends continuing existing progress");
   assert(env.ids["#home-start-link"].href === "./vocab-sr/", "home continue link points to latest trainer");
   assert(env.ids["#home-primary-action"].textContent === "Continue", "home primary CTA continues the latest drill");
   const vocabCard = env.galleryCards.find(card => card.trainerId === "vocab");
@@ -383,25 +383,24 @@ async function runClosedMasteryHomeSmoke() {
 }
 
 function runHomeMarkupSmoke() {
-  assert(indexHtml.includes("id=\"evaluate\""), "home page should expose the evaluator path section");
+  assert(indexHtml.includes("id=\"evaluate\""), "home page should expose the reviewers/evaluator section");
   assert(indexHtml.includes("id=\"narrative-gallery\""), "home page should expose catalog-driven narrative gallery container");
   assert(indexHtml.includes("id=\"drill-gallery\""), "home page should expose catalog-driven drill gallery container");
   assert(indexHtml.includes("id=\"pwa-status\""), "home page should expose learner-visible PWA status");
-  assert(indexHtml.includes("Narrative lesson gallery"), "home page should keep narrative gallery section copy");
-  assert(indexHtml.includes("Evaluate in 60 seconds"), "home hero should link to the evaluator path");
-  assert(indexHtml.includes("./dashboard.html?demo=learner"), "home evaluator path should link the demo learner dashboard");
-  assert(indexHtml.includes("./proof.html#proof-walkthrough-title"), "home evaluator path should link the proof walkthrough");
-  assert(indexHtml.includes("./proof.html#proof-guided-title"), "home evaluator path should link guided proof");
-  assert(indexHtml.includes("./proof.html#proof-distribution-title"), "home evaluator path should link offline distribution proof");
-  assert(indexHtml.includes("pressure, notice, action, feedback"), "home gallery copy should keep pressure/notice/action/feedback loop");
+  assert(indexHtml.includes("Lesson library"), "home page should keep lesson library section copy");
+  assert(indexHtml.includes("For reviewers"), "home should keep a reviewers drawer");
+  assert(indexHtml.includes("./dashboard.html?demo=learner"), "home reviewers path should link the demo learner dashboard");
+  assert(indexHtml.includes("./proof.html#proof-walkthrough-title"), "home reviewers path should link proof walkthrough");
+  assert(indexHtml.includes("./proof.html#proof-guided-title"), "home reviewers path should link guided proof");
+  assert(indexHtml.includes("Russian-speaker trainer"), "home should label DA↔RU vocab as Russian-speaker trainer");
   assert(indexHtml.includes("id=\"repair-paths\""), "home page should expose Match→Gym repair paths list");
-  assert(indexHtml.includes("B2 radiator</a> → <a href=\"./register-drill/"), "home repair paths should list radiator register channel bridge");
-  assert(indexHtml.includes("B2 ordstilling</a> → <a href=\"./ordstilling-drill/"), "home repair paths should list ordstilling V2 bridge");
-  assert(indexHtml.includes("register drill · deadline"), "home repair paths should list job follow-up register deadline bridge");
-  assert(indexHtml.includes("bøjning drill · gender traps"), "home repair paths should list job follow-up bojning trap bridge");
-  assert(indexHtml.includes("A2 doctor</a> → skrive sundhed"), "home repair paths should list doctor skrive sundhed bridge");
-  assert(indexHtml.includes("vocab SR · scene words"), "home repair paths should list vocab SR scene repair bridge");
+  assert(indexHtml.includes("register · deadline"), "home repair paths should list job follow-up register deadline bridge");
+  assert(indexHtml.includes("bøjning · gender"), "home repair paths should list job follow-up bojning trap bridge");
+  assert(indexHtml.includes("bøjning · strong verb"), "home repair paths should list strong-verb repair");
+  assert(indexHtml.includes("register · channel"), "home repair paths should list channel register bridge");
+  assert(!indexHtml.includes("vocab SR · scene words"), "home flagship repair paths should not list DA↔RU vocab");
   assert(!indexHtml.includes("href=\"./reports/"), "home page should not link Pages-only reports from the root static page");
+  assert(!indexHtml.includes("fonts.googleapis.com"), "home page must not load Google Fonts");
 }
 
 async function run() {

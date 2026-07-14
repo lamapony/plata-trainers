@@ -8,9 +8,6 @@
   <link rel="manifest" href="./site.webmanifest" />
   <link rel="icon" href="./assets/icons/icon-192.png" type="image/png" />
   <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./shared/plata-tokens.css" />
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./styles-core.css" />
@@ -42,15 +39,13 @@
       <section class="hero-grid">
         <div>
           <p class="eyebrow">One next step</p>
-          <h1>Dashboard</h1>
-          <p class="lead">Do the recommended action first. Evidence and memory are optional, under Inspect.</p>
+          <h1>Today</h1>
+          <p class="lead">Do the recommended action first. Evidence and memory stay under Inspect.</p>
         </div>
       </section>
     </header>
 
     <section class="demo-profile-banner" id="demo-profile" hidden aria-label="Demo learner profile"></section>
-
-    <section class="learner-headroom-bar" id="learner-headroom" hidden aria-label="Practice in plain language" style="display:none !important"></section>
 
     <section class="section today-section" id="today" aria-labelledby="today-title">
       <div class="section-head">
@@ -58,14 +53,6 @@
         <h2 id="today-title">Recommended practice</h2>
       </div>
       <div id="today-program" class="today-program"></div>
-    </section>
-
-    <section class="section guided-session-section" id="guided-session" aria-labelledby="guided-session-title">
-      <div class="section-head">
-        <p class="eyebrow">Session</p>
-        <h2 id="guided-session-title">Guided walkthrough</h2>
-      </div>
-      <div id="guided-session-panel" class="guided-session-panel"></div>
     </section>
 
     <section class="section" id="overview" aria-labelledby="overview-title">
@@ -85,60 +72,43 @@
       <div id="due-cards" class="trainer-grid"></div>
     </section>
 
-      <h3 class="debug-header" style="margin-top:32px; font-size:0.9rem; color:var(--muted);">Advanced / debug (optional)</h3>
-<section class="section debug-group" id="evidence" aria-labelledby="evidence-title">
-      <details class="inspect-drawer">
-        <summary>Evidence trail (optional)</summary>
-        <div class="section-head">
-          <p class="eyebrow">Evidence trail</p>
-          <h2 id="evidence-title">What changed and why</h2>
-        </div>
+    <section class="section debug-group" id="inspect" aria-labelledby="inspect-title">
+      <h2 id="inspect-title" class="debug-header" style="margin-top:32px; font-size:0.9rem; color:var(--muted);">Inspect (optional)</h2>
+
+      <details class="inspect-drawer" id="guided-session">
+        <summary>Guided walkthrough</summary>
+        <div id="guided-session-panel" class="guided-session-panel"></div>
+      </details>
+
+      <details class="inspect-drawer" id="evidence">
+        <summary>Evidence trail</summary>
         <div id="evidence-ledger" class="evidence-ledger"></div>
       </details>
-    </section>
 
-     <section class="section debug-group" id="memory" aria-labelledby="memory-title">
-      <details class="inspect-drawer">
-        <summary>Learner memory (optional)</summary>
-        <div class="section-head">
-          <p class="eyebrow">Learner memory</p>
-          <h2 id="memory-title">What the system believes</h2>
-        </div>
+      <details class="inspect-drawer" id="memory">
+        <summary>Learner memory</summary>
         <div id="memory-facts" class="memory-facts"></div>
       </details>
-    </section>
 
-     <section class="section debug-group" id="mastery" aria-labelledby="mastery-title">
-      <details class="inspect-drawer">
-        <summary>What to fix next (optional)</summary>
-        <div class="section-head">
-          <p class="eyebrow">Plain language</p>
-          <h2 id="mastery-title">What to fix next</h2>
-          <p class="section-lead">Each card says what we saw, what it means for your Danish, and one repair step. Open technical details only if you want the raw signal ids.</p>
-        </div>
+      <details class="inspect-drawer" id="mastery">
+        <summary>What to fix next</summary>
+        <p class="section-lead">Each card says what we saw, what it means for your Danish, and one repair step.</p>
         <div id="mastery-list" class="mastery-list"></div>
       </details>
-    </section>
 
-     <section class="section debug-group" id="competencies" aria-labelledby="competencies-title">
-      <details class="inspect-drawer">
-        <summary>Root skills (optional)</summary>
-        <div class="section-head">
-          <p class="eyebrow">Root skills</p>
-          <h2 id="competencies-title">Competency map</h2>
-        </div>
+      <details class="inspect-drawer" id="competencies">
+        <summary>Root skills</summary>
         <div id="competency-list" class="mastery-list competency-list"></div>
       </details>
-    </section>
 
-     <section class="section debug-group" id="raw-weak" aria-labelledby="raw-weak-title">
-      <details class="inspect-drawer">
-        <summary>Raw signals (optional — for curious)</summary>
-        <div class="section-head">
-          <p class="eyebrow">Developer view</p>
-          <h2 id="raw-weak-title">Raw weak tags</h2>
-        </div>
+      <details class="inspect-drawer" id="raw-weak">
+        <summary>Raw signals</summary>
         <div id="weak-list" class="weak-list"></div>
+      </details>
+
+      <details class="inspect-drawer">
+        <summary>Proof &amp; quality</summary>
+        <p class="narrative"><a href="./proof.html">Proof</a> · <a href="./quality.html">Quality</a> · <a href="./program.html">Program</a></p>
       </details>
     </section>
 
@@ -177,11 +147,15 @@
     </section>
 
     <footer class="footer">
-      <p>MIT · <a href="https://dmitrii.dk">Dmitrii Babinov</a> · <a href="./proof.html">Proof</a> · <a href="./quality.html">Quality</a></p>
+      <p>MIT · <a href="https://dmitrii.dk">Dmitrii Babinov</a></p>
     </footer>
   </main>
 
+  <!-- Hidden stubs kept for dashboard.js selectors that still expect these ids -->
+  <div id="learner-headroom" hidden></div>
+
   <script src="./shared/plata-kernel.js"></script>
+  <script src="./shared/plata-profile.js"></script>
   <script src="./shared/plata-catalog.js"></script>
   <script src="./shared/plata-competencies.js"></script>
   <script src="./shared/plata-planner.js"></script>
@@ -198,17 +172,14 @@
   <script src="./shared/plata-headroom.js"></script>
   <script src="./dashboard.js"></script>
   <script src="./shared/plata-pwa.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".inspect-drawer").forEach(function (d) {
+        d.removeAttribute("open");
+      });
+      var today = document.getElementById("today");
+      if (today) today.style.scrollMarginTop = "20px";
+    });
+  </script>
 </body>
 </html>
-
-<script>
-  // Close debug sections by default for clean learner view
-  document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.inspect-drawer, .debug-group details').forEach(function (d) {
-      d.removeAttribute('open');
-    });
-    // Ensure Today is noticeable
-    var today = document.getElementById('today');
-    if (today) today.style.scrollMarginTop = '20px';
-  });
-</script>

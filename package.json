@@ -28,11 +28,14 @@
     "proof:quickstart": "node scripts/build-quickstart-proof.js",
     "generate:comics": "node scripts/generate-comic-assets-openrouter.js",
     "scaffold:gold": "node scripts/scaffold-gold-lesson.js",
+    "lesson:new": "node scripts/create-lesson-from-request.js",
+    "lesson:verify": "node scripts/verify-agent-lesson.js",
     "preflight:gold-lesson": "node scripts/preflight-gold-lesson.js",
     "build:pwa-icons": "node scripts/build-pwa-icons.js",
-    "check": "npm run check:syntax && npm run check:kernel && npm run check:competencies && npm run check:skill-coverage && npm run check:evidence && npm run check:events && npm run check:memory && npm run check:learner-model && npm run check:learner-model-alignment && npm run check:learner-model-alignment-mutations && npm run check:memory-fixtures && npm run check:memory-corrections && npm run check:memory-vault && npm run check:memory-brief && npm run check:agent-handoff && npm run check:advisor && npm run check:companion && npm run check:guided-session && npm run check:personalization-eval && npm run check:personalization-mutations && npm run check:personalization-trajectory && npm run check:personalization-trajectory-mutations && npm run check:personalization-trajectory-diff && npm run check:profile-replay && npm run check:profile-portability && npm run check:planner && npm run check:planner-mutations && npm run check:catalog && npm run check:repair-bridge && npm run check:home && npm run check:headroom && npm run check:evaluator-path && npm run check:evaluator-journey && npm run check:lesson-engine && npm run check:dashboard && npm run check:demo-learner-report && npm run check:demo-learner-diff && npm run check:today-program-report && npm run check:today-program-diff && npm run check:guided-session-report && npm run check:guided-session-diff && npm run check:dashboard-snapshot && npm run check:dashboard-snapshot-mutations && npm run check:dashboard-snapshot-diff && npm run check:data && npm run check:static && npm run check:lessons && npm run check:exercise-schema && npm run check:exercise-generator && npm run check:exercise-audit && npm run check:exercise-value-report && npm run check:gold-lessons && npm run check:counterfactuals && npm run check:gold-scaffold && npm run check:comic-prompts && npm run check:quality-report && npm run check:quality-mutations && npm run check:quality-diff && npm run check:review-report && npm run check:review-report-fixture && npm run check:quickstart-proof && npm run check:proof-digest && npm run check:quality-page && npm run check:program-page && npm run check:proof-page && npm run check:capability-map && npm run check:health && npm run check:public-runtime && npm run check:public-runtime-mutations && npm run check:pages && npm run check:distribution && npm run check:pwa",
+    "check": "npm run check:syntax && npm run check:kernel && npm run check:profile && npm run check:competencies && npm run check:skill-coverage && npm run check:evidence && npm run check:events && npm run check:memory && npm run check:learner-model && npm run check:learner-model-alignment && npm run check:learner-model-alignment-mutations && npm run check:memory-fixtures && npm run check:memory-corrections && npm run check:memory-vault && npm run check:memory-brief && npm run check:agent-handoff && npm run check:advisor && npm run check:companion && npm run check:guided-session && npm run check:personalization-eval && npm run check:personalization-mutations && npm run check:personalization-trajectory && npm run check:personalization-trajectory-mutations && npm run check:personalization-trajectory-diff && npm run check:profile-replay && npm run check:profile-portability && npm run check:planner && npm run check:planner-mutations && npm run check:catalog && npm run check:repair-bridge && npm run check:home && npm run check:headroom && npm run check:evaluator-path && npm run check:evaluator-journey && npm run check:lesson-engine && npm run check:dashboard && npm run check:demo-learner-report && npm run check:demo-learner-diff && npm run check:today-program-report && npm run check:today-program-diff && npm run check:guided-session-report && npm run check:guided-session-diff && npm run check:dashboard-snapshot && npm run check:dashboard-snapshot-mutations && npm run check:dashboard-snapshot-diff && npm run check:data && npm run check:static && npm run check:lessons && npm run check:exercise-schema && npm run check:exercise-generator && npm run check:exercise-audit && npm run check:exercise-value-report && npm run check:gold-lessons && npm run check:counterfactuals && npm run check:gold-scaffold && npm run check:lesson-request && npm run check:comic-prompts && npm run check:quality-report && npm run check:quality-mutations && npm run check:quality-diff && npm run check:review-report && npm run check:review-report-fixture && npm run check:quickstart-proof && npm run check:proof-digest && npm run check:quality-page && npm run check:program-page && npm run check:proof-page && npm run check:capability-map && npm run check:health && npm run check:public-runtime && npm run check:public-runtime-mutations && npm run check:pages && npm run check:distribution && npm run check:pwa",
     "check:syntax": "node scripts/check-syntax.js",
     "check:kernel": "node scripts/smoke-kernel.js",
+    "check:profile": "node scripts/smoke-profile.js",
     "check:competencies": "node scripts/smoke-competencies.js",
     "check:skill-coverage": "node scripts/smoke-skill-coverage.js",
     "check:evidence": "node scripts/smoke-evidence.js",
@@ -85,6 +88,7 @@
     "check:gold-lessons": "node scripts/simulate-gold-lessons.js",
     "check:counterfactuals": "node scripts/counterfactual-learner-simulator.js",
     "check:gold-scaffold": "node scripts/smoke-gold-scaffold.js",
+    "check:lesson-request": "node scripts/smoke-agent-lesson-workflow.js",
     "check:comic-prompts": "node scripts/generate-comic-assets-openrouter.js --dry-run --out .dist/comic-prompts.json",
     "check:gold-lesson-preflight": "node scripts/smoke-gold-lesson-preflight.js",
     "check:quality-report": "node scripts/build-quality-report.js --out .dist/quality-report.json",
@@ -103,7 +107,11 @@
     "check:public-runtime-mutations": "node scripts/mutation-public-runtime.js",
     "check:pwa": "node scripts/smoke-pwa.js",
     "check:pages": "npm run build:pages && PUBLIC_ROOT=.dist/pages node scripts/static-qa.js",
-    "check:distribution": "node scripts/smoke-distribution-bundle.js"
+    "check:distribution": "node scripts/smoke-distribution-bundle.js",
+    "check:browser": "npm run build:pages && playwright test"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.61.1"
+  }
 }

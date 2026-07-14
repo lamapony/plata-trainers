@@ -31,6 +31,7 @@ const rootFiles = [
   "dashboard.js",
   "home.js",
   "index.html",
+  "llms.txt",
   "program.html",
   "program.js",
   "proof.html",
@@ -51,6 +52,7 @@ const publicDirs = [
   "lessons",
   "ordstilling-drill",
   "register-drill",
+  "schemas",
   "skrive-drill",
   "shared",
   "vocab-sr"

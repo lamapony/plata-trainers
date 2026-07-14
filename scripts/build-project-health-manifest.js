@@ -41,6 +41,7 @@ const repoRoot = path.resolve(__dirname, "..");
 const requiredGates = [
   { id: "check:syntax", category: "static", contract: "All JavaScript files parse before deeper checks run." },
   { id: "check:kernel", category: "state", contract: "Shared progress state, migration, import/export, weak tags, and repair closure behavior." },
+  { id: "check:profile", category: "state", contract: "PlataProfile classify/prepare/commit import with preview, null-clear confirm, and rollback." },
   { id: "check:competencies", category: "pedagogy", contract: "Root competency graph groups gold mastery signals." },
   { id: "check:skill-coverage", category: "pedagogy", contract: "Gold mastery signals map cleanly to the root skill graph." },
   { id: "check:evidence", category: "diagnostics", contract: "Evidence ledger ranks open, closed, reopened, miss, and correct facts." },
@@ -93,6 +94,7 @@ const requiredGates = [
   { id: "check:gold-lessons", category: "simulation", contract: "Gold lesson simulations cover paths, endings, attempts, and weak signals." },
   { id: "check:counterfactuals", category: "simulation", contract: "Lesson edits are compared against deterministic learner profiles." },
   { id: "check:gold-scaffold", category: "authoring", contract: "Generated gold lesson scaffolds remain validator, simulator, and runtime clean." },
+  { id: "check:lesson-request", category: "authoring", contract: "Natural-language lesson briefs normalize into deterministic scaffolds, while delivery gates reject generic or unreviewed agent output." },
   { id: "check:comic-prompts", category: "assets", contract: "Comic prompt manifests build without network access." },
   { id: "check:quality-report", category: "report", contract: "Public gold lesson quality report builds cleanly." },
   { id: "check:quality-mutations", category: "mutation", contract: "Quality report proves broken gold lesson contracts fail." },

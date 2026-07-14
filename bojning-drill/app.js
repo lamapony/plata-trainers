@@ -1,11 +1,11 @@
 /* platå · bøjning-drill · app v0.1
  *
- * Lite SM-2 spaced repetition
+ * Leitner spaced repetition
  * - 5 boxes: 1 (new) → 5 (mastered)
- * - Correct: box += 1
- * - Wrong: box = 1, re-queue this session
+ * - Correct: box += 1, nextDueAt += 1/2/4/7/14 days
+ * - Wrong: box = 1, re-queue this session, due tomorrow
  * - Daily cap: 10 items per session
- * - Pick: prioritize weak items (box 1-2), fill with random
+ * - Pick: overdue → new → weakest
  * - State persisted to LocalStorage as JSON
  */
 
@@ -154,8 +154,10 @@
     els.statAccuracy.textContent = view.accuracy;
     els.statStreak.textContent = view.streak;
     els.statMastered.textContent = view.mastered;
-    const gate = kernel.computeGate(state, { name: "M0 gate", tags: ["verber"], mode: "verber", minAttempts: 100, minAccuracy: 0.8 });
-    els.m0Gate.textContent = dashboard.gateText(gate);
+    const gateText = dashboard.m0ProgressText
+      ? dashboard.m0ProgressText(state)
+      : dashboard.gateText(kernel.computeGate(state, { name: "M0 verbs", tags: ["verber"], mode: "verber", minAttempts: 100, minAccuracy: 0.8 }));
+    els.m0Gate.textContent = gateText;
   }
 
   function renderPrompt() {
@@ -216,11 +218,14 @@
 
   function renderNextStep() {
     if (!els.nextStep || !window.PlataNextStep) return;
+    const params = new URLSearchParams(window.location.search);
     els.nextStep.innerHTML = window.PlataNextStep.render(window.PlataNextStep.drill({
       trainerId: TRAINER_ID,
       state,
       sessionResults,
-      rootPrefix: "../"
+      rootPrefix: "../",
+      fromLesson: params.get("from") || "",
+      signal: params.get("signal") || ""
     }));
     const againLink = els.nextStep.querySelector("a[href='#again-btn']");
     if (againLink) {

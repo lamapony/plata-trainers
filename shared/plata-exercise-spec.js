@@ -436,6 +436,8 @@
     var attempt = {
       itemId: normalized.id,
       correct: !!(result && result.correct),
+      assessmentKind: "objective",
+      completed: true,
       tags: normalized.language.weakTags.slice(),
       mode: normalized.type,
       expected: normalized.language.correct.join(" | "),
@@ -446,7 +448,7 @@
       attempt.responseTimeMs = timing.responseTimeMs;
     }
     if (normalized.metrics.attempts && timing && typeof timing.attempts === "number") {
-      attempt.attempts = timing.attempts;
+      attempt.tries = timing.attempts;
     }
 
     return attempt;
