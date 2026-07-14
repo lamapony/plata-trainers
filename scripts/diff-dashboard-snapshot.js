@@ -186,6 +186,7 @@ function comparePlan(diff, scenarioId, before, after) {
 }
 
 function ledgerKey(entry) {
+  if (entry.kind === "open") return [entry.kind, entry.trainerId].join("::");
   return [entry.kind, entry.title, entry.trainerId].join("::");
 }
 
@@ -204,6 +205,7 @@ function compareLedger(diff, scenarioId, before, after) {
       change(diff, "info", scope, `Ledger row added: ${key}`);
       return;
     }
+    compareField(diff, "review", `${scope}.${key}`, "title", left.title, right.title);
     compareField(diff, "review", `${scope}.${key}`, "status", left.status, right.status);
     compareField(diff, "review", `${scope}.${key}`, "score", left.score, right.score);
     compareField(diff, "review", `${scope}.${key}`, "facts", signature(left.facts), signature(right.facts));

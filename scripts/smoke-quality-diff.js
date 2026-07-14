@@ -59,6 +59,23 @@ const same = compareQualityReports(base, clone(base));
 assert(same.status === "unchanged", "unchanged reports should have unchanged diff status");
 assert(same.summary.changes === 0, "unchanged reports should not emit changes");
 
+const sourceReplacementReport = clone(base);
+const sourceReplacementLesson = sourceReplacementReport.lessons.find(item => item.id === "lesson-a2-doctor");
+const sourceReplacementRow = sourceReplacementLesson.evidenceMatrix.sceneRows.find(item => item.id === "read-context");
+sourceReplacementRow.sourceRefs[0] = "Reviewed official source";
+const sourceReplacement = compareQualityReports(base, sourceReplacementReport);
+assert(sourceReplacement.status === "changed", "source replacement should require review");
+assert(sourceReplacement.summary.regressions === 0, "source replacement should not look like source loss");
+assert(sourceReplacement.changes.some(entry => entry.message.includes("source changed")), "source replacement should be explicit in the diff");
+
+const sourceRemovalReport = clone(base);
+const sourceRemovalLesson = sourceRemovalReport.lessons.find(item => item.id === "lesson-a2-doctor");
+const sourceRemovalRow = sourceRemovalLesson.evidenceMatrix.sceneRows.find(item => item.id === "read-context");
+sourceRemovalRow.sourceRefs = [];
+const sourceRemoval = compareQualityReports(base, sourceRemovalReport);
+assert(sourceRemoval.status === "regression", "source removal should remain a regression");
+assert(sourceRemoval.regressions.some(entry => entry.message.includes("source removed")), "source removal should remain explicit in the diff");
+
 const regressionReport = makeRegression(base);
 const regression = compareQualityReports(base, regressionReport);
 assert(regression.status === "regression", "regression report should produce regression diff status");

@@ -65,6 +65,32 @@ function compareIdSet(diff, scope, label, baseItems, headItems, severityWhenRemo
   });
 }
 
+function compareReplaceableReferences(diff, scope, label, baseValues, headValues) {
+  const base = asArray(baseValues).filter(Boolean);
+  const head = asArray(headValues).filter(Boolean);
+  const baseSet = new Set(base);
+  const headSet = new Set(head);
+  const removed = base.filter(value => !headSet.has(value)).sort();
+  const added = head.filter(value => !baseSet.has(value)).sort();
+  const replacements = Math.min(removed.length, added.length);
+
+  for (let index = 0; index < replacements; index++) {
+    change(
+      diff,
+      "review",
+      scope,
+      `${label} changed ${JSON.stringify(removed[index])} -> ${JSON.stringify(added[index])}`,
+      { before: removed[index], after: added[index] }
+    );
+  }
+  removed.slice(replacements).forEach(value => {
+    change(diff, "regression", scope, `${label} removed: ${value}`);
+  });
+  added.slice(replacements).forEach(value => {
+    change(diff, "info", scope, `${label} added: ${value}`);
+  });
+}
+
 function compareIssues(diff, lessonId, baseIssues, headIssues) {
   const baseSet = new Set(asArray(baseIssues));
   const headSet = new Set(asArray(headIssues));
@@ -131,7 +157,7 @@ function compareEvidenceRows(diff, lessonId, baseRows, headRows) {
       return;
     }
     compareSceneChecks(diff, lessonId, before, after);
-    compareIdSet(diff, lessonId, `Scene ${id} source`, asArray(before.sourceRefs).map(key => ({ key })), asArray(after.sourceRefs).map(key => ({ key })), "regression", "info");
+    compareReplaceableReferences(diff, lessonId, `Scene ${id} source`, before.sourceRefs, after.sourceRefs);
     compareIdSet(diff, lessonId, `Scene ${id} mastery`, asArray(before.masteryTags).map(key => ({ key })), asArray(after.masteryTags).map(key => ({ key })), "regression", "info");
     compareIdSet(diff, lessonId, `Scene ${id} simulation path`, asArray(before.simulatedBy).map(key => ({ key })), asArray(after.simulatedBy).map(key => ({ key })), "regression", "info");
   });
