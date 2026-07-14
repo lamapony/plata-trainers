@@ -66,16 +66,16 @@ The command writes the normalized request to the new lesson folder, so JSON stay
 
 | Trainer | Status | Description |
 |---------|--------|-------------|
-| [Lesson 01: The First Morning](./lessons/lesson-01/) | available | Narrative A0/A1 onboarding: arrive in Copenhagen, read signs, and say a first useful sentence. |
-| [A2: Hvor længe har du haft det sådan?](./lessons/lesson-a2-doctor/) | gold | Describe symptom duration and severity to a doctor or pharmacy without turning language practice into medical advice. |
-| [B1: Bolig og udlejer](./lessons/lesson-b1-bolig/) | gold | Housing repairs and tenant communication without passive or aggressive Danish. |
-| [B1: Når systemet siger nej](./lessons/lesson-b1-borgerservice/) | gold | Navigate Borgerservice, MitID, and CPR appointment pressure with calm agency. |
-| [B2: Det afhænger af, hvordan du siger det](./lessons/lesson-b2-radiator/) | gold | Register, modal particles, complaint tone, and social consequences. |
-| [B2: Efter interviews](./lessons/lesson-b2-job-followup/) | gold flagship | Professional follow-up after interviews: email tone, LinkedIn register, and patient precision. |
-| [B2: Hvem gør hvad](./lessons/lesson-b2-ordstilling/) | gold | V2, inversion, and `fordi`/`derfor` clause structure inside a conference narrative. |
+| [A0/A1: Your first five minutes in Danish](./lessons/lesson-01/) | available | Read `ind`/`ud` signs, introduce yourself, and handle a small `Tak` / `Selv tak` exchange. |
+| [A2: Explain your symptoms clearly](./lessons/lesson-a2-doctor/) | gold | Tell a pharmacist what hurts, how long it has lasted, and what you need to know next. |
+| [B1: Report a problem after moving in](./lessons/lesson-b1-bolig/) | gold | Put a move-in defect on record, attach evidence, and ask the landlord to confirm it. |
+| [B1: Book help with MitID](./lessons/lesson-b1-borgerservice/) | gold | Explain what you need, check what to bring, and find another appointment when the first location is full. |
+| [B2: Get a concrete repair date](./lessons/lesson-b2-radiator/) | gold | Read a vague landlord reply, follow up with facts, call for an appointment, and confirm the visit. |
+| [B2: Follow up after a job interview](./lessons/lesson-b2-job-followup/) | gold flagship | Use the employer's timeline, write a natural follow-up, answer a call request, and close the process well. |
+| [B1/B2: Danish word order in a real workday](./lessons/lesson-b2-ordstilling/) | gold | Practise V2, indirect questions, and `fordi`/`derfor` while arranging meetings and explaining changes. |
 | [Bøjning drill](./bojning-drill/) | available | Verb tenses and noun inflection with Leitner review. |
 | [Ordstilling drill](./ordstilling-drill/) | available | Multiple-choice V2, inversion, and subordinate-clause practice with explanations. |
-| [Register drill](./register-drill/) | available | Passive agency, channel transfer, deadlines, and polite escalation. |
+| [Register drill](./register-drill/) | available | Read vague official replies, choose the right tone for each channel, and follow up without sounding harsh. |
 | [Skriveøvelser](./skrive-drill/) | available | Written production with completion-only self-report; no automated accuracy claim. |
 | [Vocab SR](./vocab-sr/) | optional | Danish ↔ Russian spaced repetition for Russian-speaking learners; outside the English flagship path. |
 
@@ -298,7 +298,7 @@ npm run generate:comics -- --lesson lesson-b2-radiator-register --panel official
 
 Do not commit API keys. The dry-run prompt manifest is part of `npm run check`; generated images should be visually reviewed before commit.
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. See [GOLD_LESSON_QUALITY_ENGINE.md](./docs/GOLD_LESSON_QUALITY_ENGINE.md) for the gold lesson quality contract. See [ROADMAP.md](./ROADMAP.md) for planned trainer expansion.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. Use [LESSON_QUALITY_STANDARD.md](./docs/LESSON_QUALITY_STANDARD.md) for learner-facing editorial rules and [GOLD_LESSON_QUALITY_ENGINE.md](./docs/GOLD_LESSON_QUALITY_ENGINE.md) for the automated gold lesson contract. See [ROADMAP.md](./ROADMAP.md) for planned trainer expansion.
 
 ## Good first contributions
 

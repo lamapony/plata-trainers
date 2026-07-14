@@ -119,7 +119,7 @@ function run() {
       },
       assert(snapshot) {
         const weak = scenario(snapshot, "weak-mastery");
-        assert(!weak.evidenceLedger.some(entry => entry.kind === "open" && entry.title === "Read passive agency"), "mutated ledger still exposes open mastery row");
+        assert(!weak.evidenceLedger.some(entry => entry.kind === "open" && entry.title === "Read what was actually promised"), "mutated ledger still exposes open mastery row");
       }
     }
   ].forEach(spec => runMutation(baseText, spec));

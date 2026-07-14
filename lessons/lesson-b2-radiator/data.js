@@ -1,8 +1,9 @@
 window.PLATA_LESSON_B2_RADIATOR = {
   id: "lesson-b2-radiator-register",
+  contentVersion: 2,
   level: "B2",
-  title: "Det afhænger af, hvordan du siger det",
-  subtitle: "A B2 Danish lesson about complaints, register, modal particles, and social consequences.",
+  title: "Get a concrete repair date",
+  subtitle: "Read a vague landlord reply, follow up with facts, and confirm the appointment across email and phone.",
   estimatedMinutes: 14,
   qualityTier: "gold",
   editorialFocus: "Read official Danish precisely, choose register under pressure, and preserve agency without escalating tone.",
@@ -49,33 +50,33 @@ window.PLATA_LESSON_B2_RADIATOR = {
         id: "workplace-understatement",
         sceneId: "workplace-understatement",
         assetPath: "./assets/comic/workplace-understatement.png",
-        alt: "A workplace coffee conversation shows honesty balanced with calm agency.",
-        prompt: "A single comic panel in a Danish workplace kitchen. A supervisor casually asks about the apartment while making coffee; the learner answers calmly, neither oversharing nor hiding the problem. Show balanced social intelligence and practical agency through body language. No readable text, no speech bubbles, no brand marks.",
+        alt: "The tenant calls the property manager with the case details ready.",
+        prompt: "A single comic panel showing a tenant calling a property manager about a repair. The learner speaks calmly with notes and the case number visible as abstract marks. Show practical follow-through through body language. No readable text, no speech bubbles, no brand marks.",
         sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
         masteryTags: ["understatement-with-agency"],
-        mustInclude: ["workplace coffee", "calm answer", "private problem kept proportional"],
-        avoid: ["melodrama", "readable labels", "romantic office scene"]
+        mustInclude: ["phone call", "case notes", "calm practical request"],
+        avoid: ["melodrama", "readable labels", "angry confrontation"]
       },
       {
         id: "channel-transfer-lab",
         sceneId: "channel-transfer-lab",
         assetPath: "./assets/comic/channel-transfer-lab.png",
-        alt: "The tenant compares the same radiator complaint across email, chat, meeting, and public profile contexts.",
-        prompt: "A single comic panel showing the tenant at a small desk with four communication channels represented visually: a formal laptop email, a private phone chat, a quiet workplace coffee conversation, and a minimal professional profile card. The same radiator problem is being translated into different social channels. Show careful comparison and restraint, not confusion. No readable text, no logos, no speech bubbles.",
+        alt: "The tenant carries the same repair facts from the landlord email into a phone call and confirmation message.",
+        prompt: "A single comic panel showing the tenant at a small desk with three connected communication steps: a formal landlord email, a phone call to the property manager, and a short appointment confirmation. The same case details move cleanly across each step. Show careful continuity, not notification overload. No readable text, logos, or speech bubbles.",
         sourceRefs: ["Lex: passiv", "Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
         masteryTags: ["formal-register-control", "passive-agency", "consequence-aware-tone"],
-        mustInclude: ["four communication channels", "same problem translated", "calm comparison"],
+        mustInclude: ["email", "phone call", "appointment confirmation"],
         avoid: ["readable messages", "generic app logos", "chaotic notification storm"]
       },
       {
         id: "epilogue-consequence",
         sceneId: "epilogue-consequence",
         assetPath: "./assets/comic/epilogue-consequence.png",
-        alt: "The radiator is fixed and the relationships around the tenant remain intact.",
-        prompt: "A single comic panel after the conflict is resolved. The radiator is warm, the room feels livable again, and the tenant looks relieved while messages from landlord, friend, and workplace are represented as calm abstract notification cards without readable text. The visual idea is clarity without aggression preserving relationships. Nordic editorial comic style, no text.",
+        alt: "The tenant has a confirmed repair visit with a clear time window and call-ahead note.",
+        prompt: "A single comic panel in a Copenhagen apartment after a repair visit has been scheduled. The tenant checks a calm appointment card beside the still-cold radiator; an abstract time window and phone-call cue show that the craftsperson will call before arriving. The mood is relieved but realistic: the visit is confirmed, the repair is not yet complete. No readable text, logos, or speech bubbles.",
         sourceRefs: ["Lex: passiv", "Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
         masteryTags: ["consequence-aware-tone"],
-        mustInclude: ["warm radiator", "relieved tenant", "preserved relationships"],
+        mustInclude: ["cold radiator", "confirmed visit", "call-ahead cue"],
         avoid: ["victory pose", "readable text", "corporate stock art"]
       }
     ]
@@ -83,7 +84,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
   masteryMap: {
     "passive-agency": {
       competencyId: "agency",
-      label: "Read passive agency",
+      label: "Read what was actually promised",
       evidence: "The learner distinguishes registration/process language from an actual repair commitment.",
       remediation: {
         sceneId: "official-reply-passive",
@@ -110,29 +111,29 @@ window.PLATA_LESSON_B2_RADIATOR = {
       remediation: {
         sceneId: "two-registers",
         cta: "Repair the formal reply",
-        action: "Rerun the two-register scene and keep the useful pressure: ask for a precise date without adding chat-force words."
+        action: "Rerun the two-reply scene and ask for a precise date without copying sgu or other forceful words from the private chat."
       },
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Dansk Sproghistorie: dialogiske partikler"]
     },
     "understatement-with-agency": {
       competencyId: "agency",
-      label: "Use understatement with agency",
-      evidence: "The learner softens a workplace answer while preserving an action and concrete next step.",
+      label: "Ask for the appointment by phone",
+      evidence: "The learner opens a phone call with the case status and the repair appointment they want to arrange.",
       remediation: {
         sceneId: "workplace-understatement",
-        cta: "Repair the workplace answer",
-        action: "Rerun the workplace completion and include both halves: one agency word and one concrete next step."
+        cta: "Repair the phone opening",
+        action: "Rerun the phone completion and include both halves: the missing date and the appointment you want to arrange."
       },
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"]
     },
     "consequence-aware-tone": {
       competencyId: "consequence-awareness",
-      label: "Choose consequence-aware tone",
-      evidence: "The learner names the B2 principle that clarity and relationship control can coexist.",
+      label: "Confirm the visit clearly",
+      evidence: "The learner confirms the agreed time window and asks for the one practical detail that is still missing.",
       remediation: {
         sceneId: "epilogue-consequence",
-        cta: "Review the consequence",
-        action: "Rerun the final choice and choose the principle that solves the case while preserving the room."
+        cta: "Review the confirmation",
+        action: "Rerun the final choice and repeat the time window before asking the craftsperson to call ahead."
       },
       sourceRefs: ["Lex: passiv", "Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"]
     }
@@ -142,7 +143,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
     completionAnswers: {
       "workplace-understatement": {
         reject: ["varme", "jeg har bedt"],
-        accept: "jeg har bedt udlejeren om en konkret dato"
+        accept: "jeg har stadig ingen dato; kan vi aftale en tid med en håndværker"
       }
     },
     paths: [
@@ -157,7 +158,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
           { sceneId: "group-chat-particles", matchAll: true },
           { sceneId: "two-registers", optionId: "formal-clear", expectCorrect: true },
           { sceneId: "channel-transfer-lab", optionId: "email-clear-agency", reasonId: "actor-date-channel", expectCorrect: true },
-          { sceneId: "workplace-understatement", answer: "jeg har bedt udlejeren om en konkret dato", expectCorrect: true },
+          { sceneId: "workplace-understatement", answer: "jeg har stadig ingen dato; kan vi aftale en tid med en håndværker", expectCorrect: true },
           { sceneId: "epilogue-consequence", optionId: "balanced", expectCorrect: true }
         ]
       },
@@ -172,7 +173,7 @@ window.PLATA_LESSON_B2_RADIATOR = {
           { sceneId: "group-chat-particles", matchAll: true },
           { sceneId: "two-registers", optionId: "formal-aggressive", expectCorrect: false },
           { sceneId: "channel-transfer-lab", optionId: "email-private-force", expectCorrect: false },
-          { sceneId: "workplace-understatement", answer: "jeg har bedt udlejeren om en konkret dato", expectCorrect: true },
+          { sceneId: "workplace-understatement", answer: "jeg har stadig ingen dato; kan vi aftale en tid med en håndværker", expectCorrect: true },
           { sceneId: "epilogue-consequence", optionId: "always-hard", expectCorrect: false }
         ]
       },
@@ -198,6 +199,18 @@ window.PLATA_LESSON_B2_RADIATOR = {
     sofiaTrust: 0,
     emilEscalation: 0,
     workplaceTrust: 0
+  },
+  variableLabels: {
+    landlordTension: "Landlord tension",
+    sofiaTrust: "Sofia's confidence",
+    emilEscalation: "Pressure to escalate",
+    workplaceTrust: "Follow-through"
+  },
+  variableDescriptions: {
+    landlordTension: ["low — the exchange stayed factual", "neutral — no extra friction", "high — the tone became part of the problem"],
+    sofiaTrust: ["shaken — the calm advice was lost", "unchanged", "strong — the practical advice stayed useful"],
+    emilEscalation: ["low — frustration did not take over", "neutral", "high — anger replaced the date request"],
+    workplaceTrust: ["weak — the next step stayed vague", "neutral — the request was partly clear", "strong — the appointment became easy to arrange"]
   },
   languagePhenomena: [
     { item: "jo", function: "expects shared understanding; can sound accusatory" },
@@ -233,38 +246,38 @@ window.PLATA_LESSON_B2_RADIATOR = {
     {
       id: "official-reply-passive",
       type: "choice",
-      eyebrow: "Scene 1 · Brevet",
-      title: "The landlord answers politely without promising anything.",
+      eyebrow: "Scene 1 · The third reply",
+      title: "Separate a registered case from a booked repair.",
       learningGoal: "Distinguish a registered case from an actual repair commitment in formal passive Danish.",
       sourceRefs: ["Lex: passiv", "sproget.dk: grammatiske betegnelser"],
       masteryTags: ["passive-agency"],
-      pressure: "It is January, the radiator has been broken for five days, and the official reply looks calm enough to make you doubt your own irritation.",
-      narrative: "The email is perfect Danish: formal, smooth, and evasive. The question is not what the words mean, but what the sender avoids taking responsibility for.",
+      pressure: "Your bedroom radiator has been cold for five days. This is the third reply, but you still have no appointment.",
+      narrative: "Read only what the message commits to. The case is registered; a repair is mentioned; no date or named contact appears.",
       dialogue: [
         { speaker: "Udlejer", line: "Der er blevet noteret en reklamation vedrørende radiatoren." },
         { speaker: "Udlejer", line: "Der vil blive sendt en håndværker, når det passer ind i planlægningen." }
       ],
-      notice: "Passive voice removes the actor. Nobody says: Vi sender en håndværker på fredag.",
-      targetPhrases: ["Der er blevet noteret", "reklamation vedrørende radiatoren", "der vil blive sendt en håndværker", "de lover ikke en dato"],
+      notice: "The passive wording leaves out who will book the visit and when. It is vague, but it is not a refusal.",
+      targetPhrases: ["Der er blevet noteret", "reklamation vedrørende radiatoren", "der vil blive sendt en håndværker", "ikke aftalt en dato"],
       prompt: "What does the reply actually promise?",
       options: [
-        { id: "too-trusting", diagnostic: "overreads-passive-as-promise", label: "De lover, at radiatoren bliver fikset hurtigt.", detail: "too trusting", correct: false, effects: { landlordTension: 0 }, feedback: "Diagnostic: you treated passive planning language as a concrete appointment. There is no actor, date, or deadline." },
-        { id: "accurate", diagnostic: "separates-registration-from-commitment", label: "De har registreret sagen, men de lover ikke en dato.", detail: "accurate reading", correct: true, effects: { landlordTension: 0, workplaceTrust: 1 }, feedback: "Diagnostic: correct. You identified the only commitment: the case is registered. Everything after that is process language, not a repair promise." },
-        { id: "too-aggressive", diagnostic: "adds-refusal-not-in-text", label: "De nægter at reparere radiatoren.", detail: "too aggressive", correct: false, effects: { landlordTension: 1 }, feedback: "Diagnostic: you converted missing commitment into refusal. B2 reading means naming evasion without adding an accusation the text does not support." }
+        { id: "too-trusting", diagnostic: "overreads-passive-as-promise", label: "De har booket en håndværker, som snart kommer.", detail: "adds an appointment that is not in the text", correct: false, effects: { landlordTension: 0 }, feedback: "The message mentions a future visit, but it gives neither a booking nor a date." },
+        { id: "accurate", diagnostic: "separates-registration-from-commitment", label: "De har registreret sagen, men de har ikke aftalt en dato endnu.", detail: "matches the exact commitment", correct: true, effects: { landlordTension: 0, workplaceTrust: 1 }, feedback: "Correct. The case exists in the system, but the practical appointment is still missing." },
+        { id: "too-aggressive", diagnostic: "adds-refusal-not-in-text", label: "De har besluttet, at radiatoren ikke skal repareres.", detail: "turns vagueness into a refusal", correct: false, effects: { landlordTension: 1 }, feedback: "The message is vague, but it does not refuse the repair. Ask for the missing date without adding that accusation." }
       ],
-      carry: "Carry-forward: official passive wording like 'Der er blevet noteret en reklamation vedrørende radiatoren' and 'der vil blive sendt en håndværker' can sound polite while avoiding hvem, hvornår, sagen, passer ind i planlægningen, registreret, and lover.",
+      carry: "Before replying, list the missing facts: who contacts you, which day, and what time window.",
       tags: ["B2", "passive", "official-register", "housing"]
     },
     {
       id: "group-chat-particles",
       type: "match",
-      eyebrow: "Scene 2 · Gruppechatten",
-      title: "Your friends reveal their stance before they make an argument.",
+      eyebrow: "Scene 2 · Group chat",
+      title: "Hear what the small words do to the advice.",
       learningGoal: "Identify social stance from Danish particles before reacting to advice.",
       sourceRefs: ["Dansk Sproghistorie: dialogiske partikler"],
       masteryTags: ["modal-particle-stance"],
-      pressure: "Sofia wants to calm you down. Emil wants you to escalate. Their particles do half the work.",
-      narrative: "You paste the landlord email into the group chat. Four replies arrive. None of them are neutral, even when they pretend to be.",
+      pressure: "You paste the reply into a group chat. Your friends agree on the facts but frame them very differently.",
+      narrative: "Particles such as da, jo, sgu, and nok tell you how strongly the speaker expects you to agree.",
       dialogue: [
         { speaker: "Sofia", line: "Ej, det er da helt fint. Han svarer jo." },
         { speaker: "Emil", line: "Det er sgu ikke godt nok. Skriv igen." }
@@ -278,45 +291,45 @@ window.PLATA_LESSON_B2_RADIATOR = {
         { id: "practical", left: "Det løser sig nok, men jeg ville bede om en dato.", right: "cautious and practical", feedback: "Nok softens the prediction; bede om en dato turns the emotion into a concrete next step." },
         { id: "suspicious", left: "Han prøver bare at trække tiden.", right: "suspicious and dismissive", feedback: "Bare reduces the landlord's explanation to a tactic. Useful in chat, risky in formal writing." }
       ],
-      carry: "Carry-forward: particles become social variables, not vocabulary trivia; 'det løser sig nok' calms, while 'han prøver at trække tiden' escalates suspicion.",
+      carry: "Keep the practical advice — bed om en dato — even if you leave the chat's emotional particles out of the landlord email.",
       tags: ["B2", "modal-particles", "subtext", "informal-register"]
     },
     {
       id: "two-registers",
       type: "choice",
-      eyebrow: "Scene 3 · To svar",
-      title: "The same frustration needs two different Danish versions.",
+      eyebrow: "Scene 3 · Two replies",
+      title: "Turn the frustration into a factual follow-up.",
       learningGoal: "Make a formal request concrete without importing private-chat aggression.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Dansk Sproghistorie: dialogiske partikler"],
       masteryTags: ["formal-register-control", "modal-particle-stance"],
-      pressure: "You must answer the landlord and also text Emil. If you use one register for both, somebody will misunderstand you.",
-      narrative: "Formal Danish should move the case forward without sounding like a threat. Chat Danish can carry emotion, but not destroy your judgement.",
-      notice: "Register shift is not decoration. It changes which doors stay open.",
-      targetPhrases: ["jeg vil gerne bede om", "en mere præcis dato", "temperaturen er faldet", "sgu alt for koldt"],
+      pressure: "You are replying to the landlord. The useful facts are that the radiator is still cold, you first reported it on Monday, and no appointment has been booked.",
+      narrative: "A strong follow-up names the history and asks for a concrete date. It does not need a temperature claim you cannot document.",
+      notice: "Keep the observable facts and one answerable request.",
+      targetPhrases: ["radiatoren stadig er kold", "anmeldte fejlen i mandags", "konkret dato"],
       prompt: "Choose the best formal sentence for the landlord.",
       options: [
-        { id: "formal-clear", diagnostic: "concrete-civil-request", label: "Jeg vil gerne bede om en mere præcis dato, da temperaturen er faldet til under 12 grader.", detail: "clear formal request", correct: true, effects: { landlordTension: -1, workplaceTrust: 1 }, feedback: "Diagnostic: strong formal Danish. Bede om keeps the request civil; præcis dato and 12 grader make it actionable." },
-        { id: "formal-aggressive", diagnostic: "imports-private-emphasis-into-formal-email", label: "Jeg kræver, at I fikser det nu, for det er sgu alt for koldt.", detail: "register clash", correct: false, effects: { landlordTension: 2, sofiaTrust: -1 }, feedback: "Diagnostic: the facts are usable, but kræver + nu + sgu moves the message from firm to hostile. Save sgu for private chat." },
-        { id: "formal-passive", diagnostic: "over-softens-and-removes-pressure", label: "Det løser sig nok, men det ville være fint med varme på et tidspunkt.", detail: "too weak", correct: false, effects: { landlordTension: 0, workplaceTrust: -1 }, feedback: "Diagnostic: too much softening. Nok, ville være fint, and på et tidspunkt remove the date, actor, and pressure." }
+        { id: "formal-clear", diagnostic: "concrete-civil-request", label: "Radiatoren er stadig kold, og jeg anmeldte fejlen i mandags. Kan I oplyse en konkret dato for besøget?", detail: "history + current state + request", correct: true, effects: { landlordTension: -1, workplaceTrust: 1 }, feedback: "This gives the landlord the timeline and one precise question to answer." },
+        { id: "formal-aggressive", diagnostic: "imports-private-emphasis-into-formal-email", label: "Det er sgu ikke godt nok. I må sende nogen med det samme.", detail: "understandable frustration, no case history", correct: false, effects: { landlordTension: 2, sofiaTrust: -1 }, feedback: "The urgency is clear, but the date of your report and the requested appointment are missing. Sgu also imports private-chat force into the email." },
+        { id: "formal-passive", diagnostic: "over-softens-and-removes-pressure", label: "Jeg håber, at der snart kommer nogen og ser på det.", detail: "polite hope, no direct question", correct: false, effects: { landlordTension: 0, workplaceTrust: -1 }, feedback: "This leaves the next step with nobody in particular. Ask directly for the date of the visit." }
       ],
-      carry: "Carry-forward: being polite is not the same as being vague; a useful request asks for en mere præcis dato because temperaturen er faldet til under 12 grader.",
+      carry: "Reliable follow-up: current problem + date first reported + one request for the appointment date.",
       tags: ["B2", "register", "complaint", "formal-writing"]
     },
     {
       id: "channel-transfer-lab",
       type: "flagship-chain",
-      eyebrow: "Scene 4 · Kanalvalg",
-      title: "The same complaint is not the same sentence in every channel.",
-      learningGoal: "Transfer one complaint across private chat, formal email, workplace talk, and public profile contexts without losing agency or social fit.",
+      eyebrow: "Scene 4 · Choose the channel",
+      title: "Keep the same request when the channel changes.",
+      learningGoal: "Move the repair follow-up across email, phone, SMS, and private chat without losing the date request.",
       sourceRefs: ["Lex: passiv", "Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["formal-register-control", "passive-agency", "consequence-aware-tone"],
-      pressure: "You have one real intent: get a concrete repair date. But the next sentence could go into Slack, email, a coffee conversation, or LinkedIn. Same intent, different social cost.",
-      narrative: "This is where plateau learners often sound technically correct and still wrong for the room. The sentence can be grammatical Danish and still damage the case.",
+      pressure: "You have one goal: get a concrete repair date. The wording changes between email and phone, but the missing appointment must stay visible.",
+      narrative: "A sentence can be grammatical and still fail if it drops the case history, date request, or appropriate tone for the channel.",
       dialogue: [
         { speaker: "Emil", line: "Skriv nu bare, at det er sgu ikke godt nok." },
         { speaker: "Sofia", line: "Du kan godt være tydelig uden at lyde vred." }
       ],
-      notice: "A near miss is not a grammar failure. It is a channel failure: private force, passive softness, or public oversharing in the wrong place.",
+      notice: "Keep the practical core in every version: the radiator is still cold, the case is already reported, and you need a date.",
       targetPhrases: ["konkret dato", "hvornår håndværkeren kommer", "det er sgu ikke godt nok", "varme på et tidspunkt"],
       prompt: "Choose the sentence that belongs in the formal landlord email, then prove why.",
       intent: "Ask for a concrete repair date without escalating tone.",
@@ -330,13 +343,13 @@ window.PLATA_LESSON_B2_RADIATOR = {
       ],
       memoryCue: {
         signal: "passive-agency",
-        copy: "Memory-backed recurrence: you have already seen passive agency in the landlord's wording. Now avoid creating the same vagueness in your own reply."
+        copy: "The landlord's message had no date. Make sure your own reply asks for one directly."
       },
       channelVersions: [
-        { id: "slack", label: "Slack to a friend", sample: "Det er sgu ikke godt nok.", risk: "Useful for emotion; risky if pasted into formal email." },
-        { id: "email", label: "Landlord email", sample: "Jeg vil gerne bede om en konkret dato for, hvornår håndværkeren kommer.", risk: "Best channel for actor, date, and actionable pressure." },
-        { id: "meeting", label: "Workplace coffee", sample: "Der har været lidt bøvl med varmen, men jeg har bedt om en dato.", risk: "Enough truth for the room without turning work into the case." },
-        { id: "linkedin", label: "Public profile", sample: "Jeg håndterer praktiske sager roligt og konkret.", risk: "Public channel needs capability, not private complaint detail." }
+        { id: "slack", label: "Private chat", sample: "Det er sgu frustrerende — jeg skriver igen og beder om en dato.", risk: "Emotion is fine here, but the formal request still needs different wording." },
+        { id: "email", label: "Landlord email", sample: "Kan I oplyse en konkret dato for, hvornår håndværkeren kommer?", risk: "Best place to keep the case history and request in writing." },
+        { id: "meeting", label: "Phone call", sample: "Jeg ringer om radiatoren. Kan vi aftale en tid med håndværkeren?", risk: "The opening must identify the case before the appointment question." },
+        { id: "linkedin", label: "Appointment SMS", sample: "Tak. Torsdag mellem 9 og 12 passer mig. Bekræft gerne adressen.", risk: "A short confirmation needs the agreed day and time window." }
       ],
       options: [
         {
@@ -347,18 +360,18 @@ window.PLATA_LESSON_B2_RADIATOR = {
           detail: "formal, concrete, still calm",
           correct: true,
           grammarStatus: "grammatical",
-          pragmaticStatus: "workplace-ready",
-          consequence: "The landlord sees a civil request with actor and date pressure. You have not imported private anger, but you have removed passive fog.",
+          pragmaticStatus: "email-ready",
+          consequence: "The landlord sees one civil, answerable question about the missing appointment.",
           effects: { landlordTension: -1 },
-          feedback: "Diagnostic: strong channel transfer. You kept the useful pressure — konkret dato and håndværkeren — while staying inside formal Danish.",
+          feedback: "This fits the email: the request is concrete, calm, and easy to answer in writing.",
           repairLadder: [
             { stage: "raw intent", text: "Fix the heat. I need a date." },
             { stage: "safer Danish", text: "Jeg vil gerne bede om en dato." },
-            { stage: "workplace-ready Danish", text: "Jeg vil gerne bede om en konkret dato for, hvornår håndværkeren kommer." }
+            { stage: "email-ready Danish", text: "Jeg vil gerne bede om en konkret dato for, hvornår håndværkeren kommer." }
           ],
           reasonPrompt: "Why does this work as the email version?",
           reasonOptions: [
-            { id: "actor-date-channel", label: "It keeps actor/date pressure visible while matching the formal channel.", correct: true },
+            { id: "actor-date-channel", label: "It clearly asks for a date and fits a formal landlord email.", correct: true },
             { id: "soft-because-long", label: "It works mainly because the sentence is longer and sounds more official.", correct: false },
             { id: "harder-is-clearer", label: "It works because it is the hardest possible version of the complaint.", correct: false }
           ]
@@ -368,18 +381,18 @@ window.PLATA_LESSON_B2_RADIATOR = {
           channel: "Landlord email",
           diagnostic: "imports-private-force-into-formal-channel",
           label: "Det er sgu ikke godt nok. I må fikse det nu.",
-          detail: "grammatical but socially expensive",
+          detail: "grammatical but too sharp for a formal email",
           correct: false,
           nearMiss: true,
           grammarStatus: "grammatical",
           pragmaticStatus: "too sharp for formal email",
-          consequence: "The fact is legitimate, but the channel cost rises: sgu and nu make the email easier to dismiss as anger instead of evidence.",
+          consequence: "The frustration is legitimate, but sgu and nu make the anger more prominent than the missing appointment.",
           effects: { landlordTension: 2, sofiaTrust: -1 },
-          feedback: "Diagnostic: near miss. The Danish is understandable, but private-chat force leaks into the formal channel and raises conflict before it adds evidence.",
+          feedback: "Near miss. The Danish is understandable, but private-chat force raises the conflict without adding the missing case history or date request.",
           repairLadder: [
             { stage: "raw phrase", text: "Det er sgu ikke godt nok." },
             { stage: "safer Danish", text: "Det er ikke holdbart uden varme." },
-            { stage: "workplace-ready Danish", text: "Jeg vil gerne bede om en konkret dato for, hvornår håndværkeren kommer." }
+            { stage: "email-ready Danish", text: "Jeg vil gerne bede om en konkret dato for, hvornår håndværkeren kommer." }
           ]
         },
         {
@@ -392,66 +405,66 @@ window.PLATA_LESSON_B2_RADIATOR = {
           nearMiss: true,
           grammarStatus: "grammatical",
           pragmaticStatus: "too vague for action",
-          consequence: "The relationship stays smooth, but the repair stays foggy. There is no actor, no date, and no pressure for the case to move.",
+          consequence: "The email stays polite, but the landlord is not asked to provide any specific information.",
           effects: { workplaceTrust: -1 },
-          feedback: "Diagnostic: near miss. This sounds polite, but it recreates the passive-agency problem: no actor, no date, no deadline.",
+          feedback: "Near miss. This sounds polite, but it repeats the original problem: no person, date, or appointment.",
           repairLadder: [
             { stage: "raw phrase", text: "Det løser sig nok." },
             { stage: "safer Danish", text: "Jeg vil gerne følge op på varmen." },
-            { stage: "workplace-ready Danish", text: "Jeg vil gerne bede om en konkret dato for, hvornår håndværkeren kommer." }
+            { stage: "email-ready Danish", text: "Jeg vil gerne bede om en konkret dato for, hvornår håndværkeren kommer." }
           ]
         }
       ],
-      carry: "Carry-forward: a valuable B2 answer survives channel transfer. In email, 'Tak for svar' can open calmly before the concrete request; 'uden at lyde vred' is the social target. Keep intent, name the missing actor/date, and change tone for email, chat, meeting, or public profile instead of treating grammar as the whole problem.",
+      carry: "Change the length and opening for the channel, but keep the request for a concrete repair date.",
       tags: ["B2", "register-transfer", "near-miss", "social-consequence", "repair-ladder"]
     },
     {
       id: "workplace-understatement",
       type: "completion",
-      eyebrow: "Scene 5 · Arbejdspladsen",
-      title: "Honesty is not the same sentence in every room.",
-      learningGoal: "Use understatement without losing agency when discussing a private problem at work.",
+      eyebrow: "Scene 5 · Call the property manager",
+      title: "Open the call with the case and the missing outcome.",
+      learningGoal: "Ask for a repair appointment by phone after repeated vague email replies.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["understatement-with-agency"],
-      pressure: "Your supervisor Mette is friendly, but not your close friend. She asks about the apartment while making coffee.",
-      narrative: "You can be honest, but you also need to sound like someone who can handle a problem without turning every room into a courtroom.",
+      pressure: "The email thread still has no date, so you call the property manager. You have the case number in front of you.",
+      narrative: "The listener needs to know why you are calling and what concrete result you want from the call.",
       dialogue: [
-        { speaker: "Mette", line: "Hvordan går det med lejligheden? Har du fået varme?" }
+        { speaker: "Property manager", line: "Ejendomskontoret, det er Mette." }
       ],
-      notice: "Danish understatement can be socially intelligent, but passivity can hide inside it.",
-      targetPhrases: ["det går fint nok", "lidt bøvl med varmen", "jeg har bedt udlejeren", "en konkret dato"],
-      prompt: "Complete a balanced B2 answer. Include one agency word and one concrete next step.",
-      prefix: "Det går fint nok. Der har været lidt bøvl med varmen, men",
-      placeholder: "jeg har bedt udlejeren om en konkret dato",
+      notice: "Jeg ringer om … identifies the case. Jeg har stadig ingen dato explains why email was not enough.",
+      targetPhrases: ["jeg ringer om radiatoren", "stadig ingen dato", "aftale en tid"],
+      prompt: "Complete the opening with the missing date and the appointment you want.",
+      prefix: "Hej, jeg ringer om radiatoren. Sagen blev registreret i mandags, men",
+      placeholder: "jeg har stadig ingen dato. Kan vi aftale en tid med en håndværker?",
       acceptKeywordGroups: [
-        { name: "agency word", keywords: ["bedt", "skrevet", "ringet", "kontaktet", "aftalt"] },
-        { name: "concrete next step", keywords: ["dato", "tid", "håndværker", "udlejer", "varme"] }
+        { name: "missing appointment", keywords: ["dato", "tid", "aftale"] },
+        { name: "repair visit", keywords: ["håndværker", "besøg", "kommer", "komme"] }
       ],
-      success: "Good. Fint nok and lidt bøvl soften the social surface, while an agency word plus a concrete next step keeps control of the situation.",
-      failure: "Your answer needs both sides of the B2 move: an agency word (bedt/skrevet/ringet/kontaktet) and a concrete next step (dato/tid/håndværker/udlejer/varme).",
+      success: "Good. Mette can hear both why you called and what she needs to arrange.",
+      failure: "Include both the missing date/time and the repair visit or håndværker you want to arrange.",
       effects: { workplaceTrust: 1 },
-      carry: "Carry-forward: tone is not honesty versus lying. When Mette asks 'Hvordan går det med lejligheden? Har du fået varme?', 'lidt bøvl med varmen' gives the useful amount of truth for the room.",
+      carry: "Phone frame: Jeg ringer om … + current status + Kan vi aftale …?",
       tags: ["B2", "understatement", "workplace-register", "agency"]
     },
     {
       id: "epilogue-consequence",
       type: "choice",
-      eyebrow: "Final · Konsekvens",
-      title: "The radiator is fixed. The relationships remember the wording.",
-      learningGoal: "Name the B2 principle: clarity and relationship control can coexist.",
+      eyebrow: "Final · Confirm the visit",
+      title: "Turn a time window into a confirmed appointment.",
+      learningGoal: "Confirm the day and time window and ask for one practical detail.",
       sourceRefs: ["Lex: passiv", "Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["consequence-aware-tone"],
-      pressure: "A week later, the case is closed. But language did not only repair a radiator. It changed how people read you.",
-      narrative: "The best outcome is not always the one where you were maximally right. B2 means seeing the price of tone.",
-      notice: "A complaint has two goals: solve the problem and preserve enough relationship to live with the solution.",
-      targetPhrases: ["være tydelig", "uden at lyde aggressiv", "undgå konflikt", "vente"],
-      prompt: "Which sentence best summarises the lesson?",
+      pressure: "Mette offers Thursday between 9 and 12. You can be home, but you need the craftsperson to call before arriving.",
+      narrative: "A complete confirmation repeats the agreed window and adds the one practical request that is still missing.",
+      notice: "Tak + the exact window + Kan I bekræfte …? creates a record both sides can use.",
+      targetPhrases: ["torsdag mellem 9 og 12", "passer mig", "ringe før besøget"],
+      prompt: "Which reply confirms the appointment most clearly?",
       options: [
-        { id: "balanced", diagnostic: "states-core-b2-register-principle", label: "Man kan godt være tydelig uden at lyde aggressiv.", detail: "balanced B2 takeaway", correct: true, feedback: "Diagnostic: yes. The lesson's pattern is clarity plus relationship control: actor, date, and tone all stay visible." },
-        { id: "always-hard", diagnostic: "confuses-force-with-effectiveness", label: "Man skal altid skrive så hårdt som muligt.", detail: "overcorrection", correct: false, feedback: "Diagnostic: overcorrection. Hard language can solve one case while making every future exchange colder." },
-        { id: "always-soft", diagnostic: "confuses-politeness-with-passivity", label: "Man skal helst undgå konflikt og vente.", detail: "passive", correct: false, feedback: "Diagnostic: passivity is also a cost. If you remove all pressure, you may preserve politeness while losing time, heat, and respect." }
+        { id: "balanced", diagnostic: "states-core-b2-register-principle", label: "Tak. Torsdag mellem 9 og 12 passer mig. Kan I bekræfte, at håndværkeren ringer før besøget?", detail: "window + availability + practical confirmation", correct: true, feedback: "This confirms the appointment and asks one clear logistical question." },
+        { id: "always-hard", diagnostic: "confuses-force-with-effectiveness", label: "Torsdag er sent, men jeg accepterer det. Håndværkeren skal ringe først.", detail: "the information is present, but the confirmation starts a new dispute", correct: false, feedback: "The practical request is understandable, but the opening adds conflict after an appointment has finally been offered." },
+        { id: "always-soft", diagnostic: "confuses-politeness-with-passivity", label: "Tak, så håber jeg, at nogen kommer på torsdag.", detail: "does not confirm the time window or call request", correct: false, feedback: "This sounds friendly, but it drops both 9–12 and the request to call before arrival." }
       ],
-      carry: "Unlocked B2 theme: Danish as social operating system — not only grammar, but consequence: be tydelig uden at lyde aggressiv.",
+      carry: "You now have the full escalation ladder: read the promise → reply with facts → call for a date → confirm the visit.",
       tags: ["B2", "reflection", "argumentation", "social-consequence"]
     }
   ],
@@ -463,24 +476,24 @@ window.PLATA_LESSON_B2_RADIATOR = {
   endings: [
     {
       id: "diplomatic",
-      title: "Diplomatic resolution",
-      narrative: "The radiator was fixed by Thursday. The landlord sent a short apology — not warm, but correct. Sofia still trusts your judgement, and at work Mette sees someone who handles problems without creating drama. You kept the heat on without burning any bridges.",
-      danish: "Du fik varme uden at brænde broer.",
-      carry: "B2 unlocked: being clear and being liked are not opposites — tone is the bridge."
+      title: "The visit is confirmed",
+      narrative: "The property manager confirms Thursday between 9 and 12 and notes that the craftsperson will call first.",
+      danish: "Aftalen er bekræftet til torsdag mellem klokken 9 og 12.",
+      carry: "Keep the email and appointment confirmation together until the repair is complete."
     },
     {
       id: "aggressive",
-      title: "Escalated resolution",
-      narrative: "The radiator was fixed by Wednesday. But the landlord's reply was cold and formal, and Sofia has been quieter in the group chat since your sharp reply. You won the argument — the question is whether you won the relationships.",
-      danish: "Du fik varme, men mistede varmen hos andre.",
-      carry: "B2 unlocked: the sharpest sentence sometimes wins the case and loses the room."
+      title: "The problem is urgent, but the appointment is still unclear",
+      narrative: "The property manager responds to the tone of the complaint, while the exact day and time remain buried in the exchange.",
+      danish: "Vi vender tilbage vedrørende planlægningen.",
+      carry: "Return to one practical question: Hvilken dato og hvilket tidsrum kan håndværkeren komme?"
     },
     {
       id: "passive",
-      title: "Delayed resolution",
-      narrative: "The radiator was fixed — eventually. You waited an extra week because your replies were too soft. At work, Mette assumed you were handling it, but privately you felt you had apologised for needing heat. Being polite is not a mistake — but being too polite can cost real time.",
-      danish: "Du fik varme til sidst, men du betalte med tålmodighed.",
-      carry: "B2 unlocked: politeness without clarity is a form of invisible waiting."
+      title: "The case is open, but nobody has booked the visit",
+      narrative: "The landlord continues to acknowledge the problem without giving a date or time window.",
+      danish: "Sagen er registreret, og vi vender tilbage.",
+      carry: "Call with the case history and ask directly: Kan vi aftale en tid med en håndværker?"
     }
   ]
 };

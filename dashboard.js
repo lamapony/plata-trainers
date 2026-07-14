@@ -343,7 +343,7 @@ function demoRadiatorState(kernel) {
       itemId: "official-reply-passive",
       sceneId: "official-reply-passive",
       lessonId: "lesson-b2-radiator-register",
-      label: "Read passive agency",
+      label: "Read what was actually promised",
       action: "Name who promises what",
       resolvedAt: "2026-06-02T08:02:00.000Z",
       sourceMode: "repair",

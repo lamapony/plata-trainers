@@ -109,10 +109,10 @@
             "trainerId": "lesson-01-arrival",
             "signalTag": "",
             "score": 40,
-            "title": "Start Lesson 01: The First Morning",
+            "title": "Start Your first five minutes in Danish",
             "primaryHref": "./lessons/lesson-01/",
             "traceRule": "dashboard.start.tutorial-option",
-            "traceFingerprint": "ptr-12ps41n"
+            "traceFingerprint": "ptr-1j6c1u5"
           }
         },
         {
@@ -125,10 +125,10 @@
             "trainerId": "lesson-a2-doctor",
             "signalTag": "",
             "score": 29,
-            "title": "Start Hvor længe har du haft det sådan?",
+            "title": "Start Explain your symptoms clearly",
             "primaryHref": "./lessons/lesson-a2-doctor/",
             "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-1hbxviz"
+            "traceFingerprint": "ptr-18tue7c"
           }
         },
         {
@@ -141,10 +141,10 @@
             "trainerId": "lesson-b2-radiator-register",
             "signalTag": "",
             "score": 28,
-            "title": "Start Det afhænger af, hvordan du siger det",
+            "title": "Start Get a concrete repair date",
             "primaryHref": "./lessons/lesson-b2-radiator/",
             "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-k7st8k"
+            "traceFingerprint": "ptr-w6jnno"
           }
         },
         {
@@ -157,10 +157,10 @@
             "trainerId": "lesson-b2-job-followup",
             "signalTag": "",
             "score": 52,
-            "title": "Start Efter interviews — tone, tak, og tålmodighed",
+            "title": "Start Follow up after a job interview",
             "primaryHref": "./lessons/lesson-b2-job-followup/",
             "traceRule": "dashboard.start.preferred-entry",
-            "traceFingerprint": "ptr-6ijg45"
+            "traceFingerprint": "ptr-tl77ms"
           }
         },
         {
@@ -173,10 +173,10 @@
             "trainerId": "lesson-b2-ordstilling",
             "signalTag": "",
             "score": 26,
-            "title": "Start Hvem gør hvad — ordstilling i praksis",
+            "title": "Start Danish word order in a real workday",
             "primaryHref": "./lessons/lesson-b2-ordstilling/",
             "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-tx6c5d"
+            "traceFingerprint": "ptr-15w89x4"
           }
         },
         {
@@ -189,10 +189,10 @@
             "trainerId": "lesson-b1-bolig",
             "signalTag": "",
             "score": 25,
-            "title": "Start Bolig og udlejer",
+            "title": "Start Report a problem after moving in",
             "primaryHref": "./lessons/lesson-b1-bolig/",
             "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-392r08"
+            "traceFingerprint": "ptr-59die1"
           }
         },
         {
@@ -205,17 +205,17 @@
             "trainerId": "lesson-b1-borgerservice",
             "signalTag": "",
             "score": 24,
-            "title": "Start Når systemet siger nej",
+            "title": "Start Book help with MitID",
             "primaryHref": "./lessons/lesson-b1-borgerservice/",
             "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-1kwgky8"
+            "traceFingerprint": "ptr-1wi09bh"
           }
         }
       ],
       "due": [
         {
           "trainerId": "lesson-b2-job-followup",
-          "trainerName": "Efter interviews — tone, tak, og tålmodighed",
+          "trainerName": "Follow up after a job interview",
           "index": 8,
           "stats": {
             "total": 0,
@@ -236,7 +236,7 @@
             "signalTag": "",
             "score": 52,
             "badge": "Start path",
-            "title": "Start Efter interviews — tone, tak, og tålmodighed",
+            "title": "Start Follow up after a job interview",
             "primaryLabel": "Start lesson",
             "primaryHref": "./lessons/lesson-b2-job-followup/",
             "meta": "",
@@ -248,7 +248,7 @@
             "signals": [],
             "trace": {
               "rule": "dashboard.start.preferred-entry",
-              "fingerprint": "ptr-6ijg45",
+              "fingerprint": "ptr-tl77ms",
               "selected": {
                 "kind": "start",
                 "targetKind": "start",
@@ -271,7 +271,7 @@
                 "trainer": {
                   "id": "lesson-b2-job-followup",
                   "index": 8,
-                  "name": "Efter interviews — tone, tak, og tålmodighed",
+                  "name": "Follow up after a job interview",
                   "type": "lesson"
                 },
                 "stats": {
@@ -292,7 +292,7 @@
         },
         {
           "trainerId": "lesson-01-arrival",
-          "trainerName": "Lesson 01: The First Morning",
+          "trainerName": "Your first five minutes in Danish",
           "index": 5,
           "stats": {
             "total": 0,
@@ -313,7 +313,7 @@
             "signalTag": "",
             "score": 40,
             "badge": "Tutorial option",
-            "title": "Start Lesson 01: The First Morning",
+            "title": "Start Your first five minutes in Danish",
             "primaryLabel": "Start lesson",
             "primaryHref": "./lessons/lesson-01/",
             "meta": "",
@@ -325,7 +325,7 @@
             "signals": [],
             "trace": {
               "rule": "dashboard.start.tutorial-option",
-              "fingerprint": "ptr-12ps41n",
+              "fingerprint": "ptr-1j6c1u5",
               "selected": {
                 "kind": "start",
                 "targetKind": "start",
@@ -348,7 +348,7 @@
                 "trainer": {
                   "id": "lesson-01-arrival",
                   "index": 5,
-                  "name": "Lesson 01: The First Morning",
+                  "name": "Your first five minutes in Danish",
                   "type": "lesson"
                 },
                 "stats": {
@@ -462,7 +462,7 @@
             "targetKind": "start",
             "trainerId": "lesson-b2-job-followup",
             "signalTag": "",
-            "title": "Start Efter interviews — tone, tak, og tålmodighed",
+            "title": "Start Follow up after a job interview",
             "primaryLabel": "Start lesson",
             "primaryHref": "./lessons/lesson-b2-job-followup/",
             "routedHref": "./lessons/lesson-b2-job-followup/?plan=pk4fu3&step=s1-k4fu3",
@@ -482,7 +482,7 @@
             },
             "trace": {
               "rule": "dashboard.start.preferred-entry",
-              "fingerprint": "ptr-6ijg45",
+              "fingerprint": "ptr-tl77ms",
               "selected": {
                 "kind": "start",
                 "targetKind": "start",
@@ -505,7 +505,7 @@
                 "trainer": {
                   "id": "lesson-b2-job-followup",
                   "index": 8,
-                  "name": "Efter interviews — tone, tak, og tålmodighed",
+                  "name": "Follow up after a job interview",
                   "type": "lesson"
                 },
                 "stats": {
@@ -636,10 +636,10 @@
             "trainerId": "lesson-01-arrival",
             "signalTag": "",
             "score": 40,
-            "title": "Start Lesson 01: The First Morning",
+            "title": "Start Your first five minutes in Danish",
             "primaryHref": "./lessons/lesson-01/",
             "traceRule": "dashboard.start.tutorial-option",
-            "traceFingerprint": "ptr-12ps41n"
+            "traceFingerprint": "ptr-1j6c1u5"
           }
         },
         {
@@ -652,10 +652,10 @@
             "trainerId": "lesson-a2-doctor",
             "signalTag": "",
             "score": 29,
-            "title": "Start Hvor længe har du haft det sådan?",
+            "title": "Start Explain your symptoms clearly",
             "primaryHref": "./lessons/lesson-a2-doctor/",
             "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-1hbxviz"
+            "traceFingerprint": "ptr-18tue7c"
           }
         },
         {
@@ -670,10 +670,10 @@
             "trainerId": "lesson-b2-radiator-register",
             "signalTag": "passive-agency",
             "score": 169,
-            "title": "Repair Read passive agency",
+            "title": "Repair Read what was actually promised",
             "primaryHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive",
             "traceRule": "dashboard.repair.highest-open-mastery",
-            "traceFingerprint": "ptr-a5p141"
+            "traceFingerprint": "ptr-a31nms"
           }
         },
         {
@@ -686,10 +686,10 @@
             "trainerId": "lesson-b2-job-followup",
             "signalTag": "",
             "score": 52,
-            "title": "Start Efter interviews — tone, tak, og tålmodighed",
+            "title": "Start Follow up after a job interview",
             "primaryHref": "./lessons/lesson-b2-job-followup/",
             "traceRule": "dashboard.start.preferred-entry",
-            "traceFingerprint": "ptr-6ijg45"
+            "traceFingerprint": "ptr-tl77ms"
           }
         },
         {
@@ -702,10 +702,10 @@
             "trainerId": "lesson-b2-ordstilling",
             "signalTag": "",
             "score": 26,
-            "title": "Start Hvem gør hvad — ordstilling i praksis",
+            "title": "Start Danish word order in a real workday",
             "primaryHref": "./lessons/lesson-b2-ordstilling/",
             "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-tx6c5d"
+            "traceFingerprint": "ptr-15w89x4"
           }
         },
         {
@@ -718,10 +718,10 @@
             "trainerId": "lesson-b1-bolig",
             "signalTag": "",
             "score": 25,
-            "title": "Start Bolig og udlejer",
+            "title": "Start Report a problem after moving in",
             "primaryHref": "./lessons/lesson-b1-bolig/",
             "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-392r08"
+            "traceFingerprint": "ptr-59die1"
           }
         },
         {
@@ -734,17 +734,17 @@
             "trainerId": "lesson-b1-borgerservice",
             "signalTag": "",
             "score": 24,
-            "title": "Start Når systemet siger nej",
+            "title": "Start Book help with MitID",
             "primaryHref": "./lessons/lesson-b1-borgerservice/",
             "traceRule": "dashboard.start.empty-profile",
-            "traceFingerprint": "ptr-1kwgky8"
+            "traceFingerprint": "ptr-1wi09bh"
           }
         }
       ],
       "due": [
         {
           "trainerId": "lesson-b2-radiator-register",
-          "trainerName": "Det afhænger af, hvordan du siger det",
+          "trainerName": "Get a concrete repair date",
           "index": 7,
           "stats": {
             "total": 2,
@@ -773,7 +773,7 @@
             "signalTag": "passive-agency",
             "score": 169,
             "badge": "Repair now",
-            "title": "Repair Read passive agency",
+            "title": "Repair Read what was actually promised",
             "primaryLabel": "Open repair scene",
             "primaryHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive",
             "meta": "Rerun the landlord email and name the missing actor, date, and deadline before judging whether the text promises a repair.",
@@ -797,7 +797,7 @@
             "signals": [
               {
                 "tag": "passive-agency",
-                "label": "Read passive agency",
+                "label": "Read what was actually promised",
                 "competencyId": "agency",
                 "wrong": 1,
                 "correct": 0,
@@ -808,7 +808,7 @@
             ],
             "trace": {
               "rule": "dashboard.repair.highest-open-mastery",
-              "fingerprint": "ptr-a5p141",
+              "fingerprint": "ptr-a31nms",
               "selected": {
                 "kind": "repair",
                 "targetKind": "repair",
@@ -843,7 +843,7 @@
                 "trainer": {
                   "id": "lesson-b2-radiator-register",
                   "index": 7,
-                  "name": "Det afhænger af, hvordan du siger det",
+                  "name": "Get a concrete repair date",
                   "type": "lesson"
                 },
                 "stats": {
@@ -860,7 +860,7 @@
                 "selectedSignal": {
                   "competencyId": "agency",
                   "correct": 0,
-                  "label": "Read passive agency",
+                  "label": "Read what was actually promised",
                   "score": 1,
                   "tag": "passive-agency",
                   "total": 1,
@@ -895,7 +895,7 @@
         },
         {
           "trainerId": "lesson-b2-job-followup",
-          "trainerName": "Efter interviews — tone, tak, og tålmodighed",
+          "trainerName": "Follow up after a job interview",
           "index": 8,
           "stats": {
             "total": 0,
@@ -916,7 +916,7 @@
             "signalTag": "",
             "score": 52,
             "badge": "Start path",
-            "title": "Start Efter interviews — tone, tak, og tålmodighed",
+            "title": "Start Follow up after a job interview",
             "primaryLabel": "Start lesson",
             "primaryHref": "./lessons/lesson-b2-job-followup/",
             "meta": "",
@@ -928,7 +928,7 @@
             "signals": [],
             "trace": {
               "rule": "dashboard.start.preferred-entry",
-              "fingerprint": "ptr-6ijg45",
+              "fingerprint": "ptr-tl77ms",
               "selected": {
                 "kind": "start",
                 "targetKind": "start",
@@ -951,7 +951,7 @@
                 "trainer": {
                   "id": "lesson-b2-job-followup",
                   "index": 8,
-                  "name": "Efter interviews — tone, tak, og tålmodighed",
+                  "name": "Follow up after a job interview",
                   "type": "lesson"
                 },
                 "stats": {
@@ -972,7 +972,7 @@
         },
         {
           "trainerId": "lesson-01-arrival",
-          "trainerName": "Lesson 01: The First Morning",
+          "trainerName": "Your first five minutes in Danish",
           "index": 5,
           "stats": {
             "total": 0,
@@ -993,7 +993,7 @@
             "signalTag": "",
             "score": 40,
             "badge": "Tutorial option",
-            "title": "Start Lesson 01: The First Morning",
+            "title": "Start Your first five minutes in Danish",
             "primaryLabel": "Start lesson",
             "primaryHref": "./lessons/lesson-01/",
             "meta": "",
@@ -1005,7 +1005,7 @@
             "signals": [],
             "trace": {
               "rule": "dashboard.start.tutorial-option",
-              "fingerprint": "ptr-12ps41n",
+              "fingerprint": "ptr-1j6c1u5",
               "selected": {
                 "kind": "start",
                 "targetKind": "start",
@@ -1028,7 +1028,7 @@
                 "trainer": {
                   "id": "lesson-01-arrival",
                   "index": 5,
-                  "name": "Lesson 01: The First Morning",
+                  "name": "Your first five minutes in Danish",
                   "type": "lesson"
                 },
                 "stats": {
@@ -1065,7 +1065,7 @@
             "targetKind": "repair",
             "trainerId": "lesson-b2-radiator-register",
             "signalTag": "passive-agency",
-            "title": "Repair Read passive agency",
+            "title": "Repair Read what was actually promised",
             "primaryLabel": "Open repair scene",
             "primaryHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive",
             "routedHref": "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency&plan=p1olwl6y&step=s1-1z0mgdg#official-reply-passive",
@@ -1084,7 +1084,7 @@
               "copy": "Chosen because this is the highest open mastery signal in the current evidence.",
               "facts": [
                 "Root skill: Agency and responsibility",
-                "Signal: Read passive agency",
+                "Signal: Read what was actually promised",
                 "Evidence: 1 miss / 1 try",
                 "Memory: weak_signal passive-agency memsrc-h7inq3",
                 "Rerun the landlord email and name the missing actor, date, and deadline before judging whether the text promises a repair."
@@ -1093,7 +1093,7 @@
             },
             "trace": {
               "rule": "dashboard.repair.highest-open-mastery",
-              "fingerprint": "ptr-a5p141",
+              "fingerprint": "ptr-a31nms",
               "selected": {
                 "kind": "repair",
                 "targetKind": "repair",
@@ -1128,7 +1128,7 @@
                 "trainer": {
                   "id": "lesson-b2-radiator-register",
                   "index": 7,
-                  "name": "Det afhænger af, hvordan du siger det",
+                  "name": "Get a concrete repair date",
                   "type": "lesson"
                 },
                 "stats": {
@@ -1145,7 +1145,7 @@
                 "selectedSignal": {
                   "competencyId": "agency",
                   "correct": 0,
-                  "label": "Read passive agency",
+                  "label": "Read what was actually promised",
                   "score": 1,
                   "tag": "passive-agency",
                   "total": 1,
@@ -1253,7 +1253,7 @@
         {
           "kind": "open",
           "status": "Needs attention",
-          "title": "Read passive agency",
+          "title": "Read what was actually promised",
           "trainerId": "lesson-b2-radiator-register",
           "score": 150,
           "facts": [
@@ -1297,7 +1297,7 @@
           "signals": [
             {
               "tag": "passive-agency",
-              "label": "Read passive agency",
+              "label": "Read what was actually promised",
               "competencyId": "agency",
               "wrong": 1,
               "correct": 0,

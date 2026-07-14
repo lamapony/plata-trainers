@@ -40,7 +40,7 @@ function makeReviewChange(snapshot) {
 function makeRegression(snapshot) {
   const next = clone(snapshot);
   const weak = scenario(next, "weak-mastery");
-  weak.evidenceLedger = weak.evidenceLedger.filter(entry => !(entry.kind === "open" && entry.title === "Read passive agency"));
+  weak.evidenceLedger = weak.evidenceLedger.filter(entry => !(entry.kind === "open" && entry.title === "Read what was actually promised"));
   weak.weakCompetencies = [];
   return next;
 }

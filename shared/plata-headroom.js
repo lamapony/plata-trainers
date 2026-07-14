@@ -159,7 +159,7 @@
         ? "No local progress yet — the planner starts with the B2 follow-up lesson."
         : "The planner picked one step from your saved route."),
       means: isOnboarding
-        ? (program.why || "B2 job-follow-up is the primary first action for plateau learners.") + " Lesson 01 remains an optional first-visit tutorial."
+        ? (program.why || "Start with the B2 job follow-up if you know the words but freeze when the stakes feel real.") + " Lesson 01 remains an optional first-visit tutorial."
         : (program.why || "This choice is deterministic — same evidence, same recommendation."),
       nextStep: step ? (program.actionLabel || "Start step") + " (" + (program.routeMeta || "") + ")" : program.actionLabel || "Review route",
       nextHref: payload.actionHref || "",
@@ -235,7 +235,7 @@
         : kind === "active-plan"
           ? "You already have a saved route — finishing the open step beats starting fresh."
           : isPreferredStart
-            ? "B2 job-follow-up is the primary entry for plateau learners. Lesson 01 is an optional first-visit tutorial."
+            ? "Start with the B2 job follow-up if you know the words but freeze when the stakes feel real. Lesson 01 is an optional first-visit tutorial."
             : isTutorialStart
               ? "Lesson 01 is the optional first-visit tutorial — use it to see how choices, feedback, and local progress work."
               : "One short session here builds the evidence trail for smarter recommendations.",

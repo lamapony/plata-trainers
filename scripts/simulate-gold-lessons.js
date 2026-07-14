@@ -264,7 +264,7 @@ function simulatePath(context, lesson, pathSpec) {
 
     if (scene.type === "choice") {
       scene.options.forEach(option => {
-        assert(/^Diagnostic:/.test(option.feedback), `${lesson.id}::${scene.id}.${option.id}: choice feedback should be diagnostic`);
+        assert(typeof option.feedback === "string" && option.feedback.trim().length >= 20, `${lesson.id}::${scene.id}.${option.id}: choice feedback should explain the result`);
       });
       expectedAttempts += simulateChoiceAction(context, state, lesson, variables, scene, action);
       return;
@@ -282,7 +282,7 @@ function simulatePath(context, lesson, pathSpec) {
 
     if (scene.type === "flagship-chain") {
       scene.options.forEach(option => {
-        assert(/^Diagnostic:/.test(option.feedback), `${lesson.id}::${scene.id}.${option.id}: flagship feedback should be diagnostic`);
+        assert(typeof option.feedback === "string" && option.feedback.trim().length >= 20, `${lesson.id}::${scene.id}.${option.id}: flagship feedback should explain the result`);
         assert(option.consequence && option.consequence.length > 0, `${lesson.id}::${scene.id}.${option.id}: missing consequence`);
         assert(Array.isArray(option.repairLadder) && option.repairLadder.length >= 3, `${lesson.id}::${scene.id}.${option.id}: missing repair ladder`);
       });

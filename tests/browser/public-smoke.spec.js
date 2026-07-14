@@ -3,6 +3,15 @@ const { test, expect } = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
 
 const FLAGSHIP = "/lessons/lesson-b2-job-followup/";
+const LESSONS = [
+  "/lessons/lesson-01/",
+  "/lessons/lesson-a2-doctor/",
+  "/lessons/lesson-b1-bolig/",
+  "/lessons/lesson-b1-borgerservice/",
+  FLAGSHIP,
+  "/lessons/lesson-b2-ordstilling/",
+  "/lessons/lesson-b2-radiator/"
+];
 const TODAY = "/dashboard.html";
 const DEMO = "/dashboard.html?demo=learner";
 
@@ -69,6 +78,19 @@ test.describe("public pages smoke", () => {
     expect(runtimeProblems, "flagship runtime failures").toEqual([]);
   });
 
+  test("every lesson loads cleanly on a phone-sized screen", async ({ page }) => {
+    const runtimeProblems = collectRuntimeProblems(page);
+    await page.setViewportSize({ width: 360, height: 740 });
+    for (const path of LESSONS) {
+      await page.goto(path);
+      await page.waitForLoadState("networkidle");
+      await expect(page.locator("main")).toBeVisible();
+      await expect(page.locator("h1")).toBeVisible();
+      await assertNoHorizontalOverflow(page);
+    }
+    expect(runtimeProblems, "lesson library runtime failures").toEqual([]);
+  });
+
   test("Today first-run dashboard renders primary route", async ({ page }) => {
     const runtimeProblems = collectRuntimeProblems(page);
     await page.goto(TODAY);
@@ -123,11 +145,11 @@ test.describe("repair path e2e", () => {
     await page.goto(`${FLAGSHIP}?mode=repair&signal=consequence-aware-tone#email-closing`);
     await page.waitForLoadState("domcontentloaded");
 
-    // Prefer clicking the pushy option when the scene UI is interactive.
-    const pushy = page.getByText(/forventer svar senest fredag/i).first();
-    if (await pushy.count()) {
-      await pushy.click({ timeout: 5_000 }).catch(() => {});
-    }
+    const pushy = page.getByRole("button", {
+      name: /jeg forventer derfor.*senest i morgen/i
+    });
+    await expect(pushy).toBeVisible();
+    await pushy.click();
 
     const registerLink = page.locator('a[href*="register-drill"]').first();
     await expect(registerLink).toBeVisible({ timeout: 15_000 });

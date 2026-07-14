@@ -405,7 +405,7 @@ function runDashboardDecisionSmoke(context) {
   });
 
   assert(repair.kind === "repair", "dashboard should prioritize repair decisions");
-  assert(repair.title.includes("Read passive agency"), "dashboard repair should use mastery label");
+  assert(repair.title.includes(spec.label), "dashboard repair should use mastery label");
   assert(repair.primaryHref.includes("mode=repair"), "dashboard repair should link repair mode");
   assert(repair.competency.id === "agency", "dashboard repair exposes root competency");
   assert(repair.trace.rule === "dashboard.repair.highest-open-mastery", "dashboard repair carries a trace rule");

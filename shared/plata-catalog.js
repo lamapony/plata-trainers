@@ -70,7 +70,7 @@
         name: "Register drill",
         type: "drill",
         path: "./register-drill/",
-        description: "Multiple-choice practice for B2 register: passive agency in official Danish, channel transfer across Slack/email/meeting, deadlines, and polite escalation.",
+        description: "Practise clear professional Danish: read vague official replies, choose the right tone for each channel, and follow up without sounding harsh.",
         icon: "✉️",
         gallery: {
           tag: "B2 register",
@@ -78,7 +78,7 @@
           level: "B2",
           theme: "Public-service & workplace Danish",
           estimatedMinutes: 8,
-          repairs: "passive agency · channel transfer · deadlines · polite escalation",
+          repairs: "vague promises · channel tone · deadlines · polite follow-up",
           repairSignals: [
             "passive-agency",
             "formal-register-control",
@@ -131,17 +131,17 @@
       },
       {
         id: "lesson-01-arrival",
-        name: "Lesson 01: The First Morning",
+        name: "Your first five minutes in Danish",
         type: "lesson",
         path: "./lessons/lesson-01/",
         lessonGlobal: "PLATA_LESSON_01",
         lessonDataPath: "./lessons/lesson-01/data.js",
-        description: "Arrive in Copenhagen, meet Lene, read signs, and say your first useful Danish sentence. Exercises are embedded as story actions.",
+        description: "Read ind/ud signs, introduce yourself, and handle a small Tak / Selv tak exchange.",
         icon: "🌅",
         gallery: {
           tag: "Optional tutorial",
           level: "A0/A1",
-          theme: "Mechanics demo",
+          theme: "First useful phrases",
           status: "starter",
           estimatedMinutes: 10,
           signalFamily: "signage · identity · courtesy",
@@ -156,12 +156,12 @@
       },
       {
         id: "lesson-a2-doctor",
-        name: "Hvor længe har du haft det sådan?",
+        name: "Explain your symptoms clearly",
         type: "lesson",
         path: "./lessons/lesson-a2-doctor/",
         lessonGlobal: "PLATA_LESSON_A2_DOCTOR",
         lessonDataPath: "./lessons/lesson-a2-doctor/data.js",
-        description: "Describe symptoms to læge or apotek with duration, severity, and calm clarification — language practice only.",
+        description: "Tell a pharmacist what hurts, how long it has lasted, and what you need to know next.",
         icon: "🩺",
         gallery: {
           tag: "A2 everyday health",
@@ -172,7 +172,7 @@
           outcomes: [
             "State duration with i to dage and siden i går",
             "Calibrate lidt, ret, and meget without drama",
-            "Ask hvad skal jeg gøre nu after describing symptoms"
+            "Ask what to do next or whether to contact your doctor"
           ],
           sequence: 2,
           featured: false
@@ -180,24 +180,24 @@
       },
       {
         id: "lesson-b2-radiator-register",
-        name: "Det afhænger af, hvordan du siger det",
+        name: "Get a concrete repair date",
         type: "lesson",
         path: "./lessons/lesson-b2-radiator/",
         lessonGlobal: "PLATA_LESSON_B2_RADIATOR",
         lessonDataPath: "./lessons/lesson-b2-radiator/data.js",
-        description: "You know the words — but do you sound right? Register, modal particles, and social consequences when a repair goes wrong.",
+        description: "Read a vague landlord reply, follow up with facts, call for an appointment, and confirm the visit.",
         icon: "⚖️",
         gallery: {
           tag: "Narrative B2 · Register",
           level: "B2",
-          theme: "Register & tone",
+          theme: "Repair follow-up",
           status: "gold",
           estimatedMinutes: 14,
-          signalFamily: "passive agency · particles · register",
+          signalFamily: "passive wording · repair date · confirmation",
           outcomes: [
-            "Spot passive promises that hide who acts",
+            "Separate a registered case from a booked repair",
             "Read modal particles as social stance",
-            "Transfer tone across email, chat, and workplace"
+            "Confirm a repair visit across email and phone"
           ],
           sequence: 3,
           featured: false
@@ -205,12 +205,12 @@
       },
       {
         id: "lesson-b2-job-followup",
-        name: "Efter interviews — tone, tak, og tålmodighed",
+        name: "Follow up after a job interview",
         type: "lesson",
         path: "./lessons/lesson-b2-job-followup/",
         lessonGlobal: "PLATA_LESSON_B2_JOB_FOLLOWUP",
         lessonDataPath: "./lessons/lesson-b2-job-followup/data.js",
-        description: "Nailed the interview. Now the silence starts. Post-interview follow-up, LinkedIn tone, and sounding like a future colleague.",
+        description: "Use the employer's timeline, write a natural follow-up, answer a call request, and close the process well.",
         icon: "💼",
         gallery: {
           tag: "Narrative B2 · Professional",
@@ -220,9 +220,9 @@
           estimatedMinutes: 15,
           signalFamily: "timing · formal warmth · platform register",
           outcomes: [
-            "Follow up after silence without sounding desperate",
+            "Follow up after the date the employer actually gave",
             "Shift register between email and LinkedIn",
-            "Keep agency while sounding patient"
+            "Respond professionally to either an invitation or a rejection"
           ],
           sequence: 1,
           featured: true
@@ -230,12 +230,12 @@
       },
       {
         id: "lesson-b2-ordstilling",
-        name: "Hvem gør hvad — ordstilling i praksis",
+        name: "Danish word order in a real workday",
         type: "lesson",
         path: "./lessons/lesson-b2-ordstilling/",
         lessonGlobal: "PLATA_LESSON_B2_ORDSTILLING",
         lessonDataPath: "./lessons/lesson-b2-ordstilling/data.js",
-        description: "Learn Danish word order through a conference narrative: V2, inversion after fronted adverbials, and the difference between fordi and derfor clause structure.",
+        description: "Practise V2, indirect questions, and fordi/derfor while arranging meetings and explaining changes.",
         icon: "🔀",
         gallery: {
           tag: "Narrative B1/B2 · Word order",
@@ -255,12 +255,12 @@
       },
       {
         id: "lesson-b1-bolig",
-        name: "Bolig og udlejer",
+        name: "Report a problem after moving in",
         type: "lesson",
         path: "./lessons/lesson-b1-bolig/",
         lessonGlobal: "PLATA_LESSON_B1_BOLIG",
         lessonDataPath: "./lessons/lesson-b1-bolig/data.js",
-        description: "Navigate housing repairs and tenant communication without sounding passive or aggressive.",
+        description: "Put a move-in defect on record, attach evidence, and ask the landlord to confirm it.",
         icon: "🏠",
         gallery: {
           tag: "B1 housing",
@@ -269,9 +269,9 @@
           signalFamily: "tenant-register",
           estimatedMinutes: 12,
           outcomes: [
-            "Write repair requests without passive Danish",
-            "Keep tenant rights visible without aggression",
-            "Agree concrete next steps with udlejer"
+            "Report a defect within the move-in period",
+            "Separate the fact, evidence, and request",
+            "Follow up until the landlord confirms receipt"
           ],
           sequence: 5,
           featured: false
@@ -279,12 +279,12 @@
       },
       {
         id: "lesson-b1-borgerservice",
-        name: "Når systemet siger nej",
+        name: "Book help with MitID",
         type: "lesson",
         path: "./lessons/lesson-b1-borgerservice/",
         lessonGlobal: "PLATA_LESSON_B1_BORGERSERVICE",
         lessonDataPath: "./lessons/lesson-b1-borgerservice/data.js",
-        description: "Book or fix a Borgerservice/MitID/CPR appointment without panic or passive Danish.",
+        description: "Explain the MitID help you need, ask what identification to bring, and find an available appointment.",
         icon: "🏛",
         gallery: {
           tag: "B1 public service",
@@ -293,9 +293,9 @@
           signalFamily: "polite-persistence · system-navigation · register-control",
           estimatedMinutes: 14,
           outcomes: [
-            "Use polite request chunks at Borgerservice counters",
-            "Clarify system rejections without panic or aggression",
-            "Book appointments with date and time precision"
+            "Name the exact MitID service you need",
+            "Ask which identification to bring",
+            "Search another location or date when the first is full"
           ],
           sequence: 6,
           featured: false

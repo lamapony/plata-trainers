@@ -580,7 +580,7 @@
       btn.addEventListener("click", function () {
         var ok = option.correct === true && reason.correct === true;
         $("#feedback").className = "feedback show " + (ok ? "ok" : "warn");
-        $("#feedback").textContent = ok ? option.feedback : "Diagnostic: the phrase is promising, but the explanation must name the channel logic: actor/date pressure plus formal tone.";
+        $("#feedback").textContent = ok ? option.feedback : "The phrase is promising, but your explanation also needs to name the missing facts and why the tone fits this channel.";
         if (!ctx.state.attempts[scene.id + option.id + reason.id] || ok) {
           record(ctx, scene, ok, option.label + " / " + reason.label, option.label + " / " + (option.reasonPrompt || "reason"), option);
           ctx.state.attempts[scene.id + option.id + reason.id] = ok ? "correct" : "tried";
@@ -639,7 +639,7 @@
 
         if (opt.correct && opt.reasonOptions && opt.reasonOptions.length) {
           $("#feedback").className = "feedback show ok";
-          $("#feedback").textContent = "Good candidate. Now prove the channel logic before the scene counts as solved.";
+          $("#feedback").textContent = "Good choice. Now explain why it fits this channel before the scene counts as complete.";
           renderReasonOptions(ctx, scene, opt, panel);
           return;
         }

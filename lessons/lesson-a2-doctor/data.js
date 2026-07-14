@@ -1,8 +1,9 @@
 window.PLATA_LESSON_A2_DOCTOR = {
   id: "lesson-a2-doctor",
+  contentVersion: 2,
   level: "A2",
-  title: "Hvor længe har du haft det sådan?",
-  subtitle: "Symptom precision for everyday health conversations without overclaiming or vague Danish",
+  title: "Explain your symptoms clearly",
+  subtitle: "Useful Danish for a pharmacy or doctor: what hurts, how long, and what you need next.",
   estimatedMinutes: 12,
   qualityTier: "gold",
   editorialFocus: "Everyday health plateau: describe duration and severity to læge or apotek, clarify calmly, ask for next steps — language practice only, not medical advice.",
@@ -17,7 +18,7 @@ window.PLATA_LESSON_A2_DOCTOR = {
         assetPath: "./assets/comic/read-context.png",
         alt: "A learner pauses at a pharmacy counter before describing symptoms.",
         prompt: "Create a quiet editorial comic panel in a Danish pharmacy. An adult learner stands at the counter with calm posture, pausing before speaking — not panicking, not minimizing. Soft clinic cues in background. No readable text or speech bubbles.",
-        sourceRefs: ["Sundhed.dk patient guidance"],
+        sourceRefs: ["Apoteket.dk: cough guidance"],
         masteryTags: ["context-reading"],
         mustInclude: ["pharmacy counter", "learner pausing calmly"],
         avoid: ["readable labels", "dramatic illness imagery"]
@@ -60,7 +61,7 @@ window.PLATA_LESSON_A2_DOCTOR = {
         sceneId: "next-step",
         assetPath: "./assets/comic/next-step.png",
         alt: "A learner asks what to do next after describing symptoms.",
-        prompt: "Create a quiet editorial comic panel where a learner completes a symptom description and asks for a concrete next step at a Danish pharmacy counter. Show an abstract process marker or calendar shape suggesting what happens next, with calm posture and visible agency. No readable prescription text, no speech bubbles, no dramatic illness imagery.",
+        prompt: "Create a quiet editorial comic panel where a learner completes a symptom description and asks what to do next at a Danish pharmacy counter. Show an abstract process marker or calendar shape suggesting what happens next, with calm, attentive posture. No readable prescription text, no speech bubbles, no dramatic illness imagery.",
         sourceRefs: ["Sundhed.dk patient guidance"],
         masteryTags: ["concrete-next-step"],
         mustInclude: ["next-step gesture", "calm pharmacy setting"],
@@ -70,11 +71,11 @@ window.PLATA_LESSON_A2_DOCTOR = {
         id: "principle",
         sceneId: "principle",
         assetPath: "./assets/comic/principle.png",
-        alt: "A calm health conversation shows that precise Danish helps without overclaiming.",
-        prompt: "Create a quiet editorial comic panel showing the principle: precise symptom language helps the conversation without pretending to be a doctor. Learner and pharmacist part with workable trust. No readable text.",
+        alt: "The learner calls the doctor and gives the symptom, duration, and change in one clear opening.",
+        prompt: "Create a quiet editorial comic panel showing the learner calling a doctor's office after the cough has become worse. Use three simple visual cues for cough, four days, and change over time while a receptionist listens on the other end. The learner describes symptoms without trying to diagnose them. No readable text, logos, or speech bubbles.",
         sourceRefs: ["Sundhed.dk patient guidance"],
         masteryTags: ["consequence-aware-register"],
-        mustInclude: ["workable trust", "calm closure"],
+        mustInclude: ["doctor phone call", "duration cue", "symptoms becoming worse"],
         avoid: ["celebration pose", "literal slogan text"]
       }
     ]
@@ -152,7 +153,7 @@ window.PLATA_LESSON_A2_DOCTOR = {
     completionAnswers: {
       "next-step": {
         reject: ["tak", "jeg har"],
-        accept: "hvad skal jeg gøre nu og kontakte læge"
+        accept: "skal jeg kontakte min læge nu"
       }
     },
     paths: [
@@ -167,7 +168,7 @@ window.PLATA_LESSON_A2_DOCTOR = {
           { sceneId: "symptom-duration", matchAll: true },
           { sceneId: "symptom-severity", optionId: "calibrated-ret", expectCorrect: true },
           { sceneId: "clarify-misunderstanding", optionId: "check-calmly", expectCorrect: true },
-          { sceneId: "next-step", answer: "hvad skal jeg gøre nu og kontakte læge", expectCorrect: true },
+          { sceneId: "next-step", answer: "skal jeg kontakte min læge nu", expectCorrect: true },
           { sceneId: "principle", optionId: "precision-not-diagnosis", expectCorrect: true }
         ]
       },
@@ -182,7 +183,7 @@ window.PLATA_LESSON_A2_DOCTOR = {
           { sceneId: "symptom-duration", matchAll: true },
           { sceneId: "symptom-severity", optionId: "too-vague", expectCorrect: false },
           { sceneId: "clarify-misunderstanding", optionId: "check-calmly", expectCorrect: true },
-          { sceneId: "next-step", answer: "hvad skal jeg gøre nu og kontakte læge", expectCorrect: true },
+          { sceneId: "next-step", answer: "skal jeg kontakte min læge nu", expectCorrect: true },
           { sceneId: "principle", optionId: "precision-not-diagnosis", expectCorrect: true }
         ]
       },
@@ -216,7 +217,7 @@ window.PLATA_LESSON_A2_DOCTOR = {
   variableDescriptions: {
     relationshipTension: ["low — the conversation stayed calm", "visible — wording made the room tighter", "high — panic or minimization got in the way"],
     clarity: ["unclear — duration or severity still vague", "adequate — symptoms can be understood", "clear — duration, severity, and next step are visible"],
-    professionalTrust: ["weakened — vague or dramatic wording cost credibility", "neutral — polite but low-signal", "strong — you sounded precise and reliable"]
+    professionalTrust: ["weakened — vague or dramatic wording made the symptoms harder to understand", "neutral — the main point was understood", "strong — you sounded precise and reliable"]
   },
   languagePhenomena: [
     { item: "i to dage", function: "states duration concretely for symptoms" },
@@ -228,8 +229,13 @@ window.PLATA_LESSON_A2_DOCTOR = {
   sourceNotes: [
     {
       title: "Sundhed.dk patient guidance",
-      url: "https://www.sundhed.dk/",
-      supports: ["Patients should describe symptoms clearly; call 112 for acute life-threatening situations — this lesson trains language only"]
+      url: "https://www.sundhed.dk/borger/trivsel/boern-og-unge-i-fokus/akut-hjaelp/",
+      supports: ["Medical urgency belongs with qualified services; this lesson only practises the language of describing symptoms"]
+    },
+    {
+      title: "Apoteket.dk: cough guidance",
+      url: "https://www.apoteket.dk/sundhed-og-sygdom/feber-og-forkoelelse/medicin-mod-hoste/",
+      supports: ["A pharmacist may ask about the type and duration of a cough before advising what to do next"]
     },
     {
       title: "borger.dk/lifeindenmark.dk skrivevejledning",
@@ -241,35 +247,35 @@ window.PLATA_LESSON_A2_DOCTOR = {
     {
       id: "read-context",
       type: "choice",
-      eyebrow: "Scene 1 · Akut eller rutine",
-      title: "Not every symptom sentence belongs in the same register.",
-      learningGoal: "Distinguish emergency escalation from routine symptom description at apotek or læge.",
-      sourceRefs: ["Sundhed.dk patient guidance"],
+      eyebrow: "Scene 1 · At the pharmacy",
+      title: "Start with a sentence the pharmacist can use.",
+      learningGoal: "Describe the main symptom and its duration in one clear sentence.",
+      sourceRefs: ["Apoteket.dk: cough guidance"],
       masteryTags: ["context-reading"],
-      pressure: "Du hoster og har ondt i halsen. Apotekeren spørger: 'Hvor længe har du haft det?' Før du svarer, skal du vide: er det akut — eller en almindelig samtale om symptomer?",
-      narrative: "Præcis dansk hjælper — men det starter med at læse situationen. Ring 112 ved akut fare. Beskriv varighed og styrke roligt i apotek eller hos læge.",
-      dialogue: [{ speaker: "Apoteker", line: "Hvor længe har du haft symptomerne?" }],
-      notice: "Akut: ring 112. Rutine: beskriv varighed (i to dage, siden i går) og styrke (lidt, ret) uden at lyde som læge — og uden at sige bare 'ikke så godt'.",
-      targetPhrases: ["ring 112", "i to dage", "beskriv symptomer", "apotek"],
-      prompt: "What is the first move?",
+      pressure: "You have a cough and a sore throat. At the counter, the pharmacist asks what is wrong.",
+      narrative: "You do not need a diagnosis in Danish. You need to say what you feel and how long it has lasted.",
+      dialogue: [{ speaker: "Apoteker", line: "Hvad kan jeg hjælpe dig med?" }],
+      notice: "A useful answer has two parts: the symptom and the timeline — for example, hoste + i to dage.",
+      targetPhrases: ["jeg har hostet", "i to dage", "ondt i halsen"],
+      prompt: "Which answer gives the pharmacist the clearest start?",
       options: [
-        { id: "describe-routine", diagnostic: "reads-routine-context", label: "Beskriv roligt: hvor længe og hvor meget — det er apotek, ikke akut.", detail: "routine description", correct: true, effects: { clarity: 1, professionalTrust: 1 }, feedback: "Diagnostic: you read routine context. Duration and severity come next — not emergency drama." },
-        { id: "call-emergency", diagnostic: "misreads-urgency", label: "Sig med det samme, at det sikkert er meget alvorligt — ring læge nu.", detail: "over-escalates routine case", correct: false, effects: { relationshipTension: 1, clarity: -1 }, feedback: "Diagnostic: for a routine pharmacy talk, overdramatizing can blur the facts. Reserve akut language for akut situations — ring 112 when needed." },
-        { id: "minimize", diagnostic: "hides-symptoms", label: "Sig 'det er nok fint' og nævn ikke varighed.", detail: "too vague", correct: false, effects: { clarity: -1, professionalTrust: -1, relationshipTension: 1 }, feedback: "Diagnostic: minimization hides duration and severity. Apotekeren cannot help with what you will not say." }
+        { id: "describe-routine", diagnostic: "reads-routine-context", label: "Jeg har hostet i to dage, og jeg har ondt i halsen.", detail: "symptom + duration", correct: true, effects: { clarity: 1, professionalTrust: 1 }, feedback: "Good start. The pharmacist immediately knows what is wrong and how long it has lasted." },
+        { id: "call-emergency", diagnostic: "misreads-urgency", label: "Jeg tror, at det er en alvorlig infektion.", detail: "a diagnosis without useful details", correct: false, effects: { relationshipTension: 1, clarity: -1 }, feedback: "This guesses at a diagnosis but leaves out the timeline. Describe what you feel first; a professional can assess the cause." },
+        { id: "minimize", diagnostic: "hides-symptoms", label: "Jeg har det ikke så godt.", detail: "understandable but too broad", correct: false, effects: { clarity: -1, professionalTrust: -1, relationshipTension: 1 }, feedback: "The pharmacist still has to discover both the symptom and the timeline. Add what hurts and for how long." }
       ],
-      carry: "Carry-forward: læs akut vs rutine først. I apotek: hvor længe (i to dage / siden i går) og hvor meget (lidt / ret).",
+      carry: "Keep the frame: Jeg har … + i/siden … . You will make it more precise in the next two scenes.",
       tags: ["A2", "health", "context", "safety"]
     },
     {
       id: "symptom-duration",
       type: "match",
-      eyebrow: "Scene 2 · Varighed",
-      title: "Hvor længe er et konkret svar — ikke en følelse.",
+      eyebrow: "Scene 2 · Duration",
+      title: "Three short phrases answer three different questions.",
       learningGoal: "Match duration phrases to what they tell the listener.",
       sourceRefs: ["Sundhed.dk patient guidance"],
       masteryTags: ["symptom-duration"],
-      pressure: "Du skal forklare hoste og ondt i halsen. Tidsudtryk ser simple ud — men de gør din dansk testbar.",
-      narrative: "Match hver frase til hvad den fortæller om symptomerne.",
+      pressure: "The pharmacist wants to know when the cough began and whether it changes during the day.",
+      narrative: "Match each Danish time phrase to the information it gives.",
       dialogue: [{ speaker: "You", line: "Jeg har haft det ..." }],
       notice: "I to dage = varighed. Siden i går = startpunkt. Om morgenen = mønster — ikke det samme som 'lidt tid'.",
       targetPhrases: ["i to dage", "siden i går", "om morgenen"],
@@ -279,99 +285,99 @@ window.PLATA_LESSON_A2_DOCTOR = {
         { id: "since-yesterday", left: "Siden i går.", right: "marks when symptoms started", feedback: "Siden i går anchors the timeline." },
         { id: "mornings", left: "Især om morgenen.", right: "describes a pattern", feedback: "Om morgenen adds pattern — useful for hoste and hals." }
       ],
-      carry: "Carry-forward: i to dage og siden i går gør varighed synlig. Om morgenen tilføjer mønster.",
+      carry: "Use i + a period for duration, siden + a point in time for the start, and om morgenen for a recurring pattern.",
       tags: ["A2", "duration", "health"]
     },
     {
       id: "symptom-severity",
       type: "choice",
-      eyebrow: "Scene 3 · Styrke",
-      title: "Lidt og ret er præcision — ikke overdrivelse.",
+      eyebrow: "Scene 3 · Intensity",
+      title: "Say how strong it feels without guessing the cause.",
       learningGoal: "Calibrate severity words without drama or vagueness.",
       sourceRefs: ["Sundhed.dk patient guidance"],
       masteryTags: ["symptom-severity"],
-      pressure: "Apotekeren spørger hvor slemt det er. For svagt lyder som ingenting; for hårdt lyder som panik.",
-      narrative: "A2-sundhedsdansk: kalibrer styrke med lidt, ret, meget — uden at spille læge.",
+      pressure: "The pharmacist asks how bad the sore throat is.",
+      narrative: "Words such as lidt, ret, and meget help the listener understand the intensity.",
       dialogue: [{ speaker: "Apoteker", line: "Er det meget slemt?" }],
       notice: "Ret ondt i halsen er præcist. Meget slemt uden fakta lyder dramatisk. 'Ikke så godt' er for vagt.",
       targetPhrases: ["lidt", "ret ondt", "meget slemt", "ikke så godt"],
       prompt: "Which line calibrates severity best?",
       options: [
-        { id: "calibrated-ret", diagnostic: "calibrated-severity", label: "Ret ondt i halsen, især om morgenen.", detail: "precise severity", correct: true, effects: { clarity: 1, professionalTrust: 1 }, feedback: "Diagnostic: ret plus om morgenen gives precision without panic." },
-        { id: "too-vague", diagnostic: "vague-severity", label: "Ikke så godt, tror jeg.", detail: "too vague", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "Diagnostic: ikke så godt hides severity. Apotekeren still lacks testable detail." },
-        { id: "overdramatic", diagnostic: "overdramatic-severity", label: "Det er meget slemt — jeg tror det er farligt.", detail: "over-claims", correct: false, effects: { relationshipTension: 2, professionalTrust: -1, clarity: -1 }, feedback: "Diagnostic: you overclaimed certainty. Describe symptoms; let professionals assess danger — ring 112 when acute." }
+        { id: "calibrated-ret", diagnostic: "calibrated-severity", label: "Jeg har ret ondt i halsen, især når jeg synker.", detail: "intensity + useful detail", correct: true, effects: { clarity: 1, professionalTrust: 1 }, feedback: "Ret describes the intensity, and især når jeg synker tells the pharmacist when it hurts." },
+        { id: "too-vague", diagnostic: "vague-severity", label: "Det føles lidt mærkeligt.", detail: "too broad to guide the next question", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "Mærkeligt does not say where it hurts or how strongly. Name the body part and the intensity." },
+        { id: "overdramatic", diagnostic: "overdramatic-severity", label: "Det må være halsbetændelse.", detail: "a conclusion rather than a description", correct: false, effects: { relationshipTension: 2, professionalTrust: -1, clarity: -1 }, feedback: "This names a possible diagnosis but not what you experience. Say how your throat feels and let the professional assess it." }
       ],
-      carry: "Carry-forward: ret ondt i halsen er stærkere end 'ikke så godt'. Undgå at diagnosticere — beskriv.",
+      carry: "A strong A2 answer can be simple: Jeg har ret ondt i halsen, især når jeg synker.",
       tags: ["A2", "severity", "health"]
     },
     {
       id: "clarify-misunderstanding",
       type: "choice",
-      eyebrow: "Scene 4 · Afklaring",
-      title: "When you did not hear the word, ask — do not guess.",
+      eyebrow: "Scene 4 · Clarify",
+      title: "A clarification question keeps the conversation moving.",
       learningGoal: "Use clarification questions calmly at apotek or læge.",
       sourceRefs: ["Sundhed.dk patient guidance"],
       masteryTags: ["clarification-without-panic"],
-      pressure: "Apotekeren siger et ord du ikke helt hørte — måske om hoste eller feber. Du kan nikke, gætte, eller spørge.",
-      narrative: "Kan du gentage det og Mener du ...? holder samtalen præcis uden panik.",
+      pressure: "You hear the word feber, but you are not sure whether the pharmacist means now or during the last few days.",
+      narrative: "Use Mener du …? to check the exact meaning before you answer.",
       dialogue: [{ speaker: "Apoteker", line: "Har du også haft feber?" }],
-      notice: "Spørg roligt: Mener du over 38 grader? eller Kan du gentage det? — det er agency uden aggression.",
+      notice: "Undskyld makes the interruption gentle; mener du lets you test what you understood.",
       targetPhrases: ["kan du gentage", "mener du", "feber"],
       prompt: "How do you clarify?",
       options: [
-        { id: "check-calmly", diagnostic: "clarifies-with-agency", label: "Mener du feber hele tiden, eller kun om aftenen?", detail: "calm clarification", correct: true, effects: { clarity: 1, relationshipTension: -1 }, feedback: "Diagnostic: strong A2 move. You checked meaning before answering wrong." },
-        { id: "go-silent", diagnostic: "silent-guess", label: "Nik ja — du er ikke sikker på hvad de spurgte om.", detail: "guessing", correct: false, effects: { clarity: -1, professionalTrust: -1, relationshipTension: 1 }, feedback: "Diagnostic: silence lets wrong assumptions pass. Clarify first." },
-        { id: "panic", diagnostic: "panic-response", label: "Sig højt at du ikke forstår dansk og gå.", detail: "panic exit", correct: false, effects: { relationshipTension: 1 }, feedback: "Diagnostic: leaving in panic ends the process. One calm question keeps you in control." }
+        { id: "check-calmly", diagnostic: "clarifies-with-agency", label: "Undskyld, mener du, om jeg har feber nu?", detail: "checks the exact question", correct: true, effects: { clarity: 1, relationshipTension: -1 }, feedback: "Exactly. You check one detail and make it easy for the pharmacist to repeat or rephrase." },
+        { id: "go-silent", diagnostic: "silent-guess", label: "Ja, måske.", detail: "answers before the question is clear", correct: false, effects: { clarity: -1, professionalTrust: -1, relationshipTension: 1 }, feedback: "This sounds like an answer, but neither person knows whether you understood the question. Ask what feber refers to." },
+        { id: "panic", diagnostic: "panic-response", label: "Undskyld, mit dansk er ikke så godt.", detail: "honest but does not recover the question", correct: false, effects: { relationshipTension: 1 }, feedback: "This explains the problem but does not solve it. Add Kan du gentage det? or Mener du …?" }
       ],
-      carry: "Carry-forward: mener du og kan du gentage det afklarer uden panik.",
+      carry: "Two reliable repair phrases are Kan du gentage det? and Undskyld, mener du …?",
       tags: ["A2", "clarification", "health"]
     },
     {
       id: "next-step",
       type: "completion",
-      eyebrow: "Scene 5 · Næste skridt",
-      title: "Description is not finished until something can happen next.",
+      eyebrow: "Scene 5 · Next step",
+      title: "Finish by asking what to do next.",
       learningGoal: "Complete the exchange with a concrete next-step question.",
       sourceRefs: ["Sundhed.dk patient guidance"],
       masteryTags: ["concrete-next-step"],
-      pressure: "Du har beskrevet hoste, varighed og styrke. Nu skal du spørge hvad du gør — uden at lyde som læge.",
-      narrative: "Afslut med et synligt næste skridt: hvad skal jeg gøre nu, skal jeg kontakte læge, eller book tid.",
-      dialogue: [{ speaker: "You", line: "Tak — jeg har hoste i to dage med ret ondt i halsen. ..." }],
+      pressure: "The pharmacist has heard your symptoms. You still need to know whether to try something from the pharmacy or contact your doctor.",
+      narrative: "Ask one short next-step question. You are not expected to know the medical answer yourself.",
+      dialogue: [{ speaker: "You", line: "Tak — jeg har hostet i to dage og har ret ondt i halsen. ..." }],
       notice: "Konkret dansk: hvad skal jeg gøre nu eller skal jeg kontakte min læge. Ikke kun tak.",
-      targetPhrases: ["hvad skal jeg gøre", "kontakte læge", "hoste i to dage"],
-      prompt: "Complete with a next-step question.",
-      prefix: "Tak — jeg har hoste i to dage med ret ondt i halsen.",
-      placeholder: "Hvad skal jeg gøre nu og kontakte læge?",
+      targetPhrases: ["hvad skal jeg gøre", "kontakte læge", "hostet i to dage"],
+      prompt: "Complete the exchange with a natural next-step question.",
+      prefix: "Tak. Jeg har hostet i to dage og har ret ondt i halsen.",
+      placeholder: "Skal jeg kontakte min læge, hvis det ikke bliver bedre?",
       acceptKeywordGroups: [
-        { name: "next-step question", keywords: ["hvad", "gøre", "skal", "nu"] },
-        { name: "process move", keywords: ["læge", "kontakte", "tid", "book"] }
+        { name: "next-step question", keywords: ["hvad", "skal", "kan", "bør"] },
+        { name: "process move", keywords: ["gøre", "læge", "kontakte", "tid", "prøve"] }
       ],
-      success: "Good. You described symptoms and asked a process next step.",
-      failure: "Include a next-step word: hvad, gøre, skal, læge, kontakte, tid, or nu.",
+      success: "Good. The pharmacist now knows both what you feel and what question you need answered.",
+      failure: "Ask a complete question with a question word such as skal/kan/hvad and an action such as gøre/kontakte/prøve.",
       effects: { clarity: 1 },
-      carry: "Carry-forward: beskrivelse plus hvad skal jeg gøre nu gør samtalen brugbar.",
+      carry: "Useful frame: Skal jeg …? / Hvad skal jeg gøre, hvis …?",
       tags: ["A2", "completion", "health"]
     },
     {
       id: "principle",
       type: "choice",
-      eyebrow: "Final · Princip",
-      title: "Precise Danish is not playing doctor.",
-      learningGoal: "Name the A2 principle: describe clearly, clarify calmly, ask next steps — language training only.",
+      eyebrow: "Final · A phone call",
+      title: "Use the same structure when the situation changes.",
+      learningGoal: "Open a call to the doctor with symptom, duration, and change over time.",
       sourceRefs: ["Sundhed.dk patient guidance"],
       masteryTags: ["consequence-aware-register"],
-      pressure: "Samtalen slutter. Dette er sprogtræning — ikke medicinsk rådgivning.",
-      narrative: "Princip du kan bruge igen: præcis symptombeskrivelse uden at diagnosticere.",
-      dialogue: [{ speaker: "Safety note", line: "Ved akut fare: ring 112. Kontakt læge ved vedvarende eller forværrede symptomer." }],
-      notice: "Platå træner sprog. Beskriv varighed og styrke; lad fagfolk vurdere behandling.",
-      targetPhrases: ["præcis symptombeskrivelse", "ring 112", "sprogtræning"],
-      prompt: "Which principle should this lesson teach?",
+      pressure: "Four days later, the cough is worse. You call your doctor and need a useful first sentence.",
+      narrative: "Transfer the same three-part structure: why you are calling, how long it has lasted, and what has changed.",
+      dialogue: [{ speaker: "Lægehus", line: "Lægehuset, det er Anne." }],
+      notice: "Jeg ringer, fordi … is a natural opening. It tells the receptionist why this call needs the next question.",
+      targetPhrases: ["jeg ringer, fordi", "i fire dage", "det bliver værre"],
+      prompt: "Which opening gives the receptionist the clearest picture?",
       options: [
-        { id: "precision-not-diagnosis", diagnostic: "names-precision-principle", label: "Præcis symptombeskrivelse er sprog — ikke at være læge.", detail: "transferable principle", correct: true, feedback: "Diagnostic: yes. Duration, severity, clarification, and next steps — without diagnosing." },
-        { id: "play-doctor", diagnostic: "confuses-language-with-diagnosis", label: "God dansk betyder at du selv ved hvad der er galt.", detail: "over-claims", correct: false, feedback: "Diagnostic: language precision helps communication; it does not replace medical assessment." },
-        { id: "maximum-drama", diagnostic: "confuses-urgency-with-clarity", label: "God dansk betyder at du lyder mest alvorlig.", detail: "too dramatic", correct: false, feedback: "Diagnostic: drama is not clarity. Calibrated lidt/ret/meget beats theatrical language." }
+        { id: "precision-not-diagnosis", diagnostic: "names-precision-principle", label: "Jeg ringer, fordi jeg har hostet i fire dage, og det bliver værre.", detail: "reason + duration + change", correct: true, feedback: "That works. The receptionist can hear why you are calling and what has changed since the pharmacy visit." },
+        { id: "play-doctor", diagnostic: "confuses-language-with-diagnosis", label: "Jeg ringer, fordi jeg helt sikkert har en infektion.", detail: "certainty without symptoms", correct: false, feedback: "This states a diagnosis but leaves out the useful history. Describe the cough, duration, and change instead." },
+        { id: "maximum-drama", diagnostic: "confuses-urgency-with-clarity", label: "Jeg har det stadig dårligt og vil gerne have en tid.", detail: "clear request, incomplete symptom picture", correct: false, feedback: "The request is understandable, but the receptionist still needs to ask what is wrong and how long it has lasted." }
       ],
-      carry: "Unlocked A2 theme: præcis symptombeskrivelse. Ring 112 ved akut fare; spørg hvad skal jeg gøre nu i rutinesamtaler.",
+      carry: "You can now build a useful health sentence: symptom + duration + intensity or change + one next-step question.",
       tags: ["A2", "principle", "safety", "health"]
     }
   ],
@@ -383,24 +389,24 @@ window.PLATA_LESSON_A2_DOCTOR = {
   endings: [
     {
       id: "strong",
-      title: "Clear and usable",
-      narrative: "Apotekeren forstår varighed, styrke og mønster. Du spurgte hvad du skal gøre næste — uden panik og uden at skjule symptomer.",
-      danish: "Du gjorde symptomerne tydelige uden at spille læge.",
-      carry: "A2 unlocked: duration plus severity plus next step makes everyday health Danish work."
+      title: "The listener has what they need",
+      narrative: "You described the symptom, duration, and intensity, checked one unclear question, and asked what to do next.",
+      danish: "Jeg har hostet i to dage, og jeg har ret ondt i halsen.",
+      carry: "Use the same structure at a pharmacy, on the phone, or in a short message to your doctor."
     },
     {
       id: "strained",
-      title: "Hard to help",
-      narrative: "Samtalen blev utydelig — for vag, for dramatisk, eller afbrudt af panik. Næste skridt bliver sværere at finde sammen.",
-      danish: "Uklar dansk gør det sværere at hjælpe dig.",
-      carry: "A2 unlocked: vagueness and drama both block useful health conversations."
+      title: "The key details are still missing",
+      narrative: "The conversation contains a guess or a broad statement, but not enough detail about what you feel and how long it has lasted.",
+      danish: "Jeg har det ikke så godt.",
+      carry: "Repair it with one body symptom and one time phrase: Jeg har … i/siden … ."
     },
     {
       id: "neutral",
-      title: "Polite but low-signal",
-      narrative: "Du var høflig, men severity eller varighed manglede præcision. Intet går galt — men rådet bliver generisk.",
-      danish: "Det var fint, men ikke præcist nok.",
-      carry: "A2 unlocked: polite Danish needs testable duration and severity to move the case."
+      title: "Understood, but not yet precise",
+      narrative: "The pharmacist understands the main problem, but still needs another question about duration or intensity before giving useful guidance.",
+      danish: "Det er forståeligt, men der mangler en detalje.",
+      carry: "Add i to dage, siden i går, lidt, ret, or især når … to make the sentence more useful."
     }
   ]
 };

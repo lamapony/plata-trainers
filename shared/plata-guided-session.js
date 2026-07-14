@@ -133,7 +133,7 @@
         signal: "starter-route",
         trainerId: "lesson-b2-job-followup",
         rootCompetency: "",
-        reason: "No local progress exists yet. The B2 job-follow-up lesson is the primary first action for plateau learners."
+        reason: "There is no saved practice yet, so start with a realistic B2 job follow-up where the wording has a clear consequence."
       };
     }
     if (status === "complete") {

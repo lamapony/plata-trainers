@@ -107,6 +107,7 @@ function buildSupportWords(lesson, scene) {
     scene.success || "",
     scene.failure || "",
     scene.placeholder || "",
+    ...(scene.targetPhrases || []),
     ...((scene.options || []).map(o => [o.detail, o.feedback].join(" "))),
     ...((scene.options || []).map(o => [o.consequence, o.pragmaticStatus, ...(o.repairLadder || []).map(step => [step.stage, step.text].join(" "))].join(" "))),
     ...((scene.channelVersions || []).map(channel => [channel.label, channel.sample, channel.risk].join(" "))),
@@ -669,7 +670,7 @@ function validateLesson(lessonMeta, lesson) {
           if (!nonEmptyString(option.channel)) issue(`${optionPrefix}.channel: empty`);
           if (!nonEmptyString(option.label)) issue(`${optionPrefix}.label: empty`);
           if (!nonEmptyString(option.detail)) issue(`${optionPrefix}.detail: empty`);
-          if (!nonEmptyString(option.feedback) || !/^Diagnostic:/.test(option.feedback)) issue(`${optionPrefix}.feedback: flagship-chain feedback must be diagnostic`);
+          if (!nonEmptyString(option.feedback) || option.feedback.trim().length < 20) issue(`${optionPrefix}.feedback: flagship-chain feedback must explain the consequence and repair`);
           if (!nonEmptyString(option.diagnostic)) {
             issue(`${optionPrefix}.diagnostic: required diagnostic key`);
           } else if (diagnostics.has(option.diagnostic)) {
