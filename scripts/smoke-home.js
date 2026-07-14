@@ -363,7 +363,7 @@ async function runWeakMasteryHomeSmoke() {
   seedWeakMastery(env);
   await runHome(env);
 
-  assert(env.ids["#home-start-title"].textContent === "Repair Use understatement with agency", "home promotes planner repair");
+  assert(env.ids["#home-start-title"].textContent === "Repair Ask for the appointment by phone", "home promotes planner repair");
   assert(/mode=repair/.test(env.ids["#home-start-link"].href), "home repair link opens repair mode");
   assert(/signal=understatement-with-agency/.test(env.ids["#home-start-link"].href), "home repair link carries signal");
   assert(/workplace-understatement/.test(env.ids["#home-start-link"].href), "home repair link targets source scene");

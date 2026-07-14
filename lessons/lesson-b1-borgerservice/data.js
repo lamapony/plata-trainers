@@ -1,8 +1,9 @@
 window.PLATA_LESSON_B1_BORGERSERVICE = {
   id: "lesson-b1-borgerservice",
+  contentVersion: 2,
   level: "B1",
-  title: "Når systemet siger nej",
-  subtitle: "Navigate Danish public-service systems with polite persistence, date precision, and agency without aggression",
+  title: "Book help with MitID",
+  subtitle: "Explain what you need, ask what to bring, and find another appointment when the first location is full.",
   estimatedMinutes: 14,
   qualityTier: "gold",
   editorialFocus: "Borgerservice pressure: booking or fixing MitID/CPR appointments when the system rejects you — calm register, precise dates, clarification without panic.",
@@ -17,7 +18,7 @@ window.PLATA_LESSON_B1_BORGERSERVICE = {
         assetPath: "./assets/comic/read-context.png",
         alt: "A learner pauses at a Borgerservice self-service kiosk after the screen shows an error.",
         prompt: "Create a quiet editorial comic panel in a modern Danish Borgerservice waiting area. An adult learner stands at a self-service kiosk with a red error indicator on the screen, but no readable text. They pause with calm posture before reacting — not panicking, not walking away silently. Muted civic interior, natural light, no speech bubbles.",
-        sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
+        sourceRefs: ["Borger.dk: MitID help"],
         masteryTags: ["context-reading"],
         mustInclude: ["self-service kiosk", "error indicator", "learner pausing calmly"],
         avoid: ["readable screen text", "angry shouting", "MitID logo"]
@@ -49,7 +50,7 @@ window.PLATA_LESSON_B1_BORGERSERVICE = {
         sceneId: "professional-response",
         assetPath: "./assets/comic/professional-response.png",
         alt: "A learner makes a polite but active request at Borgerservice without sounding panicked.",
-        prompt: "Create a quiet editorial comic panel showing a learner at a Borgerservice desk making a calm, active request — steady posture, visible agency, low pressure. A simple calendar shape on the desk suggests date precision. No readable text, no speech bubbles.",
+        prompt: "Create a quiet editorial comic panel showing a learner at a Borgerservice desk making a calm, active request with steady posture. A simple calendar shape on the desk suggests date precision. No readable text, no speech bubbles.",
         sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
         masteryTags: ["agency-without-pressure"],
         mustInclude: ["active calm posture", "abstract calendar cue", "service desk"],
@@ -70,11 +71,11 @@ window.PLATA_LESSON_B1_BORGERSERVICE = {
         id: "principle",
         sceneId: "principle",
         assetPath: "./assets/comic/principle.png",
-        alt: "A calm exchange at Borgerservice shows that wording affects both outcome and relationship.",
-        prompt: "Create a quiet editorial comic panel showing the final principle: polite persistence moves the case and keeps the service relationship workable. Learner and clerk leave the counter with neutral trust and a visible next-step cue between them. Danish civic interior, no readable text.",
+        alt: "The learner phones Borgerservice and asks for help booking the same MitID appointment.",
+        prompt: "Create a quiet editorial comic panel showing the learner calling Borgerservice with the MitID task, identification documents, and preferred time window ready as simple visual cues. A clerk answers in a calm civic-service setting. The call has one practical purpose and no panic. No readable text, logos, or speech bubbles.",
         sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
         masteryTags: ["consequence-aware-register"],
-        mustInclude: ["workable trust", "visual next-step cue", "civic service setting"],
+        mustInclude: ["phone call", "identification document cue", "appointment time cue"],
         avoid: ["celebration pose", "literal written lesson slogan"]
       }
     ]
@@ -115,7 +116,7 @@ window.PLATA_LESSON_B1_BORGERSERVICE = {
     },
     "agency-without-pressure": {
       competencyId: "agency",
-      label: "Use agency without aggression",
+      label: "Make a clear request",
       evidence: "The learner makes an active appointment request without sounding panicked, demanding, or passively accepting rejection.",
       remediation: {
         sceneId: "professional-response",
@@ -216,16 +217,26 @@ window.PLATA_LESSON_B1_BORGERSERVICE = {
   variableDescriptions: {
     relationshipTension: ["low — the counter stayed workable", "visible — the room felt tighter", "high — panic or aggression made the case harder"],
     clarity: ["unclear — the clerk still cannot help", "adequate — the request can move", "clear — need, date, and next step are visible"],
-    professionalTrust: ["weakened — the tone cost confidence", "neutral — correct but low-signal", "strong — you sounded reliable under system pressure"]
+    professionalTrust: ["weakened — the request became harder to understand", "neutral — the clerk understood the basics", "strong — you sounded prepared and reliable"]
   },
   languagePhenomena: [
     { item: "jeg vil gerne", function: "polite request opener in public-service Danish" },
     { item: "kan jeg få", function: "direct but courteous ask for a service outcome" },
-    { item: "er det muligt at", function: "softens the request while keeping agency visible" },
+    { item: "er det muligt at", function: "softens the request while keeping the requested action visible" },
     { item: "mener du / skal jeg", function: "checks misunderstanding without escalating" },
     { item: "tirsdag formiddag", function: "date and time precision makes booking concrete" }
   ],
   sourceNotes: [
+    {
+      title: "Borger.dk: MitID help",
+      url: "https://www.borger.dk/hjaelp-og-vejledning/hvad-har-du-brug-for-hjaelp-til/mitid",
+      supports: ["If the app cannot be copied or activated by scanning accepted ID, an activation code can be collected from the user's municipal Borgerservice after booking an appointment"]
+    },
+    {
+      title: "Borger.dk: contact and local services",
+      url: "https://www.borger.dk/hjaelp-og-vejledning/kontakt/kontakt-borger-dk",
+      supports: ["Questions about a specific municipal service belong with the local Borgerservice"]
+    },
     {
       title: "borger.dk/lifeindenmark.dk skrivevejledning",
       url: "https://digitaliser.dk/Media/638295979179542926/Skrivevejledning%20for%20borger.dk_september%202023_version%201.0.pdf",
@@ -241,107 +252,107 @@ window.PLATA_LESSON_B1_BORGERSERVICE = {
     {
       id: "read-context",
       type: "choice",
-      eyebrow: "Scene 1 · Systemet",
-      title: "The screen says no before anyone speaks.",
-      learningGoal: "Read what the system rejected before choosing panic, passivity, or calm action.",
-      sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
+      eyebrow: "Scene 1 · A new phone",
+      title: "Name the service before you try to book it.",
+      learningGoal: "Identify the exact MitID help you need and the channel that provides it.",
+      sourceRefs: ["Borger.dk: MitID help"],
       masteryTags: ["context-reading"],
-      pressure: "Du skal booke Borgerservice-tid til MitID-hjælp. Skærmen siger, at tiden ikke kan bookes online. Du kan gå væk, råbe ad systemet, eller læse, hvad der faktisk mangler.",
-      narrative: "Køen bevæger sig langsomt. Fejlbeskeden føles personlig, men den handler om systemet — ikke om, om du 'hører til'. Første risiko er reaktion: panik gør dig utydelig; passiv accept gør, at du mister din tid.",
-      dialogue: [{ speaker: "System", line: "Online booking er ikke tilgængelig for denne ydelse." }],
-      notice: "Læs beskeden først: hvilken ydelse, hvilken kanal, hvad mangler? Kort og konkret betyder ikke kold — det betyder, at du kan handle.",
-      targetPhrases: ["hvad siger systemet", "hvad mangler jeg", "læs beskeden roligt"],
-      prompt: "What is the first move at the kiosk?",
+      pressure: "You have a new phone. You cannot copy the old app or activate the new one by scanning your passport, so you need an activation code from your municipality's Borgerservice.",
+      narrative: "The booking page lists several services. Choosing the right one starts with a precise description of your problem.",
+      dialogue: [{ speaker: "You", line: "Jeg har fået en ny telefon og skal have en aktiveringskode til MitID." }],
+      notice: "The useful details are new phone + activate MitID + activation code. That is enough context for the booking.",
+      targetPhrases: ["ny telefon", "aktiveringskode", "MitID"],
+      prompt: "Which description best matches the service you need?",
       options: [
-        { id: "read-calmly", diagnostic: "reads-system-before-reacting", label: "Læs beskeden roligt: hvilken ydelse, og hvad kan jeg gøre nu?", detail: "reads before reacting", correct: true, effects: { clarity: 1, professionalTrust: 1 }, feedback: "Diagnostic: you read the system message first. That keeps panic from becoming the story." },
-        { id: "wait-vaguely", diagnostic: "passive-acceptance", label: "Giv op og gå hjem — det er sikkert umuligt alligevel.", detail: "too passive", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "Diagnostic: passive acceptance treats a system limit as a personal no. You lose the appointment without testing the next channel." },
-        { id: "overreact", diagnostic: "panic-before-facts", label: "Sig højt, at systemet aldrig virker, og gå direkte til skranken med vrede.", detail: "panic first", correct: false, effects: { relationshipTension: 1, clarity: -1 }, feedback: "Diagnostic: you brought panic before facts. The clerk hears the tone before the need." }
+        { id: "read-calmly", diagnostic: "reads-system-before-reacting", label: "Jeg skal have en aktiveringskode til MitID, fordi jeg har fået en ny telefon.", detail: "service + reason", correct: true, effects: { clarity: 1, professionalTrust: 1 }, feedback: "This gives the booking system or clerk the exact service and the relevant reason." },
+        { id: "wait-vaguely", diagnostic: "passive-acceptance", label: "Jeg kan ikke få min telefon til at virke.", detail: "too broad for the service list", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "This could mean many things. Add MitID and aktiveringskode so the request reaches the right service." },
+        { id: "overreact", diagnostic: "panic-before-facts", label: "MitID har låst mig ude, og nogen skal ordne det nu.", detail: "urgent tone, unclear service", correct: false, effects: { relationshipTension: 1, clarity: -1 }, feedback: "The frustration is clear, but the clerk still does not know whether you need support, reactivation, or an activation code." }
       ],
-      carry: "Carry-forward: læs systemet først. Name hvad der blev afvist, hvad du stadig skal have, og hvilken kanal der er næste.",
+      carry: "Reusable frame: Jeg skal have hjælp til …, fordi … .",
       tags: ["B1", "system-navigation", "context", "borgerservice"]
     },
     {
       id: "register-signals",
       type: "match",
-      eyebrow: "Scene 2 · Høflige chunks",
-      title: "Small phrases open the counter.",
-      learningGoal: "Match polite Danish request chunks to their social function at Borgerservice.",
+      eyebrow: "Scene 2 · Before you go",
+      title: "Ask the three questions that prevent a wasted trip.",
+      learningGoal: "Match questions about service, identification, and booking.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["register-signal-control"],
-      pressure: "Du står ved skranken. Sætningerne ser simple ud — fejlen er at bruge dem som pynt i stedet for som register.",
-      narrative: "Før du siger hele sætningen, isolerer du tre chunk-typer: ønske, direkte anmodning, og mulighed.",
-      dialogue: [{ speaker: "Clerk", line: "Ja, hvad kan jeg hjælpe med?" }],
-      notice: "Jeg vil gerne åbner høfligt. Kan jeg få er direkte men stadig høfligt. Er det muligt at bløder op uden at skjule, hvad du vil.",
-      targetPhrases: ["jeg vil gerne", "booke en tid", "er det muligt at"],
+      pressure: "You know an appointment may be required, but you do not yet know what identification to bring.",
+      narrative: "Separate the practical questions: what help, which documents, and whether a booking is required.",
+      dialogue: [{ speaker: "Clerk", line: "Hvad vil du gerne vide?" }],
+      notice: "Skal jeg …? asks about a requirement. Hvilken legitimation …? asks for a specific document.",
+      targetPhrases: ["aktiveringskode", "hvilken legitimation", "booke en tid"],
       prompt: "Match each phrase to the job it does.",
       pairs: [
-        { id: "wish", left: "Jeg vil gerne booke en tid.", right: "opens a polite wish", feedback: "Jeg vil gerne signals courtesy before the request." },
-        { id: "direct-ask", left: "Kan jeg få en tid til MitID-hjælp?", right: "asks directly for an outcome", feedback: "Kan jeg få keeps the ask concrete without sounding demanding." },
-        { id: "possibility", left: "Er det muligt at komme tirsdag formiddag?", right: "softens while keeping agency", feedback: "Er det muligt at lowers pressure while the date stays visible." }
+        { id: "wish", left: "Kan jeg få en aktiveringskode til MitID hos jer?", right: "checks the service", feedback: "The question confirms that this Borgerservice can provide the help you need." },
+        { id: "direct-ask", left: "Hvilken legitimation skal jeg tage med?", right: "checks what to bring", feedback: "This asks directly for the document requirement." },
+        { id: "possibility", left: "Skal jeg booke en tid først?", right: "checks the booking process", feedback: "This prevents you from arriving without an appointment." }
       ],
-      carry: "Carry-forward: jeg vil gerne åbner, kan jeg få beder om udfald, er det muligt at holder dato synlig med lavt pres.",
+      carry: "Before the visit, confirm three things: service, identification, appointment.",
       tags: ["B1", "phrases", "register", "polite-persistence"]
     },
     {
       id: "clarify-misunderstanding",
       type: "choice",
-      eyebrow: "Scene 3 · Afklaring",
-      title: "Maybe the no is not the whole story.",
-      learningGoal: "Use clarification questions instead of panic or silent acceptance.",
+      eyebrow: "Scene 3 · Identification",
+      title: "Clarify what the clerk means by valid ID.",
+      learningGoal: "Use a short check question when a requirement is too broad.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["clarification-without-panic"],
-      pressure: "Clerken siger, at CPR-nummeret ikke matcher bookingen. Du er ikke sikker på, om det er en tastefejl, et gammelt CPR-kort, eller en systemfejl.",
-      narrative: "Her skiller B1-dansk sig: du kan stoppe antagelser med én afklaringssætning — uden at angribe clerk eller system.",
-      dialogue: [{ speaker: "Clerk", line: "Systemet siger, at CPR-nummeret ikke passer." }],
-      notice: "Mener du...? og Skal jeg...? tjekker forståelsen. De lyder rolige, men de ejer processen.",
-      targetPhrases: ["mener du", "gamle cpr-kort", "nye nummer"],
-      prompt: "How do you clarify without panic?",
+      pressure: "The clerk says: Du skal medbringe gyldig legitimation. You need to know whether your passport is acceptable.",
+      narrative: "A precise clarification question turns a broad rule into something you can act on.",
+      dialogue: [{ speaker: "Clerk", line: "Du skal medbringe gyldig legitimation." }],
+      notice: "Mener du …? checks your interpretation. Er mit pas nok? asks for a concrete yes or no.",
+      targetPhrases: ["mener du", "mit pas", "gyldig legitimation"],
+      prompt: "Which question gives you a usable answer?",
       options: [
-        { id: "check-calmly", diagnostic: "clarifies-with-agency", label: "Mener du mit gamle CPR-kort, eller skal jeg bruge det nye nummer?", detail: "calm clarification", correct: true, effects: { clarity: 1, relationshipTension: -1 }, feedback: "Diagnostic: strong move. You checked the misunderstanding before assuming permanent rejection." },
-        { id: "go-silent", diagnostic: "silent-acceptance", label: "Nik bare og gå — det er sikkert min fejl.", detail: "too passive", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "Diagnostic: silence treats uncertainty as guilt. The clerk cannot fix what you do not ask about." },
-        { id: "attack-clerk", diagnostic: "blames-clerk", label: "Det er jeres system, der aldrig virker — I må fikse det nu.", detail: "aggressive blame", correct: false, effects: { relationshipTension: 2, professionalTrust: -1 }, feedback: "Diagnostic: you blamed the clerk for the system. That raises tension without clarifying the CPR mismatch." }
+        { id: "check-calmly", diagnostic: "clarifies-with-agency", label: "Mener du billedlegitimation? Er mit pas nok?", detail: "specific clarification", correct: true, effects: { clarity: 1, relationshipTension: -1 }, feedback: "This checks both the category and the document you actually plan to bring." },
+        { id: "go-silent", diagnostic: "silent-acceptance", label: "Okay, jeg tager nogle papirer med.", detail: "accepts the rule without knowing what qualifies", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "The reply is polite, but you could still arrive with the wrong document. Ask whether your passport is enough." },
+        { id: "attack-clerk", diagnostic: "blames-clerk", label: "Hvorfor står der ikke præcist på hjemmesiden, hvad I vil have?", detail: "understandable frustration, no document check", correct: false, effects: { relationshipTension: 2, professionalTrust: -1 }, feedback: "This raises a fair complaint but does not answer the practical question. Ask which identification is accepted." }
       ],
-      carry: "Carry-forward: mener du og skal jeg afklarer uden panik. Spørg præcist, før du accepterer et nej.",
+      carry: "When a requirement is broad, ask about the exact item you have: Er mit pas nok?",
       tags: ["B1", "clarification", "agency", "cpr"]
     },
     {
       id: "professional-response",
       type: "choice",
-      eyebrow: "Scene 4 · Anmodningen",
-      title: "Ask with agency, not panic.",
-      learningGoal: "Choose an active Borgerservice request that stays calm and concrete.",
+      eyebrow: "Scene 4 · No appointments",
+      title: "Keep the request open when the first location is full.",
+      learningGoal: "Ask for another time or location instead of treating one full calendar as a final no.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["agency-without-pressure"],
-      pressure: "Du skal have en tid til MitID-hjælp. Du har brug for klarhed, men skranken skal stadig kunne hjælpe dig bagefter.",
-      narrative: "Dette er B1-dom: aktiv uden panik. Du beder om noget konkret uden at true eller gemme dig bag vag høflighed.",
-      dialogue: [{ speaker: "You", line: "Jeg vil gerne have hjælp til at booke en tid — hvad er næste skridt?" }],
-      notice: "Jeg vil gerne plus næste skridt giver agency uden pres. Vag høflighed skjuler, hvad du faktisk skal bruge.",
-      targetPhrases: ["jeg vil gerne", "næste skridt", "uden pres"],
-      prompt: "Choose the sentence that keeps agency without aggression.",
+      pressure: "There are no available appointments at your nearest Borgerservice this week.",
+      narrative: "You can widen one variable: the day, the time, or the location.",
+      dialogue: [{ speaker: "Clerk", line: "Der er desværre ingen ledige tider her i denne uge." }],
+      notice: "Er der en ledig tid …? keeps the question specific. Add et andet sted or i næste uge to open a real alternative.",
+      targetPhrases: ["en ledig tid", "et andet sted", "i næste uge"],
+      prompt: "Which reply gives the clerk a practical alternative to search?",
       options: [
-        { id: "active-low-pressure", diagnostic: "active-low-pressure-request", label: "Jeg vil gerne booke en tid til MitID-hjælp. Kan vi finde næste ledige tid?", detail: "active and workable", correct: true, effects: { relationshipTension: -1, clarity: 1, professionalTrust: 1 }, feedback: "Diagnostic: strong B1 move. Jeg vil gerne is polite, and næste ledige tid keeps the request concrete without pressure." },
-        { id: "too-soft", diagnostic: "softness-removes-action", label: "Det er nok fint, hvis det måske kan vente — jeg ved ikke rigtig.", detail: "too soft", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "Diagnostic: the tone is friendly, but the need disappeared. The clerk cannot book what you will not name." },
-        { id: "pressure", diagnostic: "pressure-replaces-agency", label: "I må give mig en tid i dag — jeg kan ikke vente mere på jeres system.", detail: "too forceful", correct: false, effects: { relationshipTension: 2, professionalTrust: -1 }, feedback: "Diagnostic: pressure replaced agency. That may get attention, but it is not the default Borgerservice register." }
+        { id: "active-low-pressure", diagnostic: "active-low-pressure-request", label: "Er der en ledig tid på et andet borgerservicecenter eller i begyndelsen af næste uge?", detail: "two concrete alternatives", correct: true, effects: { relationshipTension: -1, clarity: 1, professionalTrust: 1 }, feedback: "This gives the clerk two useful ways to continue the search: another location in the municipality or next week." },
+        { id: "too-soft", diagnostic: "softness-removes-action", label: "Okay, så prøver jeg måske igen senere.", detail: "friendly, but no next search", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "The exchange ends without an appointment. Ask about another location or the first time next week." },
+        { id: "pressure", diagnostic: "pressure-replaces-agency", label: "Jeg har brug for MitID, så I må finde en tid til mig i dag.", detail: "clear need, impossible condition", correct: false, effects: { relationshipTension: 2, professionalTrust: -1 }, feedback: "The need is clear, but i dag leaves the clerk no workable alternative. Widen the location or date." }
       ],
-      carry: "Carry-forward: jeg vil gerne plus konkret behov giver agency uden panik. Sætningen skal flytte sagen uden at lukke rummet.",
+      carry: "When the first option is full, ask about another location or the next available week.",
       tags: ["B1", "agency", "polite-persistence", "mitid"]
     },
     {
       id: "next-step",
       type: "completion",
-      eyebrow: "Scene 5 · Dato og tid",
-      title: "A booking request needs a when, not just a what.",
+      eyebrow: "Scene 5 · Date and time",
+      title: "Give the clerk a service and a time window.",
       learningGoal: "Complete a Borgerservice request with both service need and date/time precision.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["concrete-next-step"],
-      pressure: "En høflig sætning fejler stadig, hvis ingen ved, hvornår du kan komme.",
-      narrative: "Du siger den sidste linje. Den skal være kort, konkret og brugbar for clerk.",
-      dialogue: [{ speaker: "You", line: "Jeg vil gerne booke en tid ..." }],
-      notice: "Konkret dansk behøver ikke være langt. Den skal have både ydelse og tidsvindue.",
-      targetPhrases: ["jeg vil gerne", "tirsdag formiddag", "mitid-hjælp", "booke en tid"],
+      pressure: "A second location has openings. The clerk asks when you can come.",
+      narrative: "Answer with the service and a usable day or time window.",
+      dialogue: [{ speaker: "Clerk", line: "Hvornår kan du komme?" }],
+      notice: "Tirsdag formiddag is more useful than snart. Keep hjælp med MitID in the sentence so the booking stays attached to the right service.",
+      targetPhrases: ["hjælp med MitID", "kan komme", "tirsdag formiddag"],
       prompt: "Complete the sentence with one service need and one day or time window.",
-      prefix: "Jeg vil gerne booke en tid",
-      placeholder: "tirsdag formiddag til MitID-hjælp",
+      prefix: "Jeg har brug for en tid til at få hjælp med MitID og kan komme",
+      placeholder: "tirsdag formiddag",
       acceptKeywordGroups: [
         { name: "service need", keywords: ["mitid", "cpr", "borgerservice", "hjælp", "pas"] },
         { name: "day or time", keywords: ["tirsdag", "onsdag", "formiddag", "eftermiddag", "mandag", "tid", "dato"] }
@@ -349,29 +360,29 @@ window.PLATA_LESSON_B1_BORGERSERVICE = {
       success: "Good. The sentence names both what you need and when you can come.",
       failure: "Include both parts: a service word (mitid/cpr/borgerservice/hjælp/pas) and a day or time word (tirsdag/formiddag/tid/dato).",
       effects: { clarity: 1 },
-      carry: "Carry-forward: jeg vil gerne booke en tid er først færdig, når læseren også ser tirsdag formiddag eller et andet konkret tidsvindue.",
+      carry: "A complete booking line answers both questions: what for, and when.",
       tags: ["B1", "completion", "date-precision", "booking"]
     },
     {
       id: "principle",
       type: "choice",
-      eyebrow: "Final · Princip",
-      title: "The wording writes the counter before the appointment.",
-      learningGoal: "Name the B1 principle that calm clarity beats panic or passive acceptance at Borgerservice.",
+      eyebrow: "Final · The phone call",
+      title: "Use the same information without the booking form.",
+      learningGoal: "Open a phone call with the service, reason, and one scheduling question.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["consequence-aware-register"],
-      pressure: "Mødet slutter. Det, der bliver, er ikke kun tiden — men hvordan du blev læst ved skranken.",
-      narrative: "En gold-lektion slutter med det princip, du kan bruge næste gang systemet siger nej.",
-      dialogue: [{ speaker: "Internal note", line: "Ro er ikke passivitet — det er kontrol over register." }],
-      notice: "Dette er sprogtræning, ikke juridisk rådgivning. Principet handler om, hvordan du bliver forstået.",
-      targetPhrases: ["høflig vedholdenhed", "konkret uden panik", "tone er handling"],
-      prompt: "Which principle should this lesson teach?",
+      pressure: "The second Borgerservice location in your municipality asks you to call before booking. A clerk answers: Borgerservice, det er Sara.",
+      narrative: "Your opening should explain why you are calling and make one concrete scheduling request.",
+      dialogue: [{ speaker: "Clerk", line: "Borgerservice, det er Sara." }],
+      notice: "Jeg ringer, fordi … gives the reason first. Er der en ledig tid …? turns it into an appointment question.",
+      targetPhrases: ["jeg ringer, fordi", "aktiveringskode", "en ledig tid"],
+      prompt: "Which opening lets Sara help without asking you to start over?",
       options: [
-        { id: "clarity-with-relationship", diagnostic: "names-clarity-relationship-principle", label: "Høflig vedholdenhed er konkret uden panik: tone er handling.", detail: "transferable principle", correct: true, feedback: "Diagnostic: yes. Calm clarity moves the case while keeping the counter workable." },
-        { id: "maximum-politeness", diagnostic: "confuses-register-with-politeness", label: "Offentlig dansk er altid så høfligt som muligt — også når du giver op.", detail: "over-formal", correct: false, feedback: "Diagnostic: maximum politeness can mean passive acceptance. The goal is useful clarity, not disappearing." },
-        { id: "maximum-force", diagnostic: "confuses-clarity-with-force", label: "Offentlig dansk er tydeligst, når du presser hårdest muligt.", detail: "too forceful", correct: false, feedback: "Diagnostic: pressure is not the same as clarity. Panic can make the clerk less able to help." }
+        { id: "clarity-with-relationship", diagnostic: "names-clarity-relationship-principle", label: "Hej, jeg ringer, fordi jeg skal have en aktiveringskode til MitID. Er der en ledig tid tirsdag formiddag?", detail: "reason + service + time", correct: true, feedback: "This opening gives Sara all three pieces she needs to check the calendar." },
+        { id: "maximum-politeness", diagnostic: "confuses-register-with-politeness", label: "Hej, jeg håber, at du måske kan hjælpe mig med noget omkring MitID.", detail: "friendly, but still broad", correct: false, feedback: "The tone is natural, but Sara still has to ask what kind of MitID help and whether you need an appointment." },
+        { id: "maximum-force", diagnostic: "confuses-clarity-with-force", label: "Hej, jeres hjemmeside virker ikke, så jeg skal have en tid med det samme.", detail: "complaint + demand, service still unclear", correct: false, feedback: "This explains the frustration, not the service. Name the activation code and the time window you can attend." }
       ],
-      carry: "Unlocked B1 theme: høflig vedholdenhed er konkret uden panik. Tone er handling fordi sproget flytter både sagen og rummet ved skranken.",
+      carry: "You can now handle the same task online, at the counter, or by phone: service + reason + document question + time.",
       tags: ["B1", "principle", "consequence", "register"]
     }
   ],
@@ -383,24 +394,24 @@ window.PLATA_LESSON_B1_BORGERSERVICE = {
   endings: [
     {
       id: "strong",
-      title: "Clear and trusted",
-      narrative: "You named what you needed, checked the misunderstanding, and gave a concrete time. The appointment moves forward without extra friction.",
-      danish: "Du gjorde sagen tydelig uden at gøre skranken mindre.",
-      carry: "B1 unlocked: polite persistence and date precision can reinforce each other."
+      title: "The appointment is booked",
+      narrative: "The clerk finds an appointment at another location and confirms what identification you should bring.",
+      danish: "Du har en tid tirsdag klokken 10. Husk at medbringe dit pas.",
+      carry: "Save the booking confirmation and reuse the same questions for another public-service appointment."
     },
     {
       id: "strained",
-      title: "Clear cost",
-      narrative: "You got attention, but panic or blame became the story. The next step happens with less trust than before.",
-      danish: "Du fik svar, men presset blev husket.",
-      carry: "B1 unlocked: force can move the moment while damaging the counter."
+      title: "The need is urgent, but the request is hard to process",
+      narrative: "The clerk hears your frustration but still needs to establish which service, which document, and which appointment you need.",
+      danish: "Kan du først fortælle mig, hvad du konkret skal have hjælp til?",
+      carry: "Restart with one sentence: Jeg skal have en aktiveringskode til MitID, fordi jeg har fået en ny telefon."
     },
     {
       id: "neutral",
-      title: "Correct but low-signal",
-      narrative: "The exchange stays polite and functional. Nothing breaks, but your Danish does not add much confidence either.",
-      danish: "Det var korrekt, men ikke stærkt.",
-      carry: "B1 unlocked: correct language keeps the process alive; concrete agency makes it useful."
+      title: "The clerk understands, but no appointment is fixed",
+      narrative: "You explain the MitID problem politely, yet the conversation ends without a location or time.",
+      danish: "Prøv at se efter en ledig tid igen senere.",
+      carry: "Ask one more question before ending: Er der en tid et andet sted eller i næste uge?"
     }
   ]
 };

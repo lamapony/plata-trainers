@@ -807,7 +807,7 @@
       if (trainer.id === "lesson-b2-job-followup") {
         startScore = 52;
         startRule = "dashboard.start.preferred-entry";
-        startCopy = "Start with the B2 job-follow-up lesson — the primary entry for plateau learners who need professional Danish under hiring pressure.";
+        startCopy = "Start with the B2 job follow-up: a realistic hiring situation for people who know the words but freeze under pressure.";
       } else if (trainer.id === "lesson-01-arrival") {
         startScore = 40;
         startRule = "dashboard.start.tutorial-option";

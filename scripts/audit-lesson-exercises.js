@@ -40,6 +40,48 @@ const EDITORIAL_PHRASE_RULES = [
   }
 ];
 
+const LEARNER_VISIBLE_COPY_RULES = [
+  {
+    id: "internal-diagnostic-label",
+    pattern: /\bDiagnostic:/i,
+    message: "Explain the result directly; do not expose the engine's diagnostic label."
+  },
+  {
+    id: "internal-carry-label",
+    pattern: /\b(?:Carry-forward|Unlocked):/i,
+    message: "Use a natural recap instead of an internal progression label."
+  },
+  {
+    id: "learning-design-jargon",
+    pattern: /\b(?:low[- ]signal|social signal|memory-backed(?: recurrence)?|channel transfer|relationship cost|plateau learner|testable)\b/i,
+    message: "Replace learning-design jargon with a concrete consequence the learner can observe."
+  },
+  {
+    id: "agency-jargon",
+    pattern: /\bagency\b/i,
+    message: "Name the concrete action instead of asking learners to understand the product term `agency`."
+  },
+  {
+    id: "operating-system-metaphor",
+    pattern: /\b(?:social|professional) operating system\b/i,
+    message: "Describe the real conversation skill instead of using an operating-system metaphor."
+  },
+  {
+    id: "factory-language",
+    pattern: /\b(?:gold[- ]lesson|gold-lektion|the wording writes|the words wrote|ordene skriver)\b/i,
+    message: "Keep lesson-factory language out of the learner experience."
+  }
+];
+
+const LEARNER_VISIBLE_KEYS = new Set([
+  "title", "subtitle", "completeTitle", "completeText", "eyebrow", "learningGoal",
+  "pressure", "narrative", "notice", "prompt", "danish", "label", "detail",
+  "feedback", "carry", "prefix", "placeholder", "success", "failure", "line",
+  "left", "right", "copy", "consequence", "raw", "safer", "workplaceReady",
+  "cta", "action", "evidence", "stage", "sample", "risk", "reasonPrompt",
+  "item", "function"
+]);
+
 function nonEmptyString(value) {
   return typeof value === "string" && value.trim().length > 0;
 }
@@ -156,6 +198,33 @@ function auditEditorialPhrases(lesson, issues) {
     }
   }
   scan(lesson, "", null);
+}
+
+function auditLearnerVisibleCopy(lesson, issues) {
+  function scan(value, location, key) {
+    if (typeof value === "string") {
+      const dynamicLearnerCopy = /^(?:variableLabels|variableDescriptions)\./.test(location);
+      if (!LEARNER_VISIBLE_KEYS.has(key) && !dynamicLearnerCopy) return;
+      LEARNER_VISIBLE_COPY_RULES.forEach(rule => {
+        if (rule.pattern.test(value)) {
+          addIssue(issues, lesson, location, `${rule.id}: ${rule.message}`);
+        }
+      });
+      return;
+    }
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => scan(item, `${location}[${index}]`, key));
+      return;
+    }
+    if (value && typeof value === "object") {
+      Object.keys(value).forEach(childKey => {
+        const childLocation = location ? `${location}.${childKey}` : childKey;
+        scan(value[childKey], childLocation, childKey);
+      });
+    }
+  }
+
+  scan(lesson, "", "");
 }
 
 function auditChoiceScene(lesson, scene, location, issues) {
@@ -294,7 +363,12 @@ function auditLesson(lesson) {
     return issues;
   }
 
+  if (!Number.isInteger(lesson.contentVersion) || lesson.contentVersion < 2) {
+    addIssue(issues, lesson, "contentVersion", "lesson must use the reviewed learner-copy contract (contentVersion >= 2)");
+  }
+
   auditEditorialPhrases(lesson, issues);
+  auditLearnerVisibleCopy(lesson, issues);
 
   lesson.scenes.forEach((scene, index) => {
     const location = `scene[${index}](${scene && scene.id || "no-id"})`;
@@ -348,5 +422,6 @@ if (require.main === module) {
 module.exports = {
   auditLesson,
   checkCompletion,
-  EDITORIAL_PHRASE_RULES
+  EDITORIAL_PHRASE_RULES,
+  LEARNER_VISIBLE_COPY_RULES
 };

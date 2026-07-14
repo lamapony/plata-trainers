@@ -1,8 +1,9 @@
 window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
   id: "lesson-b2-job-followup",
+  contentVersion: 2,
   level: "B2",
-  title: "Efter interviews — tone, tak, og tålmodighed",
-  subtitle: "A B2 Danish lesson about post-interview follow-up: formal email, LinkedIn, and the price of tone.",
+  title: "Follow up after a job interview",
+  subtitle: "Use the employer's timeline, write a natural email, and respond professionally whatever comes back.",
   estimatedMinutes: 15,
   qualityTier: "gold",
   editorialFocus: "Choose professional Danish under hiring uncertainty: timed follow-up, formal warmth, platform-specific register, and agency without pressure.",
@@ -70,12 +71,12 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
         id: "epilogue",
         sceneId: "epilogue",
         assetPath: "./assets/comic/epilogue.png",
-        alt: "The candidate is remembered as a future colleague because the Danish follow-up had calm agency.",
-        prompt: "A single comic panel showing the candidate as a future colleague in a calm team setting, with the earlier email and networking choices represented as subtle visual echoes around the scene. The concept is professional Danish taking agency while protecting relationships. No readable text, no company logos, no trophy imagery.",
+        alt: "The candidate answers a rejection professionally and leaves future contact possible.",
+        prompt: "A single comic panel showing the candidate reading a rejection and writing a concise, composed reply. An open doorway or a small future contact card can suggest that this process ended without closing every future opportunity. Keep the disappointment honest and the posture calm. No readable text, company logos, or trophy imagery.",
         sourceRefs: ["Den Danske Ordbog / ordnet.dk", "borger.dk/lifeindenmark.dk skrivevejledning"],
         masteryTags: ["professional-agency-principle"],
-        mustInclude: ["future colleague signal", "calm agency", "professional relationship"],
-        avoid: ["job offer letter text", "brand logos", "overly heroic pose"]
+        mustInclude: ["rejection reply", "honest disappointment", "future-contact cue"],
+        avoid: ["job offer celebration", "brand logos", "overly heroic pose"]
       }
     ]
   },
@@ -93,7 +94,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
     },
     "professional-email-agency": {
       competencyId: "agency",
-      label: "Write warm formal agency",
+      label: "Write a natural follow-up",
       evidence: "The learner chooses formal follow-up wording that owns the message without sounding robotic or needy.",
       remediation: {
         sceneId: "email-register",
@@ -170,12 +171,12 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
     },
     "professional-agency-principle": {
       competencyId: "consequence-awareness",
-      label: "Name the agency principle",
+      label: "Respond professionally",
       evidence: "The learner names the B2 principle that professional Danish takes responsibility instead of hiding behind passive wording.",
       remediation: {
         sceneId: "epilogue",
         cta: "Review the principle",
-        action: "Rerun the final choice and choose the principle that connects register, agency, and relationship cost."
+        action: "Rerun the final choice and choose the reply that acknowledges the decision while keeping future contact possible."
       },
       sourceRefs: ["Den Danske Ordbog / ordnet.dk", "borger.dk/lifeindenmark.dk skrivevejledning"]
     }
@@ -184,8 +185,8 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
     expectedEndingId: "professional",
     completionAnswers: {
       "reply-consequence": {
-        reject: ["takke", "proces", "jeg vil gerne høre"],
-        accept: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt"
+        reject: ["tak", "i morgen", "jeg kan"],
+        accept: "tak for beskeden; jeg kan tale i morgen klokken 10"
       }
     },
     paths: [
@@ -200,7 +201,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
           { sceneId: "email-register", optionId: "formal-warm", expectCorrect: true },
           { sceneId: "email-closing", optionId: "closing-balanced", expectCorrect: true },
           { sceneId: "linkedin-choice", optionId: "linkedin-good", expectCorrect: true },
-          { sceneId: "reply-consequence", answer: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt", expectCorrect: true },
+          { sceneId: "reply-consequence", answer: "tak for beskeden; jeg kan tale i morgen klokken 10", expectCorrect: true },
           { sceneId: "epilogue", optionId: "principle-owned", expectCorrect: true }
         ]
       },
@@ -215,7 +216,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
           { sceneId: "email-register", optionId: "gender-trap", expectCorrect: false },
           { sceneId: "email-closing", optionId: "closing-balanced", expectCorrect: true },
           { sceneId: "linkedin-choice", optionId: "linkedin-generic", expectCorrect: false },
-          { sceneId: "reply-consequence", answer: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt", expectCorrect: true },
+          { sceneId: "reply-consequence", answer: "tak for beskeden; jeg kan tale i morgen klokken 10", expectCorrect: true },
           { sceneId: "epilogue", optionId: "principle-owned", expectCorrect: true }
         ]
       },
@@ -230,7 +231,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
           { sceneId: "email-register", optionId: "formal-warm", expectCorrect: true },
           { sceneId: "email-closing", optionId: "plural-trap", expectCorrect: false },
           { sceneId: "linkedin-choice", optionId: "linkedin-generic", expectCorrect: false },
-          { sceneId: "reply-consequence", answer: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt", expectCorrect: true },
+          { sceneId: "reply-consequence", answer: "tak for beskeden; jeg kan tale i morgen klokken 10", expectCorrect: true },
           { sceneId: "epilogue", optionId: "principle-owned", expectCorrect: true }
         ]
       },
@@ -245,7 +246,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
           { sceneId: "email-register", optionId: "verb-trap", expectCorrect: false },
           { sceneId: "email-closing", optionId: "closing-balanced", expectCorrect: true },
           { sceneId: "linkedin-choice", optionId: "linkedin-generic", expectCorrect: false },
-          { sceneId: "reply-consequence", answer: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt", expectCorrect: true },
+          { sceneId: "reply-consequence", answer: "tak for beskeden; jeg kan tale i morgen klokken 10", expectCorrect: true },
           { sceneId: "epilogue", optionId: "principle-owned", expectCorrect: true }
         ]
       },
@@ -260,7 +261,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
           { sceneId: "email-register", optionId: "formal-warm", expectCorrect: true },
           { sceneId: "email-closing", optionId: "closing-vague", expectCorrect: false },
           { sceneId: "linkedin-choice", optionId: "linkedin-generic", expectCorrect: false },
-          { sceneId: "reply-consequence", answer: "takke for din mail og den gode dialog; vi vurderer processen og vender tilbage om næste skridt", expectCorrect: true },
+          { sceneId: "reply-consequence", answer: "tak for beskeden; jeg kan tale i morgen klokken 10", expectCorrect: true },
           { sceneId: "epilogue", optionId: "principle-owned", expectCorrect: true }
         ]
       },
@@ -296,8 +297,8 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
   variableDescriptions: {
     employerTone: ["cold — your wording created distance", "neutral — the process stayed formal", "warm — your tone invited a human reply"],
     desperation: ["calm — no pressure leaked into the message", "visible — urgency showed through", "pushy — the follow-up started to cost trust"],
-    professionalism: ["weak — the register did not fit the room", "acceptable — correct but not memorable", "strong — you sounded like a future colleague"],
-    networkTrust: ["damaged — the connection felt transactional", "unchanged — accepted but low-signal", "strengthened — the contact stayed useful beyond the role"]
+    professionalism: ["weak — the tone made the exchange harder", "acceptable — clear but generic", "strong — your message was easy to answer and remember"],
+    networkTrust: ["damaged — the connection felt transactional", "unchanged — the exchange stayed correct", "strengthened — the contact could remain useful beyond this role"]
   },
   languagePhenomena: [
     { item: "vedrørende", function: "formal preposition, signals official register" },
@@ -307,7 +308,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
     { item: "partikler: jo/da/nok", function: "soften or position stance in professional mail" },
     { item: "passiv: 'der gives svar'", function: "can sound evasive; active 'vi svarer' owns it" },
     { item: "næste skridt i processen", function: "closing signal that names process without ultimatum" },
-    { item: "må I endelig vende tilbage", function: "over-deferential closing that hides agency" }
+    { item: "må I endelig vende tilbage", function: "over-deferential closing that hides the actual request" }
   ],
   sourceNotes: [
     {
@@ -330,147 +331,147 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
     {
       id: "silence-pressure",
       type: "choice",
-      eyebrow: "Scene 1 · Stille dage",
-      title: "The interview felt good. Now the inbox is quiet.",
-      learningGoal: "Choose a professional follow-up timing under uncertainty without letting anxiety write the message.",
+      eyebrow: "Scene 1 · The promised date",
+      title: "Use their timeline, not a universal waiting rule.",
+      learningGoal: "Decide when to follow up from what the recruiter actually said.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["process-patience"],
-      pressure: "Three days since the interview at a Copenhagen tech company. You want the role. Checking mail every hour makes you look desperate — to yourself.",
-      narrative: "You replay the conversation: the CTO asked about your Danish, you answered in Danish, she nodded. No red flags. But Danish hiring moves at its own pace. The silence is not rejection — it is process.",
-      dialogue: [{ speaker: "Internal voice", line: "Skal jeg skrive? Venter de på mig? Er det for tidligt?" }],
-      notice: "Danish hiring culture: silence is not no. Acting on anxiety can read as junior, even before the Danish is wrong.",
-      targetPhrases: ["vent 5 arbejdsdage", "kort, præcis opfølgning", "er det for tidligt", "skriv efter 2 dage"],
-      prompt: "What is the professional move right now?",
+      pressure: "At Thursday's interview, the recruiter said: Vi regner med at give besked senest tirsdag. It is now Wednesday afternoon and you have heard nothing.",
+      narrative: "The stated deadline has passed. A short follow-up now is tied to the process, not to an arbitrary number of days.",
+      dialogue: [{ speaker: "Recruiter (at the interview)", line: "Vi regner med at give besked senest tirsdag." }],
+      notice: "Follow up after the date they named. If no date was given, ask about the expected timeline instead of inventing one.",
+      targetPhrases: ["senest tirsdag", "opfølgning", "tidsplan"],
+      prompt: "What is the most proportionate move on Wednesday?",
       options: [
-        { id: "wait-calm", diagnostic: "process-calibrated-wait", label: "Vent 5 arbejdsdage. Skriv så en kort, præcis opfølgning.", detail: "calm, process-aware", correct: true, effects: { employerTone: 1, desperation: 0, professionalism: 1 }, feedback: "Diagnostic: you respected the process and kept the follow-up short, precise, and adult." },
-        { id: "wait-anxious", diagnostic: "anxious-early-followup", label: "Vent, men tjek mail hver time. Skriv efter 2 dage alligevel.", detail: "anxious waiting", correct: false, effects: { desperation: 1 }, feedback: "Diagnostic: the timing is still driven by anxiety. Even polite Danish can carry pressure when the process has barely started." },
-        { id: "push-now", diagnostic: "premature-interest-pressure", label: "Skriv i dag. Vis engagement. 'Jeg er meget interesseret.'", detail: "pushy", correct: false, effects: { employerTone: -1, desperation: 2, professionalism: -1 }, feedback: "Diagnostic: too early. You turned interest into pressure, which reads less like engagement and more like insecurity." }
+        { id: "wait-calm", diagnostic: "process-calibrated-wait", label: "Skriv en kort opfølgning i dag og henvis roligt til den tidsplan, de nævnte.", detail: "the stated date has passed", correct: true, effects: { employerTone: 1, desperation: 0, professionalism: 1 }, feedback: "The timing is easy to justify: you are following up after the date the recruiter gave you." },
+        { id: "wait-anxious", diagnostic: "anxious-early-followup", label: "Vent en uge mere, så du er helt sikker på ikke at virke utålmodig.", detail: "unnecessary delay", correct: false, effects: { desperation: 1 }, feedback: "Waiting is possible, but it ignores the timeline they gave you. A short message now is a normal way to ask for an update." },
+        { id: "push-now", diagnostic: "premature-interest-pressure", label: "Ring med det samme og bed om en endelig beslutning i dag.", detail: "the deadline passed, but the demand is disproportionate", correct: false, effects: { employerTone: -1, desperation: 2, professionalism: -1 }, feedback: "A follow-up is justified; demanding a decision today is not. Ask for an update on the process." }
       ],
-      carry: "Carry-forward: silence is data. When anxiety says 'venter de på mig?' and 'er det for tidligt?', the professional move is: vent 5 arbejdsdage, then skriv a kort, præcis opfølgning.",
+      carry: "Timing rule: use the employer's stated date. If there is no date, ask when they expect to decide.",
       tags: ["B2", "professional-culture", "silence", "patience", "register-awareness"]
     },
     {
       id: "email-register",
       type: "choice",
-      eyebrow: "Scene 2 · Opfølgningsmail",
-      title: "Day 5. You write the follow-up. Register decides the impression.",
-      learningGoal: "Open a post-interview email with formal warmth and active professional agency.",
+      eyebrow: "Scene 2 · Follow-up email",
+      title: "Open with thanks, context, and purpose.",
+      learningGoal: "Write a natural post-interview opening that sounds like a candidate, not a form letter.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Den Danske Ordbog / ordnet.dk"],
       masteryTags: ["professional-email-agency"],
-      pressure: "One email. It will be read by the hiring manager and forwarded to the CTO. Too casual = not serious. Too stiff = robotic. The sweet spot is warm professional Danish.",
-      narrative: "You open a blank compose window. Subject line: 'Opfølgning på interview — [Stilling]'. Now the body. Every word choice is a register signal.",
+      pressure: "You open the email thread from the recruiter. The company has used first names and Hej throughout the process.",
+      narrative: "A natural opening acknowledges the conversation and names the role you are following up on.",
       dialogue: [
-        { speaker: "You (drafting)", line: "Kære [Navn] / Hej [Navn] — hvad signalerer hvad?" },
-        { speaker: "CTO (memory)", line: "Vi lægger vægt på, at folk kan skrive professionelt på dansk." }
+        { speaker: "You (drafting)", line: "Hej Mette, tak for en god samtale i torsdags …" },
+        { speaker: "Recruiter (memory)", line: "Vi regner med at give besked senest tirsdag." }
       ],
-      notice: "Kære = formal, safe, expected. Hej = acceptable if they used du first, but risky in follow-up. B2 writers choose Kære unless du was explicitly agreed.",
-      targetPhrases: ["Kære [Navn]", "jeg tager stilling til", "jeres henvendelse", "god dialog i torsdags"],
+      notice: "Mirror the address form already used in the thread. In this thread, Hej Mette is professional and natural.",
+      targetPhrases: ["Hej Mette", "tak for en god samtale", "følge op på stillingen"],
       vocabFocus: ["henvendelse", "opfølgning"],
-      prompt: "Choose the opening + first sentence that hits warm professional Danish.",
+      prompt: "Choose the opening that fits this email thread.",
       options: [
-        { id: "formal-warm", diagnostic: "formal-warm-agency", label: "Kære [Navn],\n\nJeg tager stilling til jeres henvendelse og vil takke for en god dialog i torsdags.", detail: "formal, warm, owns the follow-up", correct: true, effects: { employerTone: 1, professionalism: 1, networkTrust: 1 }, feedback: "Diagnostic: strong. Kære sets the register, jeg tager stilling til gives agency, and god dialog makes the thanks specific." },
-        { id: "casual-generic", diagnostic: "casual-self-minimising", label: "Hej [Navn],\n\nTak for snakken i torsdags! Bare en hurtig opfølgning — jeg er super interesseret.", detail: "too casual, 'bare' weakens", correct: false, effects: { employerTone: -1, professionalism: -1, desperation: 1 }, feedback: "Diagnostic: bare en hurtig opfølgning minimises your own message, and super interesseret sounds junior in this channel." },
-        { id: "stiff-passive", diagnostic: "passive-agency-removal", label: "Kære [Navn],\n\nDer gives besked om, at jeg fortsat er interesseret i stillingen.", detail: "passive, evasive", correct: false, effects: { employerTone: -1, professionalism: 0 }, feedback: "Diagnostic: der gives besked hides the actor. You sound like a form letter, not like a candidate owning the follow-up." },
-        { id: "gender-trap", diagnostic: "common-gender-noun-trap", label: "Kære [Navn],\n\nMit store interesse i stillingen gør, at jeg følger op på vores dialog.", detail: "wrong gender on interesse", correct: false, weakTags: ["common-gender-noun"], effects: { employerTone: -1, professionalism: -1 }, feedback: "Diagnostic: interesse is common gender (en interesse). Write min interesse or min store interesse — not mit interesse." },
-        { id: "verb-trap", diagnostic: "strong-verb-past-trap", label: "Kære [Navn],\n\nJeg skrive for at følge op på vores dialog i torsdags og vise min fortsatte interesse.", detail: "infinitive instead of past skrev", correct: false, weakTags: ["strong-verb-past"], effects: { employerTone: -1, professionalism: -1 }, feedback: "Diagnostic: dialog i torsdags calls for past tense — jeg skrev, not jeg skrive. Strong verbs like skrive → skrev signal written fluency in formal email." }
+        { id: "formal-warm", diagnostic: "formal-warm-agency", label: "Hej Mette,\n\nTak for en god samtale i torsdags. Jeg vil gerne følge op på stillingen som projektleder.", detail: "natural address + specific purpose", correct: true, effects: { employerTone: 1, professionalism: 1, networkTrust: 1 }, feedback: "This matches the existing tone, names the interview, and makes the purpose of the email clear." },
+        { id: "casual-generic", diagnostic: "casual-self-minimising", label: "Hej Mette,\n\nTak for sidst! Ville bare lige høre, om der er nyt?", detail: "natural speech, but too little context", correct: false, effects: { employerTone: -1, professionalism: -1, desperation: 1 }, feedback: "The tone is friendly, but bare lige and er der nyt? make the message vague. Name the role and the interview." },
+        { id: "stiff-passive", diagnostic: "passive-agency-removal", label: "Kære Mette,\n\nDer rettes henvendelse vedrørende status på rekrutteringsprocessen.", detail: "grammatical but bureaucratic", correct: false, effects: { employerTone: -1, professionalism: 0 }, feedback: "This sounds like an official notice. A candidate can write directly: Jeg vil gerne følge op på stillingen …" },
+        { id: "gender-trap", diagnostic: "common-gender-noun-trap", label: "Hej Mette,\n\nMit store interesse i stillingen gør, at jeg følger op på vores dialog.", detail: "wrong gender on interesse", correct: false, weakTags: ["common-gender-noun"], effects: { employerTone: -1, professionalism: -1 }, feedback: "Interesse is an en-word: write min store interesse, not mit store interesse." },
+        { id: "verb-trap", diagnostic: "strong-verb-past-trap", label: "Hej Mette,\n\nJeg skrive for at følge op på vores dialog i torsdags.", detail: "infinitive instead of present tense", correct: false, weakTags: ["strong-verb-past"], effects: { employerTone: -1, professionalism: -1 }, feedback: "Use the present tense here: Jeg skriver for at følge op …" }
       ],
-      carry: "Carry-forward: 'Kære' signalerer formalitet; 'vi lægger vægt på', 'jeg tager stilling til', 'jeres henvendelse', 'takke', and a concrete reference to folk writing professionelt på dansk create professional warmth.",
+      carry: "Reliable opening: Hej [navn] + Tak for en god samtale [day] + Jeg vil gerne følge op på stillingen som …",
       tags: ["B2", "formal-email", "register", "tage-stilling-til", "particles"]
     },
     {
       id: "email-closing",
       type: "choice",
-      eyebrow: "Scene 2b · Mailafslutning",
-      title: "Same email. The closing line decides whether you sound pushy or invisible.",
-      learningGoal: "Close a follow-up email with calm process language — neither a deadline threat nor a vanishing act.",
+      eyebrow: "Scene 2b · Email closing",
+      title: "Ask for an update without inventing a new deadline.",
+      learningGoal: "Refer to the employer's timeline and ask a direct, proportionate question.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["consequence-aware-tone"],
-      pressure: "The opening was warm. The closing can still undo it: too direct reads desperate; too vague reads like you don't dare take space.",
-      narrative: "You have the opening and a short body. One closing sentence left before Send. The hiring manager will read this line twice — once alone, once forwarded to the CTO.",
+      pressure: "Your opening is ready. Now you need one sentence about the missed Tuesday update.",
+      narrative: "The strongest closing uses their own timeline and asks whether there is an update on the process.",
       dialogue: [
-        { speaker: "You (drafting)", line: "Jeg ser frem til… / Jeg forventer svar… / Må I endelig… — hvad signalerer hvad?" }
+        { speaker: "You (drafting)", line: "I nævnte, at I forventede en afklaring i denne uge …" }
       ],
-      notice: "Balanced closings name process (næste skridt, processen) without a deadline threat. Vague deferral (må I endelig vende tilbage) hides agency. Ultimatums (senest fredag + andre processer) leak desperation.",
-      targetPhrases: ["næste skridt i processen", "står til rådighed", "ser frem til at høre"],
+      notice: "Har I en opdatering på processen? is direct but not demanding. It asks for information, not a decision on your timetable.",
+      targetPhrases: ["I nævnte", "en afklaring", "en opdatering på processen"],
       vocabFocus: ["proces", "opfølgning"],
       prompt: "Choose the closing sentence that keeps warm professional Danish intact.",
       options: [
-        { id: "closing-balanced", diagnostic: "process-aware-closing", label: "Jeg ser frem til at høre om næste skridt i processen og står naturligvis til rådighed, hvis I har brug for yderligere oplysninger.", detail: "process + availability, no ultimatum", correct: true, effects: { professionalism: 1, employerTone: 1 }, feedback: "Diagnostic: strong. You name the process, offer availability, and stay calm — no deadline weapon, no disappearing act." },
-        { id: "closing-pushy", diagnostic: "deadline-pressure-closing", label: "Jeg forventer svar senest fredag, da jeg har andre processer kørende.", detail: "ultimatum + competing processes", correct: false, weakTags: ["consequence-aware-tone"], effects: { desperation: 2, employerTone: -1, professionalism: -1 }, feedback: "Diagnostic: senest fredag turns follow-up into pressure, and andre processer kørende signals you are already shopping exits. That reads junior, not colleague-ready." },
-        { id: "closing-vague", diagnostic: "deferential-vanishing-closing", label: "Hvis det passer jer, må I endelig vende tilbage, når det er muligt.", detail: "over-deferential, hides agency", correct: false, weakTags: ["professional-email-agency"], effects: { professionalism: -1, employerTone: -1 }, feedback: "Diagnostic: må I endelig vende tilbage makes you disappear behind politeness. You opened with agency — the closing should not surrender it." },
-        { id: "plural-trap", diagnostic: "irregular-plural-noun-trap", label: "Jeg ser frem til næste skridt efter vores to mødes og den gode dialog.", detail: "mødes instead of møder", correct: false, weakTags: ["irregular-plural-noun"], effects: { professionalism: -1, employerTone: -1 }, feedback: "Diagnostic: møde becomes møder in plural — not mødes (reflexive verb form). Irregular plural errors break credibility when the hiring manager forwards your mail." }
+        { id: "closing-balanced", diagnostic: "process-aware-closing", label: "I nævnte, at I forventede en afklaring senest tirsdag. Har I en opdatering på processen?", detail: "their timeline + direct question", correct: true, effects: { professionalism: 1, employerTone: 1 }, feedback: "This explains why you are following up and asks for an update without demanding an immediate decision." },
+        { id: "closing-pushy", diagnostic: "deadline-pressure-closing", label: "Jeg forventer derfor at få jeres endelige svar senest i morgen.", detail: "replaces their timeline with your ultimatum", correct: false, weakTags: ["consequence-aware-tone"], effects: { desperation: 2, employerTone: -1, professionalism: -1 }, feedback: "The employer missed its date, but this sentence imposes a new one without context. Ask for an update instead." },
+        { id: "closing-vague", diagnostic: "deferential-vanishing-closing", label: "Jeg ser frem til at høre fra jer, når I har mulighed for det.", detail: "polite, but does not ask what you need to know", correct: false, weakTags: ["professional-email-agency"], effects: { professionalism: -1, employerTone: -1 }, feedback: "This is courteous, but it hides the reason for following up. Refer to Tuesday and ask whether there is an update." },
+        { id: "plural-trap", diagnostic: "irregular-plural-noun-trap", label: "Tak for vores to mødes. Har I en opdatering på processen?", detail: "mødes instead of møder", correct: false, weakTags: ["irregular-plural-noun"], effects: { professionalism: -1, employerTone: -1 }, feedback: "The noun møde becomes møder in the plural. Mødes is a verb form." }
       ],
-      carry: "Carry-forward: close with næste skridt / processen plus til rådighed — not senest fredag ultimatums or må I endelig vanishing acts.",
+      carry: "A useful follow-up question is anchored in the timeline already agreed, not in your anxiety.",
       tags: ["B2", "formal-email", "closing", "process-language", "consequence-tone"]
     },
     {
       id: "linkedin-choice",
       type: "choice",
       eyebrow: "Scene 3 · LinkedIn request",
-      title: "You also want to connect with the CTO on LinkedIn. Different platform, different rules.",
+      title: "A networking note should add connection, not repeat the follow-up.",
       learningGoal: "Adapt from formal email register to a short, specific, low-pressure LinkedIn note.",
       sourceRefs: ["Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["platform-register-shift"],
-      pressure: "LinkedIn is semi-public. The note field is 300 characters. Too formal = awkward. Too casual = presumptuous. The CTO will see this alongside your email.",
-      narrative: "You click 'Connect' → 'Add a note'. The preview shows your profile headline: 'Senior Developer | Danish B2'. The note is your only context.",
+      pressure: "You also want to connect with the hiring manager. The email already asks about the process.",
+      narrative: "The networking note should mention the real conversation and leave the hiring decision out of it.",
       dialogue: [{ speaker: "You (drafting)", line: "Kære [Navn] / Hej [Navn] — tak for tiden / tak for interviewet?" }],
-      notice: "LinkedIn notes are read on mobile. First 120 chars must carry the signal. 'Kære' works but 'Hej' is standard here — if you reference the specific conversation.",
-      targetPhrases: ["Hej [Navn]", "tak for en god teknisk dialog", "vil gerne holde kontakt", "uanset udgang"],
+      notice: "Keep it short and specific. The invitation is about staying in contact, not getting a faster answer.",
+      targetPhrases: ["Hej Mette", "tak for en god samtale", "holde kontakten"],
       prompt: "Choose the LinkedIn note that complements, not duplicates, your email.",
       options: [
-        { id: "linkedin-good", diagnostic: "platform-specific-low-pressure", label: "Hej [Navn],\nTak for en god teknisk dialog i torsdags. Vil gerne holde kontakt uanset udgang.\n— [Dit navn]", detail: "specific, low-pressure, keeps door open", correct: true, effects: { networkTrust: 2, professionalism: 1 }, feedback: "Diagnostic: perfect. Uanset udgang lowers pressure, and teknisk dialog proves this is not a generic networking ping." },
-        { id: "linkedin-pushy", diagnostic: "platform-pressure-duplicate", label: "Kære [Navn],\nJeg skriver for at understrege min store interesse i stillingen. Håber på hurtigt svar.\n— [Dit navn]", detail: "duplicates email, pushy", correct: false, effects: { desperation: 1, networkTrust: -1 }, feedback: "Diagnostic: you duplicated the email and added hurry. Håber på hurtigt svar pressures a connection instead of opening one." },
-        { id: "linkedin-generic", diagnostic: "generic-low-signal", label: "Hej [Navn],\nTak for at tilføje mig. Ser frem til at følge jeres arbejde.\n— [Dit navn]", detail: "generic, low signal", correct: false, effects: { networkTrust: 0 }, feedback: "Diagnostic: safe but forgettable. No reference to the interview means the note could be sent to anyone." }
+        { id: "linkedin-good", diagnostic: "platform-specific-low-pressure", label: "Hej Mette, tak for en god samtale om jeres nye projekt. Jeg vil gerne holde kontakten. — [Dit navn]", detail: "specific conversation + simple invitation", correct: true, effects: { networkTrust: 2, professionalism: 1 }, feedback: "This note has a real reason for connecting and does not use the platform to chase the decision." },
+        { id: "linkedin-pushy", diagnostic: "platform-pressure-duplicate", label: "Hej Mette, jeg har netop sendt en opfølgning og håber på et hurtigt svar. — [Dit navn]", detail: "uses the connection request as a second follow-up", correct: false, effects: { desperation: 1, networkTrust: -1 }, feedback: "The note repeats the email and adds pressure in a second channel." },
+        { id: "linkedin-generic", diagnostic: "generic-low-signal", label: "Hej Mette, jeg vil gerne tilføje dig til mit netværk. — [Dit navn]", detail: "correct but could be sent to anyone", correct: false, effects: { networkTrust: 0 }, feedback: "This is harmless, but the interview gives you a better, more human reason to connect." }
       ],
-      carry: "Carry-forward: platform-specific register. Email = formal ownership. LinkedIn = 'tak for tiden/interviewet' plus 'vil gerne holde kontakt' in a specific, low-pressure, human tone.",
+      carry: "Let email handle the process. Let the networking note acknowledge the conversation and keep contact open.",
       tags: ["B2", "linkedin", "networking", "register-shift", "low-pressure"]
     },
     {
       id: "reply-consequence",
       type: "completion",
-      eyebrow: "Scene 4 · Svaret",
-      title: "The reply arrives. Your tone shaped what you got back.",
-      learningGoal: "Complete a hiring reply with both acknowledgement and process/next-step language.",
+      eyebrow: "Scene 4 · A call request",
+      title: "Reply with an acknowledgement and a concrete time.",
+      learningGoal: "Accept a short call request and state when you are available.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["reply-tone-reading"],
-      pressure: "Three scenarios. The hiring manager writes back. The Danish tells you where you stand — and whether your follow-up helped or hurt.",
-      narrative: "The email lands. Subject: 'Re: Opfølgning på interview'. You open it. The first sentence sets the tone.",
-      dialogue: [{ speaker: "Hiring Manager", line: "[Variabel svar baseret på dine valg]" }],
-      notice: "Professional Danish replies mirror your register. Warm professional → warm specific. Pushy → formal distance. Passive → generic template.",
-      targetPhrases: ["takke for din mail", "den gode dialog", "proces", "næste skridt"],
-      prompt: "Complete the hiring manager's reply. Include one acknowledgement signal and one process or next-step signal.",
-      prefix: "Kære [Dit navn],\n\n",
-      placeholder: "takke for din mail og den gode dialog...",
+      pressure: "Mette replies: Tak for din mail. Har du mulighed for en kort telefonsamtale i morgen?",
+      narrative: "Your reply should acknowledge the message and offer a time that can be put straight into the calendar.",
+      dialogue: [{ speaker: "Mette", line: "Har du mulighed for en kort telefonsamtale i morgen?" }],
+      notice: "Tak for beskeden opens naturally. Jeg kan tale … gives a complete answer.",
+      targetPhrases: ["tak for beskeden", "jeg kan tale", "klokken 10"],
+      prompt: "Complete your reply with thanks and one concrete time.",
+      prefix: "Hej Mette,\n\n",
+      placeholder: "Tak for beskeden. Jeg kan tale i morgen klokken 10.",
       acceptKeywordGroups: [
-        { name: "acknowledgement signal", keywords: ["takke", "tak", "dialog"] },
-        { name: "process or next step", keywords: ["proces", "tid", "høre", "fremtidig", "vurdere", "næste", "skridt"] }
+        { name: "acknowledgement", keywords: ["tak", "gerne", "ja"] },
+        { name: "time", keywords: ["klokken", "morgen", "formiddag", "eftermiddag", "10", "11", "12", "13", "14"] }
       ],
-      success: "Good. You constructed a reply that combines professional acknowledgement with process language.",
-      failure: "Include both parts: an acknowledgement signal (takke/tak/dialog) and a process or next-step signal (proces/tid/høre/fremtidig/vurdere/næste/skridt).",
+      success: "Good. Mette can acknowledge the reply and put a specific time in the calendar.",
+      failure: "Include both parts: an acknowledgement such as tak/ja/gerne and a concrete time such as i morgen klokken 10.",
       effects: {},
-      carry: "Carry-forward: their reply reflects your tone. You write the first draft of the relationship.",
+      carry: "A useful scheduling reply answers the actual question: yes, and when.",
       tags: ["B2", "reply-analysis", "mirroring", "professional-warmth"]
     },
     {
       id: "epilogue",
       type: "choice",
-      eyebrow: "Final · Udfald",
-      title: "The process concludes. Your Danish wrote the ending before the decision.",
-      learningGoal: "Name the principle that professional Danish takes agency while protecting the relationship.",
+      eyebrow: "Final · A rejection",
+      title: "Close this process without closing every future door.",
+      learningGoal: "Acknowledge a rejection and keep future contact possible in one concise reply.",
       sourceRefs: ["Den Danske Ordbog / ordnet.dk", "borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["professional-agency-principle"],
-      pressure: "Two weeks later. The decision email arrives. But the real outcome — your reputation in this network — was decided by how you handled the wait, the follow-up, and the connection.",
-      narrative: "Three candidates. Same skills. Different Danish. The hiring manager remembers: who wrote like a colleague, who wrote like a supplicant, who wrote like a template.",
-      dialogue: [{ speaker: "CTO (internal)", line: "Den der kunne skrive 'Jeg tager stilling til' — den kan vi bruge." }],
-      notice: "B2 Danish is not grammar. It is social operating system: register, particles, agency, patience. The language you choose writes the relationship before the contract.",
-      targetPhrases: ["professionel dansk tager ejerskab", "jeg tager stilling til", "der gives besked", "den kan vi bruge"],
-      prompt: "Which principle summarises the lesson?",
+      pressure: "A week later, Mette writes that they have chosen another candidate.",
+      narrative: "You can be disappointed and still answer in a way that leaves the relationship intact.",
+      dialogue: [{ speaker: "Mette", line: "Tak for din tid. Vi har valgt at gå videre med en anden kandidat." }],
+      notice: "A concise reply can thank them for the process, acknowledge the decision, and invite future contact without arguing the outcome.",
+      targetPhrases: ["tak for tilbagemeldingen", "skuffet", "have mig i tankerne"],
+      prompt: "Which reply sounds honest, professional, and open to future contact?",
       options: [
-        { id: "principle-owned", diagnostic: "agency-register-principle", label: "Professionel dansk tager ejerskab: 'Jeg tager stilling til' i stedet for 'Der gives besked'.", detail: "agency + register", correct: true, feedback: "Diagnostic: exactly. Agency in language signals agency in the role." },
-        { id: "principle-polite", diagnostic: "overformal-politeness", label: "Vær altid maksimalt høflig — 'Kære', 'venligst', 'hvis De vil være så venlig'.", detail: "over-politeness", correct: false, feedback: "Diagnostic: over-politeness reads as distance, not warmth. Danish professional warmth is direct, human, and concrete." },
-        { id: "principle-wait", diagnostic: "passive-waiting-strategy", label: "Skriv aldrig opfølgning. Venter viser tålmodighed.", detail: "passive", correct: false, feedback: "Diagnostic: waiting is not the same as strategy. A well-timed, well-toned follow-up signals competence." }
+        { id: "principle-owned", diagnostic: "agency-register-principle", label: "Tak for tilbagemeldingen og for et godt forløb. Jeg er selvfølgelig skuffet, men I må gerne have mig i tankerne, hvis en lignende stilling bliver ledig.", detail: "acknowledgement + honest reaction + future contact", correct: true, feedback: "This accepts the decision without pretending not to care and gives the recruiter a clear reason to remember you." },
+        { id: "principle-polite", diagnostic: "overformal-politeness", label: "Jeg tager afslaget til efterretning og takker for den fremsendte orientering.", detail: "grammatical but distant and bureaucratic", correct: false, feedback: "The message is correct, but it sounds like an administrative notice. A brief human thank-you fits this relationship better." },
+        { id: "principle-wait", diagnostic: "passive-waiting-strategy", label: "Tak. Jeg forstår dog ikke jeres beslutning og vil gerne have en ny vurdering.", detail: "challenges the decision instead of closing the process", correct: false, feedback: "It is reasonable to ask for feedback, but asking them to reverse the decision is a different and much more confrontational move." }
       ],
-      carry: "Unlocked B2 theme: Danish as professional operating system — professionel dansk tager ejerskab: 'Jeg tager stilling til' i stedet for 'Der gives besked', so a team thinks den kandidat kan vi bruge.",
+      carry: "You now have a complete follow-up sequence: use their date, write a specific email, answer scheduling clearly, and close the process well.",
       tags: ["B2", "reputation", "agency", "professional-identity", "reflection"]
     }
   ],
@@ -482,24 +483,24 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
   endings: [
     {
       id: "professional",
-      title: "Professional resonance",
-      narrative: "The reply comes on day 12: 'Vi vil gerne invitere dig til en sidste samtale med teamet.' The tone is warm, specific, and references your follow-up: 'Din mail om processen viste, at du forstår vores tempo.' You advance. The CTO accepts your LinkedIn with a personal note.",
-      danish: "Din tone åbnede døren, før CV'et gjorde det.",
-      carry: "B2 unlocked: warm professional Danish signals 'future colleague' before 'candidate'."
+      title: "Clear from start to finish",
+      narrative: "Your messages make the timeline and your availability easy to understand. Whatever the hiring decision, the exchange ends professionally.",
+      danish: "Tak for tilbagemeldingen og for et godt forløb.",
+      carry: "Reuse this structure for another role, but always replace the company, position, conversation, and promised date."
     },
     {
       id: "acceptable",
-      title: "Standard process",
-      narrative: "The reply comes on day 14: 'Tak for din opfølgning. Vi vurderer nu alle kandidater og vender tilbage inden næste uge.' Polite, correct, template. You are still in the process, but you did not stand out. LinkedIn request accepted without note.",
-      danish: "Du gik korrekt frem — men gjorde ikke indtryk.",
-      carry: "B2 unlocked: correct Danish keeps you in the room. Warm Danish gets you a seat at the table."
+      title: "Correct, with a few missing details",
+      narrative: "The recruiter can follow the exchange, but one message lacks the role, timeline, or exact availability and requires an extra question.",
+      danish: "Tak for din mail. Hvornår har du mulighed for at tale?",
+      carry: "Make the next reply complete enough to schedule: Ja tak, jeg kan tale i morgen klokken 10."
     },
     {
       id: "damaged",
-      title: "Tone cost",
-      narrative: "The reply comes on day 10 — a brief rejection: 'Vi har valgt en anden kandidat.' No specifics. Your LinkedIn request is ignored. Later you learn: the CTO mentioned 'den der pressede for meget' in the debrief. Your Danish wrote 'junior', not 'ready'.",
-      danish: "Forkert register koster mere end en afvisning.",
-      carry: "B2 unlocked: desperation in Danish is visible. Calm agency is the only signal that scales."
+      title: "The process becomes harder than it needs to be",
+      narrative: "Repeated pressure across email and networking messages makes it difficult for the recruiter to answer the practical question you actually have.",
+      danish: "Vi vender tilbage, når der er nyt i processen.",
+      carry: "Return to the employer's stated date and ask one question in one channel: Har I en opdatering på processen?"
     }
   ]
 };

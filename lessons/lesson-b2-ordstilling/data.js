@@ -1,13 +1,14 @@
 window.PLATA_LESSON_B2_ORDSTILLING = {
   id: "lesson-b2-ordstilling",
+  contentVersion: 2,
   level: "B1/B2",
-  title: "Hvem gør hvad — ordstilling i praksis",
-  subtitle: "A B1/B2 Danish lesson about word order: V2, inversion after fronted adverbials, and the difference between fordi and derfor.",
+  title: "Danish word order in a real workday",
+  subtitle: "Practise V2, indirect questions, and fordi/derfor while arranging meetings and explaining changes.",
   estimatedMinutes: 14,
   qualityTier: "gold",
   editorialFocus: "Choose correct Danish word order under real social pressure: inversion after fronted time/place, fordi + subordinate vs derfor + inversion, and ikke placement across clause types.",
   comicStoryboard: {
-    style: "Nordic editorial comic, restrained linework, muted slate-blue and ochre palette, Copenhagen conference interiors, adult learner perspective, no readable text inside the image, no logos, no watermarks.",
+    style: "Nordic editorial comic, restrained linework, muted slate-blue and ochre palette, modern Copenhagen workplaces, adult learner perspective, no readable text inside the image, no logos, no watermarks.",
     aspectRatio: "16:9",
     imageSize: "1K",
     panels: [
@@ -15,55 +16,55 @@ window.PLATA_LESSON_B2_ORDSTILLING = {
         id: "signup-email",
         sceneId: "signup-email",
         assetPath: "./assets/comic/signup-email.png",
-        alt: "A learner composes an email to confirm conference attendance while balancing word order in their head.",
-        prompt: "A single comic panel in a Copenhagen apartment. An adult B1 learner sits at a laptop composing an email to confirm conference attendance. Speech-thought bubbles show Danish sentence fragments being mentally reordered — focus on the cognitive effort of V2 placement. No readable text in the main image, no logos, no speech bubbles.",
+        alt: "A learner writes Monday's work plan and checks the word order after a time phrase.",
+        prompt: "A single comic panel in a Copenhagen apartment. An adult learner sits at a laptop writing where they will work on Monday. Use subtle abstract sentence blocks to suggest the verb moving before the subject after a time phrase. No readable text, logos, or speech bubbles.",
         sourceRefs: ["sproget.dk: ordstilling", "Den Danske Ordbog / ordnet.dk"],
         masteryTags: ["inversion-fronted-adverbial"],
-        mustInclude: ["laptop email", "thoughtful expression", "word order thinking"],
+        mustInclude: ["laptop message", "thoughtful expression", "Monday work-plan cue"],
         avoid: ["visible Danish sentences", "frustration", "brand logos"]
       },
       {
         id: "hotel-question",
         sceneId: "hotel-question",
         assetPath: "./assets/comic/hotel-question.png",
-        alt: "The learner asks at a hotel reception about the conference room location.",
-        prompt: "A single comic panel at a Copenhagen hotel reception. The learner speaks to a receptionist while asking about the conference room. Show polite uncertainty and the moment of constructing correct V2 word order mid-sentence. No readable text, no logos, no speech bubbles.",
+        alt: "A visitor asks an office receptionist where the customer meeting room is.",
+        prompt: "A single comic panel at a modern Copenhagen office reception. A visiting employee asks a receptionist where the customer meeting room is. Show polite uncertainty and an indirect question taking shape through abstract visual blocks. No readable text, logos, or speech bubbles.",
         sourceRefs: ["sproget.dk: ordstilling", "Den Danske Ordbog / ordnet.dk"],
         masteryTags: ["v2-placement"],
-        mustInclude: ["hotel reception", "learner speaking", "polite question"],
+        mustInclude: ["office reception", "learner speaking", "meeting-room cue"],
         avoid: ["angry customer", "readable Danish text", "brand logos"]
       },
       {
         id: "schedule-swap",
         sceneId: "schedule-swap",
         assetPath: "./assets/comic/schedule-swap.png",
-        alt: "A colleague asks to swap presentation slots at a conference, and the learner must respond using correct clause structure.",
-        prompt: "A single comic panel inside a Copenhagen conference venue. A colleague gestures toward a schedule board while asking about swapping presentation times. The learner listens and prepares to respond, mentally choosing between fordi + subordinate or derfor + inversion. No readable text, no logos, no speech bubbles.",
+        alt: "Two colleagues swap customer meetings and explain why the change works.",
+        prompt: "A single comic panel in a Copenhagen office. A colleague gestures toward a simple calendar board while asking to swap a morning customer meeting. The learner listens and prepares to give a reason. Suggest two clause patterns with abstract shapes only. No readable text, logos, or speech bubbles.",
         sourceRefs: ["sproget.dk: ledsætninger", "Den Danske Ordbog / ordnet.dk"],
         masteryTags: ["fordi-derfor-clause"],
-        mustInclude: ["schedule board", "colleague gesturing", "learner processing"],
+        mustInclude: ["meeting calendar", "colleague gesturing", "learner processing"],
         avoid: ["readable schedule text", "stress caricature", "brand logos"]
       },
       {
         id: "lunch-ordsilling",
         sceneId: "lunch-ordsilling",
         assetPath: "./assets/comic/lunch-ordsilling.png",
-        alt: "During a conference lunch, the learner navigates word order across multiple social channels.",
-        prompt: "A single comic panel during a conference lunch in Copenhagen. The learner sits at a table with colleagues while messages and conversations layer: a phone chat, a lunch dialogue, and a formal follow-up thought card. Show the learner choosing correct word order across different social channels. No readable text, no logos, no speech bubbles.",
+        alt: "The learner confirms the meeting swap in chat, speech, email, and a calendar note.",
+        prompt: "A single comic panel at a Copenhagen workplace. The learner confirms the same meeting change across four clear visual channels: a short phone chat, a spoken exchange with a colleague, a laptop email, and a calendar card. Show calm consistency rather than notification overload. No readable text, logos, or speech bubbles.",
         sourceRefs: ["sproget.dk: ordstilling", "sproget.dk: ledsætninger", "Den Danske Ordbog / ordnet.dk"],
         masteryTags: ["inversion-fronted-adverbial", "v2-placement", "fordi-derfor-clause"],
-        mustInclude: ["lunch table", "multiple communication channels", "composed focus"],
+        mustInclude: ["colleague conversation", "four communication channels", "composed focus"],
         avoid: ["chaos", "readable Danish", "brand logos"]
       },
       {
         id: "epilogue",
         sceneId: "epilogue",
         assetPath: "./assets/comic/epilogue.png",
-        alt: "The learner reflects on how correct word order shaped the conference experience.",
-        prompt: "A single comic panel showing the learner walking out of the Copenhagen conference venue, looking satisfied. Around them float gentle visual echoes of the scenes: an email, a reception desk, a schedule board, and a lunch conversation — subtly connected by sentence-structure lines. The visual idea is that correct word order creates clarity and connection. No readable text, no logos, no speech bubbles.",
+        alt: "The learner sends a clear plan for tomorrow after a day of workplace conversations.",
+        prompt: "A single comic panel at the end of a Copenhagen workday. The learner sends tomorrow's work-from-home plan while gentle visual echoes show a time phrase, a reason, and an online meeting as abstract connected shapes. The message feels easy for the team to understand. No readable text, logos, or speech bubbles.",
         sourceRefs: ["sproget.dk: ordstilling", "Den Danske Ordbog / ordnet.dk"],
         masteryTags: ["ordstilling-principle"],
-        mustInclude: ["reflective exit", "scene echoes", "clarity visualization"],
+        mustInclude: ["end-of-day message", "work-from-home cue", "clarity visualization"],
         avoid: ["trophy pose", "readable Danish", "brand logos"]
       }
     ]
@@ -82,12 +83,12 @@ window.PLATA_LESSON_B2_ORDSTILLING = {
     },
     "v2-placement": {
       competencyId: "register-control",
-      label: "V2 in questions and statements",
-      evidence: "The learner keeps the finite verb in second position when forming questions and replies.",
+      label: "Direct and indirect question order",
+      evidence: "The learner distinguishes verb–subject order in a direct question from subject–verb order inside an indirect question.",
       remediation: {
         sceneId: "hotel-question",
         cta: "Review Scene 2",
-        action: "Rerun the hotel scene and make verb the second element in every main clause, even when the first element is not the subject."
+        action: "Rerun the meeting-room scene and compare a direct question with the word order inside an indirect question."
       },
       sourceRefs: ["sproget.dk: ordstilling", "Den Danske Ordbog / ordnet.dk"]
     },
@@ -105,7 +106,7 @@ window.PLATA_LESSON_B2_ORDSTILLING = {
     "ordstilling-principle": {
       competencyId: "consequence-awareness",
       label: "Name the word order principle",
-      evidence: "The learner names the B1/B2 principle that word order is not grammar trivia — it determines clarity and social signal.",
+      evidence: "The learner can explain how word order helps a colleague identify the action, reason, and timing without rereading.",
       remediation: {
         sceneId: "epilogue",
         cta: "Review the principle",
@@ -119,7 +120,7 @@ window.PLATA_LESSON_B2_ORDSTILLING = {
     completionAnswers: {
       "hotel-question": {
         reject: ["værelse", "reception"],
-        accept: "hvor konferencelokalet ligger; jeg skal bruge salen i stueetagen"
+        accept: "hvor mødelokalet ligger; jeg skal deltage i kundemødet"
       }
     },
     paths: [
@@ -131,7 +132,7 @@ window.PLATA_LESSON_B2_ORDSTILLING = {
         expectedWeakMastery: [],
         actions: [
           { sceneId: "signup-email", optionId: "correct-inversion", expectCorrect: true },
-          { sceneId: "hotel-question", answer: "hvor konferencelokalet ligger; jeg skal bruge salen i stueetagen", expectCorrect: true },
+          { sceneId: "hotel-question", answer: "hvor mødelokalet ligger; jeg skal deltage i kundemødet", expectCorrect: true },
           { sceneId: "schedule-swap", optionId: "fordi-subordinate", expectCorrect: true },
           { sceneId: "lunch-ordsilling", optionId: "lunch-formal-correct", reasonId: "v2-rule-reason", expectCorrect: true },
           { sceneId: "epilogue", optionId: "principle-v2-social", expectCorrect: true }
@@ -145,7 +146,7 @@ window.PLATA_LESSON_B2_ORDSTILLING = {
         expectedWeakMastery: ["fordi-derfor-clause", "inversion-fronted-adverbial", "ordstilling-principle", "v2-placement"],
         actions: [
           { sceneId: "signup-email", optionId: "correct-inversion", expectCorrect: true },
-          { sceneId: "hotel-question", answer: "hvor konferencelokalet ligger; jeg skal bruge salen i stueetagen", expectCorrect: true },
+          { sceneId: "hotel-question", answer: "hvor mødelokalet ligger; jeg skal deltage i kundemødet", expectCorrect: true },
           { sceneId: "schedule-swap", optionId: "derfor-no-inversion", expectCorrect: false },
           { sceneId: "lunch-ordsilling", optionId: "lunch-email-near-miss", expectCorrect: false },
           { sceneId: "epilogue", optionId: "principle-grammar-only", expectCorrect: false }
@@ -210,97 +211,97 @@ window.PLATA_LESSON_B2_ORDSTILLING = {
     {
       id: "signup-email",
       type: "choice",
-      eyebrow: "Scene 1 · Tilmelding",
-      title: "The conference wants a confirmation. One sentence, one word order choice.",
-      learningGoal: "Apply inversion after a fronted time adverbial in a formal confirmation email.",
+      eyebrow: "Scene 1 · Monday's plan",
+      title: "Put the verb directly after the fronted time phrase.",
+      learningGoal: "Apply V2 after På mandag in a short work message.",
       sourceRefs: ["sproget.dk: ordstilling", "Den Danske Ordbog / ordnet.dk"],
       masteryTags: ["inversion-fronted-adverbial"],
-      pressure: "You registered for a Copenhagen design conference weeks ago. Now they ask you to confirm. The email template starts with a time — and your brain says 'På mandag jeg ankommer', but your B1 knows that is wrong.",
-      narrative: "The confirmation form has a short text field: 'Skriv en kort bekræftelse, så vi ved, du kommer.' You must write one correct Danish sentence. The time phrase comes first.",
-      dialogue: [{ speaker: "Conference team", line: "Bekræft venligst din deltagelse med en kort sætning." }],
-      notice: "Danish main clauses: the verb is always the second element. Not the first, not the third — second. When you start with 'På mandag', the verb must follow immediately.",
-      targetPhrases: ["på mandag ankommer jeg", "på mandag jeg ankommer", "jeg glæder mig til", "bekræft venligst din deltagelse"],
-      prompt: "Choose the sentence that follows Danish V2 word order.",
+      pressure: "Your manager asks everyone to state where they will work on Monday. The message must begin with På mandag.",
+      narrative: "When a time phrase comes first in a Danish main clause, the finite verb comes next: På mandag + arbejder + jeg.",
+      dialogue: [{ speaker: "Manager", line: "Skriv gerne, hvor du arbejder på mandag." }],
+      notice: "Treat På mandag as the first sentence element. Arbejder is the second; jeg follows the verb.",
+      targetPhrases: ["på mandag arbejder jeg", "arbejder hjemme"],
+      prompt: "Choose the grammatical sentence that starts with På mandag.",
       options: [
-        { id: "correct-inversion", diagnostic: "applies-inversion-after-fronted-time", label: "På mandag ankommer jeg til konferencen og glæder mig.", detail: "correct V2 inversion", correct: true, effects: { ordstillingClarity: 1, socialConnection: 1, learnerConfidence: 1 }, feedback: "Diagnostic: correct inversion. The fronted time 'På mandag' is followed by the verb 'ankommer', then the subject 'jeg'. Danish V2 respects this order even when English would not." },
-        { id: "no-inversion", diagnostic: "follows-english-word-order", label: "På mandag jeg ankommer til konferencen og glæder mig.", detail: "no inversion — English word order", correct: false, effects: { ordstillingClarity: -1 }, feedback: "Diagnostic: this is the classic B1 near-miss. Every word is correct, but the word order is English, not Danish. The verb 'ankommer' must come before 'jeg'." },
-        { id: "reverse-order", diagnostic: "misplaces-verb-and-object", label: "Jeg ankommer på mandag til konferencen og glæder mig.", detail: "correct but avoids inversion", correct: false, effects: { ordstillingClarity: 0, learnerConfidence: -1 }, feedback: "Diagnostic: grammatical but avoids the challenge. Starting with the subject avoids inversion, but you miss the chance to practice the fronted-adverbial pattern the prompt required." }
+        { id: "correct-inversion", diagnostic: "applies-inversion-after-fronted-time", label: "På mandag arbejder jeg hjemme.", detail: "På mandag + verb + subject", correct: true, effects: { ordstillingClarity: 1, socialConnection: 1, learnerConfidence: 1 }, feedback: "Correct. Arbejder comes immediately after the fronted time phrase, before jeg." },
+        { id: "no-inversion", diagnostic: "follows-english-word-order", label: "På mandag jeg arbejder hjemme.", detail: "subject incorrectly comes before the verb", correct: false, effects: { ordstillingClarity: -1 }, feedback: "The words are useful, but Danish V2 requires På mandag arbejder jeg …" },
+        { id: "reverse-order", diagnostic: "misplaces-verb-and-object", label: "Jeg arbejder hjemme på mandag.", detail: "grammatical, but does not follow the required opening", correct: false, effects: { ordstillingClarity: 0, learnerConfidence: -1 }, feedback: "This sentence is fully grammatical. It is not the answer to this particular task because the message must begin with På mandag. When you start with the subject, no inversion is needed." }
       ],
-      carry: "Carry-forward: V2 means the verb is always the second building block. 'På mandag' + 'ankommer' + 'jeg'. Time first, then the verb, then the subject — even when your English intuition disagrees.",
+      carry: "Reusable pattern: I morgen/På mandag/Efter frokost + verb + subject.",
       tags: ["B1", "B2", "ordstilling", "V2", "inversion", "formal-email"]
     },
     {
       id: "hotel-question",
       type: "completion",
-      eyebrow: "Scene 2 · Receptionen",
-      title: "You arrive. The conference is in a room you cannot find.",
-      learningGoal: "Form a correct V2 question and statement when asking for directions.",
+      eyebrow: "Scene 2 · The meeting room",
+      title: "Keep statement order inside an indirect question.",
+      learningGoal: "Ask where a room is using Kan du sige mig, hvor … ligger?",
       sourceRefs: ["sproget.dk: ordstilling", "Den Danske Ordbog / ordnet.dk"],
       masteryTags: ["v2-placement"],
-      pressure: "You are standing in the hotel lobby. The conference starts in 10 minutes. The receptionist is friendly but busy. One wrong word order and the sentence collapses.",
-      narrative: "You know the Danish words: 'konferencelokale', 'stueetagen', 'ligge'. But arranging them in the right order under time pressure is the real test.",
+      pressure: "You are visiting another office. The customer meeting starts in ten minutes, but you cannot find the room.",
+      narrative: "After kan du sige mig, the indirect question uses hvor + subject + verb: hvor mødelokalet ligger.",
       dialogue: [
-        { speaker: "Receptionist", line: "Velkommen. Kan jeg hjælpe?" },
-        { speaker: "You", line: "Ja, jeg leder efter konferencelokalet." }
+        { speaker: "Receptionist", line: "Hej, kan jeg hjælpe?" },
+        { speaker: "You", line: "Ja, jeg leder efter mødelokalet." }
       ],
-      notice: "Questions with 'hvor' already have V2: 'Hvor ligger konferencelokalet?' In statements, even after a fronted 'det' or location, the verb stays second.",
-      targetPhrases: ["hvor konferencelokalet ligger", "jeg skal bruge", "salen i stueetagen", "sige mig"],
-      prompt: "Complete the sentence with correct V2 order. Include a location reference and a purpose.",
+      notice: "Direct question: Hvor ligger mødelokalet? Indirect question: Kan du sige mig, hvor mødelokalet ligger?",
+      targetPhrases: ["hvor mødelokalet ligger", "jeg skal deltage", "kundemødet"],
+      prompt: "Complete the request with the room and why you need it.",
       prefix: "Undskyld, kan du sige mig,",
-      placeholder: "hvor konferencelokalet ligger; jeg skal bruge salen i stueetagen",
+      placeholder: "hvor mødelokalet ligger; jeg skal deltage i kundemødet",
       acceptKeywordGroups: [
-        { name: "location reference", keywords: ["hvor", "lokale", "sal", "etage", "stueetagen", "konferencelokalet"] },
-        { name: "purpose or need", keywords: ["skal", "bruge", "skal bruge", "skal finde", "skal være"] }
+        { name: "location reference", keywords: ["hvor", "lokale", "mødelokale", "mødelokalet", "sal", "etage"] },
+        { name: "purpose or need", keywords: ["skal", "deltage", "møde", "kundemøde", "bruge"] }
       ],
-      success: "Godt. Your sentence has correct V2 word order: the verb ('kan') stays second after 'Undskyld', and the completion follows natural Danish question structure.",
-      failure: "Include both a location reference (hvor/lokale/sal/etage/stueetagen/konferencelokalet) and a purpose or need (skal/bruge/skal bruge/skal finde/skal være).",
+      success: "Good. The direct question begins kan du, while the embedded question uses hvor + subject + verb: hvor mødelokalet ligger.",
+      failure: "Include both a location reference (hvor/lokale/mødelokale/etage) and a purpose or need (skal/deltage/møde/bruge/finde).",
       effects: { ordstillingClarity: 1, learnerConfidence: 1 },
-      carry: "Carry-forward: V2 is automatic in Danish questions — 'Kan du sige mig, hvor konferencelokalet ligger?' keeps the verb second. When you add 'jeg skal bruge salen i stueetagen', the verb 'skal' stays second after the subject.",
-      tags: ["B1", "B2", "ordstilling", "V2", "question-structure", "hotel"]
+      carry: "Compare the pair: Hvor ligger lokalet? → Kan du sige mig, hvor lokalet ligger?",
+      tags: ["B1", "B2", "ordstilling", "V2", "question-structure", "workplace"]
     },
     {
       id: "schedule-swap",
       type: "choice",
-      eyebrow: "Scene 3 · Programbytte",
-      title: "A colleague asks to swap slots. The reason forks into two different sentence types.",
+      eyebrow: "Scene 3 · Swap a meeting",
+      title: "Fordi and derfor express the same logic with different word order.",
       learningGoal: "Distinguish fordi + subordinate clause from derfor + inversion when giving a reason.",
       sourceRefs: ["sproget.dk: ledsætninger", "Den Danske Ordbog / ordnet.dk"],
       masteryTags: ["fordi-derfor-clause"],
-      pressure: "Your colleague Mikkel has a flight at 16:00 and wants your morning slot. You can swap — but your reason must use correct Danish clause structure. One word order choice determines whether you sound like a fluent speaker or a B1 learner.",
-      narrative: "Mikkel explains his situation: his return flight is early. You are happy to swap because your talk is ready. But when you open your mouth, the sentence splits into two possible Danish structures.",
+      pressure: "Mikkel asks whether you can take the 9:00 customer meeting. You can, because you do not have to deliver another presentation that morning.",
+      narrative: "The reason can follow fordi inside one sentence, or therefore can start a new main clause with derfor.",
       dialogue: [
-        { speaker: "Mikkel", line: "Min flyver går kl. 16. Kan vi bytte? Jeg tager gerne din senere tid." },
+        { speaker: "Mikkel", line: "Kan du tage kundemødet klokken 9? Så tager jeg dit møde efter frokost." },
         { speaker: "You", line: "Selvfølgelig. Jeg kan godt bytte, ..." }
       ],
       notice: "The rule: 'fordi' starts a subordinate clause where 'ikke' goes before the verb. 'Derfor' starts a main clause where 'ikke' goes after the verb — and inversion follows 'derfor'.",
-      targetPhrases: ["fordi jeg ikke skal præsentere først", "jeg skal ikke præsentere først", "derfor kan vi bytte", "selvfølgelig kan vi bytte"],
+      targetPhrases: ["fordi jeg ikke skal præsentere om morgenen", "derfor kan vi bytte", "selvfølgelig"],
       prompt: "Complete the sentence with correct Danish clause structure.",
       options: [
-        { id: "fordi-subordinate", diagnostic: "fordi-triggers-subordinate-order", label: "Jeg kan godt bytte, fordi jeg ikke skal præsentere først.", detail: "correct subordinate clause after fordi", correct: true, effects: { ordstillingClarity: 1, socialConnection: 1, learnerConfidence: 1 }, feedback: "Diagnostic: correct. After 'fordi', the subordinate clause places 'ikke' before 'skal'. This is the rule: fordi + subject + ikke + verb." },
-        { id: "derfor-inversion", diagnostic: "derfor-triggers-inversion", label: "Jeg skal ikke præsentere først. Derfor kan vi bytte.", detail: "correct inversion after derfor", correct: false, nearMiss: false, grammarStatus: "grammatical", pragmaticStatus: "different-structure", feedback: "Diagnostic: grammatically correct but a different structure. 'Derfor' triggers a new main clause with inversion: 'Derfor kan vi bytte'. The prompt asks for a completion of 'Jeg kan godt bytte, ...', which expects a fordi subordinate clause." },
-        { id: "derfor-no-inversion", diagnostic: "derfor-without-inversion", label: "Jeg skal ikke præsentere først. Derfor vi kan bytte.", detail: "no inversion after derfor", correct: false, effects: { ordstillingClarity: -1, socialConnection: -1 }, feedback: "Diagnostic: near miss. 'Derfor' must trigger inversion just like any fronted element. 'Derfor kan vi bytte' is correct; 'Derfor vi kan bytte' breaks V2." }
+        { id: "fordi-subordinate", diagnostic: "fordi-triggers-subordinate-order", label: "Jeg kan godt bytte, fordi jeg ikke skal præsentere om morgenen.", detail: "fordi + subject + ikke + verb", correct: true, effects: { ordstillingClarity: 1, socialConnection: 1, learnerConfidence: 1 }, feedback: "Correct. In the subordinate clause, ikke comes before skal." },
+        { id: "derfor-inversion", diagnostic: "derfor-triggers-inversion", label: "Jeg skal ikke præsentere om morgenen. Derfor kan vi bytte.", detail: "also grammatical, but not a completion of the given sentence", correct: false, nearMiss: false, grammarStatus: "grammatical", pragmaticStatus: "different-structure", feedback: "This is fully grammatical: derfor begins a new main clause and can comes before vi. The task asks you to complete the existing fordi sentence." },
+        { id: "derfor-no-inversion", diagnostic: "derfor-without-inversion", label: "Jeg skal ikke præsentere om morgenen. Derfor vi kan bytte.", detail: "missing inversion after derfor", correct: false, effects: { ordstillingClarity: -1, socialConnection: -1 }, feedback: "After derfor, the verb comes before the subject: Derfor kan vi bytte." }
       ],
-      carry: "Carry-forward: fordi and derfor are not interchangeable. 'Fordi jeg ikke skal præsentere først' uses subordinate word order (ikke before verb). 'Derfor kan vi bytte' uses main clause with inversion (verb before subject). One logic, two Danish structures.",
+      carry: "Keep both frames: fordi jeg ikke skal … / Derfor kan vi …",
       tags: ["B1", "B2", "ordstilling", "fordi", "derfor", "subordinate-clause", "inversion"]
     },
     {
       id: "lunch-ordsilling",
       type: "flagship-chain",
-      eyebrow: "Scene 4 · Frokostsprog",
-      title: "Same word-order choice, four different channels.",
-      learningGoal: "Transfer correct Danish word order across formal email, lunch chat, phone message, and presentation context without losing grammatical accuracy.",
+      eyebrow: "Scene 4 · Confirm the change",
+      title: "Keep V2 when the same update moves from chat to email.",
+      learningGoal: "Confirm a meeting change in chat, spoken Danish, and a formal email while keeping the sentence grammatical.",
       sourceRefs: ["sproget.dk: ordstilling", "sproget.dk: ledsætninger", "Den Danske Ordbog / ordnet.dk"],
       masteryTags: ["inversion-fronted-adverbial", "v2-placement", "fordi-derfor-clause"],
-      pressure: "The schedule swap created a ripple. Now you need to confirm it in four different channels — email to the organizer, chat to Mikkel, a quick word at lunch with your manager, and a bio note for the program. Same content, different word order traps.",
-      narrative: "You agreed to swap. But agreeing is not the same as confirming. Each channel has a different social weight, and word order errors in the wrong channel can undo the clarity you just built.",
+      pressure: "Mikkel agrees to swap. Your manager now needs a written confirmation of who attends the 9:00 customer meeting.",
+      narrative: "The facts stay the same across channels, but the email needs a complete sentence that makes the agreement and action unambiguous.",
       dialogue: [
-        { speaker: "Mikkel", line: "Super, så bytter vi! Jeg skriver til arrangøren." },
-        { speaker: "Manager", line: "Hører jeg, at I har omrokkeret programmet?" }
+        { speaker: "Mikkel", line: "Super, så bytter vi. Jeg tager dit møde efter frokost." },
+        { speaker: "Manager", line: "Kan du bekræfte ændringen på mail?" }
       ],
-      notice: "Word order errors look different in every channel. In email, a missing inversion looks sloppy. In chat, the same error looks natural. B2 means knowing when V2 matters and when it can bend.",
-      targetPhrases: ["efter aftale bekræfter jeg", "jeg skriver til arrangøren", "det kan vi sagtens", "vi har byttet programtid"],
+      notice: "Formal and informal Danish use the same V2 rule. The channel changes how much context you include, not whether the verb stays second.",
+      targetPhrases: ["efter aftale med Mikkel", "bekræfter jeg", "kundemødet klokken 9"],
       prompt: "Choose the sentence that fits the channel and follows correct Danish word order.",
-      intent: "Confirm the schedule swap in the right register without breaking V2.",
+      intent: "Confirm who takes the 9:00 meeting in the right register without breaking V2.",
       archetypes: [
         "consequence-exercise",
         "near-miss",
@@ -311,31 +312,31 @@ window.PLATA_LESSON_B2_ORDSTILLING = {
       ],
       memoryCue: {
         signal: "inversion-fronted-adverbial",
-        copy: "Memory-backed recurrence: you already handled inversion after fronted adverbials in the email scene. Now apply the same rule in a channel where it may feel less natural."
+        copy: "You used På mandag + verb + subject earlier. Apply the same order after Efter aftale med Mikkel."
       },
       channelVersions: [
-        { id: "email", label: "Email to organizer", sample: "Efter aftale med Mikkel bekræfter jeg programændringen.", risk: "Formal channel; missing inversion after 'Efter aftale' reads as unprofessional." },
-        { id: "chat", label: "Chat to Mikkel", sample: "Det kan vi sagtens. Jeg snakker med arrangøren.", risk: "Low-stakes channel; word order matters less, but V2 still applies." },
-        { id: "lunch", label: "Lunch with manager", sample: "Ja, vi har byttet, fordi Mikkel har en tidlig flyver.", risk: "Semi-formal; fordi triggers subordinate order, but many B1 learners forget." },
-        { id: "bio", label: "Program bio note", sample: "Sproginteresse er grunden til, at jeg deltager.", risk: "Public channel; 'at' subordinate clause must follow correct word order." }
+        { id: "email", label: "Email to manager", sample: "Efter aftale med Mikkel bekræfter jeg, at jeg tager kundemødet klokken 9.", risk: "The manager needs a complete, unambiguous record." },
+        { id: "chat", label: "Chat to Mikkel", sample: "Super, jeg tager mødet klokken 9.", risk: "The shared context allows a shorter message, but V2 still applies." },
+        { id: "lunch", label: "Spoken update", sample: "Ja, vi har byttet, fordi Mikkel tager mit møde senere.", risk: "The reason uses subordinate word order after fordi." },
+        { id: "bio", label: "Calendar note", sample: "Efter aftale deltager jeg i kundemødet klokken 9.", risk: "A short record still needs inversion after Efter aftale." }
       ],
       options: [
         {
           id: "lunch-formal-correct",
-          channel: "Email to organizer",
+          channel: "Email to manager",
           diagnostic: "applies-inversion-after-fronted-adverbial-in-formal-channel",
-          label: "Efter aftale med Mikkel bekræfter jeg, at vi bytter programtid.",
+          label: "Efter aftale med Mikkel bekræfter jeg, at jeg tager kundemødet klokken 9.",
           detail: "correct inversion, formal register",
           correct: true,
           grammarStatus: "grammatical",
           pragmaticStatus: "channel-appropriate",
-          consequence: "The organizer sees a professional confirmation with correct V2. The fronted 'Efter aftale' is followed by 'bekræfter', then 'jeg' — textbook inversion in a formal channel.",
+          consequence: "Your manager can see the agreement, the person responsible, and the time in one grammatical sentence.",
           effects: { ordstillingClarity: 1, socialConnection: 1 },
-          feedback: "Diagnostic: strong. 'Efter aftale med Mikkel' fronts a time phrase, and 'bekræfter' follows immediately before 'jeg'. Formal V2 executed correctly.",
+          feedback: "Correct. Efter aftale med Mikkel is followed by the verb bekræfter and then the subject jeg.",
           repairLadder: [
-            { stage: "raw intent", text: "I swap times with Mikkel." },
-            { stage: "safer Danish", text: "Jeg bekræfter, at vi bytter programtid." },
-            { stage: "channel-ready Danish", text: "Efter aftale med Mikkel bekræfter jeg, at vi bytter programtid." }
+            { stage: "raw intent", text: "I take Mikkel's 9:00 meeting." },
+            { stage: "safer Danish", text: "Jeg bekræfter, at jeg tager mødet klokken 9." },
+            { stage: "channel-ready Danish", text: "Efter aftale med Mikkel bekræfter jeg, at jeg tager kundemødet klokken 9." }
           ],
           reasonPrompt: "Why does this sentence work in the formal email channel?",
           reasonOptions: [
@@ -346,66 +347,66 @@ window.PLATA_LESSON_B2_ORDSTILLING = {
         },
         {
           id: "lunch-email-near-miss",
-          channel: "Email to organizer",
+          channel: "Email to manager",
           diagnostic: "correct-meaning-no-inversion-after-fronted-phrase",
-          label: "Efter aftale med Mikkel jeg bekræfter, at vi bytter programtid.",
+          label: "Efter aftale med Mikkel jeg bekræfter, at jeg tager kundemødet klokken 9.",
           detail: "B1 near miss — missing inversion",
           correct: false,
           nearMiss: true,
           grammarStatus: "ungrammatical",
           pragmaticStatus: "channel-damaging",
-          consequence: "The organizer understands the message but notes the word order error. In a formal email, missing inversion after a fronted adverbial weakens the professional impression.",
+          consequence: "The manager can infer the meaning, but the sentence stumbles immediately after the opening phrase.",
           effects: { ordstillingClarity: -1, socialConnection: -1 },
-          feedback: "Diagnostic: near miss. Every word is correct Danish, but the word order is English. 'Efter aftale' + 'jeg' + 'bekræfter' breaks V2. The verb 'bekræfter' must come second.",
+          feedback: "Near miss. Efter aftale + jeg + bekræfter breaks V2. Move bekræfter before jeg.",
           repairLadder: [
-            { stage: "raw phrase", text: "Efter aftale med Mikkel jeg bekræfter byttet." },
-            { stage: "safer Danish", text: "Jeg bekræfter byttet efter aftale med Mikkel." },
-            { stage: "channel-ready Danish", text: "Efter aftale med Mikkel bekræfter jeg, at vi bytter programtid." }
+            { stage: "raw phrase", text: "Efter aftale med Mikkel jeg tager mødet." },
+            { stage: "safer Danish", text: "Jeg tager mødet efter aftale med Mikkel." },
+            { stage: "channel-ready Danish", text: "Efter aftale med Mikkel bekræfter jeg, at jeg tager kundemødet klokken 9." }
           ]
         },
         {
           id: "lunch-chat-wrong",
           channel: "Chat to Mikkel",
           diagnostic: "subordinate-word-order-in-main-clause",
-          label: "Vi kan sagtens bytte, fordi jeg ikke skal præsentere først alligevel.",
-          detail: "grammatical but wrong channel for the message",
+          label: "Vi kan sagtens bytte, fordi jeg ikke skal præsentere om morgenen.",
+          detail: "grammatical, but does not confirm the agreed action",
           correct: false,
           nearMiss: true,
           grammarStatus: "grammatical",
           pragmaticStatus: "wrong-channel-for-message",
-          consequence: "The sentence is grammatically correct but belongs in a different channel. Chat to Mikkel should be shorter and more direct — this level of formal reasoning fits email better.",
+          consequence: "Mikkel understands the reason, but the message still does not say who takes the 9:00 meeting.",
           effects: { socialConnection: 0 },
-          feedback: "Diagnostic: the word order is correct, but the channel fit is off. In chat, Mikkel already knows why. A short 'Selvfølgelig, det ordner vi' fits better than a full subordinate clause.",
+          feedback: "The word order is correct, but the practical confirmation is missing. Say which meeting you will take.",
           repairLadder: [
-            { stage: "raw intent", text: "Yes I can swap, Mikkel." },
-            { stage: "safer Danish", text: "Selvfølgelig, det ordner vi." },
-            { stage: "channel-ready Danish", text: "Selvfølgelig, vi bytter bare. Jeg ordner det med arrangøren." }
+            { stage: "raw intent", text: "Yes, we can swap." },
+            { stage: "safer Danish", text: "Selvfølgelig, jeg tager mødet." },
+            { stage: "channel-ready Danish", text: "Super, jeg tager kundemødet klokken 9." }
           ]
         }
       ],
-      carry: "Carry-forward: V2 is not optional in formal channels. 'Efter aftale med Mikkel bekræfter jeg' — fronted time phrase, then verb, then subject. In chat, informality can mask errors, but email, bio, and spoken Danish at work expect textbook word order.",
+      carry: "The short version and the formal version share the same grammar. Add context for the channel; do not remove V2.",
       tags: ["B1", "B2", "ordstilling", "V2", "inversion", "register", "channel-transfer"]
     },
     {
       id: "epilogue",
       type: "choice",
-      eyebrow: "Final · Ordstilling",
-      title: "The conference went well. The sentences you chose wrote your Danish identity.",
-      learningGoal: "Name the B1/B2 principle: word order is not grammar trivia — it determines clarity and social signal.",
+      eyebrow: "Final · A new message",
+      title: "Combine V2 and subordinate word order without prompts.",
+      learningGoal: "Write a two-sentence work update using a fronted time phrase, fordi, and derfor.",
       sourceRefs: ["sproget.dk: ordstilling", "Den Danske Ordbog / ordnet.dk"],
       masteryTags: ["ordstilling-principle"],
-      pressure: "The conference is over. You sent emails, asked questions, swapped slots, and chatted at lunch. Nobody corrected your Danish. But the people you spoke to noticed every sentence that flowed — and every sentence that hesitated.",
-      narrative: "Danish word order is not a test you pass once. It is a social signal you send every time you open your mouth. V2 tells the listener: this person controls the language.",
-      dialogue: [{ speaker: "Mikkel (at the end)", line: "Din dansk er blevet virkelig god. Sætningerne sidder lige i skabet." }],
-      notice: "Correct word order is not just grammatik — it er et socialt signal. V2 skaber klarhed. It is the difference between 'almost Danish' and 'Danish'.",
-      targetPhrases: ["ordstilling er ikke grammatik", "det er et socialt signal", "V2 skaber klarhed", "sætningerne sidder lige i skabet"],
-      prompt: "Which principle best summarises the lesson?",
+      pressure: "At the end of the day, you send your team tomorrow's plan: you will work from home because you do not need to be in the office, so you will join the meeting online.",
+      narrative: "This transfer task combines all three patterns in a fresh context.",
+      dialogue: [{ speaker: "Team chat", line: "Hvor arbejder du i morgen, og hvordan deltager du i mødet?" }],
+      notice: "I morgen triggers V2. Fordi places ikke before the verb. Derfor begins a new main clause with the verb before the subject.",
+      targetPhrases: ["i morgen arbejder jeg", "fordi jeg ikke skal", "derfor deltager jeg"],
+      prompt: "Which two-sentence update gets all three patterns right?",
       options: [
-        { id: "principle-v2-social", diagnostic: "word-order-as-social-signal", label: "Ordstilling er ikke bare grammatik — det er et socialt signal, der viser, at du kan sproget.", detail: "word order as social signal", correct: true, feedback: "Diagnostic: exactly. Word order is not a rule to memorise — it is a signal you send every sentence. V2 tells the listener you control the language." },
-        { id: "principle-grammar-only", diagnostic: "word-order-as-rule-memorisation", label: "Husk at sætte verbet på andenpladsen. Det er den vigtigste regel.", detail: "grammar-only takeaway", correct: false, feedback: "Diagnostic: true but incomplete. V2 is a rule, but the lesson shows that word order lives inside social situations — email, hotel, schedule swap, lunch." },
-        { id: "principle-vocab-only", diagnostic: "words-over-structure", label: "Ordforråd er vigtigere end ordstilling. Hvis ordene er rigtige, forstår folk dig.", detail: "vocabulary-only takeaway", correct: false, feedback: "Diagnostic: people will understand you with wrong word order — but they will also register you as a learner. Correct word order is what makes Danish feel like your language." }
+        { id: "principle-v2-social", diagnostic: "word-order-as-social-signal", label: "I morgen arbejder jeg hjemme, fordi jeg ikke skal være på kontoret. Derfor deltager jeg online i mødet.", detail: "V2 + subordinate order + inversion", correct: true, feedback: "Correct. Arbejder follows I morgen, ikke comes before skal after fordi, and deltager comes before jeg after Derfor." },
+        { id: "principle-grammar-only", diagnostic: "word-order-as-rule-memorisation", label: "I morgen jeg arbejder hjemme, fordi jeg ikke skal være på kontoret. Derfor deltager jeg online.", detail: "missing V2 in the first main clause", correct: false, feedback: "The fordi and derfor clauses work, but the opening needs inversion: I morgen arbejder jeg …" },
+        { id: "principle-vocab-only", diagnostic: "words-over-structure", label: "I morgen arbejder jeg hjemme, fordi jeg skal ikke være på kontoret. Derfor jeg deltager online.", detail: "main-clause order used in the wrong places", correct: false, feedback: "After fordi, write jeg ikke skal. After Derfor, write deltager jeg." }
       ],
-      carry: "Unlocked B1/B2 theme: Danish word order as social operating system — not grammar trivia, but a signal of fluency, clarity, and connection. Sætningerne sidder lige i skabet.",
+      carry: "Pocket check: time first → verb before subject; fordi → ikke before verb; derfor → verb before subject.",
       tags: ["B1", "B2", "ordstilling", "reflection", "social-signal", "fluency"]
     }
   ],
@@ -417,24 +418,24 @@ window.PLATA_LESSON_B2_ORDSTILLING = {
   endings: [
     {
       id: "klar",
-      title: "Clear word order",
-      narrative: "The conference ended with a warm handshake from Mikkel and a nod from the organizer: 'God kommunikation.' Your emails used textbook V2, your questions at reception were understood immediately, and your lunch conversation flowed without hesitation. Word order was not a barrier — it was a bridge.",
-      danish: "Ordstilling var ikke en mur — det var en bro.",
-      carry: "B1/B2 unlocked: correct word order moves you from 'almost Danish' to 'Danish'. V2 is the signal that you control the language."
+      title: "The plan is clear on the first read",
+      narrative: "Your manager can see when you work, why you are at home, and how you will attend the meeting without mentally rearranging the sentence.",
+      danish: "I morgen arbejder jeg hjemme. Derfor deltager jeg online.",
+      carry: "Reuse the same three checks in emails, chat messages, and spoken updates."
     },
     {
       id: "ok",
-      title: "Acceptable word order",
-      narrative: "The conference was fine. People understood you, though a few sentences needed mental re-parsing. Mikkel was grateful for the swap, but the organizer's reply was shorter than expected. You communicated — but word order uncertainty added friction to otherwise good Danish.",
-      danish: "Du blev forstået, men ordstillingen skabte stadig friktion.",
-      carry: "B1/B2 unlocked: being understood is not the same as sounding fluent. Correct V2 removes the friction that makes listeners work to understand you."
+      title: "Understood after a second look",
+      narrative: "Most of the message works, but one clause uses the wrong order and makes the reader pause.",
+      danish: "Meningen er tydelig, men én sætning skal repareres.",
+      carry: "Find the trigger word first: time phrase, fordi, or derfor. Then place the verb from that pattern."
     },
     {
       id: "forvirret",
-      title: "Confused word order",
-      narrative: "The conference was harder than it needed to be. The organizer replied with 'Kan du bekræfte det igen?' after your email. The receptionist switched to English. Mikkel was friendly, but the lunch chat was mostly in English. Word order errors created distance.",
-      danish: "Ordstilling skabte afstand — ikke klarhed.",
-      carry: "B1/B2 unlocked: wrong word order costs more than a grammar point. It costs the natural flow that tells Danes: 'I speak your language.'"
+      title: "The reader has to reconstruct the plan",
+      narrative: "The words are familiar, but several clauses use English order and the team asks you to confirm tomorrow's plan again.",
+      danish: "Kan du lige bekræfte, om du deltager online?",
+      carry: "Repair one frame at a time: I morgen arbejder jeg … / fordi jeg ikke skal … / Derfor deltager jeg …"
     }
   ]
 };

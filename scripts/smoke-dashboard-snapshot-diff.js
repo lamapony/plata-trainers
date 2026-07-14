@@ -40,7 +40,7 @@ function makeReviewChange(snapshot) {
 function makeRegression(snapshot) {
   const next = clone(snapshot);
   const weak = scenario(next, "weak-mastery");
-  weak.evidenceLedger = weak.evidenceLedger.filter(entry => !(entry.kind === "open" && entry.title === "Read passive agency"));
+  weak.evidenceLedger = weak.evidenceLedger.filter(entry => !(entry.kind === "open" && entry.title === "Read what was actually promised"));
   weak.weakCompetencies = [];
   return next;
 }
@@ -67,6 +67,14 @@ const base = buildDashboardRecommendationSnapshot();
 const same = compareDashboardSnapshots(base, clone(base));
 assert(same.status === "unchanged", "unchanged snapshots should have unchanged status");
 assert(same.summary.changes === 0, "unchanged snapshots should not emit changes");
+
+const renamedLedgerSnapshot = clone(base);
+const renamedLedger = scenario(renamedLedgerSnapshot, "weak-mastery").evidenceLedger.find(entry => entry.kind === "open");
+renamedLedger.title = "A clearer learner-facing title";
+const renamedLedgerDiff = compareDashboardSnapshots(base, renamedLedgerSnapshot);
+assert(renamedLedgerDiff.status === "changed", "open ledger title changes should require review");
+assert(renamedLedgerDiff.summary.regressions === 0, "open ledger title changes should not look like row loss");
+assert(renamedLedgerDiff.changes.some(entry => entry.message.includes("title changed")), "open ledger title change should be explicit in the diff");
 
 const reviewSnapshot = makeReviewChange(base);
 const reviewDiff = compareDashboardSnapshots(base, reviewSnapshot);

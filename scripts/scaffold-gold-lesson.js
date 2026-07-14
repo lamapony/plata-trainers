@@ -79,7 +79,7 @@ function normalizeOptions(options) {
   if (!Number.isInteger(minutes) || minutes <= 0) throw new Error("--minutes must be a positive integer");
 
   const root = path.resolve(options.root || repoRoot);
-  const subtitle = String(options.subtitle || `A ${level} Danish gold lesson scaffold about professional register, concrete next steps, and social consequences.`).trim();
+  const subtitle = String(options.subtitle || `A ${level} Danish lesson built around one concrete situation, useful phrases, and a final transfer task.`).trim();
   const name = String(options.name || `${level}: ${title}`).trim();
   const description = String(options.description || subtitle).trim();
   const icon = String(options.icon || "🧭").trim();
@@ -125,6 +125,7 @@ function buildLesson(options) {
 
   return `window.${globalName} = {
   id: ${js(options.slug)},
+  contentVersion: 2,
   level: ${js(options.level)},
   title: ${js(title)},
   subtitle: ${js(subtitle)},
@@ -165,8 +166,8 @@ function buildLesson(options) {
         sceneId: "professional-response",
         assetPath: "./assets/comic/professional-response.png",
         assetReady: false,
-        alt: "A learner writes with agency while keeping the conversation open and low pressure.",
-        prompt: "Create a quiet editorial comic panel showing a learner drafting a professional response with steady posture and open body language. The scene should contrast agency without pressure: one hand points to a next step, while the conversation space remains open and calm. No readable text, no speech bubbles, no brand logos.",
+        alt: "A learner makes a clear request while keeping the conversation open and calm.",
+        prompt: "Create a quiet editorial comic panel showing a learner drafting a professional response with steady posture and open body language. One hand points to a concrete next step while the conversation space remains open and calm. No readable text, no speech bubbles, no brand logos.",
         sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
         masteryTags: ["agency-without-pressure"],
         mustInclude: ["visible next-step gesture", "low-pressure professional mood"],
@@ -223,7 +224,7 @@ function buildLesson(options) {
     },
     "agency-without-pressure": {
       competencyId: "agency",
-      label: "Use agency without pressure",
+      label: "Make a clear request",
       evidence: "The learner writes an active professional response without over-demanding or hiding behind vague politeness.",
       remediation: {
         sceneId: "professional-response",
@@ -239,14 +240,14 @@ function buildLesson(options) {
       remediation: {
         sceneId: "next-step",
         cta: "Repair the next step",
-        action: "Rerun the completion and include one agency verb plus one concrete time or next-step word."
+        action: "Rerun the completion and include one action plus one concrete time or next-step word."
       },
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"]
     },
     "consequence-aware-register": {
       competencyId: "consequence-awareness",
       label: "Name the register principle",
-      evidence: "The learner names why tone, clarity, and relationship cost belong together.",
+      evidence: "The learner explains how a clear request can move the task while keeping the conversation workable.",
       remediation: {
         sceneId: "principle",
         cta: "Review the principle",
@@ -321,7 +322,7 @@ function buildLesson(options) {
   variableDescriptions: {
     relationshipTension: ["low — the relationship stayed workable", "visible — the room felt tighter", "high — the wording created friction"],
     clarity: ["unclear — the next step is still vague", "adequate — the message can move", "clear — the action and next step are visible"],
-    professionalTrust: ["weakened — the tone cost confidence", "neutral — correct but low-signal", "strong — you sounded reliable under pressure"]
+    professionalTrust: ["weakened — the request became harder to understand", "neutral — the main point was understood", "strong — you sounded reliable under pressure"]
   },
   languagePhenomena: [
     { item: "kort og konkret", function: "professional Danish values concise, concrete wording" },
@@ -357,11 +358,11 @@ function buildLesson(options) {
       targetPhrases: ["kort og konkret", "hvad er situationen", "skriv med ro"],
       prompt: "What is the professional first move?",
       options: [
-        { id: "read-calmly", diagnostic: "reads-context-before-writing", label: "Skriv kort og konkret: hvad er situationen, og hvad beder du om?", detail: "clear and calm", correct: true, effects: { clarity: 1, professionalTrust: 1 }, feedback: "Diagnostic: you read the room first. The message can be direct without sounding pressured." },
-        { id: "wait-vaguely", diagnostic: "hides-the-request", label: "Skriv meget forsigtigt og håb, at de forstår resten.", detail: "too vague", correct: false, effects: { clarity: -1 }, feedback: "Diagnostic: vague politeness hides the request. The reader cannot act on what you did not say." },
-        { id: "overreact", diagnostic: "adds-pressure-before-facts", label: "Skriv hårdt med det samme, så de forstår alvoren.", detail: "too much force", correct: false, effects: { relationshipTension: 1, clarity: -1 }, feedback: "Diagnostic: you added pressure before the facts were clear. That can make the relationship cost higher than the problem." }
+        { id: "read-calmly", diagnostic: "reads-context-before-writing", label: "Skriv kort og konkret: hvad er situationen, og hvad beder du om?", detail: "clear and calm", correct: true, effects: { clarity: 1, professionalTrust: 1 }, feedback: "Good. The message can be direct without sounding pressured." },
+        { id: "wait-vaguely", diagnostic: "hides-the-request", label: "Skriv meget forsigtigt og håb, at de forstår resten.", detail: "too vague", correct: false, effects: { clarity: -1 }, feedback: "The polite wording hides the request. The reader cannot act on what you did not say." },
+        { id: "overreact", diagnostic: "adds-pressure-before-facts", label: "Skriv hårdt med det samme, så de forstår alvoren.", detail: "too much force", correct: false, effects: { relationshipTension: 1, clarity: -1 }, feedback: "The pressure arrives before the facts. Name the situation and the requested action first." }
       ],
-      carry: "Carry-forward: skriv med ro, kort og konkret. First name hvad er situationen, then choose how much pressure the relationship can carry.",
+      carry: "Start with the situation and the action you need from the reader.",
       tags: ["B2", "register", "professional-writing", "context"]
     },
     {
@@ -380,32 +381,32 @@ function buildLesson(options) {
       prompt: "Match each phrase to the job it does.",
       pairs: [
         { id: "acknowledge", left: "Tak for din besked.", right: "acknowledges contact", feedback: "Tak for din besked confirms receipt without adding pressure." },
-        { id: "action", left: "Jeg vender tilbage.", right: "owns the next action", feedback: "Jeg vender tilbage keeps agency with the writer." },
+        { id: "action", left: "Jeg vender tilbage.", right: "owns the next action", feedback: "Jeg vender tilbage makes it clear who will act next." },
         { id: "next-step", left: "Kan vi aftale næste skridt?", right: "turns politeness into process", feedback: "Næste skridt moves the exchange from goodwill to action." }
       ],
-      carry: "Carry-forward: tak for din besked opens the door, jeg vender tilbage owns action, and aftale næste skridt makes the process visible.",
+      carry: "A complete reply acknowledges the message, names an action, and makes the next step visible.",
       tags: ["B2", "phrases", "register", "process-language"]
     },
     {
       id: "professional-response",
       type: "choice",
       eyebrow: "Scene 3 · Svaret",
-      title: "Now write with agency, not pressure.",
+      title: "Now make a clear request without adding unnecessary pressure.",
       learningGoal: "Choose an active professional sentence that proposes a next step without escalating tone.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["agency-without-pressure"],
       pressure: "You need the message to move, but you also need the relationship to survive the sentence.",
-      narrative: "This is where B2 Danish stops being vocabulary and becomes judgement: agency without pressure.",
+      narrative: "This is where B2 Danish stops being vocabulary and becomes judgement: the action stays clear while the tone stays workable.",
       dialogue: [{ speaker: "You", line: "Jeg foreslår, at vi aftaler næste skridt uden at gøre det større end nødvendigt." }],
       notice: "Jeg foreslår is active but not demanding. Uden pres keeps the door open while the next step stays concrete.",
       targetPhrases: ["jeg foreslår", "næste skridt", "uden pres"],
-      prompt: "Choose the sentence that keeps agency without pressure.",
+      prompt: "Choose the sentence that keeps the action clear without adding unnecessary pressure.",
       options: [
-        { id: "active-low-pressure", diagnostic: "active-low-pressure-next-step", label: "Jeg foreslår, at vi aftaler næste skridt, når det passer jer.", detail: "active and workable", correct: true, effects: { relationshipTension: -1, clarity: 1, professionalTrust: 1 }, feedback: "Diagnostic: strong B2 move. Jeg foreslår gives agency, and når det passer jer lowers pressure without losing the next step." },
-        { id: "too-soft", diagnostic: "softness-removes-action", label: "Det er helt fint, hvis det måske kan vente lidt.", detail: "too soft", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "Diagnostic: the tone is friendly, but the action disappeared. The reader cannot see what should happen next." },
-        { id: "pressure", diagnostic: "pressure-replaces-agency", label: "Jeg forventer, at I svarer hurtigt, for det her kan ikke vente.", detail: "too forceful", correct: false, effects: { relationshipTension: 2, professionalTrust: -1 }, feedback: "Diagnostic: you replaced agency with pressure. That may be justified in some cases, but it is not the default professional register." }
+        { id: "active-low-pressure", diagnostic: "active-low-pressure-next-step", label: "Jeg foreslår, at vi aftaler næste skridt, når det passer jer.", detail: "active and workable", correct: true, effects: { relationshipTension: -1, clarity: 1, professionalTrust: 1 }, feedback: "Jeg foreslår makes the action visible, and når det passer jer keeps the request flexible." },
+        { id: "too-soft", diagnostic: "softness-removes-action", label: "Det er helt fint, hvis det måske kan vente lidt.", detail: "too soft", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "The tone is friendly, but the action disappears. The reader cannot see what should happen next." },
+        { id: "pressure", diagnostic: "pressure-replaces-agency", label: "Jeg forventer, at I svarer hurtigt, for det her kan ikke vente.", detail: "too forceful", correct: false, effects: { relationshipTension: 2, professionalTrust: -1 }, feedback: "The deadline pressure arrives without enough context. Ask for the concrete next step first." }
       ],
-      carry: "Carry-forward: jeg foreslår plus næste skridt gives agency without pressure. The sentence should move the case without closing the room.",
+      carry: "Jeg foreslår … is useful when you want to move the task without turning the proposal into a demand.",
       tags: ["B2", "agency", "professional-register", "next-step"]
     },
     {
@@ -413,7 +414,7 @@ function buildLesson(options) {
       type: "completion",
       eyebrow: "Scene 4 · Konkrethed",
       title: "A next step must be visible enough to test.",
-      learningGoal: "Complete a professional sentence with both an agency verb and a time or next-step signal.",
+      learningGoal: "Complete a professional sentence with both an action and a time or next-step signal.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["concrete-next-step"],
       pressure: "A polite sentence can still fail if nobody knows who does what next.",
@@ -421,7 +422,7 @@ function buildLesson(options) {
       dialogue: [{ speaker: "You", line: "Jeg kan sende et kort forslag ..." }],
       notice: "Concrete Danish does not need to be long. It needs an action and a next-step signal.",
       targetPhrases: ["jeg kan sende", "et kort forslag", "inden fredag", "næste skridt"],
-      prompt: "Complete the sentence with one agency signal and one time or next-step signal.",
+      prompt: "Complete the sentence with one action and one time or next-step signal.",
       prefix: "Jeg kan sende et kort forslag",
       placeholder: "inden fredag og aftale næste skridt",
       acceptKeywordGroups: [
@@ -429,9 +430,9 @@ function buildLesson(options) {
         { name: "time or next step", keywords: ["fredag", "næste", "skridt", "tid", "dato"] }
       ],
       success: "Good. The sentence contains both an action and a visible next step.",
-      failure: "Include both parts: an agency verb (sende/skrive/foreslå/aftale) and a time or next-step word (fredag/næste/skridt/tid/dato).",
+      failure: "Include both parts: an action verb (sende/skrive/foreslå/aftale) and a time or next-step word (fredag/næste/skridt/tid/dato).",
       effects: { clarity: 1 },
-      carry: "Carry-forward: jeg kan sende et kort forslag is only complete when the reader also sees inden fredag or another concrete next step.",
+      carry: "Jeg kan sende et kort forslag becomes useful when the reader also sees inden fredag or another concrete next step.",
       tags: ["B2", "completion", "concrete-language", "process"]
     },
     {
@@ -443,17 +444,17 @@ function buildLesson(options) {
       sourceRefs: ["Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["consequence-aware-register"],
       pressure: "The exchange ends. What remains is not only the answer, but the way you were read.",
-      narrative: "A gold lesson should end by naming the transferable principle, not by celebrating a one-off correct answer.",
+      narrative: "End with a fresh situation that proves the learner can use the same skill again.",
       dialogue: [{ speaker: "Internal note", line: "Tone er handling, især når relationen stadig skal bruges." }],
       notice: "Professionel dansk is concrete without pressure. The principle transfers across email, chat, workplace, and public-service writing.",
       targetPhrases: ["professionel dansk", "konkret uden pres", "tone er handling"],
       prompt: "Which principle should this lesson teach?",
       options: [
-        { id: "clarity-with-relationship", diagnostic: "names-clarity-relationship-principle", label: "Professionel dansk er konkret uden pres: tone er handling.", detail: "transferable principle", correct: true, feedback: "Diagnostic: yes. The wording makes the next step visible while protecting the relationship." },
-        { id: "maximum-politeness", diagnostic: "confuses-register-with-politeness", label: "Professionel dansk er altid så høfligt som muligt.", detail: "over-formal", correct: false, feedback: "Diagnostic: maximum politeness can create distance. The goal is useful clarity, not ceremonial language." },
-        { id: "maximum-force", diagnostic: "confuses-clarity-with-force", label: "Professionel dansk er tydeligst, når presset er maksimalt.", detail: "too forceful", correct: false, feedback: "Diagnostic: pressure is not the same as clarity. The relationship cost can become the message." }
+        { id: "clarity-with-relationship", diagnostic: "names-clarity-relationship-principle", label: "Professionel dansk er konkret uden pres: tone er handling.", detail: "transferable principle", correct: true, feedback: "The wording makes the next step visible while keeping the conversation workable." },
+        { id: "maximum-politeness", diagnostic: "confuses-register-with-politeness", label: "Professionel dansk er altid så høfligt som muligt.", detail: "over-formal", correct: false, feedback: "Maximum politeness can create distance. The goal is useful clarity, not ceremonial language." },
+        { id: "maximum-force", diagnostic: "confuses-clarity-with-force", label: "Professionel dansk er tydeligst, når presset er maksimalt.", detail: "too forceful", correct: false, feedback: "Pressure is not the same as clarity. The tone can distract from the practical request." }
       ],
-      carry: "Unlocked B2 theme: professionel dansk is konkret uden pres. Tone er handling because language moves both the case and the relationship.",
+      carry: "The reusable skill is a concrete request with a tone the next conversation can still use.",
       tags: ["B2", "principle", "consequence", "register"]
     }
   ],
@@ -479,10 +480,10 @@ function buildLesson(options) {
     },
     {
       id: "neutral",
-      title: "Correct but low-signal",
+      title: "Understood, but not yet specific",
       narrative: "The exchange stays polite and functional. Nothing breaks, but your Danish does not add much confidence either.",
       danish: "Det var korrekt, men ikke stærkt.",
-      carry: "B2 unlocked: correct language keeps the process alive; concrete agency makes it useful."
+      carry: "Add a named action and a visible next step to make the reply useful."
     }
   ]
 };

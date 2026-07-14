@@ -296,7 +296,7 @@ function seedClosedMasteryState(env) {
     itemId: "official-reply-passive",
     sceneId: "official-reply-passive",
     lessonId: "lesson-b2-radiator-register",
-    label: "Read passive agency",
+    label: "Read what was actually promised",
     action: "Name the missing actor",
     correct: true
   });
@@ -398,7 +398,7 @@ function runSeededMasterySmoke() {
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   assert(env.context.PlataCatalog.trainers.length === 12, "dashboard reads trainer catalog");
-  assert(/Read passive agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders weak mastery label");
+  assert(/Read what was actually promised/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders weak mastery label");
   assert(/passive-agency/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders mastery tag key");
   assert(/registration\/process language/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders lesson-owned mastery evidence");
   assert(/Review Scene 1/.test(env.elements["#mastery-list"].innerHTML), "dashboard renders mastery repair CTA");
@@ -438,10 +438,10 @@ function runSeededMasterySmoke() {
   assert(/plan=/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links carry active plan token");
   assert(/step=/.test(env.elements["#practice-plan"].innerHTML), "dashboard repair plan links carry step route id");
   assert(env.storage[env.context.PlataPlanner.practicePlanStorageKey], "dashboard stores repair plan tracker state");
-  assert(/Read passive agency/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation highlights weak mastery");
+  assert(/Read what was actually promised/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation highlights weak mastery");
   assert(/Open repair scene/.test(env.elements["#due-cards"].children[0].innerHTML), "practice recommendation opens the repair scene");
   assert(/Needs attention/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger shows open mastery signals");
-  assert(/Read passive agency/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger names the open signal");
+  assert(/Read what was actually promised/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger names the open signal");
   assert(/1 miss \/ 1 try/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger includes signal counts");
   assert(/Weak signal: passive-agency/.test(env.elements["#memory-facts"].innerHTML), "dashboard memory inspector shows weak signal facts");
   assert(/memsrc-/.test(env.elements["#memory-facts"].innerHTML), "dashboard memory inspector renders source fingerprints");
@@ -520,7 +520,7 @@ function runStartedPlanSmoke() {
       number: 1,
       kind: "repair",
       trainerId: "lesson-b2-radiator-register",
-      title: "Repair Read passive agency",
+      title: "Repair Read what was actually promised",
       copy: "Replay the source scene.",
       primaryLabel: "Open repair scene",
       primaryHref: "./lessons/lesson-b2-radiator/?mode=repair&signal=passive-agency#official-reply-passive",
@@ -537,7 +537,7 @@ function runStartedPlanSmoke() {
   assert(/plan-step-ledger/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders started plan ledger");
   assert(/Started/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains when a plan step started");
   assert(/Continue where you stopped/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell labels an active saved route");
-  assert(/Resume Repair Read passive agency/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes the active step");
+  assert(/Resume Repair Read what was actually promised/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes the active step");
   assert(/active-plan/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell exposes the active-plan state");
   assert(/>Continue</.test(env.elements["#today-program"].innerHTML), "dashboard Today shell resumes the active step");
 }
@@ -706,7 +706,7 @@ function runClosedMasterySmoke() {
   assert(!/signal=passive-agency/.test(planHtml), "dashboard closed practice plan has no repair link");
   assert(!/Open repair scene/.test(dueHtml), "dashboard closed due cards do not use repair CTA");
   assert(/Resolved/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger shows closed repairs");
-  assert(/Read passive agency/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger names the closed signal");
+  assert(/Read what was actually promised/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger names the closed signal");
   assert(/Name the missing actor/.test(env.elements["#evidence-ledger"].innerHTML), "dashboard evidence ledger shows repair closure action");
 }
 
@@ -728,7 +728,7 @@ async function runDynamicCatalogSmoke() {
 
   assert(env.context.PLATA_LESSON_B2_RADIATOR, "dashboard loads gold lesson data from catalog");
   assert(env.context.PLATA_LESSON_B2_JOB_FOLLOWUP, "dashboard loads job follow-up lesson data from catalog");
-  assert(/Read passive agency/.test(env.elements["#mastery-list"].innerHTML), "dynamic catalog load renders mastery diagnostics");
+  assert(/Read what was actually promised/.test(env.elements["#mastery-list"].innerHTML), "dynamic catalog load renders mastery diagnostics");
   assert(/Agency and responsibility/.test(env.elements["#competency-list"].innerHTML), "dynamic catalog load renders competency diagnostics");
   assert(/Repair plan/.test(env.elements["#practice-plan"].innerHTML), "dynamic catalog load renders compiled practice plan");
 }
