@@ -285,9 +285,9 @@ async function runEmptyHomeSmoke() {
   loadKernelAndCatalog(env);
   await runHome(env);
 
-  assert(env.ids["#home-start-title"].textContent === "Start at the plateau", "home start card recommends B2 plateau entry for new users");
+  assert(env.ids["#home-start-title"].textContent === "Follow up after a job interview", "home start card recommends a concrete B2 situation for new users");
   assert(env.ids["#home-start-link"].href === "./lessons/lesson-b2-job-followup/", "home starter link points to B2 job follow-up");
-  assert(env.ids["#home-start-link"].textContent === "Start B2 lesson", "home start card CTA opens B2 plateau lesson");
+  assert(env.ids["#home-start-link"].textContent === "Open this lesson", "home start card CTA opens the concrete B2 lesson");
   assert(env.ids["#home-primary-action"].textContent === "Try B2 follow-up lesson", "home hero primary CTA stays on B2 lesson for new users");
   assert(env.ids["#home-primary-action"].href === "./lessons/lesson-b2-job-followup/", "home hero primary CTA links to B2 job follow-up");
   assert(env.ids["#evaluate"].scrollIntoViewCalls && env.ids["#evaluate"].scrollIntoViewCalls.length === 1, "home restores hash scroll after dynamic launcher rendering");
@@ -387,7 +387,7 @@ function runHomeMarkupSmoke() {
   assert(indexHtml.includes("id=\"narrative-gallery\""), "home page should expose catalog-driven narrative gallery container");
   assert(indexHtml.includes("id=\"drill-gallery\""), "home page should expose catalog-driven drill gallery container");
   assert(indexHtml.includes("id=\"pwa-status\""), "home page should expose learner-visible PWA status");
-  assert(indexHtml.includes("Browse all lessons and drills"), "home page should keep a learner-controlled library disclosure");
+  assert(indexHtml.includes("Open the lesson library"), "home page should keep a learner-controlled library disclosure");
   assert(indexHtml.includes("Evaluating or contributing to Platå?"), "home should keep a reviewers drawer");
   assert(indexHtml.includes("./dashboard.html?demo=learner"), "home reviewers path should link the demo learner dashboard");
   assert(indexHtml.includes("./program.html"), "home reviewers path should link the product boundary and proof page");
