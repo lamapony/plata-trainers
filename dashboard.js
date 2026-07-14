@@ -2328,8 +2328,11 @@ function renderDashboard() {
   masteryCatalogCache = null;
   const candidates = dashboardCandidates();
   const planContext = resolvePracticePlan(candidates);
+  const dueSection = $("#due");
+  if (dueSection) {
+    dueSection.hidden = !isDemoMode() && planContext.plan && planContext.plan.kind === "start";
+  }
   renderDemoProfileBanner();
-  renderLearnerHeadroom(candidates, planContext);
   renderTrainerCards();
   renderTodayProgram(candidates, planContext);
   renderGuidedSession(candidates, planContext);

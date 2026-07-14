@@ -42,6 +42,12 @@ test.describe("public pages smoke", () => {
     await expect(page.locator("#home-primary-action")).toBeVisible();
     await expect(page.locator("#home-primary-action")).toHaveAttribute("href", /lesson-b2-job-followup/);
     await expect(page.getByText("Situation → miss → repair")).toBeVisible();
+    await expect(page.locator(".product-loop")).toBeVisible();
+    const library = page.locator(".library-disclosure").first();
+    await expect(library).not.toHaveAttribute("open", "");
+    await expect(page.locator("#narrative-gallery")).not.toBeVisible();
+    await library.locator(":scope > summary").click();
+    await expect(page.locator("#narrative-gallery")).toBeVisible();
     await assertNoCriticalAxe(page, "home");
     expect(runtimeProblems, "home runtime failures").toEqual([]);
   });
@@ -62,6 +68,8 @@ test.describe("public pages smoke", () => {
     await page.goto(TODAY);
     await page.waitForLoadState("networkidle");
     await expect(page.locator("#today-program")).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator("#due")).toBeHidden();
+    await expect(page.locator("#overview > details")).not.toHaveAttribute("open", "");
     await assertNoCriticalAxe(page, "today first-run");
     expect(runtimeProblems, "Today runtime failures").toEqual([]);
   });
@@ -76,9 +84,27 @@ test.describe("public pages smoke", () => {
     expect(runtimeProblems, "demo runtime failures").toEqual([]);
   });
 
+  test("reviewer pages state product boundaries and reveal deep-linked evidence", async ({ page }) => {
+    const runtimeProblems = collectRuntimeProblems(page);
+    await page.goto("./program.html");
+    await page.waitForLoadState("networkidle");
+    await expect(page.getByText("What it does — and what it does not.")).toBeVisible();
+    await expect(page.getByText("Provide a complete linear A2 → B2 curriculum.")).toBeVisible();
+    await expect(page.locator(".program-pillars")).toHaveCSS("display", "grid");
+    await expect(page.locator(".program-pillar").first()).toHaveCSS("border-top-style", "solid");
+    await expect(page.locator(".technical-disclosure")).not.toHaveAttribute("open", "");
+
+    await page.goto("./proof.html#proof-capability-title");
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator("#proof-capability-title")).toBeVisible();
+    await expect(page.locator("#proof-capability-title").locator("xpath=ancestor::details[1]")).toHaveAttribute("open", "");
+    await assertNoCriticalAxe(page, "reviewer proof");
+    expect(runtimeProblems, "reviewer runtime failures").toEqual([]);
+  });
+
   test("360px viewports do not scroll horizontally", async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 740 });
-    for (const path of ["./", FLAGSHIP, TODAY, DEMO]) {
+    for (const path of ["./", FLAGSHIP, TODAY, DEMO, "./program.html", "./proof.html", "./quality.html"]) {
       await page.goto(path);
       await page.waitForLoadState("networkidle");
       await assertNoHorizontalOverflow(page);

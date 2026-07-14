@@ -175,7 +175,7 @@ h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
 }
 
 .section { padding: 28px 0; }
-.section-head { margin-bottom: 14px; }
+.section-head { display: block; margin-bottom: 14px; }
 .section-copy {
   max-width: 40rem;
   margin: 8px 0 0;
@@ -284,6 +284,16 @@ h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
   border-radius: var(--radius) !important;
   padding: 18px !important;
 }
+#today-program {
+  border: 0 !important;
+  background: transparent !important;
+}
+.today-program-card,
+#today-program .today-program-card {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
 .today-program-card .eyebrow { color: var(--muted) !important; }
 .inspect-drawer summary {
   color: var(--muted);
@@ -298,3 +308,185 @@ h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
   inset: auto !important;
 }
 [class*="badge"], .live-dot, .dot { display: none !important; }
+
+/* Product loop: one quiet explanation, not three competing feature cards. */
+.product-loop {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 30px 0 0;
+  padding: 18px 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.product-loop li {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  gap: 8px;
+  padding-right: 18px;
+}
+.product-loop li + li {
+  padding-left: 18px;
+  border-left: 1px solid var(--line);
+}
+.product-loop li > span,
+.product-loop small {
+  color: var(--muted);
+}
+.product-loop strong,
+.product-loop small {
+  display: block;
+}
+.product-loop small {
+  margin-top: 3px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+/* Secondary choices stay available without dominating the learner's next action. */
+.library-disclosure,
+.dashboard-disclosure,
+.technical-disclosure,
+.technical-link-disclosure {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.library-disclosure > summary,
+.dashboard-disclosure > summary,
+.technical-disclosure > summary,
+.technical-link-disclosure > summary {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 10px 34px 10px 0;
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 600;
+  list-style: none;
+}
+.library-disclosure > summary::-webkit-details-marker,
+.dashboard-disclosure > summary::-webkit-details-marker,
+.technical-disclosure > summary::-webkit-details-marker,
+.technical-link-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.library-disclosure > summary::after,
+.dashboard-disclosure > summary::after,
+.technical-disclosure > summary::after,
+.technical-link-disclosure > summary::after {
+  position: absolute;
+  right: 2px;
+  content: "+";
+  color: var(--muted);
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+.library-disclosure[open] > summary::after,
+.dashboard-disclosure[open] > summary::after,
+.technical-disclosure[open] > summary::after,
+.technical-link-disclosure[open] > summary::after {
+  content: "−";
+}
+.library-disclosure > summary small,
+.dashboard-disclosure > summary small,
+.technical-disclosure > summary small,
+.technical-link-disclosure > summary small {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 400;
+}
+.library-disclosure > summary:focus-visible,
+.dashboard-disclosure > summary:focus-visible,
+.technical-disclosure > summary:focus-visible,
+.technical-link-disclosure > summary:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+.library-content,
+.dashboard-disclosure-content,
+.technical-disclosure-content,
+.technical-link-list {
+  padding: 20px 0 24px;
+}
+.dashboard-disclosure-content > * + * { margin-top: 18px; }
+.technical-link-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+.technical-link-list a { color: var(--muted); }
+
+.debug-header {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 600;
+}
+.friendly-progress {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+section[hidden] { display: none !important; }
+.pwa-status-region {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: baseline;
+}
+.pwa-status-region strong { margin-right: 0.35rem; }
+.hero-grid > .status-card { margin-top: 24px; }
+.debug-group,
+.debug-group summary { opacity: 1; }
+.program-chip.mastery,
+a.program-chip.mastery {
+  border-color: var(--line);
+  background: transparent;
+  color: var(--text);
+}
+
+.reviewer-boundaries {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.reviewer-boundaries > div { padding: 20px 20px 20px 0; }
+.reviewer-boundaries > div + div {
+  padding-left: 20px;
+  border-left: 1px solid var(--line);
+}
+.reviewer-boundaries p,
+.reviewer-boundaries ul {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+@media (max-width: 700px) {
+  .product-loop,
+  .reviewer-boundaries { grid-template-columns: 1fr; }
+  .product-loop li { padding: 10px 0; }
+  .product-loop li + li {
+    padding-left: 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+  .library-disclosure > summary,
+  .dashboard-disclosure > summary,
+  .technical-disclosure > summary,
+  .technical-link-disclosure > summary {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .reviewer-boundaries > div { padding: 18px 0; }
+  .reviewer-boundaries > div + div {
+    padding-left: 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+}

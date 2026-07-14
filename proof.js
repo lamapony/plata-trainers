@@ -700,7 +700,7 @@
     }).join("\n");
     $("#proof-review").innerHTML =
       "<div class=\"proof-review-table\">" + surfaces + "</div>" +
-      "<pre class=\"proof-summary-preview\">" + summaryLines + "</pre>" +
+      "<pre class=\"proof-summary-preview\" tabindex=\"0\" aria-label=\"Review summary preview\">" + summaryLines + "</pre>" +
       "<div class=\"hero-actions\">" +
         linkChip(proofSources.review, "Open full review JSON", "mastery") +
         linkChip(proofSources.summary, "Open capped Markdown", "") +
