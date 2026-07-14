@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Platå · ordstilling-drill</title>
-  <meta name="description" content="Open Danish word-order drill — V2 rule, inversion, ledsætninger. Multiple choice with spaced repetition." />
+  <title>Dansk ordstilling · Platå</title>
+  <meta name="description" content="Øv dansk ordstilling, V2-reglen, inversion og ledsætninger i korte runder." />
   <meta name="author" content="Dmitrii Babinov" />
   <link rel="stylesheet" href="../shared/plata-tokens.css" />
   <link rel="stylesheet" href="./styles.css" />
@@ -16,7 +16,7 @@
       <a class="brand" href="../" aria-label="Platå trainers">
         <span class="brand-text">platå</span>
         <span class="brand-sep">·</span>
-        <span class="brand-sub">ordstilling-drill <span class="ver">v0.2</span></span>
+        <span class="brand-sub">ordstilling</span>
       </a>
       <h1 class="sr-only">Ordstilling drill — Danish word order practice</h1>
       <nav class="hdr-actions">
@@ -29,9 +29,9 @@
     <section class="stats" id="stats" aria-live="polite">
       <div class="stat"><span class="stat-num" id="stat-today">0</span><span class="stat-label">i dag</span></div>
       <div class="stat"><span class="stat-num" id="stat-correct">0</span><span class="stat-label">rigtige</span></div>
-      <div class="stat"><span class="stat-num" id="stat-accuracy">—</span><span class="stat-label">accuracy</span></div>
-      <div class="stat"><span class="stat-num" id="stat-streak">0</span><span class="stat-label">streak</span></div>
-      <div class="stat"><span class="stat-num" id="stat-mastered">0</span><span class="stat-label">mastered</span></div>
+      <div class="stat"><span class="stat-num" id="stat-accuracy">—</span><span class="stat-label">rigtige %</span></div>
+      <div class="stat"><span class="stat-num" id="stat-streak">0</span><span class="stat-label">i træk</span></div>
+      <div class="stat"><span class="stat-num" id="stat-mastered">0</span><span class="stat-label">lært</span></div>
     </section>
 
     <section class="pickers" aria-label="Choose category">
@@ -49,36 +49,36 @@
     <section class="card" id="drill-card" aria-live="polite">
       <div class="prompt-meta">
         <span class="meta-pill" id="prompt-counter">— / —</span>
-        <span class="meta-pill" id="prompt-box">box 1</span>
+        <span class="meta-pill" id="prompt-box">trin 1</span>
         <span class="meta-pill" id="prompt-cat">v2</span>
       </div>
       <p class="prompt" id="prompt-text">—</p>
       <div class="options" id="options" role="radiogroup" aria-label="Answer options"></div>
       <div class="feedback hidden" id="feedback" role="status"></div>
       <div class="action-row">
-        <button class="btn btn-primary" id="submit-btn" type="button" disabled>Check</button>
+        <button class="btn btn-primary" id="submit-btn" type="button" disabled>Tjek svar</button>
       </div>
     </section>
 
     <section class="card hidden" id="summary-card">
-      <h2 class="summary-title">Session færdig</h2>
+      <h2 class="summary-title">Øvelse færdig</h2>
       <p class="summary-line"><strong id="sum-correct">0</strong> rigtige ud af <strong id="sum-total">0</strong></p>
-      <p class="summary-line summary-acc">Accuracy: <strong id="sum-accuracy">—</strong></p>
+      <p class="summary-line summary-acc">Rigtige svar: <strong id="sum-accuracy">—</strong></p>
       <ul class="summary-mistakes" id="sum-mistakes"></ul>
       <div id="next-step" class="next-step-slot"></div>
       <div class="summary-actions">
-        <button class="btn btn-primary" id="again-btn">I gang igen</button>
+        <button class="btn btn-primary" id="again-btn">Øv igen</button>
         <button class="btn btn-ghost" id="change-cat-btn">Skift kategori</button>
       </div>
     </section>
 
     <footer class="ftr">
       <p>
-        <a href="../">← platå-trainers</a> ·
+        <a href="../">← alle øvelser</a> ·
         <a href="https://github.com/lamapony/plata-curriculum/blob/main/m0-bojning-og-form/README.md">M0 curriculum</a> ·
-        <a href="https://github.com/lamapony/plata-trainers">source</a>
+        <a href="https://github.com/lamapony/plata-trainers">kode</a>
       </p>
-      <p class="ftr-meta">data: LocalStorage · spaced repetition: Leitner (1·2·4·7·14 days) · MIT</p>
+      <p class="ftr-meta">fremskridt gemmes i din browser · svære svar kommer igen efter 1·2·4·7·14 dage · MIT</p>
     </footer>
   </main>
 

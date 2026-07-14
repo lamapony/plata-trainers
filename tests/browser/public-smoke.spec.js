@@ -94,8 +94,8 @@ test.describe("public pages smoke", () => {
     const runtimeProblems = collectRuntimeProblems(page);
     await page.goto("./program.html");
     await page.waitForLoadState("networkidle");
-    await expect(page.getByText("What it does — and what it does not.")).toBeVisible();
-    await expect(page.getByText("Provide a complete linear A2 → B2 curriculum.")).toBeVisible();
+    await expect(page.getByText("What Platå is — and what it is not.")).toBeVisible();
+    await expect(page.getByText("Teach the whole language from the beginning.")).toBeVisible();
     await expect(page.locator(".program-pillars")).toHaveCSS("display", "grid");
     await expect(page.locator(".program-pillar").first()).toHaveCSS("border-top-style", "solid");
     await expect(page.locator(".technical-disclosure")).not.toHaveAttribute("open", "");

@@ -168,7 +168,7 @@
     const p = session[sessionPos];
     const rec = state.byItemId[p.itemId] || { box: 1 };
     els.promptCounter.textContent = `${sessionPos + 1} / ${session.length}`;
-    els.promptBox.textContent = `box ${rec.box}${rec.mastered ? " · mastered" : ""}`;
+    els.promptBox.textContent = `trin ${rec.box}${rec.mastered ? " · lært" : ""}`;
     els.promptText.textContent = p.prompt;
     els.promptHint.textContent = p.hint;
     els.answerInput.value = "";
@@ -180,7 +180,7 @@
     els.feedback.textContent = "";
     els.feedback.className = "feedback hidden";
     els.submitBtn.disabled = false;
-    els.submitBtn.textContent = "Check";
+    els.submitBtn.textContent = "Tjek svar";
     awaitingInput = true;
   }
 

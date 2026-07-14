@@ -39,7 +39,7 @@ async function run() {
   assert(/apotek.*patientportal|patientportal.*apotek/i.test(programHtml), "program page should describe apotek to patientportal channel transfer");
   assert(programHtml.includes("job-followup-bojning-gender-trap"), "program page should cite bojning trap repair chain");
   assert(programHtml.includes("proof.html#proof-capability-title"), "program page should link proof capability matrix for bojning trap chain");
-  assert(programHtml.includes("Demo learner → Today → guided session → gates"), "program page should expose the reviewer path headline");
+  assert(programHtml.includes("From one suggestion to a useful result"), "program page should expose the reviewer path headline");
 
   const elements = {};
   [
@@ -82,10 +82,10 @@ async function run() {
   vm.runInContext(fs.readFileSync(path.join(root, "program.js"), "utf8"), context, { filename: "program.js" });
   await new Promise(resolve => setImmediate(resolve));
 
-  assert(elements["#program-status"].textContent === "Proof map passing", "program page did not render passing status");
-  assert(elements["#program-summary"].innerHTML.includes("Capabilities"), "program page did not render summary");
+  assert(elements["#program-status"].textContent === "All checks passing", "program page did not render passing status");
+  assert(elements["#program-summary"].innerHTML.includes("What works"), "program page did not render summary");
   assert(elements["#program-pillars"].innerHTML.includes("Break the plateau one step at a time"), "program page did not render learner pillar");
-  assert(elements["#program-pillars"].innerHTML.includes("Personalization stays explainable"), "program page did not render personalization pillar");
+  assert(elements["#program-pillars"].innerHTML.includes("You can understand every suggestion"), "program page did not render personalization pillar");
   assert(elements["#program-capabilities"].innerHTML.includes("Stateful Today program shell"), "program page did not render Today capability");
   assert(elements["#program-capabilities"].innerHTML.includes("Lightweight companion and read-only bridge"), "program page did not render companion capability");
   assert(elements["#program-capabilities"].innerHTML.includes("capability map"), "program page did not render proof surface text");

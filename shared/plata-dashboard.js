@@ -22,15 +22,15 @@
   }
 
   function gateText(gate) {
-    return gate.name + ": " + gate.total + "/" + gate.minAttempts + " attempts · " + gate.accuracyPct + "% · " + (gate.ready ? "ready" : "not ready");
+    return gate.name + ": " + gate.total + "/" + gate.minAttempts + " svar · " + gate.accuracyPct + "% rigtige · " + (gate.ready ? "klar" : "fortsæt lidt endnu");
   }
 
   function m0ProgressText(state) {
     var k = root.PlataKernel;
-    if (!k || !k.computeGate) return "M0: unavailable";
-    var verbs = k.computeGate(state, { name: "M0 verbs", tags: ["verber"], mode: "verber", minAttempts: 100, minAccuracy: 0.8 });
-    var nouns = k.computeGate(state, { name: "M0 nouns", tags: ["substantiver"], mode: "substantiver", minAttempts: 100, minAccuracy: 0.9 });
-    return gateText(verbs) + " · " + gateText(nouns) + " · writing: manual check (not auto-ready)";
+    if (!k || !k.computeGate) return "Fremskridt er ikke tilgængelige lige nu";
+    var verbs = k.computeGate(state, { name: "Verber", tags: ["verber"], mode: "verber", minAttempts: 100, minAccuracy: 0.8 });
+    var nouns = k.computeGate(state, { name: "Substantiver", tags: ["substantiver"], mode: "substantiver", minAttempts: 100, minAccuracy: 0.9 });
+    return gateText(verbs) + " · " + gateText(nouns) + " · Du vurderer selv dine skriftlige svar";
   }
 
   function weakTagsText(weakTags) {

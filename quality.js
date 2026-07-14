@@ -41,33 +41,33 @@
       jsonLink.href = "./reports/quality.json";
       jsonLink.removeAttribute("aria-disabled");
     }
-    $("#quality-status").textContent = report.status === "pass" ? "Passing" : "Needs attention";
+    $("#quality-status").textContent = report.status === "pass" ? "All checks passing" : "Needs attention";
     $("#quality-status").className = report.status === "pass" ? "quality-pass" : "quality-fail";
     $("#quality-summary").innerHTML = [
-      ["Gold lessons", report.totals.goldLessons],
-      ["Simulation paths", report.totals.simulationPaths],
-      ["Comic panels", report.totals.comicPanels],
-      ["Mastery signals", report.totals.masterySignals],
-      ["Issues", report.totals.issues]
+      ["Checked lessons", report.totals.goldLessons],
+      ["Tested routes", report.totals.simulationPaths],
+      ["Storyboard panels", report.totals.comicPanels],
+      ["Skills tracked", report.totals.masterySignals],
+      ["Open issues", report.totals.issues]
     ].map(function (item) {
       return "<li><span>" + escapeHtml(item[0]) + "</span><strong>" + escapeHtml(item[1]) + "</strong></li>";
     }).join("");
-    $("#quality-generated").textContent = "Generated " + new Date(report.generatedAt).toLocaleString();
+    $("#quality-generated").textContent = "Last checked " + new Date(report.generatedAt).toLocaleString();
   }
 
   function renderMetrics(report) {
     $("#quality-metrics").innerHTML = [
-      metric("Lessons", report.totals.lessons, "All narrative lesson data files discovered at build time."),
-      metric("Gold Lessons", report.totals.goldLessons, "Lessons with the strict source -> goal -> diagnostic -> mastery -> repair contract."),
-      metric("Scenes", report.totals.scenes, "Interactive scenes across all narrative lessons."),
-      metric("Mastery Signals", report.totals.masterySignals, "Durable learner-facing concepts that can appear in dashboard repair recommendations."),
-      metric("Comic Panels", report.totals.comicPanels, "Scene-bound visual prompts that turn gold lessons into auditable comic storyboards."),
-      metric("Comic Assets", report.totals.comicAssets, "Generated storyboard images currently present in lesson asset folders."),
-      metric("Simulation Paths", report.totals.simulationPaths, "Deterministic paths that cover outcomes and social variables."),
-      metric("Simulated Attempts", report.totals.simulatedAttempts, "Attempt events replayed by gold lesson simulations."),
-      metric("Endings", report.totals.endings, "Declared consequence outcomes covered by simulation paths."),
-      metric("Evidence Rows", report.totals.evidenceRows, "Scene-level audit rows linking goals, sources, mastery, diagnostics, remediation, and simulations."),
-      metric("Report Issues", report.totals.issues, "Quality report issues are build-blocking.")
+      metric("Lessons found", report.totals.lessons, "All interactive situation lessons included in the current build."),
+      metric("Fully checked lessons", report.totals.goldLessons, "Lessons with a source, a clear goal, likely mistakes, a result to track, and a useful repair."),
+      metric("Practice scenes", report.totals.scenes, "Realistic moments where a learner has to choose, match, or write something."),
+      metric("Skills tracked", report.totals.masterySignals, "Specific things Platå can notice and suggest practising again."),
+      metric("Storyboard panels", report.totals.comicPanels, "Visual prompts that make the situation easier to understand."),
+      metric("Storyboard images", report.totals.comicAssets, "Generated images currently present in lesson folders."),
+      metric("Routes tested", report.totals.simulationPaths, "Different answer paths checked automatically before publication."),
+      metric("Practice attempts replayed", report.totals.simulatedAttempts, "Sample attempts replayed to make sure feedback still works."),
+      metric("Possible endings", report.totals.endings, "Consequences the automated checks make sure learners can reach."),
+      metric("Evidence links", report.totals.evidenceRows, "Connections between each scene, its goal, source, feedback, and repair."),
+      metric("Open issues", report.totals.issues, "The site cannot pass its quality check while one of these remains open.")
     ].join("");
   }
 

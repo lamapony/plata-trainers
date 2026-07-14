@@ -429,7 +429,7 @@ async function renderProgramRuntime(baseUrl) {
   runPublicScript(env.context, "program.js");
   await waitFor(() => env.elements["#program-status"].textContent, "program runtime did not render status");
 
-  assert(env.elements["#program-status"].textContent === "Proof map passing", "program runtime did not render a passing capability map");
+  assert(env.elements["#program-status"].textContent === "All checks passing", "program runtime did not render a passing capability map");
   assert(env.elements["#program-reports"].innerHTML.includes("reports/evaluator-path.json"), "program runtime did not render evaluator path report link");
   assert(env.elements["#program-capabilities"].innerHTML.includes("Public GitHub proof surface"), "program runtime did not render public proof capability");
   assert(env.elements["#program-json-link"].href === "./reports/capabilities.json", "program runtime did not enable capability JSON link");
@@ -481,13 +481,13 @@ async function renderProofRuntime(baseUrl) {
   runPublicScript(env.context, "proof.js");
   await waitFor(() => env.elements["#proof-status"].textContent, "proof runtime did not render status");
 
-  assert(env.elements["#proof-status"].textContent === "Proof passing", "proof runtime did not render passing status");
+  assert(env.elements["#proof-status"].textContent === "All checks passing", "proof runtime did not render passing status");
   assert(env.elements["#proof-evaluator"].innerHTML.includes("First-visit evaluator path"), "proof runtime did not render evaluator path");
   assert(env.elements["#proof-walkthrough"].innerHTML.includes("evaluator-journey.json"), "proof runtime did not render evaluator journey proof");
   assert(env.elements["#proof-evaluator"].innerHTML.includes("0 storage writes"), "proof runtime did not render read-only demo proof");
-  assert(env.elements["#proof-surfaces"].innerHTML.includes("Profile portability"), "proof runtime did not render profile portability surface");
+  assert(env.elements["#proof-surfaces"].innerHTML.includes("Take your progress with you"), "proof runtime did not render profile portability surface");
   assert(env.elements["#proof-surfaces"].innerHTML.includes("profileport-"), "proof runtime did not render profile portability trace");
-  assert(env.elements["#proof-surfaces"].innerHTML.includes("Exercise value"), "proof runtime did not render exercise value surface");
+  assert(env.elements["#proof-surfaces"].innerHTML.includes("Practice that changes what you can do"), "proof runtime did not render exercise value surface");
   assert(env.elements["#proof-surfaces"].innerHTML.includes("6/6 archetypes"), "proof runtime did not render exercise value archetype coverage");
   assert(env.elements["#proof-surfaces"].innerHTML.includes("flagship outcome"), "proof runtime did not render profile flagship outcome proof");
   assert(env.elements["#proof-surfaces"].innerHTML.includes("guided outcome proof"), "proof runtime did not render guided flagship outcome proof");

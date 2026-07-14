@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Lesson factory · Platå</title>
-  <meta name="description" content="The repository workflow contributors use to turn a lesson brief into a checked Platå lesson." />
+  <title>Make a lesson for your situation · Platå</title>
+  <meta name="description" content="Give a coding agent the Platå repository and describe a difficult Danish situation in ordinary language. The repository turns it into a sourced, checked lesson." />
   <link rel="manifest" href="./site.webmanifest" />
   <link rel="icon" href="./assets/icons/icon-192.png" type="image/png" />
   <link rel="stylesheet" href="./shared/plata-tokens.css" />
@@ -26,42 +26,42 @@
       </nav>
       <section class="hero-grid">
         <div>
-          <p class="eyebrow">Repository authoring path</p>
-          <h1>Small prompt → checked lesson.</h1>
-          <p class="lead">This is a contributor workflow in the repository, not a lesson builder on the live website. An agent or developer can turn a short brief into a gold lesson only when it carries sources, mastery tags, remediation, simulation paths, and public proof that CI can fail.</p>
+          <p class="eyebrow">Create a lesson for your own situation</p>
+          <h1>Tell the agent what you need to say.</h1>
+          <p class="lead">Share the repository link with a coding assistant such as Codex. Describe the real conversation, email, or appointment you want to handle. The assistant prepares a short Danish lesson, and Platå checks that it is sourced and complete before it is treated as ready.</p>
           <div class="hero-actions">
-            <a class="btn primary" href="./quality.html">Open quality report</a>
-            <a class="btn" href="./proof.html">Open proof</a>
-            <a class="btn" href="https://github.com/lamapony/plata-trainers#ask-an-agent-to-create-a-lesson">Create on GitHub</a>
+            <a class="btn primary" href="https://github.com/lamapony/plata-trainers#ask-an-agent-to-create-a-lesson">Open the GitHub guide</a>
+            <a class="btn" href="./lessons/lesson-b2-job-followup/">Try a finished lesson</a>
+            <a class="btn" href="./quality.html">See how lessons are checked</a>
           </div>
         </div>
         <aside class="start-card">
-          <p class="eyebrow">Checked workflow</p>
-          <h2>Agent authoring path</h2>
-          <p>Give an agent the repository link and describe the outcome in normal language. The agent previews its assumptions, authors and sources the lesson, runs the quality gates, then publishes through review.</p>
-          <a class="btn primary" href="https://github.com/lamapony/plata-trainers/blob/main/docs/AGENT_LESSON_WORKFLOW.md">Authoring contract</a>
+          <p class="eyebrow">You can write this</p>
+          <h2>Ordinary language is enough.</h2>
+          <p>“Make me a 12-minute B1 lesson about telling my landlord that the radiator is still cold. I want to be clear without sounding rude.”</p>
+          <a class="btn primary" href="https://github.com/lamapony/plata-trainers">Use the repository</a>
         </aside>
       </section>
     </header>
 
     <section class="section" aria-labelledby="pipeline-title">
       <div class="section-head">
-        <p class="eyebrow">Pipeline</p>
-        <h2 id="pipeline-title">What the factory checks</h2>
+        <p class="eyebrow">What happens next</p>
+        <h2 id="pipeline-title">From an awkward moment to useful practice</h2>
       </div>
       <div class="steps">
-        <div><strong>1</strong><span><strong>Brief</strong> — topic, learner outcome, real pressure situation, and boundaries in normal language.</span></div>
-        <div><strong>2</strong><span><strong>Preview</strong> — <code>lesson:new -- --topic "…" --goal "…" --situation "…" --preview</code> exposes assumptions without writing.</span></div>
-        <div><strong>3</strong><span><strong>Teach</strong> — scene diagnostics, masteryMap, remediation links, flagship chain if needed.</span></div>
-        <div><strong>4</strong><span><strong>Prove</strong> — simulator + counterfactuals + quality report. CI blocks broken contracts.</span></div>
+        <div><strong>1</strong><span><strong>Tell</strong> — describe the situation, your level, and what you want to be able to do.</span></div>
+        <div><strong>2</strong><span><strong>Preview</strong> — the agent repeats its plan and assumptions before changing the project.</span></div>
+        <div><strong>3</strong><span><strong>Build</strong> — it creates a short lesson with a realistic choice, clear feedback, and a focused repair.</span></div>
+        <div><strong>4</strong><span><strong>Check</strong> — the project tests the lesson and refuses to treat an unfinished or unsourced draft as ready.</span></div>
       </div>
     </section>
 
     <section class="section" aria-labelledby="memory-title">
       <div class="section-head">
-        <p class="eyebrow">Learner side</p>
-        <h2 id="memory-title">Stats and memory stay inspectable</h2>
-        <p class="section-copy">Attempts write mastery signals. Dashboard Today cites them. Repair links open the exact scene or drill. Export is JSON. Nothing is a black-box tutor.</p>
+        <p class="eyebrow">What you get</p>
+        <h2 id="memory-title">A lesson that reacts to your choices</h2>
+        <p class="section-copy">You enter a real situation, make a choice, and see what worked or slipped. A wrong answer points to one exact repair instead of a vague score. Your progress stays in your browser.</p>
       </div>
       <div class="hero-actions">
         <a class="btn" href="./dashboard.html?demo=learner">Demo learner</a>
@@ -70,16 +70,20 @@
     </section>
 
     <section class="section" aria-labelledby="cmd-title">
-      <div class="section-head">
-        <p class="eyebrow">Commands</p>
-        <h2 id="cmd-title">From brief to proof</h2>
-      </div>
-      <div class="copy-block" style="padding:20px;">
-        <pre style="margin:0; white-space:pre-wrap; font-family:var(--font-mono); font-size:13px; line-height:1.5; color:var(--muted);"><code>npm run lesson:new -- --topic "…" --goal "…" --situation "…" --preview
+      <details class="technical-disclosure">
+        <summary>
+          <span id="cmd-title">For agents and contributors</span>
+          <small>Exact commands for creating and checking a lesson</small>
+        </summary>
+        <div class="technical-disclosure-content">
+          <div class="copy-block" style="padding:20px;">
+            <pre style="margin:0; white-space:pre-wrap; font-family:var(--font-mono); font-size:13px; line-height:1.5; color:var(--muted);"><code>npm run lesson:new -- --topic "…" --goal "…" --situation "…" --preview
 # repeat without --preview, then author and source the real lesson
 npm run lesson:verify -- --lesson &lt;slug&gt;
 npm run check</code></pre>
-      </div>
+          </div>
+        </div>
+      </details>
     </section>
 
     <footer class="footer">

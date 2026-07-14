@@ -7,19 +7,19 @@
     {
       id: "practice",
       title: "Break the plateau one step at a time",
-      copy: "The program chooses between B2 story lessons, repair routes, review, and short drills—one useful session, no account.",
+      copy: "Choose a real situation or follow one useful suggestion. There is no long course to keep up with and no account to create.",
       capabilityIds: ["static-forkable-runtime", "today-program-shell", "guided-session-outcome-loop", "gold-lesson-quality-engine"]
     },
     {
       id: "memory",
-      title: "Personalization stays explainable",
-      copy: "Local learner memory, planner decisions, and companion copy are derived from cited facts instead of opaque chat history.",
+      title: "You can understand every suggestion",
+      copy: "Platå uses only the practice saved in your browser, and it can show why a particular step was chosen.",
       capabilityIds: ["private-learner-memory", "adaptive-planner-and-advisor", "lightweight-companion-bridge"]
     },
     {
       id: "proof",
-      title: "Contributors can inspect the machine",
-      copy: "Capabilities, quality, skill coverage, and project health are generated artifacts that make regressions visible.",
+      title: "The checks are open to everyone",
+      copy: "Anyone can inspect the sources, lesson checks, and project health instead of trusting a marketing claim.",
       capabilityIds: ["root-skill-coverage", "contributor-authoring-toolkit", "public-github-proof-surface"]
     }
   ];
@@ -73,18 +73,18 @@
       jsonLink.href = "./reports/capabilities.json";
       jsonLink.removeAttribute("aria-disabled");
     }
-    $("#program-status").textContent = report.status === "pass" ? "Proof map passing" : "Needs attention";
+    $("#program-status").textContent = report.status === "pass" ? "All checks passing" : "Needs attention";
     $("#program-status").className = report.status === "pass" ? "quality-pass" : "quality-fail";
     $("#program-summary").innerHTML = [
-      ["Capabilities", report.totals.capabilities],
-      ["Proof gates", report.totals.proofGates],
-      ["Public reports", report.totals.publicReports],
-      ["Linked docs", report.totals.docs],
-      ["Issues", report.totals.issues]
+      ["What works", report.totals.capabilities],
+      ["Automated checks", report.totals.proofGates],
+      ["Public evidence", report.totals.publicReports],
+      ["Helpful documents", report.totals.docs],
+      ["Open issues", report.totals.issues]
     ].map(function (item) {
       return "<li><span>" + escapeHtml(item[0]) + "</span><strong>" + escapeHtml(item[1]) + "</strong></li>";
     }).join("");
-    $("#program-generated").textContent = "Generated " + new Date(report.generatedAt).toLocaleString();
+    $("#program-generated").textContent = "Last checked " + new Date(report.generatedAt).toLocaleString();
   }
 
   function renderPillars(report) {
@@ -96,14 +96,14 @@
       return "<article class=\"program-pillar " + (passed ? "pass" : "fail") + "\">" +
         "<div class=\"quality-card-head\">" +
           "<span class=\"quality-key\">" + escapeHtml(pillar.id) + "</span>" +
-          "<span class=\"quality-state\">" + escapeHtml(passed ? "ready" : "review") + "</span>" +
+          "<span class=\"quality-state\">" + escapeHtml(passed ? "checked" : "review") + "</span>" +
         "</div>" +
         "<h3>" + escapeHtml(pillar.title) + "</h3>" +
         "<p>" + escapeHtml(pillar.copy) + "</p>" +
         "<div class=\"program-proof-strip\">" +
-          chip(countLabel(rows.length, "capability", "capabilities"), "mastery") +
+          chip(countLabel(rows.length, "feature", "features"), "mastery") +
           chip(countLabel(checks, "check", "checks"), "") +
-          chip(passed ? "passing" : "needs review", passed ? "pass" : "fail") +
+          chip(passed ? "checked" : "needs review", passed ? "pass" : "fail") +
         "</div>" +
       "</article>";
     }).join("");

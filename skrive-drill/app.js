@@ -79,7 +79,7 @@
     const stats = kernel.getStats(state);
     els.statToday.textContent = String(stats.todayCount);
     els.statCorrect.textContent = String(stats.totalAttempts);
-    els.statAccuracy.textContent = "n/a";
+    els.statAccuracy.textContent = "—";
     els.statStreak.textContent = "—";
     els.statMastered.textContent = "—";
   }
@@ -101,7 +101,7 @@
     }
     const p = session[sessionPos];
     els.promptCounter.textContent = `${sessionPos + 1} / ${session.length}`;
-    els.promptBox.textContent = "self-report";
+    els.promptBox.textContent = "selvtjek";
     els.promptCat.textContent = p.cat;
     els.promptChannel.textContent = p.channel;
     els.promptText.textContent = p.prompt;
@@ -112,7 +112,7 @@
     els.feedback.textContent = "";
     awaitingCheck = true;
     els.submitBtn.disabled = false;
-    els.submitBtn.textContent = "Self-grade & continue";
+    els.submitBtn.textContent = "Vurder selv og fortsæt";
     els.answerInput.focus();
   }
 
@@ -179,11 +179,11 @@
     els.feedback.classList.add(completed ? "good" : "bad");
     const parts = [];
     if (completed) {
-      parts.push("✓ Completed — self-assessment logged (does not change accuracy or mastery).");
+      parts.push("✓ Færdig — din egen vurdering er gemt. Platå giver ikke teksten en kunstig score.");
     } else {
-      parts.push("Needs revision");
-      if (!meta.lengthOk) parts.push(`— write at least ${meta.minChars} characters (${meta.charCount} now).`);
-      if (!meta.rubricOk) parts.push("— check every rubric row before continuing.");
+      parts.push("Prøv teksten igen");
+      if (!meta.lengthOk) parts.push(`— skriv mindst ${meta.minChars} tegn (du har ${meta.charCount}).`);
+      if (!meta.rubricOk) parts.push("— markér hvert punkt i tjeklisten, før du fortsætter.");
     }
     if (prompt.note) parts.push(`<div class="why">${escapeHtml(prompt.note)}</div>`);
     parts.push('<div class="next-hint">tryk Enter eller klik "Næste →"</div>');
@@ -198,18 +198,18 @@
     const needsRevision = sessionResults.filter((r) => r.needsRevision).length;
     els.sumCorrect.textContent = completed;
     els.sumTotal.textContent = total;
-    els.sumAccuracy.textContent = needsRevision ? `${needsRevision} needs revision` : "all completed";
+    els.sumAccuracy.textContent = needsRevision ? `${needsRevision} skal prøves igen` : "alle færdige";
     els.sumMistakes.innerHTML = "";
     const gaps = sessionResults.filter((r) => r.needsRevision);
     if (gaps.length === 0) {
       const li = document.createElement("li");
       li.className = "empty";
-      li.textContent = "all prompts completed — no accuracy claimed";
+      li.textContent = "alle tekster er færdige — Platå påstår ikke at kunne bedømme deres sproglige kvalitet";
       els.sumMistakes.appendChild(li);
     } else {
       gaps.forEach((m) => {
         const li = document.createElement("li");
-        li.innerHTML = `<div>${escapeHtml(m.prompt)}</div><div class="given">${m.rubricOk ? "rubric ok" : "rubric incomplete"} · ${m.charCount} tegn · needs revision</div>`;
+        li.innerHTML = `<div>${escapeHtml(m.prompt)}</div><div class="given">${m.rubricOk ? "tjekliste færdig" : "tjekliste mangler"} · ${m.charCount} tegn · prøv igen</div>`;
         els.sumMistakes.appendChild(li);
       });
     }

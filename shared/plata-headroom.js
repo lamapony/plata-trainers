@@ -293,14 +293,14 @@
       + Number(capabilities.totals && capabilities.totals.issues || 0);
     if (!payload.passing) {
       return interpretationFromParts({
-        verdict: "Proof needs attention before you trust the demo",
+        verdict: "Some product promises still need evidence",
         saw: issueCount
-          ? issueCount + " contract issue(s) in generated health or capability reports."
-          : "One or more proof reports did not pass.",
-        means: "The walkthrough below still shows the intended reviewer path, but some gates or artifacts are not green.",
-        nextStep: "Follow the walkthrough, then open the failing JSON report.",
+          ? issueCount + " issue(s) remain open in the published checks."
+          : "One or more published checks did not pass.",
+        means: "You can still follow the example below, but Platå is not claiming that every promise is ready yet.",
+        nextStep: "Follow the example, then open the failed check if you want the technical detail.",
         nextHref: "#proof-walkthrough",
-        nextLabel: "Follow reviewer path",
+        nextLabel: "Follow the example",
         appendix: [
           ["Digest", digest.status || "unknown"],
           ["Demo learner", demo.status || "unknown"],
@@ -310,28 +310,13 @@
         ]
       });
     }
-    var saw = journeyStages >= 6
-      ? "The " + journeyStages + "-step reviewer route covers Demo → Today → Guided"
-        + (guidedCount ? " (" + guidedCount + " scenarios)" : "")
-        + " → Offline ZIP → Quality → Capability map"
-      : "Demo learner → Today step → guided session → outcome receipt"
-        + (guidedCount ? " (" + guidedCount + " guided scenarios)" : "")
-        + (offlineProof ? " plus offline distribution proof" : "");
-    saw += ", traced as one deterministic journey (" + (journey.traceId || "trace") + ").";
-    var meansBits = ["personalization"];
-    if (offlineProof) meansBits.unshift("offline distribution");
-    if (guidedCount) meansBits.push(guidedCount + " guided scenarios");
-    if (doctorSkrive) meansBits.push("doctor→skrive channel transfer");
-    var nextStep = journeyStages >= 6
-      ? "Follow the 6-step reviewer path (including Offline ZIP), then open quality and JSON reports for source gates."
-      : "Walk the 60-second path, then open quality and JSON reports for source gates.";
     return interpretationFromParts({
       verdict: digest.headline || "Public proof is passing",
-      saw: saw,
-      means: "A reviewer can verify " + meansBits.join(", ") + " without accounts, raw learner answers, or hidden model calls.",
-      nextStep: nextStep,
+      saw: "The public walkthrough follows one fictional learner from a suggestion to completed practice, then checks lesson quality and offline use.",
+      means: "You can see how Platå chose the next step and what changed afterwards without creating an account or sending learner answers anywhere.",
+      nextStep: "Follow the short walkthrough. Open the technical reports only if you want to inspect the machinery.",
       nextHref: "#proof-walkthrough",
-      nextLabel: "Follow reviewer path",
+      nextLabel: "Follow the 60-second walkthrough",
       appendix: [
         ["Health gates", health.totals && health.totals.gates || 0],
         ["Capabilities", capabilities.totals && capabilities.totals.capabilities || 0],

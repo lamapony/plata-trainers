@@ -345,7 +345,7 @@ function buildDemoLearnerReport(options = {}) {
   const forbiddenLeaks = ["raw weak", "raw due-review", "De lover, at radiatoren bliver fikset hurtigt."];
 
   if (extracted.routeSearch !== "?demo=learner") issues.push("demo route search drifted");
-  if (!rendered.banner.includes("Sample B2 plateau profile")) issues.push("demo banner missing");
+  if (!rendered.banner.includes("See what Platå notices after a few sessions")) issues.push("demo banner missing");
   if (!todayStripped.includes("Study companion")) issues.push("Today surface is not companion-backed");
   if (todayStripped.toLowerCase().includes("onboarding")) issues.push("demo Today surface fell back to onboarding");
   if (!todayStripped.includes("Cited memory")) issues.push("Today surface does not cite memory");

@@ -155,102 +155,102 @@ function buildProofDigest(options = {}) {
   const whatThisProves = [
     row(
       "static-public-artifact",
-      "The project can be evaluated from public static files.",
-      `Pages publishes a checked artifact with ${countLabel(capabilities.totals.publicReports, "public report", "public reports")} and ${countLabel(health.totals.gates, "required gate", "required gates")}.`,
+      "The live site is the same version the checks approved.",
+      `Before publication, Platå runs ${countLabel(health.totals.gates, "required check", "required checks")} and publishes ${countLabel(capabilities.totals.publicReports, "public result", "public results")}.`,
       ["check:pages", "check:static", "reports/project-health.json", "reports/capabilities.json"],
       allHealthPass && allCapabilityPass,
-      "A visitor can inspect the same generated reports that CI uses before deployment."
+      "Anyone can inspect the same results that decide whether the site is ready to publish."
     ),
     row(
       "private-personalization",
-      "Personalization is inspectable without writing visitor data.",
-      `The demo learner exposes ${countLabel(demo.totals.visibleMemoryFacts, "memory fact", "memory facts")} and ${countLabel(demo.totals.planSteps, "plan step", "plan steps")} with ${demo.totals.storageWrites} storage writes.`,
+      "The example learner is safe to explore.",
+      `The example contains ${countLabel(demo.totals.visibleMemoryFacts, "saved clue", "saved clues")} and ${countLabel(demo.totals.planSteps, "practice step", "practice steps")}, but writes nothing to your own progress.`,
       ["dashboard.html?demo=learner", "reports/demo-learner.json", "check:demo-learner-report"],
       demoReadOnly,
-      "The demo profile proves memory, planner, and companion behavior without touching local progress."
+      "You can see how Platå chooses a next step without changing anything in your browser."
     ),
     row(
       "profile-portability",
-      "A real local profile can be exported, imported, and replayed.",
-      `The portability trace ${portability.traceId} replays ${countLabel(portability.totals.eventCount, "event", "events")}, ${countLabel(portability.totals.memoryCorrections, "memory correction", "memory corrections")}, and ${countLabel(portability.totals.guidedOutcomes, "guided outcome", "guided outcomes")}.`,
+      "You can take your progress with you.",
+      `The move-progress check replays ${countLabel(portability.totals.eventCount, "practice event", "practice events")}, ${countLabel(portability.totals.memoryCorrections, "correction", "corrections")}, and ${countLabel(portability.totals.guidedOutcomes, "completed result", "completed results")}.`,
       ["reports/profile-portability.json", "check:profile-portability", "scripts/debug-profile-replay.js"],
       profilePortabilityPass,
-      "This proves a non-demo learner can move progress between browser sessions without losing plan execution, correction audit, guided receipts, or privacy guardrails."
+      "Exporting and importing your profile keeps your plan and progress while leaving raw answers out of the file."
     ),
     row(
       "flagship-exercise-value",
-      "The flagship exercises are not ordinary context-free quizzes.",
-      `The exercise value report covers ${countLabel(exerciseValue.totals.flagshipChains, "flagship chain", "flagship chains")}, ${exerciseValue.totals.archetypesCovered}/${exerciseValue.requiredArchetypes.length} radical archetypes, ${countLabel(exerciseValue.totals.nearMisses, "near miss", "near misses")}, and ${countLabel(exerciseValue.totals.repairLadders, "repair ladder", "repair ladders")}.`,
+      "Exercises react to the kind of mistake you make.",
+      `The lesson checks cover ${countLabel(exerciseValue.totals.flagshipChains, "complete learning path", "complete learning paths")}, ${countLabel(exerciseValue.totals.nearMisses, "realistic almost-right answer", "realistic almost-right answers")}, and ${countLabel(exerciseValue.totals.repairLadders, "step-by-step repair", "step-by-step repairs")}.`,
       ["reports/exercise-value.json", "check:exercise-value-report", "lessons/lesson-b2-radiator/data.js"],
       exerciseValuePass,
-      "The report fails if the exercise loses consequence, grammatical near-miss, repair ladder, channel transfer, memory recurrence, or explain-your-choice proof."
+      "A lesson fails its check if every wrong answer leads to the same generic explanation or if a promised repair disappears."
     ),
     row(
       "reviewer-output-contract",
-      "Reviewer output is tested as a product surface.",
-      `The golden fixture covers ${countLabel(golden.review.summary.surfaces, "review surface", "review surfaces")} with capped Markdown and full JSON behind it.`,
+      "The review process is tested too.",
+      `A deliberately broken example checks that reviewers can still see and understand problems across ${countLabel(golden.review.summary.surfaces, "part of the product", "parts of the product")}.`,
       ["check:review-report-fixture", "reports/quickstart-proof/review-report.json", "reports/quickstart-proof/review-summary.md"],
       reviewFixturePass,
-      "The fixture intentionally contains regressions so fail modes, grouping, ordering, and truncation stay proven."
+      "The test makes sure real regressions are grouped clearly instead of disappearing in a wall of technical output."
     ),
     row(
       "fast-contributor-proof",
-      "A contributor has a short proof path before the full suite.",
-      `The quickstart writes ${countLabel(golden.quickstart.artifacts.length, "artifact", "artifacts")} and links ${countLabel(golden.quickstart.checks.length, "check", "checks")}.`,
+      "Contributors can check a change quickly.",
+      `A short preflight creates ${countLabel(golden.quickstart.artifacts.length, "review file", "review files")} and links ${countLabel(golden.quickstart.checks.length, "important check", "important checks")}.`,
       ["npm run proof:quickstart", "check:quickstart-proof", "reports/quickstart-proof/quickstart.json"],
       quickstartPass,
-      "The fast path is not a replacement for full QA; it is an orientation layer over the same core claims."
+      "It gives a useful first answer before the complete test suite runs."
     )
   ];
 
   const whatChanged = [
     row(
       "proof-page-front-door",
-      "Proof is now one readable page, not scattered CI output.",
-      "The public proof capability links `proof.html`, the renderer, and the page smoke gate.",
+      "The evidence now has one front door.",
+      "Visitors can start with this page instead of hunting through build logs and JSON files.",
       ["proof.html", "proof.js", "check:proof-page"],
       proofPagePass,
-      "This gives non-maintainers one place to inspect the proof surface before opening raw reports."
+      "Technical reports remain available, but they are no longer the required starting point."
     ),
     row(
       "visitor-proof-walkthrough",
-      "A visitor can follow one deterministic learner loop before opening raw JSON.",
-      `The proof page now connects the first-visit evaluator path, demo learner, Today recommendation, guided route, dashboard return receipt, outcome receipt, and audit trail through ${journey.traceId}.`,
+      "A visitor can follow one complete learner story.",
+      "The page connects an example learner, one recommendation, a short practice, and the result that comes back.",
       ["reports/evaluator-path.json", "reports/evaluator-journey.json", "dashboard.html?demo=learner", "reports/demo-learner.json", "reports/guided-session.json", "check:evaluator-path", "check:evaluator-journey", "check:proof-page"],
       visitorWalkthroughPass,
-      "This turns the generated reports into one inspectable acceptance path for first-time evaluators."
+      "The human story comes first; the technical trail is still there for anyone who wants to verify it."
     ),
     row(
       "quickstart-proof-published",
-      "Quickstart proof is published with the Pages artifact.",
-      "The local contributor proof index is also available under `reports/quickstart-proof/` on Pages.",
+      "The short contributor check is public.",
+      "The same quick review used by contributors is published with the site.",
       ["reports/quickstart-proof/quickstart.json", "reports/quickstart-proof/quickstart.md", "check:quickstart-proof"],
       quickstartPublished,
-      "A visitor can compare the friendly page with the machine-readable quickstart index."
+      "A curious visitor can compare this explanation with the machine-readable result."
     ),
     row(
       "plain-language-digest",
-      "The proof page has a plain-language digest over the generated reports.",
-      "The digest is generated and checked instead of being hard-coded into the HTML.",
+      "The plain-language explanation stays connected to the checks.",
+      "This summary is rebuilt from the current reports instead of being a hand-written promise that can go stale.",
       ["reports/proof-digest.json", "check:proof-digest", "check:proof-page"],
       digestPublished,
-      "This keeps the public explanation aligned with the underlying reports."
+      "If the underlying evidence changes, this page changes with it."
     )
   ];
 
   const trustBoundaries = [
-    "The digest summarizes generated reports; the JSON artifacts remain the source of truth.",
-    "The golden PR review fixture is expected to contain regressions so the reviewer fail path stays visible.",
-    "The public demo learner is read-only and in-memory; real learner progress remains local to the browser.",
-    "No account sync or model-backed companion is required for the current proof surface."
+    "This page summarizes the checks; the downloadable reports remain the exact record.",
+    "One test example is broken on purpose so the review process can prove that it catches failures.",
+    "The example learner cannot change your progress. Your real practice stays in your browser.",
+    "Platå does not need an account, cloud sync, or a hidden AI model to choose the next practice."
   ];
 
   return {
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
     status: issues.length ? "fail" : "pass",
-    headline: issues.length ? "Proof digest needs attention" : "The public proof surface is coherent and inspectable.",
-    summary: "This digest translates generated reports into product-level claims for visitors, contributors, and reviewers.",
+    headline: issues.length ? "Some promises still need evidence" : "The important promises are checked in public.",
+    summary: "Here is what Platå checks before a lesson or product claim is treated as ready.",
     totals: {
       claims: whatThisProves.length,
       changes: whatChanged.length,
