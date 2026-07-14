@@ -7,6 +7,7 @@ const vm = require("vm");
 
 const repoRoot = path.resolve(__dirname, "..");
 const kernelSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-kernel.js"), "utf8");
+const profileSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-profile.js"), "utf8");
 const catalogSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-catalog.js"), "utf8");
 const competencySource = fs.readFileSync(path.join(repoRoot, "shared", "plata-competencies.js"), "utf8");
 const plannerSource = fs.readFileSync(path.join(repoRoot, "shared", "plata-planner.js"), "utf8");
@@ -129,6 +130,9 @@ function makeContext(initialStorage, options) {
         }
       };
     },
+    confirm() {
+      return true;
+    },
     document: {
       readyState: "complete",
       head: null,
@@ -185,6 +189,7 @@ function makeContext(initialStorage, options) {
 
 function loadKernelAndDashboard(env) {
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
+  vm.runInContext(profileSource, env.context, { filename: "shared/plata-profile.js" });
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(lesson01Source, env.context, { filename: "lessons/lesson-01/data.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
@@ -306,10 +311,10 @@ function runEmptyDashboardSmoke() {
   assert(/Planner route/.test(env.elements["#today-program"].innerHTML), "dashboard renders Today program shell for starter routes");
   assert(/Start here/.test(env.elements["#today-program"].innerHTML), "dashboard labels the empty profile with Start here");
   assert(/job-followup|follow-up/i.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes the B2 follow-up starter step");
-  assert(/0%/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell shows route progress");
-  assert(/onboarding/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell exposes the onboarding state");
-  assert(/First run/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell shows the program state strip");
-  assert(/Local progress/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell labels local-progress recommendations");
+  assert(/today-program-card onboarding/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell uses onboarding state");
+  assert(/btn primary/.test(env.elements["#today-program"].innerHTML), "dashboard Today shows one primary action button");
+  assert(/today-outcome/.test(env.elements["#today-program"].innerHTML), "dashboard Today shows one recommendation reason");
+  assert(/Local progress/.test(env.elements["#today-program"].innerHTML), "dashboard Today evidence keeps local-progress label");
   assert(/Walkthrough|Guided session/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard renders guided session shell");
   assert(/job-followup|follow-up|Same step as/i.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session promotes the B2 follow-up starter outcome");
   assert(/Outcome receipt/.test(env.elements["#guided-session-panel"].innerHTML), "dashboard guided session renders an outcome receipt");
@@ -577,6 +582,7 @@ function runPrimaryPlanActionSmoke() {
 function runPlanReturnReceiptSmoke() {
   const env = makeContext();
   vm.runInContext(kernelSource, env.context, { filename: "shared/plata-kernel.js" });
+  vm.runInContext(profileSource, env.context, { filename: "shared/plata-profile.js" });
   vm.runInContext(catalogSource, env.context, { filename: "shared/plata-catalog.js" });
   vm.runInContext(lesson01Source, env.context, { filename: "lessons/lesson-01/data.js" });
   vm.runInContext(radiatorLessonSource, env.context, { filename: "lessons/lesson-b2-radiator/data.js" });
@@ -765,7 +771,8 @@ function runPortableProfileSmoke() {
   assert(/Plan steps in file/.test(exportEnv.elements["#profile-portability-diagnostics"].innerHTML), "dashboard export diagnostics include plan step count");
   assert(/Memory vault facts/.test(exportEnv.elements["#profile-portability-diagnostics"].innerHTML), "dashboard export diagnostics include vault fact count");
   assert(/Guided outcomes/.test(exportEnv.elements["#profile-portability-diagnostics"].innerHTML), "dashboard export diagnostics include guided outcome count");
-  assert(payload.profileSchemaVersion === 1, "dashboard export marks profile schema version");
+  assert(payload.profileSchemaVersion === 2, "dashboard export marks profile schema version");
+  assert(payload.artifactType === "plata.profile-backup", "dashboard export marks profile artifact type");
   assert(payload.practicePlan && payload.practicePlan.steps.length, "dashboard export includes active practice plan");
   assert(payload.practicePlan.steps[0].completedAt === plan.steps[0].completedAt, "dashboard export includes plan execution ledger");
   assert(payload.practicePlan.steps[0].trace && payload.practicePlan.steps[0].trace.fingerprint, "dashboard export includes practice-plan trace");
@@ -881,18 +888,39 @@ function runPortableProfileSmoke() {
 
   const legacyEnv = makeContext();
   loadKernelAndDashboard(legacyEnv);
-  assert(legacyEnv.context.PlataPlanner.readPracticePlan(), "dashboard starts with a plan before legacy import");
+  const stalePlan = legacyEnv.context.PlataPlanner.readPracticePlan();
+  assert(stalePlan, "dashboard starts with a plan before partial import");
   legacyEnv.storage["plata:learner-memory:corrections:v1"] = JSON.stringify([{ factId: "legacy-corrected" }]);
   legacyEnv.storage["plata:learner-memory:vault:v1"] = JSON.stringify(correctedPayload.memoryVault);
   legacyEnv.storage[legacyEnv.context.PlataGuidedSession.outcomeStorageKey] = JSON.stringify(correctedPayload.guidedSessionOutcomes);
   invokeDashboardFunction(legacyEnv, "importAll");
   legacyEnv.elements["#import-file"].files = [{ content: JSON.stringify({ schemaVersion: 2, trainers: {} }) }];
   legacyEnv.elements["#import-file"].onchange();
-  assert(!legacyEnv.context.PlataPlanner.readPracticePlan(), "legacy dashboard import clears stale active plan");
-  assert(!legacyEnv.storage["plata:learner-memory:deleted-facts:v1"], "legacy dashboard import clears stale hidden memory facts");
-  assert(!legacyEnv.storage["plata:learner-memory:corrections:v1"], "legacy dashboard import clears stale corrected memory facts");
-  assert(!legacyEnv.storage["plata:learner-memory:vault:v1"], "legacy dashboard import clears stale account memory vault");
-  assert(!JSON.parse(legacyEnv.storage[legacyEnv.context.PlataGuidedSession.outcomeStorageKey] || "{}").outcomes.length, "legacy dashboard import clears stale guided outcome receipts");
+  const preservedPlan = legacyEnv.context.PlataPlanner.readPracticePlan();
+  assert(preservedPlan && preservedPlan.planToken === stalePlan.planToken, "partial import preserves missing practice-plan section");
+  assert((legacyEnv.storage["plata:learner-memory:corrections:v1"] || "").includes("legacy-corrected"), "partial import preserves missing memory section");
+  assert((legacyEnv.storage["plata:learner-memory:vault:v1"] || "").includes("plata.memory-vault"), "partial import preserves missing vault section");
+  assert((legacyEnv.storage[legacyEnv.context.PlataGuidedSession.outcomeStorageKey] || "").includes("plata.guided-session-outcome-ledger.v1"), "partial import preserves missing guided outcomes");
+
+  const clearEnv = makeContext();
+  loadKernelAndDashboard(clearEnv);
+  assert(clearEnv.context.PlataPlanner.readPracticePlan(), "dashboard starts with a plan before null-clear import");
+  clearEnv.storage["plata:learner-memory:corrections:v1"] = JSON.stringify([{ factId: "clear-me" }]);
+  invokeDashboardFunction(clearEnv, "importAll");
+  clearEnv.elements["#import-file"].files = [{
+    content: JSON.stringify({
+      artifactType: "plata.profile-backup",
+      profileSchemaVersion: 2,
+      trainers: {},
+      practicePlan: null,
+      memory: null,
+      guidedSessionOutcomes: null
+    })
+  }];
+  clearEnv.elements["#import-file"].onchange();
+  assert(!clearEnv.context.PlataPlanner.readPracticePlan(), "null practicePlan clears active plan after confirm");
+  assert(!clearEnv.storage["plata:learner-memory:corrections:v1"], "null memory clears corrections after confirm");
+  assert(!JSON.parse(clearEnv.storage[clearEnv.context.PlataGuidedSession.outcomeStorageKey] || "{}").outcomes.length, "null guidedSessionOutcomes clears receipts after confirm");
 }
 
 async function run() {

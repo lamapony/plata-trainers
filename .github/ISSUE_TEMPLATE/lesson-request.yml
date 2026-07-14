@@ -1,0 +1,63 @@
+name: Request a Danish lesson
+description: Describe a real situation you want Platå or an authoring agent to turn into a lesson.
+title: "Lesson request: "
+labels: ["lesson-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the outcome in normal language. An agent should translate this into the repository's lesson-request contract; you do not need to write JSON.
+  - type: input
+    id: topic
+    attributes:
+      label: Topic
+      description: What should the lesson be about?
+      placeholder: Asking a noisy neighbour to keep evenings quieter
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Learner outcome
+      description: What should the learner be able to say, write, notice, or decide after the lesson?
+    validations:
+      required: true
+  - type: textarea
+    id: situation
+    attributes:
+      label: Real-life situation and pressure
+      description: Who is communicating, through which channel, and what could go wrong socially or practically?
+    validations:
+      required: true
+  - type: dropdown
+    id: level
+    attributes:
+      label: Level
+      options:
+        - A2
+        - B1
+        - B2
+    validations:
+      required: true
+  - type: input
+    id: duration
+    attributes:
+      label: Preferred duration
+      placeholder: 12-15 minutes
+  - type: textarea
+    id: must_include
+    attributes:
+      label: Must include
+      description: Moments, channels, phrases, or mistakes the lesson should cover.
+  - type: textarea
+    id: avoid
+    attributes:
+      label: Avoid
+      description: Claims, tones, content, or advice that must stay out of the lesson.
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope confirmation
+      options:
+        - label: This is a Danish A2-B2 language-practice request, not a request for professional legal, medical, or financial advice.
+          required: true

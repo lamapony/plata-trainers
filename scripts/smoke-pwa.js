@@ -93,8 +93,8 @@ function main() {
   assert(status && status.key && status.label && status.detail, "PlataPWA.getStatus: must return learner-readable status");
 
   const indexHtml = read("index.html");
-  assert(indexHtml.includes("Narrative lesson gallery"), "index.html: missing narrative lesson gallery");
-  assert(indexHtml.includes("pressure, notice, action, feedback"), "index.html: gallery must name the scene loop");
+  assert(indexHtml.includes("id=\"narrative-gallery\""), "index.html: missing narrative lesson gallery");
+  assert(indexHtml.includes("Situation → miss → repair"), "index.html: gallery must name the scene loop");
   assert(indexHtml.includes('property="og:image"'), "index.html: missing og:image");
   assert(indexHtml.includes("og-plata.png"), "index.html: og:image must reference og-plata.png");
   assert(indexHtml.includes("summary_large_image"), "index.html: twitter card should be summary_large_image");

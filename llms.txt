@@ -1,0 +1,17 @@
+# Platå
+
+Platå is an open-source, static Danish A2-B2 learning product and source-backed lesson factory.
+
+Live product: https://lamapony.github.io/plata-trainers/
+Source repository: https://github.com/lamapony/plata-trainers
+
+For an agent asked to create a lesson:
+1. Clone or open the source repository with write and command access.
+2. Read AGENTS.md and docs/AGENT_LESSON_WORKFLOW.md.
+3. Turn the user's natural-language topic into a plata.lesson-request JSON brief using schemas/lesson-request.schema.json.
+4. Run: npm run lesson:new -- --request <request.json>
+5. Author source-backed Danish content and complete lesson-request.json.delivery.
+6. Run: npm run lesson:verify -- --lesson <slug>
+7. Run the full npm run check before calling the lesson publishable.
+
+The live Pages site is read-only. It does not embed an autonomous model and cannot create or publish lesson files by itself.

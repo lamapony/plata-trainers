@@ -23,7 +23,7 @@ The MVP is useful for A2-B2 learners who need short, repeatable practice on the 
 
 Each trainer is a self-contained single-page app. Progress is private by default: it is stored in browser LocalStorage, never sent to a server. Export/import is JSON so you can back up or move between devices.
 
-The current trainers share a small static learning kernel in [`shared/`](./shared/). It provides the common progress schema, LocalStorage migration, attempt recording, mastery-signal diagnostics, stats, gates, and JSON export/import. Old v0 trainer progress is migrated into stable v1 keys such as `plata:trainer:bojning:state:v1`; exported v1 JSON is validated against the trainer ID before import.
+The current trainers share a small static learning kernel in [`shared/`](./shared/). It provides the common progress schema, LocalStorage migration, attempt recording, mastery-signal diagnostics, stats, gates, and JSON export/import. Progress uses schema v2 while retaining stable storage keys such as `plata:trainer:bojning:state:v1`; legacy exports are migrated and validated against the trainer ID before import.
 
 ## Why this is different
 
@@ -36,23 +36,41 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Portable learner profile proof:** a generated acceptance trace exports a real local profile, imports it into a clean session, replays both timelines, and checks plan execution, memory corrections, guided outcomes, and privacy guardrails.
 - **Lightweight companion:** the dashboard opens with a deterministic Today shell, a guided outcome session, and a read-only Hermes bridge brief without embedding a heavy agent runtime.
 - **Inspectable demo learner:** `dashboard.html?demo=learner` shows a rich B2 profile in memory only, so visitors can inspect personalization without overwriting their local progress.
-- **Static and forkable:** every trainer can run from `index.html`; GitHub Pages deploys a checked static artifact.
+- **Static and forkable:** every trainer runs from the repository's static files when served over HTTP; GitHub Pages deploys a checked artifact.
+
+## Ask an agent to create a lesson
+
+Give a coding agent the repository link and describe the lesson in normal language, for example:
+
+> Create a 12-minute B1 Danish lesson about asking a noisy neighbour to keep evenings quieter. Include a spoken opening, a written follow-up, and a repair for wording that sounds aggressive. Do not give legal advice.
+
+Repository-aware agents should automatically read [`AGENTS.md`](./AGENTS.md). That contract tells them to turn the request into a checked brief, author source-backed content, wire diagnostics and repair, and prove the result before delivery. The executable path is:
+
+```bash
+npm run lesson:new -- --request examples/lesson-request.example.json
+# the agent replaces the generic scaffold and completes lesson-request.json.delivery
+npm run lesson:verify -- --lesson lesson-b1-a-noisy-neighbour-in-an-apartment-building
+npm run check
+```
+
+See [`docs/AGENT_LESSON_WORKFLOW.md`](./docs/AGENT_LESSON_WORKFLOW.md) and the machine-readable [`lesson-request.schema.json`](./schemas/lesson-request.schema.json). The live Pages URL exposes [`llms.txt`](./llms.txt) for agent discovery, but the static site is read-only: an agent still needs repository write access to create and publish files.
 
 ## Available trainers
 
 | Trainer | Status | Description |
 |---------|--------|-------------|
-| [Lesson 01: The First Morning](./lessons/lesson-01/) | v0.1 | Narrative A0/A1 onboarding: arrive in Copenhagen, meet Lene, read signs, use `tak`, and say `Jeg hedder ...`. |
-| [B2: Det afhænger af, hvordan du siger det](./lessons/lesson-b2-radiator/) | v1.0 | B2 narrative: register, modal particles, complaint tone, and social consequences. Your wording changes the outcome. |
-| [B2: Efter interviews](./lessons/lesson-b2-job-followup/) | v1.0 gold | Professional follow-up after interviews: email tone, LinkedIn register, and patient precision. |
-| [bøjning-drill](./bojning-drill/) | v0.2 | Verb tenses (nutid/datid/førnutid) + noun bøjning (bestemt/ubestemt, ental/flertal). Type the answer. |
-| [ordstilling-drill](./ordstilling-drill/) | v0.1 | V2 rule, inversion, ledsætninger. Multiple choice with explanations. |
-| [vocab-sr](./vocab-sr/) | v0.1 | Spaced-repetition vocabulary, DA ↔ RU. 48 high-frequency A2-B1 words. |
-| skriveøvelser | planned | Production exercises with self-grade rubric |
-| lytteøvelser | planned | DR P1 klip with comprehension questions |
-| læseøvelser | planned | Timed reading + comprehension Q |
-| udtale | planned | Audio playback + IPA highlight |
-| mock-exam | planned | Full Studieprøven simulation (læse+lytte+skrive+mundtlig) |
+| [Lesson 01: The First Morning](./lessons/lesson-01/) | available | Narrative A0/A1 onboarding: arrive in Copenhagen, read signs, and say a first useful sentence. |
+| [A2: Hvor længe har du haft det sådan?](./lessons/lesson-a2-doctor/) | gold | Describe symptom duration and severity to a doctor or pharmacy without turning language practice into medical advice. |
+| [B1: Bolig og udlejer](./lessons/lesson-b1-bolig/) | gold | Housing repairs and tenant communication without passive or aggressive Danish. |
+| [B1: Når systemet siger nej](./lessons/lesson-b1-borgerservice/) | gold | Navigate Borgerservice, MitID, and CPR appointment pressure with calm agency. |
+| [B2: Det afhænger af, hvordan du siger det](./lessons/lesson-b2-radiator/) | gold | Register, modal particles, complaint tone, and social consequences. |
+| [B2: Efter interviews](./lessons/lesson-b2-job-followup/) | gold flagship | Professional follow-up after interviews: email tone, LinkedIn register, and patient precision. |
+| [B2: Hvem gør hvad](./lessons/lesson-b2-ordstilling/) | gold | V2, inversion, and `fordi`/`derfor` clause structure inside a conference narrative. |
+| [Bøjning drill](./bojning-drill/) | available | Verb tenses and noun inflection with Leitner review. |
+| [Ordstilling drill](./ordstilling-drill/) | available | Multiple-choice V2, inversion, and subordinate-clause practice with explanations. |
+| [Register drill](./register-drill/) | available | Passive agency, channel transfer, deadlines, and polite escalation. |
+| [Skriveøvelser](./skrive-drill/) | available | Written production with completion-only self-report; no automated accuracy claim. |
+| [Vocab SR](./vocab-sr/) | optional | Danish ↔ Russian spaced repetition for Russian-speaking learners; outside the English flagship path. |
 
 ## Run locally
 
@@ -63,7 +81,9 @@ python3 -m http.server 8000
 # open http://127.0.0.1:8000/
 ```
 
-No build, no dependencies, no server required. You can also open any trainer's `index.html` directly in a browser.
+No build step for the public app. For local development, serve this folder over HTTP (for example `./start_practice.sh` or `python3 -m http.server 8000`). Do not rely on `file://` — relative imports, repair deep-links, and the PWA need an HTTP origin.
+
+Canonical learner origin: [https://lamapony.github.io/plata-trainers/](https://lamapony.github.io/plata-trainers/).
 
 ## Contributor proof quickstart
 
@@ -79,6 +99,15 @@ The quickstart writes inspectable proof artifacts to `.dist/quickstart-proof/`: 
 
 ```bash
 npm run check
+```
+
+Browser QA (separate from the zero-dep `check` suite; requires `npm install` + Playwright browsers):
+
+```bash
+npx playwright install chromium webkit
+npm run check:browser
+# optional Chromium pixel baselines (system fonts → OS-specific):
+PLATA_VISUAL=1 npm run check:browser -- --update-snapshots
 ```
 
 Production Pages artifact:
@@ -276,7 +305,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. S
 
 ## Design
 
-Each trainer uses the headpage-v2 design system: Fraunces (display), Inter (body), JetBrains Mono (code), ember accent. Mobile-first, accessible.
+Each trainer uses the Platå editorial visual system: system UI fonts (no Google Fonts / third-party font requests), warm paper background, restrained brick accent. Mobile-first, accessible, offline-capable.
 
 ## Why public
 

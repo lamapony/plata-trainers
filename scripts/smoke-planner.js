@@ -229,8 +229,7 @@ function runDrillRepairRoutingSmoke(context) {
   assert(jobDecision.kind === "repair", "job follow-up closing miss should recommend repair");
   assert(jobDecision.secondaryHref.includes("register-drill"), "job follow-up repair should offer register drill secondary");
   assert(jobDecision.secondaryHref.includes("cat=deadline"), "job follow-up drill secondary opens deadline category");
-  assert(jobDecision.vocabRepair && jobDecision.vocabRepair.kind === "vocab", "job follow-up repair should offer vocab remediation");
-  assert(jobDecision.vocabRepair.href.includes("scene=email-closing"), "job follow-up vocab repair carries source scene");
+  assert(!jobDecision.vocabRepair, "flagship path must not auto-prescribe DA↔RU vocab");
 
   const genderState = kernel.freshState("lesson-b2-job-followup");
   kernel.recordAttempt(genderState, {
@@ -251,12 +250,11 @@ function runDrillRepairRoutingSmoke(context) {
   assert(genderDecision.secondaryHref.includes("cat=common-gender"), "job follow-up bojning secondary opens common-gender trap");
 
   const vocabLink = catalog.vocabRepairLink("lesson-b2-job-followup", "email-closing");
-  assert(vocabLink.includes("vocab-sr"), "vocab repair link targets vocab SR");
+  assert(vocabLink.includes("vocab-sr"), "vocab repair link helper still builds absolute SR URLs");
   assert(vocabLink.includes("from=lesson-b2-job-followup"), "vocab repair link carries source lesson");
   assert(vocabLink.includes("scene=email-closing"), "vocab repair link carries source scene");
   const vocabRemediation = catalog.buildVocabRemediation("lesson-b2-job-followup", "email-closing");
-  assert(vocabRemediation && vocabRemediation.kind === "vocab", "job follow-up closing scene should offer vocab remediation");
-  assert(vocabRemediation.href.includes("proces") === false, "vocab remediation href uses query params not inline words");
+  assert(vocabRemediation === null, "flagship scenes must not auto-build vocab remediation");
 
   const skriveDrill = catalog.drillForSignal("symptom-severity");
   assert(skriveDrill && skriveDrill.id === "skrive", "catalog maps symptom-severity to skrive drill");
@@ -312,6 +310,35 @@ function runDrillDecisionSmoke(context) {
   assert(clean.kind === "continue", "clean drill should continue the chain");
   assert(clean.primaryHref === "../ordstilling-drill/", "bojning chain should move to ordstilling");
   assert(clean.trace.rule === "drill.continue.clean-session", "clean drill carries a continuation trace");
+
+  const writingRevision = planner.drillDecision({
+    trainerId: "skrive",
+    state: kernel.freshState("skrive"),
+    assessmentKind: "self-report",
+    sessionResults: [
+      { assessmentKind: "self-report", completed: true },
+      { assessmentKind: "self-report", completed: false }
+    ],
+    rootPrefix: "../"
+  });
+  assert(writingRevision.kind === "repeat", "incomplete writing self-report should recommend revision");
+  assert(writingRevision.trace.rule === "drill.repeat.self-report-revision", "writing revision has a non-accuracy trace rule");
+  assert(writingRevision.meta.includes("No accuracy claimed"), "writing revision does not claim objective accuracy");
+  assert(writingRevision.trace.inputs.session.completed === 1, "writing revision trace keeps completion count");
+  assert(writingRevision.trace.inputs.session.accuracy === undefined, "writing revision trace omits objective accuracy");
+
+  const writingComplete = planner.drillDecision({
+    trainerId: "skrive",
+    state: kernel.freshState("skrive"),
+    assessmentKind: "self-report",
+    sessionResults: [
+      { assessmentKind: "self-report", completed: true },
+      { assessmentKind: "self-report", completed: true }
+    ],
+    rootPrefix: "../"
+  });
+  assert(writingComplete.kind === "continue", "complete writing self-report should continue the chain");
+  assert(writingComplete.meta.includes("No accuracy claimed"), "complete writing self-report stays completion-only");
 
   state.meta.dailyAttempts[new Date().toISOString().slice(0, 10)] = 20;
   const enough = planner.drillDecision({
@@ -576,7 +603,7 @@ function run() {
   console.log("ok - planner recommends lesson repair from weak mastery");
   console.log("ok - planner routes weak word-order signals to ordstilling drill repair");
   console.log("ok - planner routes job follow-up closing signals to register deadline drill");
-  console.log("ok - planner routes weak scene vocabulary to vocab SR repair");
+  console.log("ok - planner routes weak scene vocabulary away from flagship (no auto vocab)");
   console.log("ok - planner routes doctor health signals to skrive sundhed drill");
   console.log("ok - planner routes passive-agency signals to register drill repair");
   console.log("ok - planner routes noun/verb trap signals to bojning drill repair");

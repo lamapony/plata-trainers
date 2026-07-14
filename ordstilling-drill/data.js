@@ -1,10 +1,12 @@
-/* platå · ordstilling-drill · data v0.1
+/* platå · ordstilling-drill · data v0.2
  *
  * Word order drill for Danish. V2 rule, inversion, ledsætninger.
- * 34 multiple-choice items, 4 options each, 1 correct.
  *
- * Format: each item has a category, a prompt, 4 options, correct index, and a Danish explanation.
- * Categories: v2 (subject first), inversion (adverbial first), ledsaetning (subordinate clause).
+ * Format: category, prompt, 4 options, correct index, optional accepted[] for multiple
+ * valid answers, and a Danish explanation.
+ * Categories: v2 (subject first), inversion (adverbial first), ledsaetning
+ * (conjunction → subject → sentence adverb → finite verb — not "verb at end").
+ * When accepted is omitted, grading uses [correct].
  */
 
 window.PLATA_DATA = {
@@ -251,18 +253,19 @@ window.PLATA_DATA = {
       correct: 0,
       why: "Modal-adverbial 'selvfølgelig' først → inversion. B er V2-brud." },
 
-    // ---------- Ledsætninger: verb at end ----------
-    { cat: "ledsaetning", prompt: "Vælg den ledsætning med verb i slutningen:",
+    // ---------- Ledsætninger: konjunktion → subjekt → sætningsadverbial → finit verbum ----------
+    { cat: "ledsaetning", prompt: "Vælg den korrekte ledsætning (konjunktion → subjekt → finit verbum):",
       options: [
         "Jeg tror, at han kommer i morgen.",
-        "Jeg tror, at han i morgen kommer.",
+        "Jeg tror, at i morgen han kommer.",
         "Jeg tror, han kommer i morgen.",
-        "Jeg tror, at han kommer i morgen sent."
+        "Jeg tror, kommer han i morgen."
       ],
       correct: 0,
-      why: "Alle undtagen C er korrekte (verbum 'kommer' i slutningen af ledsætning). A er den enkleste, standard-form. C mangler 'at'." },
+      accepted: [0, 2],
+      why: "I ledsætninger: konjunktion (evt. 'at') → subjekt → finit verbum. A og C er begge normale, fordi 'at' kan udelades efter 'tror'. B sætter tidsleddet før subjektet; D vender verbum og subjekt." },
 
-    { cat: "ledsaetning", prompt: "Vælg den ledsætning med verb i slutningen:",
+    { cat: "ledsaetning", prompt: "Vælg den korrekte ledsætning (konjunktion → subjekt → finit verbum):",
       options: [
         "Hun siger, at hun er træt.",
         "Hun siger, hun er træt.",
@@ -270,49 +273,53 @@ window.PLATA_DATA = {
         "Hun siger, er hun træt."
       ],
       correct: 0,
-      why: "Verbum 'er' i slutningen. C er V2-brud inde i ledsætning. D er forkert inversion." },
+      accepted: [0, 1],
+      why: "Efter 'at'/udsagtsverbum: subjekt 'hun', så finit 'er', så prædikat. 'at' kan udelades (B). C sætter prædikat før finit verbum; D inverterer." },
 
-    { cat: "ledsaetning", prompt: "Vælg den ledsætning med verb i slutningen:",
+    { cat: "ledsaetning", prompt: "Vælg den korrekte ledsætning (konjunktion → subjekt → finit verbum):",
       options: [
         "Vi ved, at de bor i Aarhus.",
         "Vi ved, de bor i Aarhus.",
-        "Vi ved, at de i Aarhus bor.",
+        "Vi ved, at i Aarhus de bor.",
         "Vi ved, bor de i Aarhus."
       ],
       correct: 0,
-      why: "Verbum 'bor' i slutningen. D er V2-brud inde i ledsætning." },
+      accepted: [0, 1],
+      why: "A/B er standard, og 'at' kan udelades efter 'ved'. C sætter stedsleddet før subjektet; D inverterer (spørgsmålsorden)." },
 
-    { cat: "ledsaetning", prompt: "Vælg den ledsætning med verb i slutningen:",
+    { cat: "ledsaetning", prompt: "Vælg den korrekte ledsætning (konjunktion → subjekt → finit verbum):",
       options: [
         "Han spørger, om jeg har tid i morgen.",
         "Han spørger, om jeg tid har i morgen.",
-        "Han spørger, om jeg i morgen har tid.",
+        "Han spørger, om i morgen jeg har tid.",
         "Han spørger, har jeg tid i morgen."
       ],
       correct: 0,
-      why: "Verbum 'har' i slutningen. C er også korrekt. A er den enkleste form. D er V2-brud." },
+      why: "'Om' → subjekt 'jeg' → finit 'har'. B sætter objekt før verbet; C sætter tidsleddet før subjektet; D inverterer." },
 
-    { cat: "ledsaetning", prompt: "Vælg den ledsætning med verb i slutningen:",
+    { cat: "ledsaetning", prompt: "Vælg den korrekte ledsætning (konjunktion → subjekt → finit verbum):",
       options: [
         "De siger, at de kommer i aften.",
         "De siger, de kommer i aften.",
-        "De siger, at de i aften kommer.",
+        "De siger, at i aften de kommer.",
         "De siger, kommer de i aften."
       ],
       correct: 0,
-      why: "Verbum 'kommer' i slutningen. D er V2-brud." },
+      accepted: [0, 1],
+      why: "A/B er standard, og 'at' kan udelades efter 'siger'. C sætter tidsleddet før subjektet; D inverterer." },
 
-    { cat: "ledsaetning", prompt: "Vælg den ledsætning med verb i slutningen:",
+    { cat: "ledsaetning", prompt: "Vælg den korrekte ledsætning (konjunktion → subjekt → finit verbum):",
       options: [
         "Jeg håber, at vejret bliver godt i morgen.",
         "Jeg håber, vejret bliver godt i morgen.",
-        "Jeg håber, at vejret i morgen bliver godt.",
+        "Jeg håber, at i morgen vejret bliver godt.",
         "Jeg håber, bliver vejret godt i morgen."
       ],
       correct: 0,
-      why: "Verbum 'bliver' i slutningen. D er V2-brud." },
+      accepted: [0, 1],
+      why: "A/B er standard, og 'at' kan udelades efter 'håber'. C sætter tidsleddet før subjektet; D inverterer." },
 
-    { cat: "ledsaetning", prompt: "Vælg den ledsætning med verb i slutningen:",
+    { cat: "ledsaetning", prompt: "Vælg den korrekte ledsætning med hv-ord (hv-ord → subjekt → finit verbum):",
       options: [
         "Mor spørger, hvornår vi kommer hjem.",
         "Mor spørger, vi kommer hjem hvornår.",
@@ -320,9 +327,9 @@ window.PLATA_DATA = {
         "Mor spørger, kommer vi hjem hvornår."
       ],
       correct: 0,
-      why: "Verbum 'kommer' i slutningen. C er V2-brud inde i ledsætning." },
+      why: "Indlejret hv-spørgsmål: 'hvornår' → subjekt 'vi' → finit 'kommer'. C bruger spørgsmålsorden (V2) inde i ledsætningen." },
 
-    { cat: "ledsaetning", prompt: "Vælg den ledsætning med verb i slutningen:",
+    { cat: "ledsaetning", prompt: "Vælg den korrekte ledsætning med hv-ord (hv-ord → subjekt → finit verbum):",
       options: [
         "Han ved ikke, hvor hun bor.",
         "Han ved ikke, hun bor hvor.",
@@ -330,9 +337,9 @@ window.PLATA_DATA = {
         "Han ved ikke, hun bor der hvor."
       ],
       correct: 0,
-      why: "Verbum 'bor' i slutningen. C er V2-brud." },
+      why: "'Hvor' → subjekt 'hun' → finit 'bor'. De andre bryder midterfeltets rækkefølge." },
 
-    { cat: "ledsaetning", prompt: "Vælg den ledsætning med verb i slutningen:",
+    { cat: "ledsaetning", prompt: "Vælg den korrekte ledsætning med hv-ord (hv-ord → subjekt → finit verbum):",
       options: [
         "Læreren forklarer, hvorfor dansk er svært.",
         "Læreren forklarer, dansk er svært hvorfor.",
@@ -340,9 +347,9 @@ window.PLATA_DATA = {
         "Læreren forklarer, er dansk svært hvorfor."
       ],
       correct: 0,
-      why: "Verbum 'er' i slutningen. C er V2-brud (verbum før prædikat)." },
+      why: "'Hvorfor' → subjekt 'dansk' → finit 'er' → prædikat. C sætter prædikat før finit verbum." },
 
-    { cat: "ledsaetning", prompt: "Vælg den ledsætning med verb i slutningen:",
+    { cat: "ledsaetning", prompt: "Vælg den korrekte ledsætning med hv-ord (hv-ord → subjekt → finit verbum):",
       options: [
         "Jeg forstår, hvad du mener.",
         "Jeg forstår, du mener hvad.",
@@ -350,7 +357,7 @@ window.PLATA_DATA = {
         "Jeg forstår, mener du hvad."
       ],
       correct: 0,
-      why: "Verbum 'mener' i slutningen. D er V2-brud." },
+      why: "'Hvad' → subjekt 'du' → finit 'mener'. D inverterer." },
 
     // ---------- Contextual Narrative Repair Cards ----------
     { cat: "inversion",

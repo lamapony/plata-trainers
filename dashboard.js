@@ -148,12 +148,14 @@ function computeStats(state, trainer) {
   const graph = competencyGraph();
   const weakCompetencies = graph && graph.rank ? graph.rank(weakMastery) : [];
   const registerProfile = kernel.getRegisterProfile ? kernel.getRegisterProfile(state) : { formal: 0, informal: 0, neutral: 0, total: 0 };
+  const due = kernel.countDueItems ? kernel.countDueItems(state) : records.filter(r => !r.lastSeen || !r.nextDueAt).length;
   return {
     total,
     correct,
     accuracy: total ? Math.round((correct / total) * 100) : null,
     mastered,
     totalItems,
+    due,
     currentStreak: meta.currentStreak || 0,
     longestStreak: meta.longestStreak || 0,
     lastSessionDate: meta.lastSessionDate || "",
@@ -668,6 +670,18 @@ function planEvidenceText(step) {
   if (evidence.reason === "repair-complete") return "Repair path completed";
   if (evidence.reason === "lesson-complete") return "Lesson completion recorded";
 
+  if (evidence.reason === "self-report-session-complete") {
+    const total = Number(evidence.total || 0);
+    const completed = Number(evidence.completed || 0);
+    const needsRevision = Number(evidence.needsRevision || 0);
+    const rate = Number(evidence.completionRate);
+    const count = total ? `${completed}/${total} completed` : "completed";
+    const score = Number.isFinite(rate) ? ` · ${rate}%` : "";
+    const revision = needsRevision ? ` · ${needsRevision} need revision` : "";
+    const mode = evidence.mode ? ` · ${evidence.mode}` : "";
+    return `Writing self-report: ${count}${score}${revision}${mode} · no accuracy claimed`;
+  }
+
   if (evidence.reason === "drill-session-complete") {
     const total = Number(evidence.total || 0);
     const correct = Number(evidence.correct || 0);
@@ -936,6 +950,10 @@ function renderTodayProgram(candidates, context) {
     : null;
   const todayHeadroomHtml = todayInterp ? headroomCard(todayInterp, { extraClass: "today-headroom" }) : "";
   const todayFactsHtml = `
+    ${todayMetricHtml("due items", candidates.reduce(function (sum, entry) {
+      const due = entry && entry.stats && typeof entry.stats.due === "number" ? entry.stats.due : 0;
+      return sum + due;
+    }, 0))}
     ${todayMetricHtml("program state", program.kind)}
     ${todayMetricHtml("visible memory facts", visibleFacts.length)}
     ${todayMetricHtml("open step", step ? step.number : "done")}
@@ -957,34 +975,28 @@ function renderTodayProgram(candidates, context) {
         <p class="eyebrow">${escapeHtml(program.eyebrow)}</p>
         <h3>${escapeHtml(program.headline)}</h3>
         <p class="today-message">${escapeHtml(program.message)}</p>
-        ${todayHeadroomHtml}
         ${step && actionHref ? `
           <div class="today-action">
             <a class="btn primary" href="${escapeHtml(actionHref)}">${escapeHtml(program.actionLabel)}</a>
-            <span class="today-route-meta">${escapeHtml(program.routeMeta)}</span>
           </div>
           <p class="today-outcome">${escapeHtml(program.why)}</p>
         ` : `<p class="today-outcome">${escapeHtml(program.why)}</p>`}
-        </div>
       </div>
-      
+
       <details class="headroom-appendix today-evidence-appendix" style="margin: 0 1.5rem 1.5rem 1.5rem; border-top:1px solid var(--line); padding-top:1rem;">
-        <summary style="cursor:pointer; font-size:0.85rem; color:var(--text-light); font-weight:500;">Route evidence and citations</summary>
+        <summary style="cursor:pointer; font-size:0.85rem; color:var(--muted); font-weight:500;">Route evidence and citations</summary>
         <div class="today-context" style="margin-top:1rem;">
-          <div class="today-why">
-            <span class="eyebrow">Why this</span>
-            <p>${escapeHtml(program.why)}</p>
-            <div class="today-tags">${evidenceTagsHtml}</div>
-          </div>
+          ${program.routeMeta ? `<p class="today-route-meta">${escapeHtml(program.routeMeta)}</p>` : ""}
+          ${todayHeadroomHtml || ""}
           <div class="today-facts-panel">
             <span class="eyebrow">Session metrics</span>
             <div class="today-facts">${todayFactsHtml}</div>
+            <div class="today-tags">${evidenceTagsHtml}</div>
           </div>
         </div>
         ${citationsHtml}
+        ${todayStageStripHtml(program.kind)}
       </details>
-
-      ${todayStageStripHtml(program.kind)}
     </article>
   `;
 }
@@ -1304,6 +1316,7 @@ function renderTrainerCards() {
     const statsHtml = hasData ? `
         <div class="stats-mini">
           <div><strong>${stats.total}</strong> attempts</div>
+          <div><strong>${stats.due}</strong> due</div>
           <div><strong>${stats.accuracy !== null ? stats.accuracy + "%" : "—"}</strong> accuracy</div>
           <div><strong>${stats.mastered}/${stats.totalItems}</strong> mastered</div>
           <div><strong>${getStreakLabel(stats.currentStreak)}</strong> streak</div>
@@ -1377,7 +1390,7 @@ function renderPracticePlan(candidates, context) {
         </div>
         <span>${escapeHtml(plan.meta || "")}</span>
       </div>
-      <div class="plan-progress" aria-label="${planProgress}% complete">
+      <div class="plan-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${planProgress}" aria-label="${planProgress}% complete">
         <span style="width: ${planProgress}%"></span>
       </div>
       ${advisorReceiptHtml(advisorReceipt)}
@@ -1931,9 +1944,72 @@ function renderProfilePortabilityDiagnostics(summary) {
   openProfilePortabilityDrawer();
 }
 
+function profileImportAdapters() {
+  const kernel = window.PlataKernel;
+  const planner = window.PlataPlanner;
+  const knownTrainerIds = new Set(trainers().map(trainer => trainer.id));
+  const assertKnownTrainer = (trainerId) => {
+    if (!knownTrainerIds.has(trainerId)) throw new Error(`Unknown trainer in backup: ${trainerId}`);
+  };
+  return {
+    readTrainers: () => collectTrainerStates(),
+    readPracticePlan: () => currentPracticePlan(),
+    readMemoryDeletedIds: () => readDeletedMemoryFactIds(),
+    readMemoryCorrections: () => readMemoryCorrections(),
+    readMemoryVault: () => readStoredMemoryVault(),
+    readGuidedOutcomes: () => (
+      window.PlataGuidedSession && window.PlataGuidedSession.readOutcomeLedger
+        ? window.PlataGuidedSession.readOutcomeLedger()
+        : null
+    ),
+    replaceTrainer: (trainerId, state) => {
+      assertKnownTrainer(trainerId);
+      const handle = kernel.createTrainerState({ trainerId });
+      const importedState = kernel.importState(state, trainerId);
+      handle.replace(importedState);
+    },
+    clearTrainer: (trainerId) => {
+      assertKnownTrainer(trainerId);
+      const handle = kernel.createTrainerState({ trainerId });
+      handle.fresh();
+    },
+    replaceTrainers: (map) => {
+      const snapshot = map || {};
+      knownTrainerIds.forEach((trainerId) => {
+        const handle = kernel.createTrainerState({ trainerId });
+        if (snapshot[trainerId]) handle.replace(kernel.importState(snapshot[trainerId], trainerId));
+        else handle.fresh();
+      });
+    },
+    writePracticePlan: (plan) => planner && planner.savePracticePlan ? planner.savePracticePlan(plan) : null,
+    clearPracticePlan: () => planner && planner.clearPracticePlan && planner.clearPracticePlan(),
+    writeMemoryDeletedIds: (ids) => writeDeletedMemoryFactIds(ids),
+    writeMemoryCorrections: (records) => writeMemoryCorrections(records),
+    writeMemoryVault: (vault) => writeStoredMemoryVault(vault),
+    writeGuidedOutcomes: (ledger) => {
+      if (window.PlataGuidedSession && window.PlataGuidedSession.saveOutcomeLedger) {
+        window.PlataGuidedSession.saveOutcomeLedger(ledger || { updatedAt: new Date().toISOString(), outcomes: [] });
+      }
+    },
+    mergeMemoryVault: (vaultPayload) => mergeImportedMemoryVault(vaultPayload, collectTrainerStates(), currentPracticePlan())
+  };
+}
+
+function renderImportPreview(preview, requiresConfirm) {
+  const statusEl = $("#import-status");
+  if (!statusEl || !preview) return;
+  const lines = (preview.summaryLines || []).map((line) => `• ${line}`).join("\n");
+  statusEl.textContent = (requiresConfirm
+    ? "Preview (confirm required):\n"
+    : "Preview:\n") + lines + (requiresConfirm ? "\nClick Import again and confirm the clear." : "\nApply this import?");
+  statusEl.style.color = requiresConfirm ? "var(--ember)" : "var(--ink)";
+  statusEl.style.whiteSpace = "pre-wrap";
+}
+
 function exportAll() {
   const all = collectTrainerStates();
   const kernel = window.PlataKernel;
+  const profileApi = window.PlataProfile;
   const practicePlan = currentPracticePlan();
   const eventLog = profileEventLogPayload(all, practicePlan);
   const memoryBundle = buildMemoryFacts(all, practicePlan);
@@ -1972,30 +2048,53 @@ function exportAll() {
   const guidedSessionOutcomes = window.PlataGuidedSession && window.PlataGuidedSession.readOutcomeLedger
     ? window.PlataGuidedSession.readOutcomeLedger()
     : null;
-  const payload = {
-    exportedAt,
-    demoProfile: isDemoMode() ? "learner" : null,
-    profileSchemaVersion: 1,
-    schemaVersion: kernel.schemaVersion,
-    trainers: all,
-    practicePlan: practicePlan || null,
-    eventLog,
-    memory: window.PlataMemory ? {
-      schemaVersion: window.PlataMemory.memorySchemaVersion,
-      fingerprint: memoryBundle.fingerprint,
-      summary: memoryBundle.summary,
-      facts: memoryBundle.visibleFacts,
-      deletedFactIds: memoryBundle.deletedIds,
-      correctionRecords: memoryBundle.corrections
-    } : null,
-    learnerModel,
-    memoryVault,
-    memoryBrief,
-    agentHandoff,
-    companion,
-    hermesBrief,
-    guidedSessionOutcomes
-  };
+  const payload = profileApi && profileApi.buildProfileBackup
+    ? profileApi.buildProfileBackup({
+      demoProfile: isDemoMode() ? "learner" : null,
+      schemaVersion: kernel.schemaVersion,
+      trainers: all,
+      practicePlan: practicePlan || null,
+      eventLog,
+      memory: window.PlataMemory ? {
+        schemaVersion: window.PlataMemory.memorySchemaVersion,
+        fingerprint: memoryBundle.fingerprint,
+        summary: memoryBundle.summary,
+        facts: memoryBundle.visibleFacts,
+        deletedFactIds: memoryBundle.deletedIds,
+        correctionRecords: memoryBundle.corrections
+      } : null,
+      learnerModel,
+      memoryVault,
+      memoryBrief,
+      agentHandoff,
+      companion,
+      hermesBrief,
+      guidedSessionOutcomes
+    }, { exportedAt })
+    : {
+      exportedAt,
+      demoProfile: isDemoMode() ? "learner" : null,
+      profileSchemaVersion: 1,
+      schemaVersion: kernel.schemaVersion,
+      trainers: all,
+      practicePlan: practicePlan || null,
+      eventLog,
+      memory: window.PlataMemory ? {
+        schemaVersion: window.PlataMemory.memorySchemaVersion,
+        fingerprint: memoryBundle.fingerprint,
+        summary: memoryBundle.summary,
+        facts: memoryBundle.visibleFacts,
+        deletedFactIds: memoryBundle.deletedIds,
+        correctionRecords: memoryBundle.corrections
+      } : null,
+      learnerModel,
+      memoryVault,
+      memoryBrief,
+      agentHandoff,
+      companion,
+      hermesBrief,
+      guidedSessionOutcomes
+    };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -2006,6 +2105,8 @@ function exportAll() {
   renderProfilePortabilityDiagnostics(summarizeExportPayload(payload));
 }
 
+let pendingImportPrepared = null;
+
 function importAll() {
   if (isDemoMode()) {
     const statusEl = $("#import-status");
@@ -2015,7 +2116,15 @@ function importAll() {
     }
     return;
   }
+  const profileApi = window.PlataProfile;
+  if (!profileApi || !profileApi.prepareImport || !profileApi.commitImport) {
+    $("#import-status").textContent = "Profile import module missing.";
+    $("#import-status").style.color = "var(--ember)";
+    return;
+  }
+
   const input = $("#import-file");
+  input.value = "";
   input.click();
   input.onchange = () => {
     const file = input.files[0];
@@ -2023,87 +2132,62 @@ function importAll() {
     const reader = new FileReader();
     reader.onload = e => {
       try {
-        const payload = JSON.parse(e.target.result);
-        const kernel = window.PlataKernel;
-        const statusEl = $("#import-status");
-        const vaultApi = window.PlataMemoryVault;
-        const vaultPayload = vaultApi && payload && payload.vaultType === vaultApi.vaultType ? payload : payload && payload.memoryVault;
-        const standaloneVaultImport = !!(vaultPayload && payload && payload.vaultType === vaultApi.vaultType);
-        let imported = 0;
-        let skipped = 0;
-
-        if (payload.trainers && typeof payload.trainers === "object") {
-          Object.entries(payload.trainers).forEach(([trainerId, state]) => {
-            try {
-              const handle = kernel.createTrainerState({ trainerId });
-              const importedState = kernel.importState(state, trainerId);
-              handle.replace(importedState);
-              imported++;
-            } catch (err) {
-              console.warn("Import failed for", trainerId, err);
-              skipped++;
-            }
+        let prepared = profileApi.prepareImport(e.target.result, { confirmClearNulls: false });
+        if (!prepared.ok && !prepared.requiresConfirm) {
+          pendingImportPrepared = null;
+          $("#import-status").textContent = prepared.error || "Invalid import file";
+          $("#import-status").style.color = "var(--ember)";
+          renderProfilePortabilityDiagnostics({
+            operation: "import",
+            trainerCount: 0,
+            skippedTrainers: 0,
+            planPreserved: false,
+            planSteps: 0,
+            vaultFacts: 0,
+            memoryCorrections: 0,
+            guidedOutcomes: 0,
+            standaloneVault: false,
+            error: prepared.error
           });
+          return;
         }
 
-        const planner = window.PlataPlanner;
-        const hasPracticePlan = Object.prototype.hasOwnProperty.call(payload, "practicePlan");
-        let restoredPlan = false;
-        if (!standaloneVaultImport) {
-          if (planner && planner.savePracticePlan && hasPracticePlan && payload.practicePlan) {
-            const savedPlan = planner.savePracticePlan(payload.practicePlan);
-            restoredPlan = !!(savedPlan && Array.isArray(savedPlan.steps) && savedPlan.steps.length);
-            if (!restoredPlan) planner.clearPracticePlan?.();
-          } else {
-            planner?.clearPracticePlan?.();
+        renderImportPreview(prepared.preview, prepared.requiresConfirm);
+        const previewLines = (prepared.preview && prepared.preview.summaryLines) || [];
+        if (prepared.requiresConfirm) {
+          const confirmed = window.confirm(
+            previewLines.concat([
+              "",
+              "This backup sets one or more sections to null.",
+              "Clear those sections and continue?"
+            ]).join("\n")
+          );
+          if (!confirmed) {
+            pendingImportPrepared = null;
+            $("#import-status").textContent = "Import cancelled — local data unchanged.";
+            $("#import-status").style.color = "var(--ink)";
+            return;
+          }
+          prepared = profileApi.prepareImport(e.target.result, { confirmClearNulls: true });
+          if (!prepared.ok) {
+            $("#import-status").textContent = prepared.error || "Import confirmation failed";
+            $("#import-status").style.color = "var(--ember)";
+            return;
+          }
+        } else {
+          const apply = window.confirm(previewLines.concat(["", "Apply this import?"]).join("\n"));
+          if (!apply) {
+            pendingImportPrepared = null;
+            $("#import-status").textContent = "Import cancelled — local data unchanged.";
+            $("#import-status").style.color = "var(--ink)";
+            return;
           }
         }
 
-        if (Object.prototype.hasOwnProperty.call(payload, "memory") && payload.memory) {
-          writeDeletedMemoryFactIds(Array.isArray(payload.memory.deletedFactIds) ? payload.memory.deletedFactIds : []);
-          writeMemoryCorrections(Array.isArray(payload.memory.correctionRecords) ? payload.memory.correctionRecords : []);
-        } else if (!standaloneVaultImport && !vaultPayload) {
-          writeDeletedMemoryFactIds([]);
-          writeMemoryCorrections([]);
-          writeStoredMemoryVault(null);
-        }
-
-        const hasGuidedOutcomes = Object.prototype.hasOwnProperty.call(payload, "guidedSessionOutcomes");
-        if (!standaloneVaultImport && window.PlataGuidedSession && window.PlataGuidedSession.saveOutcomeLedger) {
-          if (hasGuidedOutcomes && payload.guidedSessionOutcomes) {
-            window.PlataGuidedSession.saveOutcomeLedger(payload.guidedSessionOutcomes);
-          } else {
-            window.PlataGuidedSession.saveOutcomeLedger({ updatedAt: new Date().toISOString(), outcomes: [] });
-          }
-        }
-
-        const mergedVault = vaultPayload ? mergeImportedMemoryVault(vaultPayload, collectTrainerStates(), currentPracticePlan()) : null;
-        const planText = restoredPlan ? ", restored active plan" : "";
-        const vaultText = mergedVault ? `, merged memory vault (${mergedVault.factCount} fact(s))` : "";
-        statusEl.textContent = standaloneVaultImport && mergedVault
-          ? `Merged memory vault (${mergedVault.factCount} fact(s)). Refresh to see changes.`
-          : `Imported ${imported} trainer state(s)${skipped ? `, skipped ${skipped}` : ""}${planText}${vaultText}. Refresh to see changes.`;
-        statusEl.style.color = "var(--green)";
-        renderProfilePortabilityDiagnostics(summarizeImportResult({
-          imported,
-          skipped,
-          restoredPlan,
-          planSteps: restoredPlan && payload.practicePlan && Array.isArray(payload.practicePlan.steps)
-            ? payload.practicePlan.steps.length
-            : 0,
-          vaultFacts: mergedVault ? mergedVault.factCount : 0,
-          memoryCorrections: payload.memory && Array.isArray(payload.memory.correctionRecords)
-            ? payload.memory.correctionRecords.length
-            : 0,
-          guidedOutcomes: !standaloneVaultImport && hasGuidedOutcomes && payload.guidedSessionOutcomes
-            ? (payload.guidedSessionOutcomes.totals
-              ? payload.guidedSessionOutcomes.totals.outcomes
-              : (Array.isArray(payload.guidedSessionOutcomes.outcomes) ? payload.guidedSessionOutcomes.outcomes.length : 0))
-            : 0,
-          standaloneVault: standaloneVaultImport
-        }));
-        setTimeout(() => { statusEl.textContent = ""; }, 5000);
+        pendingImportPrepared = null;
+        applyPreparedImport(prepared, prepared.requiresConfirm);
       } catch (err) {
+        pendingImportPrepared = null;
         $("#import-status").textContent = "Invalid JSON: " + err.message;
         $("#import-status").style.color = "var(--ember)";
         renderProfilePortabilityDiagnostics({
@@ -2122,6 +2206,39 @@ function importAll() {
     };
     reader.readAsText(file);
   };
+}
+
+function applyPreparedImport(prepared, confirmClearNulls) {
+  const statusEl = $("#import-status");
+  const result = window.PlataProfile.commitImport(prepared, profileImportAdapters(), {
+    confirmClearNulls: !!confirmClearNulls
+  });
+  if (!result.ok) {
+    statusEl.textContent = result.error || "Import failed";
+    statusEl.style.color = "var(--ember)";
+    renderProfilePortabilityDiagnostics({
+      operation: "import",
+      trainerCount: 0,
+      skippedTrainers: result.skipped || 0,
+      planPreserved: false,
+      planSteps: 0,
+      vaultFacts: 0,
+      memoryCorrections: 0,
+      guidedOutcomes: 0,
+      standaloneVault: false,
+      error: result.error
+    });
+    return;
+  }
+  const planText = result.restoredPlan ? ", restored active plan" : "";
+  const vaultText = result.vaultFacts ? `, merged memory vault (${result.vaultFacts} fact(s))` : "";
+  statusEl.style.whiteSpace = "normal";
+  statusEl.textContent = result.standaloneVault && result.vaultFacts
+    ? `Merged memory vault (${result.vaultFacts} fact(s)). Refresh to see changes.`
+    : `Imported ${result.imported} trainer state(s)${result.skipped ? `, skipped ${result.skipped}` : ""}${planText}${vaultText}. Refresh to see changes.`;
+  statusEl.style.color = "var(--green)";
+  renderProfilePortabilityDiagnostics(summarizeImportResult(result));
+  setTimeout(() => { statusEl.textContent = ""; }, 5000);
 }
 
 function renderDemoProfileBanner() {

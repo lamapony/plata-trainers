@@ -15,7 +15,7 @@ Good MVP contributions are concrete and verifiable:
 
 ## Project constraints
 
-- Keep each trainer openable via `index.html` directly.
+- Keep each trainer openable via its `index.html` over a local HTTP server (`./start_practice.sh` or `python3 -m http.server`). Avoid `file://`.
 - Keep progress local to the browser (`LocalStorage`).
 - Preserve JSON export/import compatibility where possible.
 - Do not add tracking, analytics, or server calls.
@@ -99,6 +99,7 @@ On pull requests, QA also compares the generated quality report against the base
 - `prompt`: what the learner must choose.
 - `options`: exactly four answer options.
 - `correct`: index `0..3`.
+- optional `accepted`: every intentionally valid option index, including `correct`.
 - `why`: short Danish explanation.
 
 ### Vocab SR
@@ -122,6 +123,15 @@ lessons/your-lesson-id/
 ├── data.js         # exports window.PLATA_LESSON_YOUR_ID
 └── app.js          # one line: PlataLessonEngine.run(window.PLATA_LESSON_YOUR_ID)
 ```
+
+For agent-authored work, start from a natural-language request contract rather than invoking the generic scaffold directly:
+
+```bash
+npm run lesson:new -- --request examples/lesson-request.example.json
+npm run lesson:verify -- --lesson lesson-b1-a-noisy-neighbour-in-an-apartment-building
+```
+
+The first command intentionally produces `delivery.status: "scaffold"`. The second refuses unchanged template language, missing request coverage, uncited objectives, unreviewed constraints, or sources that are not present in the lesson. See [`docs/AGENT_LESSON_WORKFLOW.md`](./docs/AGENT_LESSON_WORKFLOW.md).
 
 For a new B2 gold lesson, start with the checked scaffold instead of copying by hand:
 

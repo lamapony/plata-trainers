@@ -1,7 +1,7 @@
 /* platå · register-drill · app v0.1
  *
  * Multiple choice register / agency drill after B2 narrative misses.
- * Lite SM-2 spaced repetition (same shape as ordstilling-drill).
+ * Leitner spaced repetition (same shape as ordstilling-drill).
  * Categories: passive, deadline, escalation, channel, blandet
  */
 
@@ -26,8 +26,10 @@
 
   const SIGNAL_CATEGORY = {
     "passive-agency": "passive",
-    "formal-register-control": "passive",
+    "formal-register-control": "channel",
+    "platform-register-shift": "channel",
     "consequence-aware-tone": "deadline",
+    "professional-email-agency": "deadline",
     "understatement-with-agency": "escalation",
     "agency-without-pressure": "passive",
     "concrete-next-step": "deadline",
@@ -238,11 +240,14 @@
 
   function renderNextStep() {
     if (!els.nextStep || !window.PlataNextStep) return;
+    const params = new URLSearchParams(window.location.search);
     els.nextStep.innerHTML = window.PlataNextStep.render(window.PlataNextStep.drill({
       trainerId: TRAINER_ID,
       state,
       sessionResults,
-      rootPrefix: "../"
+      rootPrefix: "../",
+      fromLesson: params.get("from") || "",
+      signal: params.get("signal") || ""
     }));
     const againLink = els.nextStep.querySelector("a[href='#again-btn']");
     if (againLink) {
@@ -298,17 +303,13 @@
       return;
     }
     const signal = params.get("signal");
-    const fromLesson = params.get("from") || "";
-    const channelSignals = {
-      "formal-register-control": true,
-      "consequence-aware-tone": true,
-      "understatement-with-agency": true
-    };
-    if (fromLesson === "lesson-b2-radiator-register" && signal && channelSignals[signal]) {
-      category = "channel";
+    if (signal && SIGNAL_CATEGORY[signal]) {
+      category = SIGNAL_CATEGORY[signal];
       return;
     }
-    if (signal && SIGNAL_CATEGORY[signal]) category = SIGNAL_CATEGORY[signal];
+    const fromLesson = params.get("from") || "";
+    if (fromLesson === "lesson-b2-radiator-register") category = "channel";
+    else if (fromLesson === "lesson-b2-job-followup") category = "deadline";
   }
 
   function syncCategoryChips() {

@@ -6,9 +6,6 @@
   <title>Platå · skrive-drill</title>
   <meta name="description" content="Short Danish writing prompts with a self-grade rubric — production practice for bolig, arbejde, and sundhed channels." />
   <meta name="author" content="Dmitrii Babinov" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../shared/plata-tokens.css" />
   <link rel="stylesheet" href="./styles.css" />
   <link rel="icon" href="../assets/icons/icon-192.png" type="image/png" />
@@ -31,10 +28,10 @@
 
     <section class="stats" id="stats" aria-live="polite">
       <div class="stat"><span class="stat-num" id="stat-today">0</span><span class="stat-label">i dag</span></div>
-      <div class="stat"><span class="stat-num" id="stat-correct">0</span><span class="stat-label">self-grade pass</span></div>
-      <div class="stat"><span class="stat-num" id="stat-accuracy">—</span><span class="stat-label">accuracy</span></div>
-      <div class="stat"><span class="stat-num" id="stat-streak">0</span><span class="stat-label">streak</span></div>
-      <div class="stat"><span class="stat-num" id="stat-mastered">0</span><span class="stat-label">mastered</span></div>
+      <div class="stat"><span class="stat-num" id="stat-correct">0</span><span class="stat-label">logged</span></div>
+      <div class="stat"><span class="stat-num" id="stat-accuracy">n/a</span><span class="stat-label">accuracy</span></div>
+      <div class="stat"><span class="stat-num" id="stat-streak">—</span><span class="stat-label">streak</span></div>
+      <div class="stat"><span class="stat-num" id="stat-mastered">—</span><span class="stat-label">mastery</span></div>
     </section>
 
     <section class="pickers" aria-label="Choose category">
@@ -68,8 +65,8 @@
 
     <section class="card hidden" id="summary-card">
       <h2 class="summary-title">Session færdig</h2>
-      <p class="summary-line"><strong id="sum-correct">0</strong> self-grade pass ud af <strong id="sum-total">0</strong></p>
-      <p class="summary-line summary-acc">Accuracy: <strong id="sum-accuracy">—</strong></p>
+      <p class="summary-line"><strong id="sum-correct">0</strong> completed · <strong id="sum-total">0</strong> logged</p>
+      <p class="summary-line summary-acc">Status: <strong id="sum-accuracy">—</strong></p>
       <ul class="summary-mistakes" id="sum-mistakes"></ul>
       <div id="next-step" class="next-step-slot"></div>
       <div class="summary-actions">

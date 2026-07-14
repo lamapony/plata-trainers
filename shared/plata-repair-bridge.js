@@ -48,9 +48,13 @@
     return raw;
   }
 
-  function sceneRepairHref(signalTag, sceneId) {
+  function sceneRepairHref(signalTag, sceneId, lessonPath) {
     if (!signalTag || !sceneId) return "";
-    return "?mode=repair&signal=" + encodeURIComponent(signalTag) + "#" + encodeURIComponent(sceneId);
+    var query = "?mode=repair&signal=" + encodeURIComponent(signalTag) + "#" + encodeURIComponent(sceneId);
+    if (!lessonPath) return query;
+    var base = String(lessonPath);
+    if (base.slice(-1) !== "/") base += "/";
+    return base + query;
   }
 
   function remediationBundle(lesson, scene, signalTag, rootPrefix) {
@@ -59,14 +63,15 @@
     var remediation = spec.remediation || {};
     var sceneId = remediation.sceneId || (scene && scene.id) || "";
     var catalog = root.PlataCatalog;
+    var lessonPath = catalog && catalog.lessonPathById ? catalog.lessonPathById(lesson.id || "") : (lesson.path || "");
     var bundle = {
       signalTag: signalTag,
       label: spec.label || signalTag,
       sceneRepair: {
         kind: "scene",
-        cta: remediation.cta || "Review scene",
-        action: remediation.action || "",
-        href: sceneRepairHref(signalTag, sceneId)
+        cta: remediation.cta || "Replay the scene",
+        action: remediation.action || "Replay this scene while the signal is still fresh.",
+        href: prefixHref(sceneRepairHref(signalTag, sceneId, lessonPath), rootPrefix || "")
       },
       drillRepair: null,
       vocabRepair: null
@@ -79,14 +84,7 @@
         });
       }
     }
-    if (catalog && catalog.buildVocabRemediation && scene && scene.id) {
-      var vocab = catalog.buildVocabRemediation(lesson.id || "", scene.id);
-      if (vocab) {
-        bundle.vocabRepair = Object.assign({}, vocab, {
-          href: prefixHref(vocab.href, rootPrefix || "")
-        });
-      }
-    }
+    // No auto-prescribed vocab on the English flagship path.
     return bundle;
   }
 
@@ -98,7 +96,7 @@
       "<aside class='miss-repair-panel' id='miss-repair-panel' aria-label='Prescribed repair after narrative miss'>",
       "<p class='eyebrow'>Match → Gym</p>",
       "<h3>Repair " + escapeHtml(bundle.label) + "</h3>",
-      "<p class='miss-repair-copy'>You missed this signal in the scene. The reflex gap is saved to your local plan — run the drill, then return to the repair scene if needed.</p>"
+      "<p class='miss-repair-copy'>You missed this signal in the scene. Run the mapped drill, then return to the scene if needed.</p>"
     ];
     if (bundle.drillRepair && bundle.drillRepair.href) {
       parts.push(
@@ -110,14 +108,7 @@
       if (bundle.sceneRepair && bundle.sceneRepair.href) {
         parts.push(
           "<a class='ghost btn link-button' href='" + escapeHtml(bundle.sceneRepair.href) + "'>" +
-            escapeHtml(bundle.sceneRepair.cta || "Review scene") +
-          "</a>"
-        );
-      }
-      if (bundle.vocabRepair && bundle.vocabRepair.href) {
-        parts.push(
-          "<a class='ghost btn link-button' href='" + escapeHtml(bundle.vocabRepair.href) + "'>" +
-            escapeHtml(bundle.vocabRepair.cta || "Review vocabulary") +
+            escapeHtml(bundle.sceneRepair.cta || "Replay the scene") +
           "</a>"
         );
       }
@@ -129,9 +120,10 @@
       parts.push(
         "<div class='miss-repair-actions'>",
         "<a class='btn primary link-button' href='" + escapeHtml(bundle.sceneRepair.href) + "'>" +
-          escapeHtml(bundle.sceneRepair.cta || "Open repair scene") +
+          escapeHtml(bundle.sceneRepair.cta || "Replay the scene") +
         "</a>",
-        "</div>"
+        "</div>",
+        "<p class='miss-repair-meta'>No mapped drill for this signal yet — replaying the scene is the honest next step.</p>"
       );
       if (bundle.sceneRepair.action) {
         parts.push("<p class='miss-repair-meta'>" + escapeHtml(bundle.sceneRepair.action) + "</p>");

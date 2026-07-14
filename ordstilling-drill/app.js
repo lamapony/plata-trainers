@@ -1,8 +1,9 @@
-/* platå · ordstilling-drill · app v0.1
+/* platå · ordstilling-drill · app v0.2
  *
  * Multiple choice word-order drill.
- * Lite SM-2 spaced repetition (same shape as bøjning-drill).
+ * Leitner spaced repetition (same shape as bøjning-drill).
  * Categories: v2, inversion, ledsaetning, blandet
+ * Items may declare accepted[] — all listed option indices are graded correct.
  */
 
 (function () {
@@ -112,7 +113,26 @@
     }
     const newOptions = indices.map((i) => item.options[i]);
     const newCorrect = indices.indexOf(item.correct);
-    return Object.assign({}, item, { options: newOptions, correct: newCorrect });
+    const sourceAccepted = Array.isArray(item.accepted) && item.accepted.length
+      ? item.accepted
+      : [item.correct];
+    const newAccepted = sourceAccepted
+      .map((i) => indices.indexOf(i))
+      .filter((i) => i >= 0);
+    return Object.assign({}, item, {
+      options: newOptions,
+      correct: newCorrect,
+      accepted: newAccepted.length ? newAccepted : [newCorrect]
+    });
+  }
+
+  function acceptedIndexes(item) {
+    if (Array.isArray(item.accepted) && item.accepted.length) return item.accepted;
+    return [item.correct];
+  }
+
+  function expectedAnswersLabel(item) {
+    return acceptedIndexes(item).map((i) => item.options[i]).join(" · ");
   }
 
   // ---------- render ----------
@@ -176,14 +196,18 @@
 
   function checkAnswer() {
     const p = session[sessionPos];
-    const correct = selectedIndex === p.correct;
+    const accepted = acceptedIndexes(p);
+    const correct = accepted.indexOf(selectedIndex) !== -1;
     const attemptTags = ["ordstilling", p.cat].concat(!correct && p.weakTags ? p.weakTags : []);
+    const expectedLabel = expectedAnswersLabel(p);
     kernel.recordAttempt(state, {
       itemId: itemIdFor(p),
       correct,
+      assessmentKind: "objective",
+      completed: true,
       tags: attemptTags,
       mode: p.cat,
-      expected: p.options[p.correct],
+      expected: expectedLabel,
       given: p.options[selectedIndex]
     });
     if (!correct) {
@@ -191,16 +215,23 @@
       const insertAt = Math.min(session.length, sessionPos + 3 + Math.floor(Math.random() * 3));
       session.splice(insertAt, 0, p);
     }
-    sessionResults.push({ itemId: itemIdFor(p), prompt: p.prompt, given: p.options[selectedIndex], expected: p.options[p.correct], why: p.why, correct });
+    sessionResults.push({
+      itemId: itemIdFor(p),
+      prompt: p.prompt,
+      given: p.options[selectedIndex],
+      expected: expectedLabel,
+      why: p.why,
+      correct
+    });
 
-    // mark options visually
+    // mark options visually — highlight every accepted answer
     [...els.options.querySelectorAll(".option")].forEach((b, idx) => {
       b.disabled = true;
-      if (idx === p.correct) b.classList.add("correct");
+      if (accepted.indexOf(idx) !== -1) b.classList.add("correct");
       else if (idx === selectedIndex) b.classList.add("wrong");
       b.classList.remove("selected");
     });
-    showFeedback(correct, p.options[p.correct], p.why);
+    showFeedback(correct, expectedLabel, p.why);
     awaitingCheck = false;
     els.submitBtn.disabled = false;
     els.submitBtn.textContent = "Næste →";
@@ -211,7 +242,14 @@
   function showFeedback(ok, expected, why) {
     els.feedback.classList.remove("hidden", "good", "bad");
     els.feedback.classList.add(ok ? "good" : "bad");
-    els.feedback.innerHTML = (ok ? `✓ korrekt — <span class="correct-answer">${escapeHtml(expected)}</span>` : `✗ ikke helt — <span class="correct-answer">${escapeHtml(expected)}</span>`) + (why ? `<div class="why">${escapeHtml(why)}</div>` : "") + `<div class="next-hint">tryk Enter eller klik "Næste →"</div>`;
+    const multi = String(expected).indexOf(" · ") !== -1;
+    const okLead = multi
+      ? `✓ korrekt — accepterede svar: <span class="correct-answer">${escapeHtml(expected)}</span>`
+      : `✓ korrekt — <span class="correct-answer">${escapeHtml(expected)}</span>`;
+    const badLead = multi
+      ? `✗ ikke helt — accepterede svar: <span class="correct-answer">${escapeHtml(expected)}</span>`
+      : `✗ ikke helt — <span class="correct-answer">${escapeHtml(expected)}</span>`;
+    els.feedback.innerHTML = (ok ? okLead : badLead) + (why ? `<div class="why">${escapeHtml(why)}</div>` : "") + `<div class="next-hint">tryk Enter eller klik "Næste →"</div>`;
   }
 
   function renderSummary() {
@@ -245,11 +283,14 @@
 
   function renderNextStep() {
     if (!els.nextStep || !window.PlataNextStep) return;
+    const params = new URLSearchParams(window.location.search);
     els.nextStep.innerHTML = window.PlataNextStep.render(window.PlataNextStep.drill({
       trainerId: TRAINER_ID,
       state,
       sessionResults,
-      rootPrefix: "../"
+      rootPrefix: "../",
+      fromLesson: params.get("from") || "",
+      signal: params.get("signal") || ""
     }));
     const againLink = els.nextStep.querySelector("a[href='#again-btn']");
     if (againLink) {

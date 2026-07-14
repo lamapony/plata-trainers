@@ -69,7 +69,7 @@
   function compactEvidence(evidence) {
     evidence = evidence || {};
     var out = {};
-    ["reason", "mode", "itemId", "sceneId", "trainerId", "correct", "total", "accuracy"].forEach(function (key) {
+    ["reason", "assessmentKind", "mode", "itemId", "sceneId", "trainerId", "correct", "completed", "needsRevision", "total", "accuracy", "completionRate"].forEach(function (key) {
       if (evidence[key] === undefined || evidence[key] === null || evidence[key] === "") return;
       if (typeof evidence[key] === "number") out[key] = Number(evidence[key]);
       else if (typeof evidence[key] === "boolean") out[key] = !!evidence[key];

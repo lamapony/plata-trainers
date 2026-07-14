@@ -69,6 +69,7 @@ function runBaseSmoke() {
   assert(manifest.gates.some(gate => gate.id === "check:headroom" && gate.requiredInCheck), "manifest should require learner headroom compression contracts");
   assert(manifest.gates.some(gate => gate.id === "check:evaluator-journey" && gate.requiredInCheck), "manifest should require the deterministic evaluator journey");
   assert(manifest.gates.some(gate => gate.id === "check:exercise-value-report" && gate.requiredInCheck), "manifest should require the exercise value report");
+  assert(manifest.gates.some(gate => gate.id === "check:lesson-request" && gate.requiredInCheck), "manifest should require agent lesson request contracts");
   assert(manifest.gates.some(gate => gate.id === "check:program-page" && gate.requiredInCheck), "manifest should require the user-facing program page");
   assert(manifest.gates.some(gate => gate.id === "check:proof-page" && gate.requiredInCheck), "manifest should require the public proof page");
   assert(manifest.gates.some(gate => gate.id === "check:capability-map" && gate.requiredInCheck), "manifest should require the product capability map");

@@ -33,7 +33,7 @@
   }
 
   function statsFromState(state) {
-    if (!state) return { total: 0, correct: 0, accuracy: null, today: 0, lastSessionDate: "" };
+    if (!state) return { total: 0, correct: 0, accuracy: null, today: 0, due: 0, lastSessionDate: "" };
     var kernel = root.PlataKernel;
     if (kernel && kernel.getStats) {
       var stats = kernel.getStats(state);
@@ -42,6 +42,7 @@
         correct: stats.totalCorrect,
         accuracy: stats.accuracyPct,
         today: stats.todayCount,
+        due: stats.dueCount,
         lastSessionDate: state.meta && state.meta.lastSessionDate || ""
       };
     }
@@ -53,6 +54,7 @@
       correct: correct,
       accuracy: total ? Math.round(correct / total * 100) : null,
       today: todayAttempts(state),
+      due: kernel && kernel.countDueItems ? kernel.countDueItems(state) : 0,
       lastSessionDate: meta.lastSessionDate || ""
     };
   }
@@ -99,13 +101,35 @@
     };
   }
 
-  function nextDrillTarget(trainerId) {
+  function nextDrillTarget(trainerId, options) {
+    options = options || {};
+    var fromLesson = options.fromLesson || "";
+    var signal = options.signal || "";
+    var catalog = root.PlataCatalog;
+    if (fromLesson && signal && catalog && catalog.lessonPathById) {
+      var lessonPath = catalog.lessonPathById(fromLesson);
+      if (lessonPath) {
+        var remediationScene = options.sceneId || "";
+        var href = String(lessonPath).replace(/^\.\//, "");
+        if (href.slice(-1) !== "/") href += "/";
+        href += "?mode=repair&signal=" + encodeURIComponent(signal);
+        if (remediationScene) href += "#" + encodeURIComponent(remediationScene);
+        return {
+          href: href,
+          label: "Return to the scene",
+          title: "Replay the repair scene",
+          copy: "You practised the weak signal. Return to the original scene and try the moment again.",
+          receipt: true
+        };
+      }
+    }
     var map = {
       bojning: { href: "ordstilling-drill/", label: "Practise word order", title: "Move to word order", copy: "Forms were clean. Now practise how Danish sentences arrange those forms." },
-      ordstilling: { href: "vocab-sr/", label: "Practise vocabulary", title: "Add vocabulary recall", copy: "Word order was clean. A short vocabulary session keeps the momentum useful." },
-      vocab: { href: "dashboard.html", label: "Open dashboard", title: "Check the dashboard", copy: "Vocabulary was clean. Let the dashboard choose the next weak area." }
+      ordstilling: { href: "dashboard.html", label: "Open Today", title: "Check Today", copy: "Word order was clean. Let Today choose the next useful step." },
+      vocab: { href: "dashboard.html", label: "Open Today", title: "Check Today", copy: "Vocabulary was clean. Let Today choose the next useful step." },
+      register: { href: "dashboard.html", label: "Open Today", title: "Check Today", copy: "Register practise is done. Return to Today for the next step." }
     };
-    return map[trainerId] || { href: "dashboard.html", label: "Open dashboard", title: "Choose the next session", copy: "Use the dashboard to pick the next short practice block." };
+    return map[trainerId] || { href: "dashboard.html", label: "Open Today", title: "Choose the next session", copy: "Use Today to pick the next short practice block." };
   }
 
   function weakMasteryForLesson(lesson, state) {
@@ -455,9 +479,6 @@
       var drillRepair = catalog && catalog.drillRemediation
         ? catalog.drillRemediation(weak.tag, lessonData.id || "")
         : null;
-      var vocabRepair = catalog && catalog.buildVocabRemediation
-        ? catalog.buildVocabRemediation(lessonData.id || "", repair.sceneId || "")
-        : null;
       return withTrace({
         kind: "repair",
         targetKind: "repair",
@@ -469,16 +490,15 @@
         copy: "You missed " + (weak.spec.label || weak.tag) + ". Replay the source scene while that signal is still fresh.",
         primaryLabel: repair.cta || "Open repair scene",
         primaryHref: href,
-        secondaryLabel: drillRepair ? drillRepair.cta : "Open dashboard",
+        secondaryLabel: drillRepair ? drillRepair.cta : "Open Today",
         secondaryHref: drillRepair ? drillRepair.href : dashboardHref,
         meta: repair.action || "",
         competency: competency,
         drillRepair: drillRepair,
-        vocabRepair: vocabRepair,
+        vocabRepair: null,
         reasons: (competency ? ["Root competency: " + competency.label] : []).concat(
           ["Weak mastery signal: " + (weak.spec.label || weak.tag)],
-          drillRepair ? ["Drill repair available for reflex practice"] : [],
-          vocabRepair ? ["Scene vocabulary should recur in SR before it fades"] : []
+          drillRepair ? ["Drill repair available for reflex practice"] : ["No mapped drill — replay the scene"]
         )
       }, {
         source: "lessonDecision",
@@ -536,7 +556,12 @@
     var results = Array.isArray(options.sessionResults) ? options.sessionResults : [];
     var rootPrefix = options.rootPrefix || "../";
     var total = results.length;
-    var correct = results.filter(function (item) { return item.correct; }).length;
+    var isSelfReport = options.assessmentKind === "self-report" || results.some(function (item) {
+      return item && item.assessmentKind === "self-report";
+    });
+    var correct = isSelfReport
+      ? results.filter(function (item) { return item && item.completed === true; }).length
+      : results.filter(function (item) { return item && item.correct === true; }).length;
     var mistakes = Math.max(0, total - correct);
     var accuracy = total ? Math.round(correct / total * 100) : 0;
     var drillStats = statsFromState(state);
@@ -548,25 +573,29 @@
         trainerId: trainerId,
         score: 80 + mistakes * 5,
         eyebrow: "Next step",
-        title: "Repeat the weak items",
-        copy: "You missed " + mistakes + " of " + total + ". Run one more short session before changing topic.",
+        title: isSelfReport ? "Revise the incomplete prompts" : "Repeat the weak items",
+        copy: isSelfReport
+          ? mistakes + " of " + total + " prompts still need rubric or length revision. Complete one more short pass before changing topic."
+          : "You missed " + mistakes + " of " + total + ". Run one more short session before changing topic.",
         primaryLabel: "Run another session",
         primaryHref: "#again-btn",
         secondaryLabel: "Open dashboard",
         secondaryHref: link(rootPrefix, "dashboard.html"),
-        meta: "Accuracy this session: " + accuracy + "%.",
-        reasons: ["Session still has mistakes"]
+        meta: isSelfReport ? "Completion this session: " + accuracy + "%. No accuracy claimed." : "Accuracy this session: " + accuracy + "%.",
+        reasons: [isSelfReport ? "Session still has prompts needing revision" : "Session still has mistakes"]
       }, {
         source: "drillDecision",
-        rule: "drill.repeat.session-mistakes",
+        rule: isSelfReport ? "drill.repeat.self-report-revision" : "drill.repeat.session-mistakes",
         inputs: {
           trainerId: trainerId,
-          session: { total: total, correct: correct, mistakes: mistakes, accuracy: accuracy },
+          session: isSelfReport
+            ? { assessmentKind: "self-report", total: total, completed: correct, needsRevision: mistakes, completionRate: accuracy }
+            : { total: total, correct: correct, mistakes: mistakes, accuracy: accuracy },
           stats: compactStats(drillStats)
         },
         scoreBreakdown: [
           { label: "repeat base", value: 80 },
-          { label: "mistake pressure", value: mistakes * 5 }
+          { label: isSelfReport ? "revision pressure" : "mistake pressure", value: mistakes * 5 }
         ]
       });
     }
@@ -580,31 +609,44 @@
     });
     if (enough) return enough;
 
-    var next = nextDrillTarget(trainerId);
+    var next = nextDrillTarget(trainerId, {
+      fromLesson: options.fromLesson || options.from || "",
+      signal: options.signal || "",
+      sceneId: options.sceneId || ""
+    });
+    var isReceipt = !!next.receipt;
     return withTrace({
-      kind: "continue",
-      targetKind: "continue",
+      kind: isReceipt ? "receipt" : "continue",
+      targetKind: isReceipt ? "repair-return" : "continue",
       trainerId: trainerId,
-      score: 30,
-      eyebrow: "Next step",
+      score: isReceipt ? 70 : 30,
+      eyebrow: isReceipt ? "Repair receipt" : "Next step",
       title: next.title,
       copy: next.copy,
       primaryLabel: next.label,
       primaryHref: link(rootPrefix, next.href),
-      secondaryLabel: "Run another session",
-      secondaryHref: "#again-btn",
-      meta: "Accuracy this session: " + accuracy + "%.",
-      reasons: ["Clean session unlocks the next block"]
+      secondaryLabel: "Open Today",
+      secondaryHref: link(rootPrefix, "dashboard.html"),
+      meta: isReceipt
+        ? "Weak signal: " + (options.signal || "mapped") + ". Practised in this drill. Tomorrow: return via Today if still open."
+        : (isSelfReport ? "Completion this session: " + accuracy + "%. No accuracy claimed." : "Accuracy this session: " + accuracy + "%."),
+      reasons: isReceipt
+        ? ["Repair return to source scene", "Signal: " + (options.signal || "")]
+        : ["Clean session unlocks the next block"]
     }, {
       source: "drillDecision",
-      rule: "drill.continue.clean-session",
+      rule: isReceipt ? "drill.receipt.return-to-scene" : "drill.continue.clean-session",
       inputs: {
         trainerId: trainerId,
-        session: { total: total, correct: correct, mistakes: mistakes, accuracy: accuracy },
+        session: isSelfReport
+          ? { assessmentKind: "self-report", total: total, completed: correct, needsRevision: mistakes, completionRate: accuracy }
+          : { total: total, correct: correct, mistakes: mistakes, accuracy: accuracy },
         stats: compactStats(drillStats),
-        nextTarget: next
+        nextTarget: next,
+        fromLesson: options.fromLesson || options.from || "",
+        signal: options.signal || ""
       },
-      scoreBreakdown: [{ label: "clean-session continuation", value: 30 }]
+      scoreBreakdown: [{ label: isReceipt ? "repair return" : "clean-session continuation", value: isReceipt ? 70 : 30 }]
     });
   }
 
@@ -665,10 +707,6 @@
       var drillRepair = catalog && catalog.drillRemediation
         ? catalog.drillRemediation(topMastery.tag, trainer.id || "")
         : null;
-      var sceneId = topMastery.remediation && topMastery.remediation.sceneId || "";
-      var vocabRepair = catalog && catalog.buildVocabRemediation
-        ? catalog.buildVocabRemediation(trainer.id || "", sceneId)
-        : null;
       return withTrace({
         kind: "repair",
         targetKind: "repair",
@@ -687,12 +725,11 @@
         competency: repairCompetency,
         repair: topMastery.remediation,
         drillRepair: drillRepair,
-        vocabRepair: vocabRepair,
+        vocabRepair: null,
         memoryFacts: repairMemoryFacts,
         reasons: (repairCompetency ? ["Root competency: " + repairCompetency.label] : []).concat(
           ["Highest weak mastery signal"],
-          drillRepair ? ["Drill repair available for reflex practice"] : [],
-          vocabRepair ? ["Scene vocabulary should recur in SR before it fades"] : [],
+          drillRepair ? ["Drill repair available for reflex practice"] : ["No mapped drill — replay the scene"],
           repairMemory.reasons
         )
       }, {
@@ -1429,7 +1466,7 @@
   function evidencePayload(value) {
     var source = value && typeof value === "object" ? value : {};
     var out = {};
-    ["reason", "mode", "itemId", "sceneId", "trainerId", "correct", "total", "accuracy"].forEach(function (key) {
+    ["reason", "assessmentKind", "mode", "itemId", "sceneId", "trainerId", "correct", "completed", "needsRevision", "total", "accuracy", "completionRate"].forEach(function (key) {
       if (source[key] === undefined || source[key] === null || source[key] === "") return;
       out[key] = source[key];
     });

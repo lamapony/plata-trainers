@@ -244,7 +244,7 @@
   function planEvidence(source) {
     source = source && typeof source === "object" ? source : {};
     var out = {};
-    ["reason", "mode", "itemId", "sceneId", "trainerId", "correct", "total", "accuracy"].forEach(function (key) {
+    ["reason", "assessmentKind", "mode", "itemId", "sceneId", "trainerId", "correct", "completed", "needsRevision", "total", "accuracy", "completionRate"].forEach(function (key) {
       if (source[key] === undefined || source[key] === null || source[key] === "") return;
       out[key] = source[key];
     });

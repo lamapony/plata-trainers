@@ -94,7 +94,9 @@ if (!catalog || !Array.isArray(catalog.trainers)) {
         }
       }
       if (trainer.type === "drill") {
-        if (gallery.role !== "repair") issue(`${prefix}.gallery.role: drills must use role "repair"`);
+        if (gallery.role !== "repair" && gallery.role !== "optional") {
+          issue(`${prefix}.gallery.role: drills must use role "repair" or "optional"`);
+        }
         if (!Array.isArray(gallery.repairSignals)) issue(`${prefix}.gallery.repairSignals: drills need repairSignals array`);
         if (!nonEmptyString(gallery.repairs) && !nonEmptyString(gallery.theme)) {
           issue(`${prefix}.gallery.repairs: drills need repairs or theme metadata`);
