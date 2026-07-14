@@ -304,10 +304,31 @@
 
   /* ---- renderers ---- */
 
+  function renderLanguageMarker(code) {
+    var language = code === "da" ? "da" : "en";
+    return "<span class='language-marker language-marker-" + language + "' aria-hidden='true'>" + language.toUpperCase() + "</span>";
+  }
+
+  function renderLanguageKey() {
+    return "<div class='language-key' aria-label='Language key'>" +
+      "<span>" + renderLanguageMarker("da") + "<span>Danish to use</span></span>" +
+      "<span>" + renderLanguageMarker("en") + "<span>English help</span></span>" +
+    "</div>";
+  }
+
+  function renderChoiceLanguagePair(danish, english) {
+    return "<span class='choice-language choice-language-da'>" + renderLanguageMarker("da") + "<strong lang='da'>" + escapeHtml(danish) + "</strong></span>" +
+      "<span class='choice-language choice-language-en'>" + renderLanguageMarker("en") + "<span class='choice-detail' lang='en'>" + escapeHtml(english || "") + "</span></span>";
+  }
+
+  function renderDanishLine(text) {
+    return "<div class='danish-line' lang='da'>" + renderLanguageMarker("da") + "<span class='danish-copy'>" + escapeHtml(text) + "</span></div>";
+  }
+
   function renderDialogue(lines) {
     var html = "<div class='dialogue' aria-label='Scene dialogue'>";
     lines.forEach(function (line) {
-      html += "<div class='dialogue-line'><span>" + escapeHtml(line.speaker) + "</span><p lang='da'>" + escapeHtml(line.line) + "</p></div>";
+      html += "<div class='dialogue-line'><span>" + escapeHtml(line.speaker) + "</span><p lang='da'>" + renderLanguageMarker("da") + "<span class='dialogue-copy'>" + escapeHtml(line.line) + "</span></p></div>";
     });
     html += "</div>";
     return html;
@@ -418,7 +439,7 @@
       var btn = document.createElement("button");
       btn.type = "button";
       btn.className = "choice-card";
-      btn.innerHTML = "<strong lang='da'>" + escapeHtml(opt.label) + "</strong><span>" + escapeHtml(opt.detail) + "</span>";
+      btn.innerHTML = renderChoiceLanguagePair(opt.label, opt.detail);
       btn.addEventListener("click", function () {
         var already = ctx.state.attempts[scene.id + opt.id];
         btn.classList.add(opt.correct ? "correct" : "wrong");
@@ -443,7 +464,7 @@
   /* ---- input renderer ---- */
   function renderInput(ctx, scene) {
     var body = $("#exercise-body");
-    body.innerHTML = "<label class='field-label' for='answer'>Your answer</label><input id='answer' class='text-input' lang='da' autocomplete='off' placeholder='" + escapeHtml(scene.placeholder) + "' /><button class='primary small' id='check' type='button'>Check</button>";
+    body.innerHTML = "<label class='field-label language-field-label' for='answer'>" + renderLanguageMarker("da") + "<span>Write in Danish</span></label><input id='answer' class='text-input' lang='da' autocomplete='off' placeholder='" + escapeHtml(scene.placeholder) + "' /><button class='primary small' id='check' type='button'>Check</button>";
     $("#check").addEventListener("click", function () {
       var value = $("#answer").value.trim();
       var ok = value.toLowerCase().indexOf(scene.acceptPrefix) === 0 && value.length > scene.acceptPrefix.length;
@@ -466,12 +487,17 @@
     body.className = "match-board";
     var left = document.createElement("div");
     var right = document.createElement("div");
+    left.className = "match-column match-column-da";
+    right.className = "match-column match-column-en";
+    left.innerHTML = "<div class='match-column-title'>" + renderLanguageMarker("da") + "<span>Danish</span></div>";
+    right.innerHTML = "<div class='match-column-title'>" + renderLanguageMarker("en") + "<span>English meaning</span></div>";
     ctx.state.selectedLeft = null;
 
     scene.pairs.forEach(function (pair) {
       var l = document.createElement("button");
       l.type = "button";
       l.className = "sign-card";
+      l.lang = "da";
       l.textContent = pair.left;
       l.addEventListener("click", function () {
         ctx.state.selectedLeft = pair;
@@ -483,6 +509,7 @@
       var r = document.createElement("button");
       r.type = "button";
       r.className = "meaning-card";
+      r.lang = "en";
       r.textContent = pair.right;
       r.addEventListener("click", function () {
         var ok = ctx.state.selectedLeft && ctx.state.selectedLeft.id === pair.id;
@@ -530,7 +557,7 @@
 
   function renderCompletion(ctx, scene) {
     var body = $("#exercise-body");
-    body.innerHTML = "<div class='sentence'><span lang='da'>" + escapeHtml(scene.prefix) + "</span><input id='name' class='inline-input b2-input' autocomplete='off' placeholder='" + escapeHtml(scene.placeholder) + "'></div><button class='primary small' id='complete' type='button'>Complete</button>";
+    body.innerHTML = "<div class='sentence language-field language-field-da'>" + renderLanguageMarker("da") + "<span class='sentence-prefix' lang='da'>" + escapeHtml(scene.prefix) + "</span><input id='name' class='inline-input b2-input' lang='da' autocomplete='off' placeholder='" + escapeHtml(scene.placeholder) + "'></div><button class='primary small' id='complete' type='button'>Complete</button>";
     $("#complete").addEventListener("click", function () {
       var value = $("#name").value.trim();
       var checked = checkCompletion(scene, value);
@@ -556,7 +583,7 @@
     if (!steps || !steps.length) return "";
     var html = "<ol class='flagship-ladder'>";
     steps.forEach(function (step) {
-      html += "<li><span>" + escapeHtml(step.stage || "step") + "</span><strong lang='da'>" + escapeHtml(step.text || "") + "</strong></li>";
+      html += "<li><span class='ladder-stage'>" + escapeHtml(step.stage || "step") + "</span><span class='ladder-language'>" + renderLanguageMarker("da") + "<strong lang='da'>" + escapeHtml(step.text || "") + "</strong></span></li>";
     });
     html += "</ol>";
     return html;
@@ -567,9 +594,9 @@
     var html = "<div class='flagship-channel-grid' aria-label='Same intent across channels'>";
     scene.channelVersions.forEach(function (channel) {
       html += "<article class='flagship-channel'>" +
-        "<span>" + escapeHtml(channel.label || channel.id || "channel") + "</span>" +
-        "<strong lang='da'>" + escapeHtml(channel.sample || "") + "</strong>" +
-        "<p>" + escapeHtml(channel.risk || "") + "</p>" +
+        "<span class='flagship-channel-label'>" + escapeHtml(channel.label || channel.id || "channel") + "</span>" +
+        "<div class='channel-language channel-language-da'>" + renderLanguageMarker("da") + "<strong lang='da'>" + escapeHtml(channel.sample || "") + "</strong></div>" +
+        "<div class='channel-language channel-language-en'>" + renderLanguageMarker("en") + "<p lang='en'>" + escapeHtml(channel.risk || "") + "</p></div>" +
       "</article>";
     });
     html += "</div>";
@@ -585,7 +612,7 @@
       var btn = document.createElement("button");
       btn.type = "button";
       btn.className = "flagship-reason";
-      btn.textContent = reason.label;
+      btn.innerHTML = "<span class='choice-language choice-language-en choice-language-single'>" + renderLanguageMarker("en") + "<span class='reason-copy' lang='en'>" + escapeHtml(reason.label) + "</span></span>";
       btn.addEventListener("click", function () {
         var ok = option.correct === true && reason.correct === true;
         $("#feedback").className = "feedback show " + (ok ? "ok" : "warn");
@@ -632,8 +659,7 @@
       btn.className = "choice-card flagship-option";
       btn.innerHTML =
         "<span class='flagship-channel-label'>" + escapeHtml(opt.channel || "channel") + "</span>" +
-        "<strong lang='da'>" + escapeHtml(opt.label) + "</strong>" +
-        "<small>" + escapeHtml(opt.detail || "") + "</small>";
+        renderChoiceLanguagePair(opt.label, opt.detail || "");
       btn.addEventListener("click", function () {
         var panel = document.createElement("aside");
         panel.className = "flagship-consequence " + (opt.correct ? "ok" : "warn");
@@ -699,7 +725,7 @@
       html += "<p class='eyebrow'>Lesson complete · " + ending.id + "</p>";
       html += "<h2>" + escapeHtml(ending.title) + "</h2>";
       html += "<p class='narrative'>" + escapeHtml(ending.narrative) + "</p>";
-      if (ending.danish) html += "<div class='danish-line' lang='da'>" + escapeHtml(ending.danish) + "</div>";
+      if (ending.danish) html += renderDanishLine(ending.danish);
       html += "<p class='carry-forward'>" + escapeHtml(ending.carry) + "</p>";
 
       if (lesson.variables) {
@@ -771,9 +797,9 @@
       html += "<aside class='repair-focus'><strong>" + escapeHtml(ctx.state.repair.cta) + "</strong><span><b>" + escapeHtml(ctx.state.repair.label) + "</b>" + (ctx.state.repair.action ? " — " + escapeHtml(ctx.state.repair.action) : "") + "</span></aside>";
     }
     if (scene.dialogue) html += renderDialogue(scene.dialogue);
-    if (scene.danish) html += "<div class='danish-line' lang='da'>" + escapeHtml(scene.danish) + "</div>";
+    if (scene.danish) html += renderDanishLine(scene.danish);
     if (scene.notice) html += "<aside class='notice'><strong>Notice</strong><span>" + escapeHtml(scene.notice) + "</span></aside>";
-    html += "</div><div class='exercise'><h3>" + escapeHtml(scene.prompt) + "</h3><div id='exercise-body'></div><div id='feedback' class='feedback' aria-live='polite'></div></div></div>";
+    html += "</div><div class='exercise'>" + renderLanguageKey() + "<div class='exercise-prompt'>" + renderLanguageMarker("en") + "<h3 lang='en'>" + escapeHtml(scene.prompt) + "</h3></div><div id='exercise-body'></div><div id='feedback' class='feedback' aria-live='polite'></div></div></div>";
     if (scene.carry) html += "<p class='carry-forward'>" + escapeHtml(scene.carry) + "</p>";
 
     var isLast = ctx.state.index === ctx.lesson.scenes.length - 1;

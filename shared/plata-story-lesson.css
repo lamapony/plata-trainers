@@ -305,6 +305,53 @@ button.ghost:hover {
   object-fit: cover;
 }
 
+/* Platå language notation: DA is the material; EN explains the material. */
+.language-marker {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  align-self: start;
+  width: 27px;
+  height: 20px;
+  border: 1px solid currentColor;
+  border-radius: 1px;
+  font-family: var(--font-mono);
+  font-size: 0.61rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.language-marker-da {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+}
+
+.language-marker-en {
+  border-color: color-mix(in srgb, var(--ember) 75%, var(--line));
+  background: var(--surface);
+  color: var(--ember-deep);
+}
+
+.language-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 15px;
+  margin: 0 0 15px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.language-key > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.2;
+}
+
 .dialogue {
   display: grid;
   gap: 12px;
@@ -340,6 +387,10 @@ button.ghost:hover {
 
 .dialogue-line > p {
   position: relative;
+  display: grid;
+  grid-template-columns: 27px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
   margin: 0;
   padding: 10px 13px;
   border: 1px solid var(--line);
@@ -364,26 +415,19 @@ button.ghost:hover {
 }
 
 .danish-line {
-  position: relative;
-  display: block;
+  display: grid;
+  grid-template-columns: 27px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
   margin: 0 0 25px;
-  padding: 20px 22px 20px 50px;
-  border-top: 1px solid var(--text);
-  border-bottom: 1px solid var(--text);
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--green);
+  background: color-mix(in srgb, var(--green) 4%, var(--surface));
   color: var(--text);
   font-family: var(--font-serif);
   font-size: clamp(1.25rem, 2.8vw, 1.55rem);
   line-height: 1.4;
-}
-
-.danish-line::before {
-  content: "“";
-  position: absolute;
-  top: 11px;
-  left: 8px;
-  color: var(--green);
-  font-size: 2.8rem;
-  line-height: 1;
 }
 
 .notice,
@@ -429,13 +473,23 @@ button.ghost:hover {
 
 .exercise h3 {
   max-width: 31rem;
-  margin: 0 0 18px;
+  margin: 0;
   color: var(--text);
   font-size: clamp(1.1rem, 2.4vw, 1.3rem);
   font-weight: 680;
   letter-spacing: -0.015em;
   line-height: 1.35;
 }
+
+.exercise-prompt {
+  display: grid;
+  grid-template-columns: 27px minmax(0, 1fr);
+  align-items: start;
+  gap: 9px;
+  margin-bottom: 18px;
+}
+
+.exercise-prompt > .language-marker { margin-top: 2px; }
 
 .choice-grid,
 .choice-list,
@@ -507,6 +561,45 @@ button.ghost:hover {
   line-height: 1.45;
 }
 
+.choice-language {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: 27px minmax(0, 1fr);
+  align-items: start;
+  gap: 9px;
+  min-width: 0;
+}
+
+.choice-language-da > strong {
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-size: 1.08rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.choice-language-en {
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px dashed var(--line);
+}
+
+.choice-language-en .choice-detail,
+.choice-language-en .reason-copy {
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  line-height: 1.42;
+}
+
+.choice-language-single {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.flagship-option::before { grid-row: 1 / span 3; }
+
 .choice-card:hover,
 .flagship-option:hover,
 .flagship-reason:hover {
@@ -547,6 +640,7 @@ button.ghost:hover {
 }
 
 .feedback {
+  position: relative;
   display: none;
   margin-top: 14px;
   padding: 15px 16px;
@@ -559,14 +653,38 @@ button.ghost:hover {
 
 .feedback.show { display: block; }
 
+.feedback.show { padding-top: 43px; }
+
 .feedback.show::before {
+  content: "EN";
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 20px;
+  border: 1px solid color-mix(in srgb, var(--ember) 75%, var(--line));
+  border-radius: 1px;
+  background: var(--surface);
+  color: var(--ember-deep);
+  font-family: var(--font-mono);
+  font-size: 0.61rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.feedback.show::after {
   content: "What this changes";
-  display: block;
-  margin-bottom: 4px;
+  position: absolute;
+  top: 16px;
+  left: 51px;
   color: var(--text);
   font-size: 0.68rem;
   font-weight: 750;
   letter-spacing: 0.07em;
+  line-height: 20px;
   text-transform: uppercase;
 }
 
@@ -586,6 +704,33 @@ button.ghost:hover {
   background: var(--bg);
 }
 
+.channel-language {
+  display: grid;
+  grid-template-columns: 27px minmax(0, 1fr);
+  align-items: start;
+  gap: 9px;
+}
+
+.channel-language + .channel-language {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+}
+
+.channel-language strong {
+  color: var(--text);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.channel-language p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
 .flagship-channel-label,
 .field-label {
   display: block;
@@ -593,6 +738,12 @@ button.ghost:hover {
   color: var(--muted);
   font-size: 0.76rem;
   font-weight: 650;
+}
+
+.language-field-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .flagship-proof,
@@ -612,6 +763,35 @@ button.ghost:hover {
   margin: 0 0 6px;
   color: var(--text);
   font-size: 0.93rem;
+}
+
+.flagship-ladder li {
+  display: grid;
+  gap: 7px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.flagship-ladder li:last-child { border-bottom: 0; }
+
+.ladder-stage {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ladder-language {
+  display: grid;
+  grid-template-columns: 27px minmax(0, 1fr);
+  align-items: start;
+  gap: 9px;
+}
+
+.ladder-language strong {
+  color: var(--text);
+  font-family: var(--font-serif);
 }
 
 .carry-forward {
@@ -689,6 +869,24 @@ textarea:focus { border-color: var(--green); }
 
 .match-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
+.match-column {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.match-column-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 27px;
+  margin-bottom: 3px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
 .sign-card,
 .meaning-card {
   min-height: 54px;
@@ -699,6 +897,29 @@ textarea:focus { border-color: var(--green); }
   color: var(--text);
   cursor: pointer;
   text-align: left;
+}
+
+.sign-card {
+  background: color-mix(in srgb, var(--green) 4%, var(--surface));
+  font-family: var(--font-serif);
+  font-size: 1rem;
+}
+
+.meaning-card {
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.sign-card.selected {
+  border-color: var(--green);
+  box-shadow: inset 3px 0 0 var(--green);
+}
+
+.sign-card.matched-pair,
+.meaning-card.matched {
+  border-color: var(--green);
+  background: color-mix(in srgb, var(--green) 8%, var(--surface));
 }
 
 .sign-card:hover,
@@ -750,6 +971,11 @@ textarea:focus { border-color: var(--green); }
   margin-bottom: 14px;
   font-family: var(--font-serif);
   font-size: 1.12rem;
+}
+
+.language-field .inline-input {
+  flex: 1 1 12rem;
+  width: auto;
 }
 
 @media (max-width: 820px) {
@@ -881,7 +1107,7 @@ textarea:focus { border-color: var(--green); }
 
   .dialogue-line > p::before { display: none; }
 
-  .danish-line { padding: 17px 14px 17px 38px; }
+  .danish-line { padding: 15px; }
 
   .choice-card,
   .flagship-option,
