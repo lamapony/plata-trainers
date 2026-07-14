@@ -436,6 +436,7 @@ details.inspect-drawer > :not(summary) { padding: 12px 14px; }
 .today-hero {
   display: grid;
   gap: 0;
+}
 .today-hero h3,
 .today-main h3 {
   max-width: 760px;
@@ -2491,10 +2492,6 @@ a.program-chip:hover { color: var(--text); border-color: var(--line); }
 
 /* Lesson: completely hide any variables display */
 .variables-display,
-
-[aria-hidden="true"] ~ * {
-  display: none !important;
-}
 
 /* Quiet overrides */
 .headroom-saw, .headroom-means,

@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Program · Platå — Break your Danish plateau</title>
-  <meta name="description" content="A2–B2 plateau-breaker program map: demo learner → Today → guided session → proof gates, plus Match → Gym channel transfer and offline ZIP portability." />
-  <meta property="og:title" content="Platå program · Break your Danish plateau" />
-  <meta property="og:description" content="Not a beginner course — one reviewer path from demo profile to proof gates, with plateau practice and generated capability checks." />
+  <title>About &amp; proof · Platå</title>
+  <meta name="description" content="What Platå really does: targeted Danish situation practice, deterministic repairs, local progress, and generated proof for reviewers." />
+  <meta property="og:title" content="About Platå · Targeted Danish practice" />
+  <meta property="og:description" content="Seven situations, five focused repairs, local progress, and a generated reviewer path — without accounts or an AI tutor." />
   <meta property="og:image" content="https://lamapony.github.io/plata-trainers/assets/og-plata.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="manifest" href="./site.webmanifest" />
@@ -19,27 +19,25 @@
 <body>
   <main class="site-shell">
     <header class="hero">
-      <nav class="topnav" aria-label="Main navigation">
+      <nav class="topnav" aria-label="Reviewer navigation">
         <a class="brand" href="./">platå</a>
-                <div class="navlinks">
+        <div class="navlinks">
           <a href="./">Practice</a>
-          <a href="./dashboard.html">Dashboard</a>
-          <a href="./program.html">Program</a>
+          <a href="./dashboard.html?demo=learner">Demo learner</a>
+          <a href="./proof.html">Proof</a>
+          <a href="./quality.html">Quality</a>
           <a href="https://github.com/lamapony/plata-trainers">GitHub</a>
         </div>
       </nav>
 
       <section class="hero-grid">
         <div>
-          <p class="eyebrow">Plateau-breaker · A2–B2 · not a beginner course</p>
-          <h1>From demo profile to proof gates.</h1>
-          <p class="lead">Platå targets the middle climb: you know Danish but freeze under pressure. Open the read-only demo learner, follow <strong>Today</strong> into a <strong>guided session</strong>, then inspect generated gates on Proof — Match → Gym → Coach picks where you stall.</p>
+          <p class="eyebrow">About Platå</p>
+          <h1>Targeted practice for the Danish plateau.</h1>
+          <p class="lead">Platå is a static, local-first practice product: seven situation lessons expose a precise language or social miss, and five focused drills help repair it. Recommendations are deterministic; the browser does not call an AI model.</p>
           <div class="hero-actions">
             <a class="btn primary" href="./dashboard.html?demo=learner">Open demo learner</a>
-            <a class="btn" href="./dashboard.html">Open dashboard</a>
             <a class="btn" href="./proof.html#proof-walkthrough">Proof walkthrough</a>
-            <a class="btn" href="./proof.html">Open proof page</a>
-            <a id="program-json-link" class="btn" href="#" aria-disabled="true">Open JSON map</a>
           </div>
         </div>
         <aside class="status-card" aria-label="Program status">
@@ -49,6 +47,31 @@
         </aside>
       </section>
     </header>
+
+    <section class="section" aria-labelledby="boundaries-title">
+      <div class="section-head">
+        <p class="eyebrow">Product boundaries</p>
+        <h2 id="boundaries-title">What it does — and what it does not.</h2>
+      </div>
+      <div class="reviewer-boundaries">
+        <div>
+          <h3>It does</h3>
+          <ul>
+            <li>Practice real Danish situations at roughly A2–B2.</li>
+            <li>Connect a visible miss to a short, specific repair.</li>
+            <li>Keep progress private in the browser and make it exportable.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>It does not</h3>
+          <ul>
+            <li>Provide a complete linear A2 → B2 curriculum.</li>
+            <li>Create or publish lessons from the live website.</li>
+            <li>Offer accounts, cloud sync, analytics, or an AI tutor.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
     <section class="section" id="reviewer-path" aria-labelledby="reviewer-path-title">
       <div class="section-head">
@@ -87,8 +110,8 @@
     <section class="section" id="learner-path" aria-labelledby="learner-path-title">
       <div class="section-head">
         <p class="eyebrow">Learner path</p>
-        <h2 id="learner-path-title">A2 → B2 on the plateau</h2>
-        <p class="lead">Match → Gym → Coach: pick the layer where you freeze. Optional tutorial: <a href="./lessons/lesson-01/">Lesson 01</a> shows mechanics once, then move to plateau stories and drills.</p>
+        <h2 id="learner-path-title">Choose the layer where you freeze.</h2>
+        <p class="lead">This is a focused practice library, not a level-by-level course. Start with a situation; use a drill only when the scene exposes a specific gap. <a href="./lessons/lesson-01/">Lesson 01</a> is an optional mechanics walkthrough.</p>
       </div>
       <div class="quick-start-grid">
         <article class="path-card">
@@ -126,24 +149,32 @@
       <div id="program-pillars" class="program-pillars"></div>
     </section>
 
-    <section class="section" aria-labelledby="program-capabilities-title">
-      <div class="section-head">
-        <p class="eyebrow">Capabilities</p>
-        <h2 id="program-capabilities-title">What is shipped</h2>
-      </div>
-      <div id="program-capabilities" class="program-capabilities"></div>
-    </section>
-
-    <section class="section split" aria-labelledby="program-proof-title">
-      <div>
-        <p class="eyebrow">Proof on Proof</p>
-        <h2 id="program-proof-title">Inspect gates instead of re-reading claims.</h2>
-        <p class="program-copy">This page maps capabilities from <code>reports/capabilities.json</code>. For the full reviewer story, follow anchors on <a href="./proof.html">Proof</a>: <a href="./proof.html#proof-walkthrough">demo → Today → receipt</a>, <a href="./proof.html#proof-distribution-title">offline ZIP portability</a> (backend-free bundle for reviewers), and <a href="./proof.html#proof-capability-title">exercise value chains</a> (<code>reports/exercise-value.json</code>, e.g. apotek → skrive sundhed). Follow-up email form traps (<em>mit interesse</em> → <em>min interesse</em>) trace repair chain <code>job-followup-bojning-gender-trap</code> on the <a href="./proof.html#proof-capability-title">proof capability matrix</a>.</p>
-      </div>
-      <div class="program-proof-panel">
-        <div id="program-guarantees" class="program-guarantees"></div>
-        <div id="program-reports" class="program-reports"></div>
-      </div>
+    <section class="section" aria-labelledby="technical-map-title">
+      <details class="technical-disclosure">
+        <summary>
+          <span id="technical-map-title">Technical capability map</span>
+          <small>Generated contracts, guarantees, and report sources</small>
+        </summary>
+        <div class="technical-disclosure-content">
+          <div class="section-head">
+            <p class="eyebrow">Capabilities</p>
+            <h2 id="program-capabilities-title">What is shipped</h2>
+          </div>
+          <div id="program-capabilities" class="program-capabilities"></div>
+          <div class="section split" aria-labelledby="program-proof-title">
+            <div>
+              <p class="eyebrow">Proof on Proof</p>
+              <h2 id="program-proof-title">Inspect gates instead of re-reading claims.</h2>
+              <p class="program-copy">This page maps capabilities from <code>reports/capabilities.json</code>. For the full reviewer story, follow anchors on <a href="./proof.html">Proof</a>: <a href="./proof.html#proof-walkthrough">demo → Today → receipt</a>, <a href="./proof.html#proof-distribution-title">offline ZIP portability</a>, and <a href="./proof.html#proof-capability-title">exercise value chains</a>. The follow-up email form trap is traced as repair chain <code>job-followup-bojning-gender-trap</code>.</p>
+            </div>
+            <div class="program-proof-panel">
+              <div id="program-guarantees" class="program-guarantees"></div>
+              <div id="program-reports" class="program-reports"></div>
+              <p><a id="program-json-link" href="#" aria-disabled="true">Open generated JSON map</a></p>
+            </div>
+          </div>
+        </div>
+      </details>
     </section>
 
     <footer class="footer">

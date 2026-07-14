@@ -387,11 +387,10 @@ function runHomeMarkupSmoke() {
   assert(indexHtml.includes("id=\"narrative-gallery\""), "home page should expose catalog-driven narrative gallery container");
   assert(indexHtml.includes("id=\"drill-gallery\""), "home page should expose catalog-driven drill gallery container");
   assert(indexHtml.includes("id=\"pwa-status\""), "home page should expose learner-visible PWA status");
-  assert(indexHtml.includes("Lesson library"), "home page should keep lesson library section copy");
-  assert(indexHtml.includes("For reviewers"), "home should keep a reviewers drawer");
+  assert(indexHtml.includes("Browse all lessons and drills"), "home page should keep a learner-controlled library disclosure");
+  assert(indexHtml.includes("Evaluating or contributing to Platå?"), "home should keep a reviewers drawer");
   assert(indexHtml.includes("./dashboard.html?demo=learner"), "home reviewers path should link the demo learner dashboard");
-  assert(indexHtml.includes("./proof.html#proof-walkthrough-title"), "home reviewers path should link proof walkthrough");
-  assert(indexHtml.includes("./proof.html#proof-guided-title"), "home reviewers path should link guided proof");
+  assert(indexHtml.includes("./program.html"), "home reviewers path should link the product boundary and proof page");
   assert(indexHtml.includes("Russian-speaker trainer"), "home should label DA↔RU vocab as Russian-speaker trainer");
   assert(indexHtml.includes("id=\"repair-paths\""), "home page should expose Match→Gym repair paths list");
   assert(indexHtml.includes("register · deadline"), "home repair paths should list job follow-up register deadline bridge");

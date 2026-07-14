@@ -15,12 +15,13 @@
 <body>
   <main class="site-shell">
     <header class="hero">
-      <nav class="topnav" aria-label="Main navigation">
+      <nav class="topnav" aria-label="Reviewer navigation">
         <a class="brand" href="./">platå</a>
-                <div class="navlinks">
+        <div class="navlinks">
           <a href="./">Practice</a>
-          <a href="./dashboard.html">Dashboard</a>
-          <a href="./program.html">Program</a>
+          <a href="./dashboard.html?demo=learner">Demo learner</a>
+          <a href="./program.html">About</a>
+          <a href="./quality.html">Quality</a>
           <a href="https://github.com/lamapony/plata-trainers">GitHub</a>
         </div>
       </nav>
@@ -34,15 +35,6 @@
             <a class="btn primary" href="#proof-walkthrough">Follow reviewer path</a>
             <a class="btn" href="./dashboard.html?demo=learner">Open demo learner</a>
             <a class="btn" href="./quality.html">Quality report</a>
-            <a id="proof-digest-link" class="btn primary" href="#" aria-disabled="true">Proof digest JSON</a>
-            <a id="proof-health-link" class="btn" href="#" aria-disabled="true">Project health JSON</a>
-            <a id="proof-capabilities-link" class="btn" href="#" aria-disabled="true">Capability map JSON</a>
-            <a id="proof-evaluator-link" class="btn" href="#" aria-disabled="true">Evaluator path JSON</a>
-            <a id="proof-journey-link" class="btn" href="#" aria-disabled="true">Journey JSON</a>
-            <a id="proof-portability-link" class="btn" href="#" aria-disabled="true">Portability JSON</a>
-            <a id="proof-exercise-link" class="btn" href="#" aria-disabled="true">Exercise value JSON</a>
-            <a id="proof-guided-link" class="btn" href="#" aria-disabled="true">Guided session JSON</a>
-            <a id="proof-quickstart-link" class="btn" href="#" aria-disabled="true">Quickstart summary</a>
           </div>
         </div>
         <aside class="status-card" aria-label="Proof status">
@@ -52,6 +44,26 @@
         </aside>
       </section>
     </header>
+
+    <section class="section" aria-labelledby="proof-report-links-title">
+      <details class="technical-link-disclosure">
+        <summary>
+          <span id="proof-report-links-title">Generated report files</span>
+          <small>JSON contracts for contributors and automated review</small>
+        </summary>
+        <div class="technical-link-list">
+          <a id="proof-digest-link" href="#" aria-disabled="true">Proof digest JSON</a>
+          <a id="proof-health-link" href="#" aria-disabled="true">Project health JSON</a>
+          <a id="proof-capabilities-link" href="#" aria-disabled="true">Capability map JSON</a>
+          <a id="proof-evaluator-link" href="#" aria-disabled="true">Evaluator path JSON</a>
+          <a id="proof-journey-link" href="#" aria-disabled="true">Journey JSON</a>
+          <a id="proof-portability-link" href="#" aria-disabled="true">Portability JSON</a>
+          <a id="proof-exercise-link" href="#" aria-disabled="true">Exercise value JSON</a>
+          <a id="proof-guided-link" href="#" aria-disabled="true">Guided session JSON</a>
+          <a id="proof-quickstart-link" href="#" aria-disabled="true">Quickstart summary</a>
+        </div>
+      </details>
+    </section>
 
     <section class="learner-headroom-bar proof-headroom-bar" id="proof-headroom" hidden aria-label="Proof in plain language"></section>
 
@@ -71,70 +83,80 @@
       <div id="proof-walkthrough" class="proof-walkthrough"></div>
     </section>
 
-    <section class="section" aria-labelledby="proof-evaluator-title">
-      <div class="section-head">
-        <p class="eyebrow">First-visit evaluator path</p>
-        <h2 id="proof-evaluator-title">The public route is checked as a product contract</h2>
-      </div>
-      <div id="proof-evaluator" class="proof-guided"></div>
-    </section>
+    <section class="section" aria-labelledby="proof-technical-title">
+      <details class="technical-disclosure">
+        <summary>
+          <span id="proof-technical-title">Technical evidence and contributor contracts</span>
+          <small>Capabilities, distribution, health gates, and PR review fixtures</small>
+        </summary>
+        <div class="technical-disclosure-content">
+          <section class="section" aria-labelledby="proof-evaluator-title">
+            <div class="section-head">
+              <p class="eyebrow">First-visit evaluator path</p>
+              <h2 id="proof-evaluator-title">The public route is checked as a product contract</h2>
+            </div>
+            <div id="proof-evaluator" class="proof-guided"></div>
+          </section>
 
-    <section class="section" aria-labelledby="proof-artifacts-title">
-      <div class="section-head">
-        <p class="eyebrow">Contributor quickstart</p>
-        <h2 id="proof-artifacts-title">One local proof path</h2>
-      </div>
-      <div id="proof-artifacts" class="proof-artifacts"></div>
-    </section>
+          <section class="section" aria-labelledby="proof-artifacts-title">
+            <div class="section-head">
+              <p class="eyebrow">Contributor quickstart</p>
+              <h2 id="proof-artifacts-title">One local proof path</h2>
+            </div>
+            <div id="proof-artifacts" class="proof-artifacts"></div>
+          </section>
 
-    <section class="section" aria-labelledby="proof-surfaces-title">
-      <div class="section-head">
-        <p class="eyebrow">Published surfaces</p>
-        <h2 id="proof-surfaces-title">What a visitor can inspect</h2>
-      </div>
-      <div id="proof-surfaces" class="proof-surfaces"></div>
-    </section>
+          <section class="section" aria-labelledby="proof-surfaces-title">
+            <div class="section-head">
+              <p class="eyebrow">Published surfaces</p>
+              <h2 id="proof-surfaces-title">What a visitor can inspect</h2>
+            </div>
+            <div id="proof-surfaces" class="proof-surfaces"></div>
+          </section>
 
-    <section class="section" aria-labelledby="proof-distribution-title">
-      <div class="section-head">
-        <p class="eyebrow">Offline distribution</p>
-        <h2 id="proof-distribution-title">Standalone ZIP for backend-free review</h2>
-        <p class="program-copy">The Pages artifact is also packaged as a self-contained offline bundle for reviewers who want to unzip and open the site without GitHub Pages or any server.</p>
-      </div>
-      <div id="proof-distribution" class="proof-guided"></div>
-    </section>
+          <section class="section" aria-labelledby="proof-distribution-title">
+            <div class="section-head">
+              <p class="eyebrow">Offline distribution</p>
+              <h2 id="proof-distribution-title">Standalone ZIP for backend-free review</h2>
+              <p class="program-copy">The Pages artifact is also packaged as a self-contained offline bundle for reviewers who want to unzip and open the site without GitHub Pages or any server.</p>
+            </div>
+            <div id="proof-distribution" class="proof-guided"></div>
+          </section>
 
-    <section class="section" aria-labelledby="proof-capability-title">
-      <div class="section-head">
-        <p class="eyebrow">Capability proof matrix</p>
-        <h2 id="proof-capability-title">User-facing claims traced to gates, reports, and source</h2>
-      </div>
-      <div id="proof-capability-matrix" class="proof-capability-matrix"></div>
-    </section>
+          <section class="section" aria-labelledby="proof-capability-title">
+            <div class="section-head">
+              <p class="eyebrow">Capability proof matrix</p>
+              <h2 id="proof-capability-title">User-facing claims traced to gates, reports, and source</h2>
+            </div>
+            <div id="proof-capability-matrix" class="proof-capability-matrix"></div>
+          </section>
 
-    <section class="section" aria-labelledby="proof-guided-title">
-      <div class="section-head">
-        <p class="eyebrow">Guided outcome loop</p>
-        <h2 id="proof-guided-title">How the receipt contract is protected</h2>
-      </div>
-      <div id="proof-guided" class="proof-guided"></div>
-    </section>
+          <section class="section" aria-labelledby="proof-guided-title">
+            <div class="section-head">
+              <p class="eyebrow">Guided outcome loop</p>
+              <h2 id="proof-guided-title">How the receipt contract is protected</h2>
+            </div>
+            <div id="proof-guided" class="proof-guided"></div>
+          </section>
 
-    <section class="section split" aria-labelledby="proof-health-title">
-      <div>
-        <p class="eyebrow">Health gates</p>
-        <h2 id="proof-health-title">The check graph stays visible.</h2>
-        <p class="program-copy">Project health is generated from package scripts, workflows, public reports, deterministic fixtures, and guarantees. Missing gates or stale fixtures fail the report.</p>
-      </div>
-      <div id="proof-health" class="proof-health-panel"></div>
-    </section>
+          <section class="section split" aria-labelledby="proof-health-title">
+            <div>
+              <p class="eyebrow">Health gates</p>
+              <h2 id="proof-health-title">The check graph stays visible.</h2>
+              <p class="program-copy">Project health is generated from package scripts, workflows, public reports, deterministic fixtures, and guarantees. Missing gates or stale fixtures fail the report.</p>
+            </div>
+            <div id="proof-health" class="proof-health-panel"></div>
+          </section>
 
-    <section class="section" aria-labelledby="proof-review-title">
-      <div class="section-head">
-        <p class="eyebrow">PR review proof</p>
-        <h2 id="proof-review-title">Reviewer output is tested as a product surface</h2>
-      </div>
-      <div id="proof-review" class="proof-review"></div>
+          <section class="section" aria-labelledby="proof-review-title">
+            <div class="section-head">
+              <p class="eyebrow">PR review proof</p>
+              <h2 id="proof-review-title">Reviewer output is tested as a product surface</h2>
+            </div>
+            <div id="proof-review" class="proof-review"></div>
+          </section>
+        </div>
+      </details>
     </section>
 
     <footer class="footer">
@@ -145,5 +167,16 @@
   <script src="./shared/plata-headroom.js"></script>
   <script src="./proof.js"></script>
   <script src="./shared/plata-pwa.js"></script>
+  <script>
+    function revealProofHash() {
+      if (!window.location.hash) return;
+      var target = document.querySelector(window.location.hash);
+      var disclosure = target && target.closest("details");
+      if (disclosure) disclosure.open = true;
+      if (target) window.requestAnimationFrame(function () { target.scrollIntoView(); });
+    }
+    window.addEventListener("hashchange", revealProofHash);
+    document.addEventListener("DOMContentLoaded", revealProofHash);
+  </script>
 </body>
 </html>
