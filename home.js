@@ -294,10 +294,10 @@
         mode: "start",
         trainer: trainer,
         href: decision.primaryHref || trainer.path,
-        title: "Start at the plateau",
-        copy: decision.copy || "Start with real B2 pressure — follow-up tone, register, and social stakes.",
-        cta: "Start B2 lesson",
-        meta: "Optional tutorial: Lesson 01 shows mechanics in 10 min. No account; progress stays in this browser."
+        title: "Follow up after a job interview",
+        copy: "Practise when to write, how to sound interested without pushing, and what to say when the employer calls back.",
+        cta: "Open this lesson",
+        meta: "About 15 minutes. No account; progress stays in this browser."
       };
     }
 
@@ -306,8 +306,8 @@
         mode: "start",
         trainer: trainer,
         href: decision.primaryHref,
-        title: "Optional tutorial",
-        copy: "Short arrival story for first-time visitors who want to see choices, feedback, and local progress before B2 situations.",
+        title: "Your first five minutes in Danish",
+        copy: "A short arrival story for first-time visitors who want to try choices, feedback, and saved progress before a harder situation.",
         cta: "Open Lesson 01",
         meta: "Tutorial only — not the main plateau path. No account; progress stays in this browser."
       };
