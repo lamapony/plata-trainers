@@ -43,6 +43,12 @@ test.describe("public pages smoke", () => {
     await expect(page.locator("#home-primary-action")).toHaveAttribute("href", /lesson-b2-job-followup/);
     await expect(page.getByText("Situation → miss → repair")).toBeVisible();
     await expect(page.locator(".product-loop")).toBeVisible();
+    const customLesson = page.locator("#create-your-lesson");
+    await expect(customLesson).toBeVisible();
+    await expect(customLesson).toContainText("No forms. No JSON. No lesson-design expertise.");
+    await expect(customLesson.getByRole("link", { name: "See the simple guide" })).toHaveAttribute("href", "./factory.html");
+    await expect(customLesson.getByRole("link", { name: "Give the repository to an agent" })).toHaveAttribute("href", /github\.com\/lamapony\/plata-trainers/);
+    await expect(customLesson).toContainText("It cannot invent a new lesson by itself.");
     const library = page.locator(".library-disclosure").first();
     await expect(library).not.toHaveAttribute("open", "");
     await expect(page.locator("#narrative-gallery")).not.toBeVisible();

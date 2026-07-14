@@ -543,6 +543,10 @@ async function run() {
     assert(pages["index.html"].includes("./proof.html#proof-guided-title"), "public home page is missing guided proof link");
     assert(pages["index.html"].includes("./proof.html#proof-distribution-title"), "public home page is missing offline distribution proof link");
     assert(pages["index.html"].includes("Situation → miss → repair"), "public home should keep Situation → miss → repair product loop");
+    assert(pages["index.html"].includes("id=\"create-your-lesson\""), "public home is missing custom lesson entry point");
+    assert(pages["index.html"].includes("No forms. No JSON. No lesson-design expertise."), "public home custom lesson path is not written for non-technical visitors");
+    assert(pages["index.html"].includes("./factory.html"), "public home custom lesson path is missing the plain-language guide");
+    assert(pages["index.html"].includes("It cannot invent a new lesson by itself."), "public home custom lesson path overpromises live generation");
     assert(pages["index.html"].includes("id=\"repair-paths\""), "public home page is missing Match→Gym repair paths list");
     assert(pages["index.html"].includes("register · deadline"), "public home repair paths should list job follow-up register deadline bridge");
     assert(pages["index.html"].includes("bøjning · gender"), "public home repair paths should list job follow-up bojning trap bridge");

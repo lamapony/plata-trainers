@@ -343,6 +343,91 @@ h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; }
   line-height: 1.4;
 }
 
+/* Human entry point for requesting a situation-specific lesson through an agent. */
+.custom-lesson-section { padding-top: 28px; }
+.custom-lesson-shell {
+  padding: clamp(24px, 5vw, 52px);
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.custom-lesson-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  gap: clamp(28px, 5vw, 64px);
+  align-items: start;
+}
+.custom-lesson-section h2 {
+  max-width: 16ch;
+  margin-bottom: 18px;
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+.custom-lesson-lead {
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+.plain-promise {
+  max-width: 60ch;
+  margin: 18px 0 0;
+  line-height: 1.55;
+}
+.request-example {
+  padding-left: clamp(24px, 4vw, 44px);
+  border-left: 1px solid var(--line);
+}
+.request-example blockquote {
+  margin: 12px 0 18px;
+  color: var(--text);
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.45;
+}
+.request-example > p:last-child {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.custom-lesson-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: clamp(32px, 5vw, 52px) 0 0;
+  padding: 22px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  list-style: none;
+}
+.custom-lesson-steps li {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  gap: 10px;
+  padding-right: 24px;
+}
+.custom-lesson-steps li + li {
+  padding-left: 24px;
+  border-left: 1px solid var(--line);
+}
+.custom-lesson-steps li > span,
+.custom-lesson-steps small { color: var(--muted); }
+.custom-lesson-steps strong,
+.custom-lesson-steps small { display: block; }
+.custom-lesson-steps small {
+  margin-top: 5px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.custom-lesson-actions { margin-top: 24px; }
+.custom-lesson-boundary {
+  max-width: 80ch;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
 /* Secondary choices stay available without dominating the learner's next action. */
 .library-disclosure,
 .dashboard-disclosure,
@@ -469,6 +554,8 @@ a.program-chip.mastery {
 
 @media (max-width: 700px) {
   .product-loop,
+  .custom-lesson-layout,
+  .custom-lesson-steps,
   .reviewer-boundaries { grid-template-columns: 1fr; }
   .product-loop li { padding: 10px 0; }
   .product-loop li + li {
@@ -476,6 +563,25 @@ a.program-chip.mastery {
     border-top: 1px solid var(--line);
     border-left: 0;
   }
+  .custom-lesson-section { padding-top: 12px; }
+  .custom-lesson-shell { padding: 24px 20px; }
+  .custom-lesson-section h2 {
+    max-width: none;
+    font-size: clamp(2rem, 10vw, 2.7rem);
+  }
+  .request-example {
+    padding: 24px 0 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+  .custom-lesson-steps { padding: 8px 0; }
+  .custom-lesson-steps li { padding: 14px 0; }
+  .custom-lesson-steps li + li {
+    padding-left: 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+  .custom-lesson-actions .btn { width: 100%; }
   .library-disclosure > summary,
   .dashboard-disclosure > summary,
   .technical-disclosure > summary,
