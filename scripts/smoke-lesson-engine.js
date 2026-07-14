@@ -425,6 +425,8 @@ function runRepairAttemptSmoke(lesson) {
   assert(/assets\/comic\/official-reply-passive\.png/.test(env.elements["#scene"].innerHTML), "repair URL renders generated comic asset");
   assert(env.elements["#scene-count"].textContent === "Scene 1 of 6", "repair URL opens the target scene");
   assert(env.elements["#exercise-body"].children.length === 3, "choice scene renders options");
+  assert(/language-marker-da/.test(env.elements["#exercise-body"].children[0].innerHTML), "choice marks Danish material explicitly");
+  assert(/language-marker-en/.test(env.elements["#exercise-body"].children[0].innerHTML), "choice marks English help explicitly");
 
   env.elements["#exercise-body"].children[1].click();
 

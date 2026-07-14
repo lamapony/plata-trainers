@@ -81,11 +81,43 @@ test.describe("public pages smoke", () => {
     await expect(page.locator("#scene-count")).toHaveText("Scene 1 of 6");
     await expect(page.locator(".scene-body")).toBeVisible();
     await expect(page.locator(".exercise")).toBeVisible();
+    await expect(page.locator(".language-key")).toContainText("Danish to use");
+    await expect(page.locator(".language-key")).toContainText("English help");
+    await expect(page.locator('.exercise-prompt h3[lang="en"]')).toBeVisible();
     await expect(page.locator(".choice-card")).toHaveCount(3);
+    await expect(page.locator(".choice-language-da")).toHaveCount(3);
+    await expect(page.locator(".choice-language-en")).toHaveCount(3);
+    await expect(page.locator(".choice-card").first().locator('[lang="da"]')).toBeVisible();
+    await expect(page.locator(".choice-card").first().locator('[lang="en"]')).toBeVisible();
     const body = await page.locator("body").innerText();
     expect(body.length).toBeGreaterThan(40);
     await assertNoCriticalAxe(page, "flagship lesson");
     expect(runtimeProblems, "flagship runtime failures").toEqual([]);
+  });
+
+  test("matching exercises separate Danish material from English meaning", async ({ page }) => {
+    await page.goto("/lessons/lesson-01/");
+    await page.locator(".route-step").nth(2).click();
+    await expect(page.locator(".match-column-da .match-column-title")).toContainText("Danish");
+    await expect(page.locator(".match-column-en .match-column-title")).toContainText("English meaning");
+    await expect(page.locator('.match-column-da .sign-card[lang="da"]')).toHaveCount(2);
+    await expect(page.locator('.match-column-en .meaning-card[lang="en"]')).toHaveCount(2);
+
+    await page.locator(".route-step").nth(1).click();
+    await expect(page.locator(".language-field-label .language-marker-da")).toBeVisible();
+    await expect(page.locator('input#answer[lang="da"]')).toBeVisible();
+
+    await page.locator(".route-step").nth(5).click();
+    await expect(page.locator(".language-field-da .language-marker-da")).toBeVisible();
+    await expect(page.locator('input#name[lang="da"]')).toBeVisible();
+
+    await page.goto("/lessons/lesson-b2-radiator/");
+    await page.locator(".route-step").nth(3).click();
+    await expect(page.locator(".channel-language-da").first()).toBeVisible();
+    await expect(page.locator(".channel-language-en").first()).toBeVisible();
+    await expect(page.locator(".flagship-option .choice-language-da").first()).toBeVisible();
+    await expect(page.locator(".flagship-option .choice-language-en").first()).toBeVisible();
+    await assertNoHorizontalOverflow(page);
   });
 
   test("every lesson loads cleanly on a phone-sized screen", async ({ page }) => {
