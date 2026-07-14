@@ -119,22 +119,22 @@
     enableLink("#proof-guided-link", proofSources.guided);
     enableLink("#proof-quickstart-link", quickstartBase + "quickstart.md");
     var passing = proofPassing(data);
-    $("#proof-status").textContent = passing ? "Proof passing" : "Needs attention";
+    $("#proof-status").textContent = passing ? "All checks passing" : "Needs attention";
     $("#proof-status").className = passing ? "quality-pass" : "quality-fail";
     $("#proof-summary").innerHTML = [
-      ["Health gates", data.health.totals.gates],
-      ["Proof gates", data.capabilities.totals.proofGates],
-      ["Evaluator targets", data.evaluator.routeTargets.length],
-      ["Journey stages", data.journey.totals.stages],
-      ["Portable stages", data.portability.totals.stages],
-      ["Exercise chains", data.exerciseValue.totals.flagshipChains],
-      ["Artifacts", data.quickstart.artifacts.length],
-      ["Review regressions", data.review.summary.regressions],
-      ["Issues", data.health.totals.issues + data.capabilities.totals.issues]
+      ["Required checks", data.health.totals.gates],
+      ["Product promises checked", data.capabilities.totals.proofGates],
+      ["Public pages checked", data.evaluator.routeTargets.length],
+      ["Walkthrough steps", data.journey.totals.stages],
+      ["Move-progress steps", data.portability.totals.stages],
+      ["Learning chains", data.exerciseValue.totals.flagshipChains],
+      ["Review files", data.quickstart.artifacts.length],
+      ["Test failures exercised", data.review.summary.regressions],
+      ["Open issues", data.health.totals.issues + data.capabilities.totals.issues]
     ].map(function (item) {
       return "<li><span>" + escapeHtml(item[0]) + "</span><strong>" + escapeHtml(item[1]) + "</strong></li>";
     }).join("");
-    $("#proof-generated").textContent = "Health generated " + new Date(data.health.generatedAt).toLocaleString();
+    $("#proof-generated").textContent = "Last checked " + new Date(data.health.generatedAt).toLocaleString();
   }
 
   function renderProofHeadroom(data) {
@@ -163,15 +163,17 @@
   }
 
   function digestCard(item) {
+    var checked = item.status === "pass" || item.status === "regression";
     return "<article class=\"proof-digest-card " + escapeHtml(item.status) + "\">" +
       "<div class=\"quality-card-head\">" +
-        "<span class=\"quality-key\">" + escapeHtml(item.status) + "</span>" +
-        "<span class=\"quality-state\">" + escapeHtml(item.id) + "</span>" +
+        "<span class=\"quality-key\">" + (checked ? "Checked" : "Needs attention") + "</span>" +
       "</div>" +
       "<h3>" + escapeHtml(item.title) + "</h3>" +
       "<p>" + escapeHtml(item.takeaway) + "</p>" +
       "<p class=\"proof-digest-detail\">" + escapeHtml(item.detail) + "</p>" +
-      "<div class=\"program-proof-strip\">" + renderEvidenceChips(item.evidence) + "</div>" +
+      "<details class=\"headroom-appendix\"><summary>See exact evidence</summary>" +
+        "<div class=\"program-proof-strip\">" + chip(item.id, "") + renderEvidenceChips(item.evidence) + "</div>" +
+      "</details>" +
     "</article>";
   }
 
@@ -180,9 +182,11 @@
     var claims = (digest.whatThisProves || []).map(digestCard).join("");
     var changes = (digest.whatChanged || []).map(function (item) {
       return "<div class=\"proof-change-row " + escapeHtml(item.status) + "\">" +
-        "<span>" + escapeHtml(item.status) + "</span>" +
+        "<span>" + (item.status === "pass" ? "✓" : "!") + "</span>" +
         "<div><strong>" + escapeHtml(item.title) + "</strong><p>" + escapeHtml(item.takeaway) + "</p>" +
-          "<div class=\"program-proof-strip\">" + renderEvidenceChips(item.evidence) + "</div></div>" +
+          "<details class=\"headroom-appendix\"><summary>See exact evidence</summary>" +
+            "<div class=\"program-proof-strip\">" + renderEvidenceChips(item.evidence) + "</div>" +
+          "</details></div>" +
       "</div>";
     }).join("");
     var boundaries = (digest.trustBoundaries || []).map(function (item) {
@@ -191,7 +195,7 @@
     $("#proof-digest").innerHTML =
       "<article class=\"proof-digest-lead " + escapeHtml(digest.status || "fail") + "\">" +
         "<div>" +
-          "<span class=\"quality-key\">" + escapeHtml(digest.status || "unknown") + "</span>" +
+          "<span class=\"quality-key\">" + (digest.status === "pass" ? "Checked" : "Needs attention") + "</span>" +
           "<h3>" + escapeHtml(digest.headline || "Proof digest unavailable") + "</h3>" +
           "<p>" + escapeHtml(digest.summary || "") + "</p>" +
         "</div>" +
@@ -227,14 +231,17 @@
   }
 
   function surfaceCard(title, status, copy, chips, href) {
-    return "<article class=\"proof-surface " + escapeHtml(status === "pass" || status === "regression" ? "pass" : "fail") + "\">" +
+    var checked = status === "pass" || status === "regression";
+    return "<article class=\"proof-surface " + escapeHtml(checked ? "pass" : "fail") + "\">" +
       "<div class=\"quality-card-head\">" +
-        "<span class=\"quality-key\">" + escapeHtml(status) + "</span>" +
-        (href ? "<a class=\"quality-state\" href=\"" + escapeHtml(href) + "\">open</a>" : "<span class=\"quality-state\">local</span>") +
+        "<span class=\"quality-key\">" + (checked ? "Checked" : "Needs attention") + "</span>" +
+        (href ? "<a class=\"quality-state\" href=\"" + escapeHtml(href) + "\">See evidence</a>" : "<span class=\"quality-state\">Included</span>") +
       "</div>" +
       "<h3>" + escapeHtml(title) + "</h3>" +
       "<p>" + escapeHtml(copy) + "</p>" +
-      "<div class=\"program-proof-strip\">" + chips.join("") + "</div>" +
+      "<details class=\"headroom-appendix\"><summary>Exact checks and counts</summary>" +
+        "<div class=\"program-proof-strip\">" + chips.join("") + "</div>" +
+      "</details>" +
     "</article>";
   }
 
@@ -243,7 +250,7 @@
       surfaceCard(
         "Demo learner",
         data.demo.status,
-        "Read-only rich B2 profile with memory facts, practice plan, and companion proof.",
+        "Meet a fictional B2 learner and see how Platå chooses one useful next step. The example cannot change your own progress.",
         [
           chip(countLabel(data.demo.totals.visibleMemoryFacts, "memory fact", "memory facts"), "mastery"),
           chip(countLabel(data.demo.totals.planSteps, "plan step", "plan steps"), ""),
@@ -252,9 +259,9 @@
         proofSources.demo
       ),
       surfaceCard(
-        "Profile portability",
+        "Take your progress with you",
         data.portability.status,
-        "Export/import/replay trace for a real local profile with plan, correction, and outcome evidence.",
+        "Your saved practice can be exported and restored, including corrections and finished steps.",
         [
           chip(data.portability.traceId || "profile trace", "pass"),
           chip(countLabel(data.portability.totals.eventCount, "event", "events"), "mastery"),
@@ -264,9 +271,9 @@
         proofSources.portability
       ),
       surfaceCard(
-        "Exercise value",
+        "Practice that changes what you can do",
         data.exerciseValue.status,
-        "Flagship exercise proof for consequence, near-miss, repair ladder, channel transfer, memory recurrence, and reason evidence.",
+        "The main lessons test realistic choices, explain close mistakes, and help you use the same skill in a new situation.",
         [
           chip(countLabel(data.exerciseValue.totals.flagshipChains, "flagship chain", "flagship chains"), "mastery"),
           chip(data.exerciseValue.totals.archetypesCovered + "/" + data.exerciseValue.requiredArchetypes.length + " archetypes", "pass"),
@@ -277,9 +284,9 @@
         proofSources.exerciseValue
       ),
       surfaceCard(
-        "Capability map",
+        "Claims you can verify",
         data.capabilities.status,
-        "Product claims mapped to checks, reports, docs, and source files.",
+        "Every important promise is connected to a check, a report, and the part of the project that makes it true.",
         [
           chip(countLabel(data.capabilities.totals.capabilities, "capability", "capabilities"), "mastery"),
           chip(countLabel(data.capabilities.totals.proofGates, "gate", "gates"), ""),
@@ -288,9 +295,9 @@
         proofSources.capabilities
       ),
       surfaceCard(
-        "Project health",
+        "Checks before publication",
         data.health.status,
-        "Required gates, workflows, public reports, and deterministic fixtures.",
+        "Lessons, links, reports, and publishing rules are checked together before a change reaches the live site.",
         [
           chip(countLabel(data.health.totals.gates, "gate", "gates"), "mastery"),
           chip(countLabel(data.health.totals.workflows, "workflow", "workflows"), ""),
@@ -299,9 +306,9 @@
         proofSources.health
       ),
       surfaceCard(
-        "Golden review fixture",
+        "A realistic code review",
         data.review.status,
-        "Large PR review scenario with capped Markdown and full JSON output.",
+        "A deliberately difficult example proves that a large change can still be reviewed without hiding errors or losing detail.",
         [
           chip(countLabel(data.review.summary.changes, "change", "changes"), "mastery"),
           chip(countLabel(data.review.summary.regressions, "regression", "regressions"), "fail"),
@@ -343,10 +350,10 @@
 
     var steps = [
       {
-        title: "Open the read-only learner",
-        copy: "The visitor starts from a deterministic B2 profile, so the dashboard can show memory, plan, and companion behavior without touching local progress.",
+        title: "Meet a fictional learner",
+        copy: "Explore a made-up B2 profile with realistic strengths and trouble spots. Nothing you do here changes your own progress.",
         href: dashboardHref,
-        hrefLabel: "Open demo dashboard",
+        hrefLabel: "Meet the example learner",
         chips: [
           chip(countLabel(demo.totals && demo.totals.visibleMemoryFacts || 0, "memory fact", "memory facts"), "mastery"),
           chip((demo.totals && demo.totals.storageWrites || 0) + " storage writes", demo.totals && demo.totals.storageWrites ? "fail" : "pass"),
@@ -354,10 +361,10 @@
         ]
       },
       {
-        title: "See the next useful action",
-        copy: demoStep.title ? "The Today surface chooses `" + demoStep.title + "` from cited learner memory instead of exposing diagnostics first." : "The Today surface chooses one actionable next step from cited learner memory.",
+        title: "See why this practice comes next",
+        copy: "Platå turns the learner’s saved practice into one clear suggestion and keeps the explanation close by.",
         href: routeHref,
-        hrefLabel: "Open recommended step",
+        hrefLabel: "See the suggestion",
         chips: [
           chip(demoStep.signalTag || demoStep.signal || "memory-backed", "mastery"),
           chip(countLabel((companion.citedFacts || []).length, "cited fact", "cited facts"), "pass"),
@@ -365,10 +372,10 @@
         ]
       },
       {
-        title: "Follow the guided session",
-        copy: session.goal && session.goal.reason || "A guided session turns planner, memory, and advisor signals into four learner-facing steps.",
+        title: "Try the suggested practice",
+        copy: "The suggestion opens a short session with a goal, one focused task, useful feedback, and a clear finish.",
         href: localPageHref(route.href || "dashboard.html?demo=learner"),
-        hrefLabel: "Open guided route",
+        hrefLabel: "Try the practice",
         chips: [
           chip(session.status || "ready", "pass"),
           chip(countLabel((session.steps || []).length, "guided step", "guided steps"), "mastery"),
@@ -376,10 +383,10 @@
         ]
       },
       {
-        title: "Return with route evidence",
-        copy: returnRendered.returnReceipt || "The dashboard receives plan and step ids, confirms the returned step, and continues the route without writing demo progress.",
+        title: "Come back without losing your place",
+        copy: "After the session, Platå remembers which step was finished and shows what to do next. The example still cannot change your own progress.",
         href: localPageHref(journey.exit || "dashboard.html?demo=learner#due"),
-        hrefLabel: "Open return route",
+        hrefLabel: "See the return",
         chips: [
           chip(journey.traceId || "journey trace", "pass"),
           chip((journey.totals && journey.totals.storageWrites || 0) + " storage writes", journey.totals && journey.totals.storageWrites ? "fail" : "pass"),
@@ -387,10 +394,10 @@
         ]
       },
       {
-        title: "Inspect the outcome receipt",
-        copy: receipt.summary || "A completed route writes a portable receipt with completion evidence, cited facts, and guardrails.",
+        title: "See what changed",
+        copy: "The completed session leaves a small, portable result: what you practised, what you finished, and what should come next.",
         href: localReportHref("reports/guided-session.json"),
-        hrefLabel: "Open receipt JSON",
+        hrefLabel: "Open the exact result",
         chips: [
           chip(receiptFingerprint || "receipt fingerprint", "pass"),
           chip(countLabel((receipt.citedFacts || []).length, "cited fact", "cited facts"), "mastery"),
@@ -398,10 +405,10 @@
         ]
       },
       {
-        title: "Audit the proof trail",
-        copy: "The same flow is guarded by generated reports, the deterministic evaluator journey, PR drift checks, and source contracts published with the static site.",
+        title: "Open the checks if you are curious",
+        copy: "The same journey is tested before publication. The detailed reports and source files stay public for anyone who wants to verify the claim.",
         href: proofSources.capabilities,
-        hrefLabel: "Open capability map",
+        hrefLabel: "Open the technical map",
         chips: [
           proofGates,
           chip("check:evaluator-journey", "pass"),
@@ -418,8 +425,8 @@
         "<div>" +
           "<h3>" + escapeHtml(item.title) + "</h3>" +
           "<p>" + escapeHtml(item.copy) + "</p>" +
-          "<div class=\"program-proof-strip\">" + item.chips.join("") + "</div>" +
           "<a class=\"program-chip mastery\" href=\"" + escapeHtml(item.href) + "\">" + escapeHtml(item.hrefLabel) + "</a>" +
+          "<details class=\"headroom-appendix\"><summary>Technical evidence</summary><div class=\"program-proof-strip\">" + item.chips.join("") + "</div></details>" +
         "</div>" +
       "</article>";
     }).join("");
@@ -427,26 +434,28 @@
     var distributionHref = localPageHref("proof.html#proof-distribution-title");
     $("#proof-walkthrough").innerHTML =
       "<nav class=\"proof-reviewer-route\" aria-label=\"Reviewer path at a glance\">" +
-        linkChip(dashboardHref, "1 · Demo learner", "mastery") +
-        linkChip(routeHref, "2 · Today step", "pass") +
-        linkChip(localPageHref(route.href || "dashboard.html?demo=learner"), "3 · Guided session", "pass") +
-        linkChip(distributionHref, "4 · Offline ZIP", "pass") +
-        linkChip(localPageHref("quality.html"), "5 · Quality gates", "pass") +
-        linkChip(proofSources.capabilities, "6 · Capability map", "pass") +
+        linkChip(dashboardHref, "1 · Example learner", "mastery") +
+        linkChip(routeHref, "2 · One suggestion", "pass") +
+        linkChip(localPageHref(route.href || "dashboard.html?demo=learner"), "3 · Short practice", "pass") +
+        linkChip(distributionHref, "4 · Works offline", "pass") +
+        linkChip(localPageHref("quality.html"), "5 · Lesson checks", "pass") +
+        linkChip(proofSources.capabilities, "6 · Technical map", "pass") +
       "</nav>" +
       "<article class=\"proof-walkthrough-summary " + escapeHtml(data.guided.status === "pass" && demo.status === "pass" && journey.status === "pass" ? "pass" : "fail") + "\">" +
         "<div>" +
-          "<span class=\"quality-key\">visitor path</span>" +
-          "<h3>One inspectable loop from recommendation to receipt</h3>" +
-          "<p>Assembled from generated reports and a deterministic journey trace — it fails with this page if demo, guided route, return receipt, or outcome contract drifts.</p>" +
+          "<span class=\"quality-key\">One complete example</span>" +
+          "<h3>From one suggestion to a useful result</h3>" +
+          "<p>Follow the human story first. The exact reports behind every step remain available when you want to inspect them.</p>" +
         "</div>" +
-        "<div class=\"program-proof-strip\">" +
-          chip(countLabel(demoPlan.steps && demoPlan.steps.length || 0, "plan step", "plan steps"), "mastery") +
-          chip(journey.traceId || "journey trace", "pass") +
-          chip(countLabel(journey.totals && journey.totals.stages || 0, "journey stage", "journey stages"), "pass") +
-          chip(countLabel(data.guided.totals && data.guided.totals.outcomeReceipts || 0, "outcome receipt", "outcome receipts"), "pass") +
-          chip(countLabel((data.guided.scenarios || []).length, "guided scenario", "guided scenarios"), "") +
-        "</div>" +
+        "<details class=\"headroom-appendix\"><summary>See exact journey data</summary>" +
+          "<div class=\"program-proof-strip\">" +
+            chip(countLabel(demoPlan.steps && demoPlan.steps.length || 0, "plan step", "plan steps"), "mastery") +
+            chip(journey.traceId || "journey trace", "pass") +
+            chip(countLabel(journey.totals && journey.totals.stages || 0, "journey stage", "journey stages"), "pass") +
+            chip(countLabel(data.guided.totals && data.guided.totals.outcomeReceipts || 0, "outcome receipt", "outcome receipts"), "pass") +
+            chip(countLabel((data.guided.scenarios || []).length, "guided scenario", "guided scenarios"), "") +
+          "</div>" +
+        "</details>" +
       "</article>" +
       "<div class=\"proof-walkthrough-steps\">" + stepHtml + "</div>";
   }

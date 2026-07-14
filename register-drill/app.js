@@ -127,7 +127,7 @@
     const p = session[sessionPos];
     const rec = state.byItemId[itemIdFor(p)] || { box: 1 };
     els.promptCounter.textContent = `${sessionPos + 1} / ${session.length}`;
-    els.promptBox.textContent = `box ${rec.box}${rec.mastered ? " · mastered" : ""}`;
+    els.promptBox.textContent = `trin ${rec.box}${rec.mastered ? " · lært" : ""}`;
     els.promptCat.textContent = p.cat;
     els.promptText.textContent = p.prompt;
     els.options.innerHTML = "";
@@ -148,7 +148,7 @@
     selectedIndex = -1;
     awaitingCheck = true;
     els.submitBtn.disabled = true;
-    els.submitBtn.textContent = "Check";
+    els.submitBtn.textContent = "Tjek svar";
   }
 
   function selectOption(i) {

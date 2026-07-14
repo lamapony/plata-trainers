@@ -8,11 +8,11 @@ window.PLATA_DATA = {
       starter: "Kære [udlejer],",
       minChars: 48,
       rubric: [
-        { id: "facts", label: "Facts first", detail: "Problem, lejlighed/adresse og hvor længe det har varet er synlige." },
-        { id: "agency", label: "Clear agency", detail: "Du bruger jeg-form og beder om et konkret næste skridt." },
-        { id: "register", label: "Calm register", detail: "Høflig uden passiv accept — ikke kun 'det er helt fint'." }
+        { id: "facts", label: "Fakta først", detail: "Problem, lejlighed/adresse og hvor længe det har varet er synlige." },
+        { id: "agency", label: "Tydeligt ansvar", detail: "Du bruger jeg-form og beder om et konkret næste skridt." },
+        { id: "register", label: "Rolig tone", detail: "Høflig uden passiv accept — ikke kun 'det er helt fint'." }
       ],
-      note: "Self-grade: flyttede din dansk sagen videre uden at eskalere?"
+      note: "Tjek selv: fik din tekst sagen til at gå videre uden at eskalere?"
     },
     {
       id: "arbejde-status",
@@ -22,11 +22,11 @@ window.PLATA_DATA = {
       starter: "Hej alle,",
       minChars: 36,
       rubric: [
-        { id: "owned-delay", label: "Owned delay", detail: "Du navngiver forsinkelsen uden undskyldninger uden handling." },
-        { id: "next-step", label: "Visible next step", detail: "Der er et tidspunkt eller næste skridt teamet kan stole på." },
-        { id: "tone", label: "Workplace tone", detail: "Kort og konkret — ikke for formelt, ikke for privat." }
+        { id: "owned-delay", label: "Tag ansvar for forsinkelsen", detail: "Du navngiver forsinkelsen uden at gemme dig bag en undskyldning." },
+        { id: "next-step", label: "Synligt næste skridt", detail: "Der er et tidspunkt eller næste skridt teamet kan stole på." },
+        { id: "tone", label: "Tone på arbejdet", detail: "Kort og konkret — ikke for formelt, ikke for privat." }
       ],
-      note: "Self-grade: lyder du som en kollega der tager ansvar?"
+      note: "Tjek selv: lyder du som en kollega der tager ansvar?"
     },
     {
       id: "sundhed-symptom",
@@ -36,11 +36,11 @@ window.PLATA_DATA = {
       starter: "Kære læge,",
       minChars: 40,
       rubric: [
-        { id: "timeline", label: "Timeline", detail: "Du nævner varighed eller hvornår det startede." },
-        { id: "precision", label: "Symptom precision", detail: "Du bruger konkrete ord (smerte, hoste, feber) frem for vage 'ikke så godt'." },
-        { id: "ask", label: "Clear ask", detail: "Du beder om tid, svar eller næste skridt tydeligt." }
+        { id: "timeline", label: "Hvornår og hvor længe", detail: "Du nævner varighed eller hvornår det startede." },
+        { id: "precision", label: "Præcise symptomer", detail: "Du bruger konkrete ord (smerte, hoste, feber) frem for vage 'ikke så godt'." },
+        { id: "ask", label: "Tydeligt ønske", detail: "Du beder tydeligt om en tid, et svar eller et næste skridt." }
       ],
-      note: "Self-grade: kan lægen handle på det uden at gætte?"
+      note: "Tjek selv: kan lægen handle på det uden at gætte?"
     },
     {
       id: "followup-interview",
@@ -50,11 +50,11 @@ window.PLATA_DATA = {
       starter: "Kære [navn],",
       minChars: 44,
       rubric: [
-        { id: "thanks", label: "Acknowledgement", detail: "Tak for samtalen uden at lyde desperat." },
-        { id: "interest", label: "Calm interest", detail: "Interesse er tydelig uden pres ('håber på hurtigt svar')." },
-        { id: "process", label: "Process language", detail: "Du bruger proces-sprog (næste skridt, opfølgning) frem for følelses-tryk." }
+        { id: "thanks", label: "Tak for samtalen", detail: "Tak for samtalen uden at lyde desperat." },
+        { id: "interest", label: "Rolig interesse", detail: "Interesse er tydelig uden pres ('håber på hurtigt svar')." },
+        { id: "process", label: "Tal om processen", detail: "Du bruger proces-sprog (næste skridt, opfølgning) frem for følelses-tryk." }
       ],
-      note: "Self-grade: lyder du som en fremtidig kollega?"
+      note: "Tjek selv: lyder du som en fremtidig kollega?"
     },
     {
       id: "borgerservice-tid",
@@ -64,11 +64,11 @@ window.PLATA_DATA = {
       starter: "Kære Borgerservice,",
       minChars: 40,
       rubric: [
-        { id: "context", label: "Context", detail: "Du nævner hvad aftalen handler om." },
-        { id: "request", label: "Concrete request", detail: "Du beder om ny tid eller alternativ tydeligt." },
-        { id: "register", label: "Public-service register", detail: "Kort, konkret og respektfuldt — ikke kravende." }
+        { id: "context", label: "Sammenhæng", detail: "Du nævner hvad aftalen handler om." },
+        { id: "request", label: "Konkret ønske", detail: "Du beder tydeligt om en ny tid eller et alternativ." },
+        { id: "register", label: "Tone til det offentlige", detail: "Kort, konkret og respektfuldt — ikke krævende." }
       ],
-      note: "Self-grade: er din dansk brugbar i det offentlige system?"
+      note: "Tjek selv: er dit dansk brugbart i det offentlige system?"
     }
   ]
 };

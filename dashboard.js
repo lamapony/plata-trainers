@@ -679,7 +679,7 @@ function planEvidenceText(step) {
     const score = Number.isFinite(rate) ? ` · ${rate}%` : "";
     const revision = needsRevision ? ` · ${needsRevision} need revision` : "";
     const mode = evidence.mode ? ` · ${evidence.mode}` : "";
-    return `Writing self-report: ${count}${score}${revision}${mode} · no accuracy claimed`;
+    return `Writing practice: ${count}${score}${revision}${mode} · you assessed the text yourself`;
   }
 
   if (evidence.reason === "drill-session-complete") {
@@ -801,13 +801,13 @@ function todayFactHtml(fact) {
 function todayStageStripHtml(activeKind) {
   const currentKind = ["repair", "continue", "review"].includes(activeKind) ? "active-plan" : activeKind;
   const stages = [
-    { kind: "onboarding", label: "First run", copy: "entry point" },
-    { kind: "active-plan", label: "Active route", copy: "open step" },
-    { kind: "return", label: "Return", copy: "recorded step" },
-    { kind: "memory-review", label: "Review due", copy: "spaced check" }
+    { kind: "onboarding", label: "First visit", copy: "start here" },
+    { kind: "active-plan", label: "In progress", copy: "current step" },
+    { kind: "return", label: "Back from practice", copy: "result saved" },
+    { kind: "memory-review", label: "Time to revisit", copy: "quick check" }
   ];
   return `
-    <div class="today-stage-strip" aria-label="Program state">
+    <div class="today-stage-strip" aria-label="Practice progress">
       ${stages.map(stage => `
         <span class="${stage.kind === currentKind ? "active" : ""}">
           <strong>${escapeHtml(stage.label)}</strong>
@@ -821,6 +821,46 @@ function todayStageStripHtml(activeKind) {
 function selectedMemoryFactsForStep(step) {
   const facts = step && step.trace && step.trace.inputs && step.trace.inputs.selectedMemoryFacts;
   return Array.isArray(facts) ? facts : [];
+}
+
+function friendlyPracticeFocus(signal) {
+  const graph = window.PlataCompetencies;
+  const competency = graph && graph.competencyForSignal
+    ? graph.competencyForSignal({ tag: signal })
+    : null;
+  const labels = {
+    "agency": "make the next step clear without sounding harsh",
+    "register-control": "choose a tone that fits the situation",
+    "stance-reading": "notice what small words do to the tone",
+    "process-control": "make the process and next step clear",
+    "consequence-awareness": "choose words that protect trust"
+  };
+  if (labels[signal]) return labels[signal];
+  if (competency && labels[competency.id]) return labels[competency.id];
+  const spec = masterySpec(signal);
+  if (spec && spec.label) return String(spec.label).replace(/^Use\s+/i, "use ");
+  return "work on one useful skill";
+}
+
+function friendlyCompanionMessage(companion, selectedFacts) {
+  if (!companion) return "";
+  const factKinds = selectedFacts.map(fact => fact && fact.kind).filter(Boolean);
+  if (companion.kind === "repair" && factKinds.includes("root_competency_trap")) {
+    return "This pattern showed up in more than one situation. A short focused scene will help you practise it without starting a whole new lesson.";
+  }
+  if (companion.kind === "repair" && factKinds.includes("recurring_trap")) {
+    return "This has tripped you up more than once, so a short focused scene is more useful than adding new material.";
+  }
+  if (companion.kind === "repair") {
+    return "A recent answer showed that this one small skill is worth practising before you move on.";
+  }
+  if (companion.kind === "maintain") {
+    return "You already repaired this once. Keep moving and come back only if the same problem appears again.";
+  }
+  if (companion.kind === "continue") {
+    return "Continue with one small practice block in the kind of situation that has worked for you before.";
+  }
+  return companion.message;
 }
 
 function todayReturnContext(plan) {
@@ -840,16 +880,22 @@ function resolveTodayProgramState(options) {
   const visibleFacts = options.visibleFacts || [];
   const totalAttempts = candidates.reduce((sum, item) => sum + Number(item && item.stats && item.stats.total || 0), 0);
   const selectedFacts = selectedMemoryFactsForStep(step);
+  const selectedSignalFact = selectedFacts.find(fact => fact && fact.signal);
+  const selectedSignal = selectedSignalFact && selectedSignalFact.signal || "";
   const selectedReviewFact = selectedFacts.find(fact => fact.kind === "next_review_due" || fact.kind === "stale_skill") || null;
   const dueReviewFact = selectedReviewFact || visibleFacts.find(fact => fact.kind === "next_review_due") || visibleFacts.find(fact => fact.kind === "stale_skill") || null;
   const returnContext = todayReturnContext(plan);
   const base = {
     kind: companion && companion.kind || plan.kind || "continue",
-    eyebrow: companion ? "Study companion" : plan.completed ? "Plan complete" : "Planner route",
-    headline: companion && companion.headline || step && step.title || plan.title || "Practice route",
-    message: companion && companion.message || step && step.copy || plan.copy || "Continue the current practice route.",
-    why: companion && companion.why || "This route comes from the deterministic planner and the current practice record.",
-    actionLabel: step ? (step.status === "active" ? "Continue current step" : step.primaryLabel || "Start next step") : "Review completed plan",
+    eyebrow: companion ? "Your suggestion" : plan.completed ? "Plan finished" : "Chosen for you",
+    headline: companion && companion.kind === "repair" && selectedSignal
+      ? `Practise how to ${friendlyPracticeFocus(selectedSignal)}`
+      : companion && companion.headline || step && step.title || plan.title || "Your next practice",
+    message: companion ? friendlyCompanionMessage(companion, selectedFacts) : step && step.copy || plan.copy || "Continue where you left off.",
+    why: companion
+      ? "Platå noticed this pattern in the practice saved in this browser."
+      : "Platå chose this from the progress saved in this browser.",
+    actionLabel: step ? (step.status === "active" ? "Continue" : companion ? "Try this practice" : step.primaryLabel || "Start") : "Review what you finished",
     routeMeta: step
       ? [`Step ${step.number} of ${plan.steps.length}`, step.trainerName || "Practice", step.minutes].filter(Boolean).join(" · ")
       : `${plan.steps.length} step${plan.steps.length === 1 ? "" : "s"} complete`,
@@ -865,38 +911,38 @@ function resolveTodayProgramState(options) {
       message: returned
         ? `${returned.title || "The finished step"} is now in the saved practice record.`
         : "Your latest practice result is reflected in the saved route.",
-      why: "The lesson returned with plan and step ids, so the dashboard can continue from the next open step instead of asking the learner to re-orient.",
-      actionLabel: step ? "Continue next step" : "Review completed route",
+      why: "You finished a step, so Platå can take you straight to the next one.",
+      actionLabel: step ? "Continue" : "Review what you finished",
       routeMeta: step
         ? [`Returned from step ${returned && returned.number || "?"}`, `next step ${step.number} of ${plan.steps.length}`, step.trainerName || "Practice"].filter(Boolean).join(" · ")
         : `${plan.steps.length} tracked step${plan.steps.length === 1 ? "" : "s"} complete`,
-      tags: ["Return recorded", "Saved route"]
+      tags: ["Progress saved", "Next step ready"]
     });
   }
 
   if (dueReviewFact && (selectedReviewFact || base.kind === "review" || step && step.kind === "review")) {
     return Object.assign(base, {
       kind: "memory-review",
-      eyebrow: "Memory review",
+      eyebrow: "Quick review",
       headline: `Review ${dueReviewFact.signal || step && step.title || "a saved signal"}`,
-      message: dueReviewFact.copy || "Spacing says this signal is old enough to be checked again.",
-      why: "A cited memory fact is due for review, so the route promotes a small check before adding new material.",
-      actionLabel: step ? "Start review" : base.actionLabel,
+      message: dueReviewFact.copy || "It has been a little while since you practised this.",
+      why: "One of your saved skills is ready for a quick check before you add something new.",
+      actionLabel: step ? "Review now" : base.actionLabel,
       routeMeta: [dueReviewFact.kind, dueReviewFact.signal, dueReviewFact.sourceFingerprint].filter(Boolean).join(" · "),
-      tags: ["Review due", "Cited memory"]
+      tags: ["Ready to review", "Based on your progress"]
     });
   }
 
   if (step && step.status === "active") {
     return Object.assign(base, {
       kind: "active-plan",
-      eyebrow: "Active route",
+      eyebrow: "Continue where you stopped",
       headline: `Resume ${step.title || "the current step"}`,
       message: step.copy || "This step is already in progress, so continuing it is more useful than starting a new route.",
-      why: "The saved plan shows an unfinished step that has already been opened; the dashboard keeps continuity ahead of fresh recommendations.",
-      actionLabel: "Resume step",
+      why: "You already started this step, so continuing it is more useful than opening something new.",
+      actionLabel: "Continue",
       routeMeta: [`Started ${formatPlanDateTime(step.startedAt) || "earlier"}`, `Step ${step.number} of ${plan.steps.length}`, step.trainerName || "Practice"].filter(Boolean).join(" · "),
-      tags: ["In progress", "Saved route"]
+      tags: ["In progress", "Saved in this browser"]
     });
   }
 
@@ -906,10 +952,10 @@ function resolveTodayProgramState(options) {
       eyebrow: "Start here",
       headline: "Your first real practice",
       message: "A short realistic situation. Feel the pressure, make choices, get one precise repair, and know exactly what to practise next.",
-      why: "Chosen because this path has no local progress yet — we start you with the strongest first plateau-breaker (B2 follow-up).",
-      actionLabel: step ? "Start first session" : base.actionLabel,
+      why: "You have no saved practice yet, so Platå starts with a short, useful situation that shows how the whole method works.",
+      actionLabel: step ? "Start your first session" : base.actionLabel,
       routeMeta: "No local history yet",
-      tags: ["Onboarding", "Planner route"]
+      tags: ["First session", "Saved in this browser"]
     });
   }
 
@@ -923,7 +969,7 @@ function renderTodayProgram(candidates, context) {
   const planner = resolved.planner;
   const plan = resolved.plan;
   if (!planner || !plan || !plan.steps || plan.steps.length === 0) {
-    container.innerHTML = '<p class="narrative">Start any trainer to compile a short practice route.</p>';
+    container.innerHTML = '<p class="narrative">Try any lesson or drill and Platå will suggest what to do next.</p>';
     return;
   }
 
@@ -984,7 +1030,7 @@ function renderTodayProgram(candidates, context) {
       </div>
 
       <details class="headroom-appendix today-evidence-appendix" style="margin: 0 1.5rem 1.5rem 1.5rem; border-top:1px solid var(--line); padding-top:1rem;">
-        <summary style="cursor:pointer; font-size:0.85rem; color:var(--muted); font-weight:500;">Route evidence and citations</summary>
+        <summary style="cursor:pointer; font-size:0.85rem; color:var(--muted); font-weight:500;">Why this was suggested</summary>
         <div class="today-context" style="margin-top:1rem;">
           ${program.routeMeta ? `<p class="today-route-meta">${escapeHtml(program.routeMeta)}</p>` : ""}
           ${todayHeadroomHtml || ""}
@@ -2263,13 +2309,13 @@ function renderDemoProfileBanner() {
     banner.hidden = false;
     banner.innerHTML = `
       <div>
-        <p class="eyebrow">Demo learner</p>
-        <h2>Sample B2 plateau profile</h2>
-        <p>This dashboard is rendering a deterministic in-memory learner: recent register misses, one closed repair, a recurring passive-agency trap, and a due professional follow-up review. Your browser progress is not changed.</p>
+        <p class="eyebrow">Example learner</p>
+        <h2>See what Platå notices after a few sessions</h2>
+        <p>This is a made-up B2 learner with a few realistic strengths and trouble spots. Explore the suggestion below without changing your own progress.</p>
       </div>
       <div class="demo-profile-actions">
-        <a class="btn primary" href="./lessons/lesson-b2-radiator/?mode=repair&signal=understatement-with-agency#workplace-understatement">Open suggested repair</a>
-        <a class="btn" href="./dashboard.html">Use my own progress</a>
+        <a class="btn primary" href="./lessons/lesson-b2-radiator/?mode=repair&signal=understatement-with-agency#workplace-understatement">Try the suggested practice</a>
+        <a class="btn" href="./dashboard.html">Show my own progress</a>
       </div>
     `;
   }

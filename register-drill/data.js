@@ -10,7 +10,7 @@
 window.PLATA_DATA = {
   register: [
     { cat: "passive", weakTags: ["passive-agency", "formal-register-control"],
-      prompt: "Du svarer på en passiv besked fra udlejeren om radiatoren. Vælg den professionelle opfølgning med tydelig aktør og dato:",
+      prompt: "Hvilket svar fra udlejeren er mest professionelt og gør både ansvaret og datoen tydelige?",
       options: [
         "Vores tekniker kontakter Dem senest fredag med en konkret tid.",
         "Der gives besked om, at radiatoren repareres hurtigst muligt.",
@@ -29,10 +29,10 @@ window.PLATA_DATA = {
         "Jeg håber, at der snart sker noget."
       ],
       correct: 0,
-      why: "Offentlig dansk kræver stadig agency: du beder om aktør + tidsramme uden at presse for meget." },
+      why: "Også i en formel besked må ansvaret være tydeligt: spørg, hvem der behandler sagen, og hvornår du kan forvente svar." },
 
     { cat: "passive", weakTags: ["passive-agency", "formal-register-control"],
-      prompt: "Udlejeren skriver: «Sagen er noteret.» Vælg et høfligt svar, der holder register uden at acceptere passivitet:",
+      prompt: "Udlejeren skriver: «Sagen er noteret.» Vælg et høfligt svar, der passer til situationen uden bare at acceptere ventetiden:",
       options: [
         "Tak for noteringen. Hvem er ansvarlig for opfølgning, og hvilken dato kan jeg forvente et udkald?",
         "Okay, så venter jeg bare.",
@@ -40,7 +40,7 @@ window.PLATA_DATA = {
         "Jeg går ud fra, at det ordner sig af sig selv."
       ],
       correct: 0,
-      why: "Tak + præcis opfølgning bevarer formalitet og agency. Trusler eller passiv accept ødelægger register-træningen." },
+      why: "Begynd høfligt, og spørg derefter præcist, hvem der følger op, og hvornår. De andre svar bliver enten for hårde eller for passive." },
 
     { cat: "passive", weakTags: ["formal-register-control", "consequence-aware-tone"],
       prompt: "Vælg den sætning, der lyder mest passende i en formel e-mail til en boligforening:",
@@ -51,7 +51,7 @@ window.PLATA_DATA = {
         "Hej, kan I hjælpe med noget varme?"
       ],
       correct: 0,
-      why: "Formel kanal = præcis sag + neutral tone. Emotion eller slang bryder register-kontrakten." },
+      why: "En formel e-mail virker bedst, når sagen er præcis og tonen neutral. Følelser og slang gør det sværere for modtageren at handle." },
 
     { cat: "deadline", weakTags: ["consequence-aware-tone", "passive-agency"],
       prompt: "Du har fået et vagt løfte om reparation. Vælg en høflig deadline-anmodning:",
@@ -62,7 +62,7 @@ window.PLATA_DATA = {
         "Jeg venter bare på, at nogen gør noget."
       ],
       correct: 0,
-      why: "Deadline med begrundelse (alternativ opvarmning) er professionel. Trusel eller passiv venten mangler agency." },
+      why: "En dato sammen med en rolig begrundelse gør ønsket tydeligt uden at blive en trussel." },
 
     { cat: "deadline", weakTags: ["formal-register-control"],
       prompt: "Første svar fra myndigheden kom efter tre uger. Vælg en passende opfølgning:",
@@ -73,10 +73,10 @@ window.PLATA_DATA = {
         "Jeg går ud fra, at I stadig arbejder på det."
       ],
       correct: 0,
-      why: "Dato + neutral opfølgning holder register. Klage-tone eller passiv accept træner ikke deadline-stance." },
+      why: "Henvis til datoen for din første besked, og bed neutralt om en ny tidsplan. Så er det let at forstå, hvad du har brug for." },
 
     { cat: "deadline", weakTags: ["passive-agency", "understatement-with-agency"],
-      prompt: "Vælg formuleringen med tydelig agency uden at lyde desperat:",
+      prompt: "Vælg formuleringen, der viser et tydeligt næste skridt uden at lyde desperat:",
       options: [
         "Hvis jeg ikke hører fra Dem inden fredag, må jeg desværre kontakte Forbrugerombudsmanden.",
         "I er nødt til at hjælpe mig NU!!!",
@@ -84,7 +84,7 @@ window.PLATA_DATA = {
         "Det er ligegyldigt — jeg giver op."
       ],
       correct: 0,
-      why: "Understatement med konsekvens: navngiv næste skridt og en dato. Panik eller passivitet undgår agency." },
+      why: "Sæt en rolig dato på, og fortæl, hvad du gør bagefter. De andre svar bliver enten paniske eller giver helt op." },
 
     { cat: "deadline", weakTags: ["consequence-aware-tone"],
       prompt: "Du skal bekræfte et møde med Borgerservice. Vælg det bedste svar:",
@@ -106,7 +106,7 @@ window.PLATA_DATA = {
         "Jeg siger ikke mere — I må finde ud af det."
       ],
       correct: 0,
-      why: "Eskalering = gentag reference + bed om aktør. Emotion eller passiv boykot træner ikke professionel persistence." },
+      why: "Henvis til din første besked, og spørg efter den ansvarlige. Det er vedholdende uden at blive personligt eller vredt." },
 
     { cat: "escalation", weakTags: ["understatement-with-agency"],
       prompt: "Vælg den formulering, der bløder tonen op uden at undvige:",
@@ -117,7 +117,7 @@ window.PLATA_DATA = {
         "I skal bare ordne det, punktum."
       ],
       correct: 0,
-      why: "Understatement med agency: anerkend tempo, men kræv aktør og tid. Undvigelse eller hårdhed mangler den øvede balance." },
+      why: "Anerkend, at sagen kan tage tid, men hold fast i spørgsmålet om hvem og hvornår. Så er tonen rolig uden at blive vag." },
 
     { cat: "escalation", weakTags: ["consequence-aware-tone", "passive-agency"],
       prompt: "Du vil eskalere til administrator. Vælg den mest professionelle åbning:",
@@ -139,10 +139,10 @@ window.PLATA_DATA = {
         "Venlig hilsen — I ved hvad I skal."
       ],
       correct: 0,
-      why: "Formel afslutning + deadline + tak bevarer register. Slack-tone i en officiel eskalering bryder kanalen." },
+      why: "En tydelig dato og en høflig tak passer til en formel afslutning. Chattone gør beskeden mindre professionel." },
 
     { cat: "channel", weakTags: ["formal-register-control", "consequence-aware-tone"],
-      prompt: "Samme intent: bed kollegaen om at flytte deadline. Vælg sætningen til en formel e-mail:",
+      prompt: "Du vil bede en kollega om at flytte en deadline. Vælg sætningen, der passer til en formel e-mail:",
       options: [
         "Jeg vil gerne bede om, at vi flytter leveringsdatoen til fredag, så jeg kan nå at gennemgå udkastet ordentligt.",
         "Det er sgu ikke okay — I må bare flytte det.",
@@ -150,7 +150,7 @@ window.PLATA_DATA = {
         "Det løser sig nok, men det ville være fint med en ny dato på et tidspunkt."
       ],
       correct: 0,
-      why: "E-mail kanal = konkret anmodning uden chat-force. Sgu og passiv ubestemthed hører til andre kanaler." },
+      why: "I en e-mail virker en konkret anmodning og en rolig begrundelse bedre end chatsprog eller et uklart måske." },
 
     { cat: "channel", weakTags: ["consequence-aware-tone", "formal-register-control"],
       prompt: "Du er uenig i Slack med en kollega om prioritering. Vælg det, der hører til kanalen:",
@@ -172,7 +172,7 @@ window.PLATA_DATA = {
         "Jeg kan ikke snakke om det her."
       ],
       correct: 0,
-      why: "Ansigt-til-ansigt: lidt bøvl + agency-word + konkret næste skridt. Drama eller total undvigelse skader tilliden." },
+      why: "I en kort samtale kan du nævne problemet roligt og samtidig vise, hvad du allerede har gjort. Drama og total benægtelse skader begge tilliden." },
 
     { cat: "channel", weakTags: ["formal-register-control"],
       prompt: "Du skal IKKE kopiere Slack-teksten ind i e-mail til chefen. Vælg den rigtige e-mail-version:",
@@ -183,7 +183,7 @@ window.PLATA_DATA = {
         "Hej hej, kan vi ikke bare finde ud af det?"
       ],
       correct: 0,
-      why: "Kanaltransfer: fjern sgu og privat vrede; behold intent (deadline) i formelt register." },
+      why: "Når Slack bliver til e-mail, fjerner du chatsprog og privat vrede, men beholder det vigtige budskab: du har brug for en dato." },
 
     { cat: "channel", weakTags: ["understatement-with-agency", "formal-register-control"],
       prompt: "Du er uenig i et møde, men vil ikke eskalere tonen. Vælg det professionelle indspark:",
@@ -194,7 +194,7 @@ window.PLATA_DATA = {
         "Jeg siger ingenting og sender en vred e-mail bagefter."
       ],
       correct: 0,
-      why: "Mødekanal: tydelig uenighed uden angreb + konkret næste skridt. Hårdhed eller passiv boykot ødelægger rummet." },
+      why: "På et møde kan du være tydeligt uenig uden at angribe. Tilføj et konkret forslag, så samtalen kan komme videre." },
 
     { cat: "channel", weakTags: ["consequence-aware-tone"],
       prompt: "Vælg sætningen, der hører til LinkedIn — ikke til Slack-tråden om samme uenighed:",
@@ -205,7 +205,7 @@ window.PLATA_DATA = {
         "Jeg er virkelig sur på mit team i dag."
       ],
       correct: 0,
-      why: "Offentlig kanal = kapabilitet og ro, ikke privat konflikt eller chat-slang." },
+      why: "På LinkedIn beskriver du din professionelle måde at arbejde på — ikke en privat konflikt eller dagens vrede." },
 
     { cat: "deadline", weakTags: ["consequence-aware-tone", "professional-email-agency"],
       prompt: "Du afslutter en opfølgningsmail efter et jobinterview. Vælg den bedste afslutning:",

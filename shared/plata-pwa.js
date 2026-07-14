@@ -72,7 +72,7 @@
     var snap = statusSnapshot();
     target.className = "pwa-status pwa-status-" + snap.key;
     target.innerHTML =
-      '<span class="pwa-status-label">' + escapeHtml(snap.label) + "</span>" +
+      '<span class="pwa-status-label">' + escapeHtml(snap.label) + "</span> " +
       '<span class="pwa-status-detail">' + escapeHtml(snap.detail) + "</span>";
     if (snap.key === "installable" && deferredPrompt) {
       var btn = document.createElement("button");

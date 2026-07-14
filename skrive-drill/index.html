@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Platå · skrive-drill</title>
-  <meta name="description" content="Short Danish writing prompts with a self-grade rubric — production practice for bolig, arbejde, and sundhed channels." />
+  <title>Skriv på dansk · Platå</title>
+  <meta name="description" content="Skriv korte danske beskeder om bolig, arbejde og sundhed, og vurder selv om teksten gør det, du har brug for." />
   <meta name="author" content="Dmitrii Babinov" />
   <link rel="stylesheet" href="../shared/plata-tokens.css" />
   <link rel="stylesheet" href="./styles.css" />
@@ -16,7 +16,7 @@
       <a class="brand" href="../" aria-label="Platå trainers">
         <span class="brand-text">platå</span>
         <span class="brand-sep">·</span>
-        <span class="brand-sub">skrive-drill <span class="ver">v0.1</span></span>
+        <span class="brand-sub">skriveøvelser</span>
       </a>
       <h1 class="sr-only">Skriveøvelser — written production with self-grade rubric</h1>
       <nav class="hdr-actions">
@@ -28,10 +28,10 @@
 
     <section class="stats" id="stats" aria-live="polite">
       <div class="stat"><span class="stat-num" id="stat-today">0</span><span class="stat-label">i dag</span></div>
-      <div class="stat"><span class="stat-num" id="stat-correct">0</span><span class="stat-label">logged</span></div>
-      <div class="stat"><span class="stat-num" id="stat-accuracy">n/a</span><span class="stat-label">accuracy</span></div>
-      <div class="stat"><span class="stat-num" id="stat-streak">—</span><span class="stat-label">streak</span></div>
-      <div class="stat"><span class="stat-num" id="stat-mastered">—</span><span class="stat-label">mastery</span></div>
+      <div class="stat"><span class="stat-num" id="stat-correct">0</span><span class="stat-label">skrevet</span></div>
+      <div class="stat"><span class="stat-num" id="stat-accuracy">—</span><span class="stat-label">ingen score</span></div>
+      <div class="stat"><span class="stat-num" id="stat-streak">—</span><span class="stat-label">selvtjek</span></div>
+      <div class="stat"><span class="stat-num" id="stat-mastered">—</span><span class="stat-label">ingen AI</span></div>
     </section>
 
     <section class="pickers" aria-label="Choose category">
@@ -49,39 +49,39 @@
     <section class="card" id="drill-card" aria-live="polite">
       <div class="prompt-meta">
         <span class="meta-pill" id="prompt-counter">— / —</span>
-        <span class="meta-pill" id="prompt-box">box 1</span>
+        <span class="meta-pill" id="prompt-box">selvtjek</span>
         <span class="meta-pill" id="prompt-cat">bolig</span>
         <span class="meta-pill" id="prompt-channel">Email</span>
       </div>
       <p class="prompt" id="prompt-text">—</p>
       <p class="prompt-starter" id="prompt-starter"></p>
       <textarea class="answer-input" id="answer-input" rows="6" placeholder="Skriv din danske tekst her…" aria-label="Your Danish writing"></textarea>
-      <div class="rubric" id="rubric" aria-label="Self-grade rubric"></div>
+      <div class="rubric" id="rubric" aria-label="Tjekliste til din egen vurdering"></div>
       <div class="feedback hidden" id="feedback" role="status"></div>
       <div class="action-row">
-        <button class="btn btn-primary" id="submit-btn" type="button">Self-grade & continue</button>
+        <button class="btn btn-primary" id="submit-btn" type="button">Vurder selv og fortsæt</button>
       </div>
     </section>
 
     <section class="card hidden" id="summary-card">
-      <h2 class="summary-title">Session færdig</h2>
-      <p class="summary-line"><strong id="sum-correct">0</strong> completed · <strong id="sum-total">0</strong> logged</p>
-      <p class="summary-line summary-acc">Status: <strong id="sum-accuracy">—</strong></p>
+      <h2 class="summary-title">Øvelse færdig</h2>
+      <p class="summary-line"><strong id="sum-correct">0</strong> færdige · <strong id="sum-total">0</strong> registrerede</p>
+      <p class="summary-line summary-acc">Selvvurdering: <strong id="sum-accuracy">—</strong></p>
       <ul class="summary-mistakes" id="sum-mistakes"></ul>
       <div id="next-step" class="next-step-slot"></div>
       <div class="summary-actions">
-        <button class="btn btn-primary" id="again-btn">I gang igen</button>
+        <button class="btn btn-primary" id="again-btn">Skriv igen</button>
         <button class="btn btn-ghost" id="change-cat-btn">Skift tema</button>
       </div>
     </section>
 
     <footer class="ftr">
       <p>
-        <a href="../">← platå-trainers</a> ·
-        <a href="../lessons/lesson-b1-bolig/">bolig lesson</a> ·
-        <a href="https://github.com/lamapony/plata-trainers">source</a>
+        <a href="../">← alle øvelser</a> ·
+        <a href="../lessons/lesson-b1-bolig/">boliglektionen</a> ·
+        <a href="https://github.com/lamapony/plata-trainers">kode</a>
       </p>
-      <p class="ftr-meta">production under rubric · no AI grading · LocalStorage · MIT</p>
+      <p class="ftr-meta">du vurderer selv teksten · ingen AI-karakter · fremskridt gemmes i din browser · MIT</p>
     </footer>
   </main>
 

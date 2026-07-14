@@ -33,18 +33,18 @@ function runBaseSmoke() {
 
   const first = report.scenarios.find(item => item.id === "first-session");
   assert(first && first.program.kind === "onboarding", "first-session should render onboarding");
-  assert(first.program.why.includes("no local progress yet"), "onboarding should avoid fake personalization");
-  assert(first.rendered.activeStage.includes("First run"), "onboarding stage should be active");
+  assert(first.program.why.includes("no saved practice yet"), "onboarding should avoid fake personalization");
+  assert(first.rendered.activeStage.includes("First visit"), "onboarding stage should be active");
 
   const active = report.scenarios.find(item => item.id === "active-saved-route");
   assert(active && active.program.kind === "active-plan", "active saved route should render active-plan");
   assert(active.step.status === "active", "active saved route should cite an active step");
-  assert(active.rendered.activeStage.includes("Active route"), "active route stage should be active");
+  assert(active.rendered.activeStage.includes("In progress"), "active route stage should be active");
 
   const returned = report.scenarios.find(item => item.id === "lesson-return");
   assert(returned && returned.program.kind === "return", "lesson return should render return");
   assert(returned.routeSearch.includes("ledger-return=1"), "lesson return should preserve the route handoff");
-  assert(returned.program.actionLabel === "Continue next step", "lesson return should continue the next step");
+  assert(returned.program.actionLabel === "Continue", "lesson return should continue the next step");
 
   const review = report.scenarios.find(item => item.id === "due-memory-review");
   assert(review && review.program.kind === "memory-review", "due review should render memory-review");

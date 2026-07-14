@@ -344,9 +344,9 @@ function runDemoLearnerSmoke() {
   const env = makeContext(null, { locationSearch: "?demo=learner" });
   loadKernelAndDashboard(env);
 
-  assert(/Sample B2 plateau profile/.test(env.elements["#demo-profile"].innerHTML), "dashboard renders the demo learner banner");
+  assert(/See what Platå notices after a few sessions/.test(env.elements["#demo-profile"].innerHTML), "dashboard renders the demo learner banner");
   assert(env.elements["#demo-profile"].hidden === false, "dashboard unhides the demo learner banner");
-  assert(/Use my own progress/.test(env.elements["#demo-profile"].innerHTML), "dashboard demo banner links back to the real local profile");
+  assert(/Show my own progress/.test(env.elements["#demo-profile"].innerHTML), "dashboard demo banner links back to the real local profile");
   assert(/Study companion/.test(env.elements["#today-program"].innerHTML), "dashboard demo mode renders a companion-backed Today step");
   assert(!/onboarding/.test(env.elements["#today-program"].innerHTML), "dashboard demo mode does not look like an empty first-run profile");
   assert(/Cited memory/.test(env.elements["#today-program"].innerHTML), "dashboard demo Today step cites learner memory");
@@ -416,7 +416,7 @@ function runSeededMasterySmoke() {
   assert(/Evidence: 1 miss \/ 1 try/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders repair evidence counts");
   assert(/Memory: weak_signal passive-agency memsrc-/.test(env.elements["#practice-plan"].innerHTML), "dashboard practice plan cites planner memory facts");
   assert(/Study companion/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell renders a companion-backed step");
-  assert(/Repair passive-agency/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes companion repair focus");
+  assert(/Practise how to make the next step clear without sounding harsh/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes companion repair focus");
   assert(/Cited memory/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell exposes cited memory");
   assert(/Hermes optional/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell keeps Hermes optional");
   assert(/cmp-/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell includes companion fingerprint");
@@ -536,10 +536,10 @@ function runStartedPlanSmoke() {
   assert(/In progress/.test(env.elements["#practice-plan"].innerHTML), "dashboard labels started plan step in progress");
   assert(/plan-step-ledger/.test(env.elements["#practice-plan"].innerHTML), "dashboard renders started plan ledger");
   assert(/Started/.test(env.elements["#practice-plan"].innerHTML), "dashboard explains when a plan step started");
-  assert(/Active route/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell labels an active saved route");
+  assert(/Continue where you stopped/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell labels an active saved route");
   assert(/Resume Repair Read passive agency/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell promotes the active step");
   assert(/active-plan/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell exposes the active-plan state");
-  assert(/Resume step/.test(env.elements["#today-program"].innerHTML), "dashboard Today shell resumes the active step");
+  assert(/>Continue</.test(env.elements["#today-program"].innerHTML), "dashboard Today shell resumes the active step");
 }
 
 function runPrimaryPlanActionSmoke() {
@@ -641,7 +641,7 @@ function runPlanReturnReceiptSmoke() {
   assert(/Step recorded\. Continue the route\./.test(todayHtml), "dashboard Today shell confirms the return before continuing");
   assert(/return/.test(todayHtml), "dashboard Today shell exposes the return state");
   assert(/Returned from step 1/.test(todayHtml), "dashboard Today shell identifies the returned step");
-  assert(/Continue next step/.test(todayHtml), "dashboard Today shell promotes the next post-return step");
+  assert(/>Continue</.test(todayHtml), "dashboard Today shell promotes the next post-return step");
 }
 
 function runDueReviewProgramSmoke() {
@@ -666,10 +666,10 @@ function runDueReviewProgramSmoke() {
   vm.runInContext(dashboardSource, env.context, { filename: "dashboard.js" });
 
   const todayHtml = env.elements["#today-program"].innerHTML;
-  assert(/Memory review/.test(todayHtml), "dashboard Today shell labels due memory review");
+  assert(/Quick review/.test(todayHtml), "dashboard Today shell labels due memory review");
   assert(/Review formal-register-control/.test(todayHtml), "dashboard Today shell names the due signal");
   assert(/memory-review/.test(todayHtml), "dashboard Today shell exposes the memory-review state");
-  assert(/Review due/.test(todayHtml), "dashboard Today shell shows the due-review stage");
+  assert(/Time to revisit/.test(todayHtml), "dashboard Today shell shows the due-review stage");
   assert(/next_review_due/.test(todayHtml), "dashboard Today shell cites the due-review memory kind");
   assert(/Cited memory/.test(todayHtml), "dashboard Today shell keeps due reviews cited");
   assert(!/raw due-review/.test(todayHtml), "dashboard Today shell does not leak raw due-review answers");

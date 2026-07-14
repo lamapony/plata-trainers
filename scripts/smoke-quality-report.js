@@ -74,12 +74,12 @@ async function run() {
   vm.runInContext(fs.readFileSync(path.join(root, "quality.js"), "utf8"), context, { filename: "quality.js" });
   await new Promise(resolve => setImmediate(resolve));
 
-  assert(elements["#quality-status"].textContent === "Passing", "quality page did not render passing status");
-  assert(elements["#quality-summary"].innerHTML.includes("Gold lessons"), "quality page did not render summary");
-  assert(elements["#quality-summary"].innerHTML.includes("Comic panels"), "quality page did not render comic summary");
-  assert(elements["#quality-metrics"].innerHTML.includes("Simulation Paths"), "quality page did not render metrics");
-  assert(elements["#quality-metrics"].innerHTML.includes("Comic Panels"), "quality page did not render comic metrics");
-  assert(elements["#quality-metrics"].innerHTML.includes("Evidence Rows"), "quality page did not render evidence metric");
+  assert(elements["#quality-status"].textContent === "All checks passing", "quality page did not render passing status");
+  assert(elements["#quality-summary"].innerHTML.includes("Checked lessons"), "quality page did not render summary");
+  assert(elements["#quality-summary"].innerHTML.includes("Storyboard panels"), "quality page did not render comic summary");
+  assert(elements["#quality-metrics"].innerHTML.includes("Routes tested"), "quality page did not render metrics");
+  assert(elements["#quality-metrics"].innerHTML.includes("Storyboard panels"), "quality page did not render comic metrics");
+  assert(elements["#quality-metrics"].innerHTML.includes("Evidence links"), "quality page did not render evidence metric");
   assert(elements["#quality-evidence"].innerHTML.includes("official-reply-passive"), "quality page did not render scene evidence rows");
   assert(elements["#quality-evidence"].innerHTML.includes("Every scene is replayed by simulation"), "quality page did not render evidence guarantees");
   assert(elements["#quality-evidence"].innerHTML.includes("ok Sources"), "quality page did not render scene check labels");
