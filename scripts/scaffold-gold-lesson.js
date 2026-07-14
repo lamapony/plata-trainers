@@ -499,44 +499,32 @@ function renderIndex(options) {
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Lesson ${html(options.level)} · ${html(options.title)} · Platå</title>
   <meta name="description" content="${html(options.subtitle)}" />
+  <link rel="stylesheet" href="../../shared/plata-tokens.css" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <main class="lesson-shell">
     <nav class="topnav" aria-label="Lesson navigation">
-      <a class="brand" href="../../">platå</a>
-      <div class="nav-meta"><span id="scene-count">1 / 5</span><button id="reset-lesson" type="button">Reset</button></div>
+      <a class="brand" href="../../">Platå</a>
+      <div class="nav-meta"><span id="scene-count">Scene 1 of 5</span><button id="reset-lesson" type="button">Restart</button></div>
     </nav>
-
-    <header class="scene-card">
-      <p class="eyebrow">Narrative lesson · ${html(options.level)}</p>
-      <h1>${html(options.title)}</h1>
-      <p>${html(options.subtitle)}</p>
-    </header>
-
-    <section class="lesson-grid" aria-label="Interactive lesson">
-      <aside class="map-card" aria-label="Route progress">
-        <p class="eyebrow">Scenario path</p>
-        <div class="map-illustration" aria-hidden="true">
-          <span class="pin wait">Read</span>
-          <span class="pin email">Match</span>
-          <span class="pin linkedin">Act</span>
-          <span class="pin reply">Step</span>
-          <span class="pin outcome">End</span>
-          <svg viewBox="0 0 320 120" role="img" aria-label="A stylized path through the lesson">
-            <path d="M24 80 C 70 20, 130 100, 170 40 S 250 60, 290 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 10" />
-          </svg>
-        </div>
-        <div id="route" class="route-list"></div>
-        <div id="variables-display" class="variables-display" aria-label="Lesson variables"></div>
+    <div class="story-layout">
+      <aside class="story-sidebar" aria-label="Story progress">
+        <p class="story-sidebar-label">Your story</p>
+        <h1 class="lesson-page-title">${html(options.title)}</h1>
+        <div id="route" class="route-list" hidden></div>
+        <p class="story-sidebar-note">You can revisit any scene. Your answers stay with you.</p>
       </aside>
-
       <article id="scene" class="scene-card" aria-live="polite"></article>
-    </section>
+    </div>
   </main>
 
   <script src="../../shared/plata-kernel.js"></script>
+  <script src="../../shared/plata-competencies.js"></script>
+  <script src="../../shared/plata-catalog.js"></script>
   <script src="../../shared/plata-planner.js"></script>
+  <script src="../../shared/plata-repair-bridge.js"></script>
+  <script src="../../shared/plata-guided-session.js"></script>
   <script src="../../shared/plata-next-step.js"></script>
   <script src="../../shared/plata-lesson-engine.js"></script>
   <script src="./data.js"></script>

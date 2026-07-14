@@ -383,15 +383,24 @@
 
   function renderRoute(lesson, state, routeEl, countEl, onNavigate) {
     routeEl.innerHTML = "";
+    routeEl.hidden = false;
     lesson.scenes.forEach(function (scene, i) {
+      var label = scene.eyebrow.split("·").pop().trim();
       var item = document.createElement("button");
       item.type = "button";
       item.className = "route-step" + (i === state.index ? " active" : "") + (state.completed[scene.id] ? " done" : "");
-      item.innerHTML = "<span>" + String(i + 1).padStart(2, "0") + "</span><strong>" + escapeHtml(scene.eyebrow.split("·").pop().trim()) + "</strong>";
+      if (item.setAttribute) {
+        item.setAttribute("aria-label", "Scene " + (i + 1) + ": " + label);
+        if (i === state.index) item.setAttribute("aria-current", "step");
+      } else {
+        item.ariaLabel = "Scene " + (i + 1) + ": " + label;
+        if (i === state.index) item.ariaCurrent = "step";
+      }
+      item.innerHTML = "<span>" + String(i + 1).padStart(2, "0") + "</span><strong>" + escapeHtml(label) + "</strong>";
       item.addEventListener("click", function () { state.index = i; onNavigate(); });
       routeEl.appendChild(item);
     });
-    countEl.textContent = (state.index + 1) + " / " + lesson.scenes.length;
+    countEl.textContent = "Scene " + (state.index + 1) + " of " + lesson.scenes.length;
   }
 
   function afterMiss(ctx, scene, option) {
@@ -752,8 +761,9 @@
         dashboardHref: "../../dashboard.html"
       });
     }
-    html += "<p class='eyebrow'>" + escapeHtml(scene.eyebrow) + "</p>";
-    html += "<h2>" + escapeHtml(scene.title) + "</h2>";
+    html += "<header class='scene-heading'><p class='eyebrow'>" + escapeHtml(scene.eyebrow) + "</p>";
+    html += "<h2>" + escapeHtml(scene.title) + "</h2></header>";
+    html += "<div class='scene-body'><div class='story-beat'>";
     html += renderComicPanel(ctx.lesson, scene);
     if (scene.pressure) html += "<p class='pressure'>" + escapeHtml(scene.pressure) + "</p>";
     html += "<p class='narrative'>" + escapeHtml(scene.narrative) + "</p>";
@@ -763,7 +773,7 @@
     if (scene.dialogue) html += renderDialogue(scene.dialogue);
     if (scene.danish) html += "<div class='danish-line' lang='da'>" + escapeHtml(scene.danish) + "</div>";
     if (scene.notice) html += "<aside class='notice'><strong>Notice</strong><span>" + escapeHtml(scene.notice) + "</span></aside>";
-    html += "<div class='exercise'><h3>" + escapeHtml(scene.prompt) + "</h3><div id='exercise-body'></div><div id='feedback' class='feedback' aria-live='polite'></div></div>";
+    html += "</div><div class='exercise'><h3>" + escapeHtml(scene.prompt) + "</h3><div id='exercise-body'></div><div id='feedback' class='feedback' aria-live='polite'></div></div></div>";
     if (scene.carry) html += "<p class='carry-forward'>" + escapeHtml(scene.carry) + "</p>";
 
     var isLast = ctx.state.index === ctx.lesson.scenes.length - 1;

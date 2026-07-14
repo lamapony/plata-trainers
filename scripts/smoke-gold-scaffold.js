@@ -61,12 +61,16 @@ run(process.execPath, ["scripts/simulate-gold-lessons.js", "--file", dataPath]);
 run(process.execPath, ["scripts/smoke-lesson-engine.js", "--file", dataPath]);
 
 const dataSource = fs.readFileSync(dataPath, "utf8");
+const indexSource = fs.readFileSync(path.join(sandboxRoot, "lessons", slug, "index.html"), "utf8");
 assert(dataSource.includes("qualityTier: \"gold\""), "generated lesson is not gold");
 assert(dataSource.includes("simulation:"), "generated lesson missing simulation contract");
 assert(dataSource.includes("masteryMap:"), "generated lesson missing mastery map");
 assert(dataSource.includes("comicStoryboard:"), "generated lesson missing comic storyboard");
 assert(dataSource.includes("./assets/comic/read-context.png"), "generated lesson missing comic asset path");
 assert(dataSource.includes("assetReady: false"), "generated lesson must not publish unreviewed comic assets");
+assert(indexSource.includes('class="story-layout"'), "generated lesson is missing the shared story layout");
+assert(indexSource.includes('class="story-sidebar"'), "generated lesson is missing visible story progress");
+assert(indexSource.includes("Scene 1 of 5"), "generated lesson is missing the human-readable scene count");
 
 const invalidAssetPath = path.join(sandboxRoot, "lessons", "lesson-b2-scaffold-asset-missing", "data.js");
 fs.mkdirSync(path.dirname(invalidAssetPath), { recursive: true });
