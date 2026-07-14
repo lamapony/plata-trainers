@@ -4,11 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Platå · Break your Danish plateau</title>
-  <meta name="description" content="Open-source Danish practice for people who already know words but freeze under pressure. Situation → exact miss → short repair." />
+  <meta name="description" content="Short Danish practice for real situations. Try a ready lesson, or describe the moment you need and let a coding agent build a checked lesson from the open repository." />
   <meta name="author" content="Dmitrii Babinov" />
   <link rel="canonical" href="https://lamapony.github.io/plata-trainers/" />
   <meta property="og:title" content="Platå · Break your Danish plateau" />
-  <meta property="og:description" content="Situation practice that shows the exact freeze, then a short drill that fixes it. Private, static, no account." />
+  <meta property="og:description" content="Practice a real Danish situation now — or describe the one you need and let a coding agent turn it into a checked lesson." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://lamapony.github.io/plata-trainers/" />
   <meta property="og:image" content="https://lamapony.github.io/plata-trainers/assets/og-plata.png" />
@@ -16,7 +16,7 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Platå · Break your Danish plateau" />
-  <meta name="twitter:description" content="Situation → miss → repair. Offline Danish practice for the plateau." />
+  <meta name="twitter:description" content="Practice a real Danish situation now — or ask a coding agent to build the lesson you need." />
   <meta name="twitter:image" content="https://lamapony.github.io/plata-trainers/assets/og-plata.png" />
   <link rel="manifest" href="./site.webmanifest" />
   <link rel="icon" href="./assets/icons/icon-192.png" type="image/png" />
@@ -31,7 +31,7 @@
     "name": "Platå",
     "applicationCategory": "EducationalApplication",
     "operatingSystem": "Any browser",
-    "description": "Break your Danish plateau. Open-source static practice for A2–B2 learners.",
+    "description": "Open-source Danish A2–B2 practice for real situations, with a checked repository workflow for agent-authored lessons.",
     "license": "https://opensource.org/licenses/MIT",
     "author": { "@type": "Person", "name": "Dmitrii Babinov" },
     "url": "https://lamapony.github.io/plata-trainers/"
@@ -46,6 +46,7 @@
         <div class="navlinks">
           <a href="./" aria-current="page">Practice</a>
           <a href="./dashboard.html">Today</a>
+          <a href="#create-your-lesson">Your lesson</a>
         </div>
       </nav>
 
@@ -73,6 +74,37 @@
         </ol>
       </section>
     </header>
+
+    <section class="section custom-lesson-section" id="create-your-lesson" aria-labelledby="custom-lesson-title">
+      <div class="custom-lesson-shell">
+        <div class="custom-lesson-layout">
+          <div>
+            <p class="eyebrow">A lesson for your life</p>
+            <h2 id="custom-lesson-title">A difficult Danish moment can become your lesson.</h2>
+            <p class="custom-lesson-lead">Maybe you need to call the doctor, answer a landlord, follow up after an interview, or say no without sounding cold. Give the Platå repository to a coding assistant such as Codex and describe the moment in ordinary language. The assistant builds practice around the words, tone, and choices you actually need.</p>
+            <p class="plain-promise"><strong>No forms. No JSON. No lesson-design expertise.</strong> You explain the human situation; the repository supplies the lesson pattern and quality checks.</p>
+          </div>
+
+          <aside class="request-example" aria-labelledby="request-example-title">
+            <p class="eyebrow" id="request-example-title">What you can say</p>
+            <blockquote>“Use the Platå repository to create a 12-minute B1 Danish lesson about telling my landlord that the radiator is still cold. I want to be clear without sounding rude.”</blockquote>
+            <p>That is enough to begin. The assistant can infer sensible defaults and only asks when a missing choice would change the lesson.</p>
+          </aside>
+        </div>
+
+        <ol class="custom-lesson-steps" aria-label="How to request your own Platå lesson">
+          <li><span>1</span><div><strong>Share the link</strong><small>Give this repository to an AI coding assistant that can work with GitHub.</small></div></li>
+          <li><span>2</span><div><strong>Describe the real moment</strong><small>Say who you are talking to, what you need to do, and what you want to avoid.</small></div></li>
+          <li><span>3</span><div><strong>Open a checked lesson</strong><small>The assistant adds sources and runs the project checks before the lesson can be published.</small></div></li>
+        </ol>
+
+        <div class="hero-actions custom-lesson-actions">
+          <a class="btn primary" href="./factory.html">See the simple guide</a>
+          <a class="btn" href="https://github.com/lamapony/plata-trainers#ask-an-agent-to-create-a-lesson">Give the repository to an agent</a>
+        </div>
+        <p class="custom-lesson-boundary"><strong>What happens where:</strong> this website is where you practise. It cannot invent a new lesson by itself. The assistant creates the lesson in the open repository, where the work can be inspected and reviewed before publishing.</p>
+      </div>
+    </section>
 
     <section class="section learner-headroom-section" id="your-practice" hidden aria-labelledby="your-practice-title">
       <div class="section-head">
