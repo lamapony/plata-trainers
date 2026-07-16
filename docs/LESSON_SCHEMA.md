@@ -107,6 +107,16 @@ window.PLATA_LESSON_XX = {
     landlordTension: 0,
     sofiaTrust: 0
   },
+  variableDirections: {             // optional; default is higher-is-better
+    landlordTension: "lower-is-better"
+  },
+  variableLabels: {
+    landlordTension: "Landlord tension",
+    sofiaTrust: "Sofia's confidence"
+  },
+  variableDescriptions: {
+    landlordTension: ["low — the exchange stayed factual", "neutral", "high — tone became part of the problem"]
+  },
 
   // --- OPTIONAL: consequence system (B2+) ---
   endingLogic: {
@@ -322,14 +332,23 @@ When a lesson defines `variables`, the engine:
 3. Displays live tags in the sidebar (`.var-tag` with classes `high`/`low`/`neutral`)
 4. Records a social snapshot via `PlataKernel.recordSocialSnapshot()` on completion
 5. Resolves the ending per `endingLogic`
+6. Shows an outcome value with `good`, `bad`, or `neutral` styling based on `variableDirections`
 
-Variable labels map (hardcoded in engine for now):
-- `landlordTension` → "Udlejer"
-- `sofiaTrust` → "Sofia"
-- `emilEscalation` → "Emil"
-- `workplaceTrust` → "Arbejde"
+The default direction is `higher-is-better`. Declare `"lower-is-better"` for tension, pressure, escalation, or any other variable where a positive number is harmful. This prevents a high-pressure outcome from being shown as success.
 
 Custom labels: specify `variableLabels` on the lesson object.
+
+Outcome descriptions may be a three-item array for negative / zero / positive values, a string, or a value map. Use a value map for non-centred scales such as pressure that starts at zero:
+
+```js
+variableDescriptions: {
+  pressure: {
+    "0": "calm — no pressure leaked into the message",
+    "1": "visible — urgency showed through",
+    positive: "pushy — the follow-up started to cost trust"
+  }
+}
+```
 
 ## Mastery system (gold)
 

@@ -184,6 +184,9 @@ window.PLATA_LESSON_B1_BOLIG = {
     clarity: 0,
     professionalTrust: 0
   },
+  variableDirections: {
+    relationshipTension: "lower-is-better"
+  },
   variableLabels: {
     relationshipTension: "Relationship tension",
     clarity: "Clarity",

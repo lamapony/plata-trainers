@@ -314,6 +314,9 @@ function buildLesson(options) {
     clarity: 0,
     professionalTrust: 0
   },
+  variableDirections: {
+    relationshipTension: "lower-is-better"
+  },
   variableLabels: {
     relationshipTension: "Relationship tension",
     clarity: "Clarity",

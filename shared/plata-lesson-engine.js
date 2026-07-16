@@ -390,6 +390,32 @@
     });
   }
 
+  function variableDirection(lesson, key) {
+    var directions = lesson && lesson.variableDirections ? lesson.variableDirections : {};
+    return directions[key] === "lower-is-better" ? "lower-is-better" : "higher-is-better";
+  }
+
+  function variableSentiment(lesson, key, value) {
+    if (value === 0) return "neutral";
+    var higherIsBetter = variableDirection(lesson, key) === "higher-is-better";
+    return ((value > 0) === higherIsBetter) ? "good" : "bad";
+  }
+
+  function variableMeaning(rawMeaning, value) {
+    if (Array.isArray(rawMeaning)) {
+      return rawMeaning[value > 0 ? 2 : value < 0 ? 0 : 1] || "";
+    }
+    if (rawMeaning && typeof rawMeaning === "object") {
+      if (Object.prototype.hasOwnProperty.call(rawMeaning, String(value))) {
+        return rawMeaning[String(value)] || "";
+      }
+      if (value > 0) return rawMeaning.positive || rawMeaning.high || rawMeaning.default || "";
+      if (value < 0) return rawMeaning.negative || rawMeaning.low || rawMeaning.default || "";
+      return rawMeaning.zero || rawMeaning.neutral || rawMeaning.default || "";
+    }
+    return rawMeaning || "";
+  }
+
   function renderVariables(lesson, state, varsEl) {
     if (!varsEl) return;
     var labels = variableLabels(lesson);
@@ -734,10 +760,10 @@
         var desc = variableDescriptions(lesson);
         Object.keys(ctx.state.variables).forEach(function (k) {
           var v = ctx.state.variables[k];
-          var level = v > 0 ? 2 : v < 0 ? 0 : 1;
           var rawMeaning = desc[k] || ["", "", ""];
-          var meaning = Array.isArray(rawMeaning) ? (rawMeaning[level] || "") : rawMeaning;
-          html += "<div class='var-bar'><span class='var-label'>" + escapeHtml(labels[k] || k) + "</span><span class='var-value'>" + (v > 0 ? "+" : "") + v + "</span><span class='var-desc'>" + escapeHtml(meaning) + "</span></div>";
+          var meaning = variableMeaning(rawMeaning, v);
+          var sentiment = variableSentiment(lesson, k, v);
+          html += "<div class='var-bar'><span class='var-label'>" + escapeHtml(labels[k] || k) + "</span><span class='var-value " + sentiment + "'>" + (v > 0 ? "+" : "") + v + "</span><span class='var-desc'>" + escapeHtml(meaning) + "</span></div>";
         });
         html += "</div>";
       }

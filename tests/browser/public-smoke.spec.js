@@ -43,6 +43,26 @@ async function assertNoHorizontalOverflow(page) {
   expect(scrollWidth, `horizontal overflow: scrollWidth=${scrollWidth} clientWidth=${clientWidth}`).toBeLessThanOrEqual(clientWidth + 1);
 }
 
+async function completeFlagshipProfessionalPath(page) {
+  await page.goto(FLAGSHIP);
+  await page.waitForLoadState("domcontentloaded");
+
+  for (let index = 0; index < 4; index += 1) {
+    await page.locator(".choice-card").first().click();
+    await expect(page.locator("#feedback")).toHaveClass(/\bok\b/);
+    await page.locator("#next").click();
+  }
+
+  await page.locator("#name").fill("tak for beskeden; jeg kan tale i morgen klokken 10");
+  await page.locator("#complete").click();
+  await expect(page.locator("#feedback")).toHaveClass(/\bok\b/);
+  await page.locator("#next").click();
+
+  await page.locator(".choice-card").first().click();
+  await expect(page.locator("#feedback")).toHaveClass(/\bok\b/);
+  await page.locator("#next").click();
+}
+
 test.describe("public pages smoke", () => {
   test("home shows flagship situation CTA", async ({ page }) => {
     const runtimeProblems = collectRuntimeProblems(page);
@@ -93,6 +113,31 @@ test.describe("public pages smoke", () => {
     expect(body.length).toBeGreaterThan(40);
     await assertNoCriticalAxe(page, "flagship lesson");
     expect(runtimeProblems, "flagship runtime failures").toEqual([]);
+  });
+
+  test("a miss offers a clear, styled retry without internal product jargon", async ({ page }) => {
+    await page.goto(FLAGSHIP);
+    await page.getByRole("button", { name: /ring med det samme/i }).click();
+
+    const panel = page.locator(".miss-repair-panel");
+    await expect(panel).toBeVisible();
+    await expect(panel).toContainText("Your correction");
+    await expect(panel).toContainText("Retry this moment");
+    await expect(panel).not.toContainText(/Match → Gym|mapped drill|signal in the scene/i);
+    await expect(panel).toHaveCSS("border-left-style", "solid");
+    await expect(panel.getByRole("link", { name: "Review Scene 1" })).toBeVisible();
+    await expect(page.locator("#next")).toHaveText("Continue");
+  });
+
+  test("professional completion has one next action and an accurate calm-pressure summary", async ({ page }) => {
+    await completeFlagshipProfessionalPath(page);
+
+    await expect(page.locator("#scene")).toContainText("Lesson complete · professional");
+    await expect(page.getByRole("link", { name: "Open dashboard", exact: true })).toHaveCount(1);
+    await expect(page.locator(".next-step-actions a")).toHaveCount(1);
+    const pressure = page.locator(".var-bar").filter({ hasText: "Pressure" });
+    await expect(pressure).toContainText("calm — no pressure leaked into the message");
+    await expect(pressure.locator(".var-value")).toHaveClass(/\bneutral\b/);
   });
 
   test("matching exercises separate Danish material from English meaning", async ({ page }) => {

@@ -200,6 +200,10 @@ window.PLATA_LESSON_B2_RADIATOR = {
     emilEscalation: 0,
     workplaceTrust: 0
   },
+  variableDirections: {
+    landlordTension: "lower-is-better",
+    emilEscalation: "lower-is-better"
+  },
   variableLabels: {
     landlordTension: "Landlord tension",
     sofiaTrust: "Sofia's confidence",
