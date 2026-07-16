@@ -288,6 +288,9 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
     professionalism: 0,   // 0 casual .. 3 polished
     networkTrust: 0       // -1 damaged .. +2 strengthened
   },
+  variableDirections: {
+    desperation: "lower-is-better"
+  },
   variableLabels: {
     employerTone: "Employer tone",
     desperation: "Pressure",
@@ -296,7 +299,11 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
   },
   variableDescriptions: {
     employerTone: ["cold — your wording created distance", "neutral — the process stayed formal", "warm — your tone invited a human reply"],
-    desperation: ["calm — no pressure leaked into the message", "visible — urgency showed through", "pushy — the follow-up started to cost trust"],
+    desperation: {
+      "0": "calm — no pressure leaked into the message",
+      "1": "visible — urgency showed through",
+      positive: "pushy — the follow-up started to cost trust"
+    },
     professionalism: ["weak — the tone made the exchange harder", "acceptable — clear but generic", "strong — your message was easy to answer and remember"],
     networkTrust: ["damaged — the connection felt transactional", "unchanged — the exchange stayed correct", "strengthened — the contact could remain useful beyond this role"]
   },

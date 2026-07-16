@@ -209,6 +209,9 @@ window.PLATA_LESSON_B1_BORGERSERVICE = {
     clarity: 0,
     professionalTrust: 0
   },
+  variableDirections: {
+    relationshipTension: "lower-is-better"
+  },
   variableLabels: {
     relationshipTension: "Counter tension",
     clarity: "Clarity",

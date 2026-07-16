@@ -209,6 +209,9 @@ window.PLATA_LESSON_A2_DOCTOR = {
     clarity: 0,
     professionalTrust: 0
   },
+  variableDirections: {
+    relationshipTension: "lower-is-better"
+  },
   variableLabels: {
     relationshipTension: "Conversation tension",
     clarity: "Symptom clarity",

@@ -74,7 +74,8 @@ function run() {
   assert(bundle.drillRepair.href.includes("from=lesson-b2-radiator-register"), "drill href cites source lesson");
 
   const panel = bridge.renderMissRepairPanel({ lesson, scene, signalTag: signal, rootPrefix: "../../" });
-  assert(/Match → Gym/.test(panel), "miss repair panel names the product loop");
+  assert(/Your correction/.test(panel), "miss repair panel uses learner-facing correction language");
+  assert(!/Match → Gym|mapped drill|signal in the scene/i.test(panel), "miss repair panel hides internal product vocabulary");
   assert(/register-drill/.test(panel), "miss repair panel links register drill");
 
   const plan = bridge.persistMissPlan({ lesson, scene, signalTag: signal, rootPrefix: "../../" });

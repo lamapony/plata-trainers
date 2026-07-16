@@ -23,6 +23,9 @@
 
   function render(spec) {
     if (!spec) return "";
+    var secondaryHref = spec.secondaryHref && spec.secondaryHref !== spec.primaryHref
+      ? spec.secondaryHref
+      : "";
     return [
       "<section class='next-step-card " + escapeHtml(spec.kind || "next") + "' aria-label='Recommended next step'>",
       "<p class='eyebrow'>" + escapeHtml(spec.eyebrow || "Next step") + "</p>",
@@ -31,7 +34,7 @@
       spec.meta ? "<p class='next-step-meta'>" + escapeHtml(spec.meta) + "</p>" : "",
       "<div class='next-step-actions'>",
       "<a class='primary btn btn-primary link-button' href='" + escapeHtml(spec.primaryHref) + "'>" + escapeHtml(spec.primaryLabel) + "</a>",
-      spec.secondaryHref ? "<a class='ghost btn btn-ghost link-button gym-link' href='" + escapeHtml(spec.secondaryHref) + "'>" + escapeHtml(spec.secondaryLabel) + "</a>" : "",
+      secondaryHref ? "<a class='ghost btn btn-ghost link-button gym-link' href='" + escapeHtml(secondaryHref) + "'>" + escapeHtml(spec.secondaryLabel) + "</a>" : "",
       "</div>",
       "</section>"
     ].join("");

@@ -88,17 +88,17 @@
     return bundle;
   }
 
-  function renderMissRepairPanel(options) {
-    options = options || {};
-    var bundle = remediationBundle(options.lesson, options.scene, options.signalTag, options.rootPrefix);
+  function renderMissRepairContent(bundle) {
     if (!bundle) return "";
+    var hasDrill = !!(bundle.drillRepair && bundle.drillRepair.href);
     var parts = [
-      "<aside class='miss-repair-panel' id='miss-repair-panel' aria-label='Prescribed repair after narrative miss'>",
-      "<p class='eyebrow'>Match → Gym</p>",
-      "<h3>Repair " + escapeHtml(bundle.label) + "</h3>",
-      "<p class='miss-repair-copy'>You missed this signal in the scene. Run the mapped drill, then return to the scene if needed.</p>"
+      "<p class='eyebrow'>Your correction</p>",
+      "<h3>Practise: " + escapeHtml(bundle.label) + "</h3>",
+      "<p class='miss-repair-copy'>" + (hasDrill
+        ? "Retry this moment now, or use the short focused drill while the correction is fresh."
+        : "Retry this moment while the correction is fresh.") + "</p>"
     ];
-    if (bundle.drillRepair && bundle.drillRepair.href) {
+    if (hasDrill) {
       parts.push(
         "<div class='miss-repair-actions'>",
         "<a class='btn primary link-button' href='" + escapeHtml(bundle.drillRepair.href) + "'>" +
@@ -114,7 +114,7 @@
       }
       parts.push("</div>");
       if (bundle.drillRepair.action) {
-        parts.push("<p class='miss-repair-meta'>" + escapeHtml(bundle.drillRepair.action) + "</p>");
+        parts.push("<p class='miss-repair-meta'><strong>Focused practice:</strong> " + escapeHtml(bundle.drillRepair.action) + "</p>");
       }
     } else if (bundle.sceneRepair && bundle.sceneRepair.href) {
       parts.push(
@@ -122,15 +122,22 @@
         "<a class='btn primary link-button' href='" + escapeHtml(bundle.sceneRepair.href) + "'>" +
           escapeHtml(bundle.sceneRepair.cta || "Replay the scene") +
         "</a>",
-        "</div>",
-        "<p class='miss-repair-meta'>No mapped drill for this signal yet — replaying the scene is the honest next step.</p>"
+        "</div>"
       );
       if (bundle.sceneRepair.action) {
-        parts.push("<p class='miss-repair-meta'>" + escapeHtml(bundle.sceneRepair.action) + "</p>");
+        parts.push("<p class='miss-repair-meta'><strong>Try this:</strong> " + escapeHtml(bundle.sceneRepair.action) + "</p>");
       }
     }
-    parts.push("</aside>");
     return parts.join("");
+  }
+
+  function renderMissRepairPanel(options) {
+    options = options || {};
+    var bundle = remediationBundle(options.lesson, options.scene, options.signalTag, options.rootPrefix);
+    if (!bundle) return "";
+    return "<aside class='miss-repair-panel' id='miss-repair-panel' aria-label='Practice this correction' aria-live='polite'>" +
+      renderMissRepairContent(bundle) +
+      "</aside>";
   }
 
   function planStepFromBundle(bundle, lesson, number) {
@@ -200,11 +207,11 @@
     if (!steps.length) return null;
     return planner.savePracticePlan({
       kind: "repair",
-      title: "Repair plan",
-      copy: "A narrative miss opened this route: repair the scene, then run the mapped reflex drill.",
+      title: "Practice this correction",
+      copy: "Retry the lesson moment, then use the focused drill if one is available.",
       steps: steps,
       primaryStep: steps[0],
-      meta: steps.length + " step repair route from narrative miss."
+      meta: steps.length + " focused practice step" + (steps.length === 1 ? "" : "s") + " from this lesson."
     });
   }
 
@@ -212,13 +219,9 @@
     if (!ctx || !scene) return null;
     var signalTag = resolveMissSignal(ctx.lesson, scene, option);
     if (!signalTag) return null;
-    var html = renderMissRepairPanel({
-      lesson: ctx.lesson,
-      scene: scene,
-      signalTag: signalTag,
-      rootPrefix: ctx.rootPrefix || "../../"
-    });
-    if (!html) return null;
+    var bundle = remediationBundle(ctx.lesson, scene, signalTag, ctx.rootPrefix || "../../");
+    if (!bundle) return null;
+    var html = renderMissRepairContent(bundle);
     var feedback = ctx.sceneEl && ctx.sceneEl.querySelector
       ? ctx.sceneEl.querySelector("#feedback")
       : (typeof document !== "undefined" && document.querySelector ? document.querySelector("#feedback") : null);
@@ -227,6 +230,8 @@
       var panel = doc.createElement("aside");
       panel.id = "miss-repair-panel";
       panel.className = "miss-repair-panel";
+      panel.setAttribute && panel.setAttribute("aria-label", "Practice this correction");
+      panel.setAttribute && panel.setAttribute("aria-live", "polite");
       panel.innerHTML = html;
       if (feedback && feedback.parentNode && typeof feedback.parentNode.insertBefore === "function") {
         var existing = feedback.parentNode.querySelector && feedback.parentNode.querySelector("#miss-repair-panel");
