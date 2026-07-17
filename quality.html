@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="./styles.css" />
   <link rel="stylesheet" href="./styles-core.css" />
 </head>
-<body>
+<body class="quality-page">
   <main class="site-shell">
     <header class="hero">
       <nav class="topnav" aria-label="Reviewer navigation">
@@ -28,13 +28,13 @@
 
       <section class="hero-grid">
         <div>
-          <p class="eyebrow">No made-up language advice</p>
-          <h1>How Platå keeps lessons honest.</h1>
+          <p class="quality-principle">No made-up language advice</p>
+          <h1>The lesson ledger.</h1>
           <p class="lead">Every featured lesson must explain what it teaches, cite its sources, react to likely mistakes, and offer a useful repair. This page is rebuilt from the lessons themselves, so missing evidence becomes a visible failure.</p>
           <div class="hero-actions">
             <a id="quality-json-link" class="btn primary" href="#" aria-disabled="true">See the lesson data</a>
-            <a class="btn" href="https://github.com/lamapony/plata-trainers/actions/workflows/pages.yml">See the automated checks</a>
           </div>
+          <p class="quality-workflow-link"><a href="https://github.com/lamapony/plata-trainers/actions/workflows/pages.yml">Open the automated checks</a></p>
         </div>
         <aside class="status-card" aria-label="Report status">
           <h2 id="quality-status">Loading</h2>
@@ -45,10 +45,7 @@
     </header>
 
     <section class="section" aria-labelledby="metrics-title">
-      <div class="section-head">
-        <p class="eyebrow">What is checked</p>
-        <h2 id="metrics-title">The lesson library in numbers</h2>
-      </div>
+      <div class="section-head"><h2 id="metrics-title">What the build proves</h2></div>
       <div id="quality-metrics" class="quality-metrics"></div>
     </section>
 

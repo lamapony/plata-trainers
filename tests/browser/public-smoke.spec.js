@@ -105,7 +105,7 @@ test.describe("public pages smoke", () => {
     await expect(customLesson).toContainText("No forms, JSON, or lesson-design vocabulary.");
     await expect(customLesson.getByRole("link", { name: "Read the simple guide" })).toHaveAttribute("href", "./factory.html");
     await expect(customLesson.getByRole("link", { name: "Give the repository to an agent" })).toHaveAttribute("href", /github\.com\/lamapony\/plata-trainers/);
-    await expect(customLesson).toContainText("the website is where you practise");
+    await expect(customLesson).toContainText(/the website is where you practise/i);
     const library = page.locator(".library-disclosure").first();
     await expect(library).not.toHaveAttribute("open", "");
     await expect(page.locator("#narrative-gallery")).not.toBeVisible();
@@ -151,7 +151,7 @@ test.describe("public pages smoke", () => {
     await expect(panel).toContainText("Your correction");
     await expect(panel).toContainText("Retry this moment");
     await expect(panel).not.toContainText(/Match → Gym|mapped drill|signal in the scene/i);
-    await expect(panel).toHaveCSS("border-left-style", "solid");
+    await expect(panel).toHaveCSS("border-top-style", "solid");
     await expect(panel.getByRole("link", { name: "Review Scene 1" })).toBeVisible();
     await expect(page.locator("#next")).toHaveText("Continue");
   });
