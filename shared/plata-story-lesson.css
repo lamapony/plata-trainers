@@ -25,7 +25,8 @@ textarea { font: inherit; }
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
-textarea:focus-visible {
+textarea:focus-visible,
+select:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--ember) 72%, transparent);
   outline-offset: 3px;
 }
@@ -392,7 +393,7 @@ a.ghost:hover,
 .dialogue-line > p {
   position: relative;
   display: grid;
-  grid-template-columns: 27px minmax(0, 1fr);
+  grid-template-columns: 27px minmax(0, 1fr) auto;
   align-items: start;
   gap: 10px;
   margin: 0;
@@ -420,7 +421,7 @@ a.ghost:hover,
 
 .danish-line {
   display: grid;
-  grid-template-columns: 27px minmax(0, 1fr);
+  grid-template-columns: 27px minmax(0, 1fr) auto;
   align-items: start;
   gap: 12px;
   margin: 0 0 25px;
@@ -432,6 +433,173 @@ a.ghost:hover,
   font-family: var(--font-serif);
   font-size: clamp(1.25rem, 2.8vw, 1.55rem);
   line-height: 1.4;
+}
+
+/* One calm, shared audio layer. Controls only render for manifest-backed clips. */
+.plata-audio-settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 14px;
+  margin: 0 0 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.plata-audio-settings label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 650;
+}
+
+.plata-audio-speed {
+  min-height: 32px;
+  padding: 4px 26px 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.plata-audio-disclosure {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+}
+
+.plata-audio-control {
+  display: inline-flex;
+  grid-column: 3;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 8px;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+}
+
+.plata-audio-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 82px;
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid color-mix(in srgb, var(--green) 50%, var(--line));
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--green);
+  cursor: pointer;
+  font-weight: 750;
+  line-height: 1;
+}
+
+.plata-audio-button:hover,
+.plata-audio-button.is-playing {
+  border-color: var(--green);
+  background: color-mix(in srgb, var(--green) 8%, var(--surface));
+}
+
+.plata-audio-icon {
+  width: 0.8rem;
+  color: currentColor;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+.plata-audio-status {
+  flex: 1 0 100%;
+  max-width: 34ch;
+  color: var(--ember-deep);
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+.plata-audio-utterance {
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.dialogue-line.is-playing > p,
+.danish-line.is-playing,
+.flagship-channel.is-playing,
+.flagship-ladder > li.is-playing,
+.plata-model-answer.is-playing {
+  border-color: var(--green);
+  background: color-mix(in srgb, var(--green) 12%, var(--surface));
+}
+
+.plata-model-answer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 14px;
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--green);
+  background: color-mix(in srgb, var(--green) 5%, var(--surface));
+}
+
+.plata-model-answer > .eyebrow,
+.plata-audio-practice-cue { grid-column: 1 / -1; }
+
+.plata-model-answer-copy {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0;
+  font-family: var(--font-serif);
+  line-height: 1.45;
+}
+
+.plata-model-answer .plata-audio-control { grid-column: 2; }
+
+.plata-audio-practice-cue {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.choice-audio-row,
+.match-audio-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.choice-audio-row > .choice-card,
+.choice-audio-row > .flagship-option,
+.match-audio-row > .sign-card { width: 100%; }
+
+.plata-audio-sibling {
+  display: flex;
+  align-items: center;
+}
+
+.plata-audio-sibling .plata-audio-control { grid-column: auto; }
+
+.choice-audio-row.is-playing > .choice-card,
+.choice-audio-row.is-playing > .flagship-option,
+.match-audio-row.is-playing > .sign-card {
+  border-color: var(--green);
+  background: color-mix(in srgb, var(--green) 12%, var(--surface));
+}
+
+.channel-language-da,
+.ladder-language {
+  flex-wrap: wrap;
+}
+
+.channel-language-da .plata-audio-control,
+.ladder-language .plata-audio-control {
+  grid-column: auto;
+  margin-top: 8px;
 }
 
 .notice,
@@ -715,6 +883,8 @@ a.ghost:hover,
   gap: 9px;
 }
 
+.channel-language-da { grid-template-columns: 27px minmax(0, 1fr) auto; }
+
 .channel-language + .channel-language {
   margin-top: 10px;
   padding-top: 10px;
@@ -788,7 +958,7 @@ a.ghost:hover,
 
 .ladder-language {
   display: grid;
-  grid-template-columns: 27px minmax(0, 1fr);
+  grid-template-columns: 27px minmax(0, 1fr) auto;
   align-items: start;
   gap: 9px;
 }
@@ -1159,6 +1329,31 @@ textarea:focus { border-color: var(--green); }
   .dialogue-line > p::before { display: none; }
 
   .danish-line { padding: 15px; }
+
+  .dialogue-line > p,
+  .danish-line {
+    grid-template-columns: 27px minmax(0, 1fr);
+  }
+
+  .dialogue-line > p .plata-audio-control,
+  .danish-line > .plata-audio-control {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .plata-model-answer { grid-template-columns: minmax(0, 1fr); }
+  .plata-model-answer .plata-audio-control { grid-column: 1; }
+
+  .choice-audio-row,
+  .match-audio-row { grid-template-columns: minmax(0, 1fr); }
+
+  .plata-audio-sibling { justify-content: flex-start; }
+
+  .channel-language-da,
+  .ladder-language { grid-template-columns: 27px minmax(0, 1fr); }
+
+  .channel-language-da .plata-audio-control,
+  .ladder-language .plata-audio-control { grid-column: 2; }
 
   .choice-card,
   .flagship-option,

@@ -321,17 +321,57 @@
       "<span class='choice-language choice-language-en'>" + renderLanguageMarker("en") + "<span class='choice-detail' lang='en'>" + escapeHtml(english || "") + "</span></span>";
   }
 
-  function renderDanishLine(text) {
-    return "<div class='danish-line' lang='da'>" + renderLanguageMarker("da") + "<span class='danish-copy'>" + escapeHtml(text) + "</span></div>";
+  function renderAudioControl(lesson, audio, text) {
+    if (!lesson || !root.PlataAudio || !root.PlataAudio.renderControl) return "";
+    return root.PlataAudio.renderControl(lesson.id, audio, text);
   }
 
-  function renderDialogue(lines) {
+  function renderDanishLine(lesson, text, audio) {
+    return "<div class='danish-line plata-audio-utterance' lang='da'>" + renderLanguageMarker("da") + "<span class='danish-copy'>" + escapeHtml(text) + "</span>" + renderAudioControl(lesson, audio, text) + "</div>";
+  }
+
+  function renderDialogue(lesson, lines) {
     var html = "<div class='dialogue' aria-label='Scene dialogue'>";
     lines.forEach(function (line) {
-      html += "<div class='dialogue-line'><span>" + escapeHtml(line.speaker) + "</span><p lang='da'>" + renderLanguageMarker("da") + "<span class='dialogue-copy'>" + escapeHtml(line.line) + "</span></p></div>";
+      html += "<div class='dialogue-line plata-audio-utterance'><span>" + escapeHtml(line.speaker) + "</span><p lang='da'>" + renderLanguageMarker("da") + "<span class='dialogue-copy'>" + escapeHtml(line.line) + "</span>" + renderAudioControl(lesson, line.audio, line.line) + "</p></div>";
     });
     html += "</div>";
     return html;
+  }
+
+  function modelAnswerText(scene) {
+    if (!scene || !scene.modelAnswer) return "";
+    return typeof scene.modelAnswer === "string" ? scene.modelAnswer : scene.modelAnswer.text || "";
+  }
+
+  function revealModelAnswer(ctx, scene) {
+    var text = modelAnswerText(scene);
+    if (!text) return;
+    var body = $("#exercise-body");
+    if (!body) return;
+    var previous = body.querySelector && body.querySelector(".plata-model-answer");
+    if (previous && previous.remove) previous.remove();
+    var answer = document.createElement("aside");
+    var audio = typeof scene.modelAnswer === "object" ? scene.modelAnswer.audio : null;
+    var hasAudio = Boolean(root.PlataAudio && root.PlataAudio.hasClip && root.PlataAudio.hasClip(ctx.lesson.id, audio));
+    answer.className = "plata-model-answer plata-audio-utterance";
+    answer.innerHTML = "<p class='eyebrow'>Model answer</p><p class='plata-model-answer-copy' lang='da'>" + renderLanguageMarker("da") + "<strong>" + escapeHtml(text) + "</strong></p>" +
+      renderAudioControl(ctx.lesson, audio, text) +
+      (hasAudio ? "<p class='plata-audio-practice-cue'>Listen once, then say it aloud.</p>" : "");
+    body.appendChild(answer);
+    if (root.PlataAudio && root.PlataAudio.bind) root.PlataAudio.bind(ctx.sceneEl);
+  }
+
+  function wrapInteractiveAudio(button, audioMarkup, className) {
+    if (!audioMarkup) return button;
+    var row = document.createElement("div");
+    row.className = (className || "choice-audio-row") + " plata-audio-utterance";
+    row.appendChild(button);
+    var sibling = document.createElement("div");
+    sibling.className = "plata-audio-sibling";
+    sibling.innerHTML = audioMarkup;
+    row.appendChild(sibling);
+    return row;
   }
 
   function findComicPanel(lesson, scene) {
@@ -481,9 +521,10 @@
           ctx.state.completed[scene.id] = true;
           markRepairPlanStepComplete(ctx, scene);
         }
+        revealModelAnswer(ctx, scene);
         ctx.renderSidebar();
       });
-      body.appendChild(btn);
+      body.appendChild(wrapInteractiveAudio(btn, renderAudioControl(ctx.lesson, opt.audio, opt.label), "choice-audio-row"));
     });
   }
 
@@ -503,6 +544,7 @@
         ctx.state.completed[scene.id] = true;
         markRepairPlanStepComplete(ctx, scene);
       }
+      revealModelAnswer(ctx, scene);
       ctx.renderSidebar();
     });
   }
@@ -530,7 +572,7 @@
         document.querySelectorAll(".sign-card").forEach(function (el) { el.classList.remove("selected"); });
         l.classList.add("selected");
       });
-      left.appendChild(l);
+      left.appendChild(wrapInteractiveAudio(l, renderAudioControl(ctx.lesson, pair.audio, pair.left), "match-audio-row"));
 
       var r = document.createElement("button");
       r.type = "button";
@@ -554,6 +596,7 @@
           ctx.state.completed[scene.id] = true;
           markRepairPlanStepComplete(ctx, scene);
         }
+        revealModelAnswer(ctx, scene);
         ctx.renderSidebar();
         ctx.state.selectedLeft = null;
       });
@@ -600,28 +643,29 @@
         ctx.state.completed[scene.id] = true;
         markRepairPlanStepComplete(ctx, scene);
       }
+      revealModelAnswer(ctx, scene);
       ctx.renderSidebar();
     });
   }
 
   /* ---- flagship chain renderer ---- */
-  function renderRepairLadder(steps) {
+  function renderRepairLadder(lesson, steps) {
     if (!steps || !steps.length) return "";
     var html = "<ol class='flagship-ladder'>";
     steps.forEach(function (step) {
-      html += "<li><span class='ladder-stage'>" + escapeHtml(step.stage || "step") + "</span><span class='ladder-language'>" + renderLanguageMarker("da") + "<strong lang='da'>" + escapeHtml(step.text || "") + "</strong></span></li>";
+      html += "<li class='plata-audio-utterance'><span class='ladder-stage'>" + escapeHtml(step.stage || "step") + "</span><span class='ladder-language'>" + renderLanguageMarker("da") + "<strong lang='da'>" + escapeHtml(step.text || "") + "</strong>" + renderAudioControl(lesson, step.audio, step.text) + "</span></li>";
     });
     html += "</ol>";
     return html;
   }
 
-  function renderChannelVersions(scene) {
+  function renderChannelVersions(lesson, scene) {
     if (!scene.channelVersions || !scene.channelVersions.length) return "";
     var html = "<div class='flagship-channel-grid' aria-label='Same intent across channels'>";
     scene.channelVersions.forEach(function (channel) {
-      html += "<article class='flagship-channel'>" +
+      html += "<article class='flagship-channel plata-audio-utterance'>" +
         "<span class='flagship-channel-label'>" + escapeHtml(channel.label || channel.id || "channel") + "</span>" +
-        "<div class='channel-language channel-language-da'>" + renderLanguageMarker("da") + "<strong lang='da'>" + escapeHtml(channel.sample || "") + "</strong></div>" +
+        "<div class='channel-language channel-language-da'>" + renderLanguageMarker("da") + "<strong lang='da'>" + escapeHtml(channel.sample || "") + "</strong>" + renderAudioControl(lesson, channel.audio, channel.sample) + "</div>" +
         "<div class='channel-language channel-language-en'>" + renderLanguageMarker("en") + "<p lang='en'>" + escapeHtml(channel.risk || "") + "</p></div>" +
       "</article>";
     });
@@ -674,7 +718,7 @@
       body.appendChild(proof);
     }
     var channels = document.createElement("div");
-    channels.innerHTML = renderChannelVersions(scene);
+    channels.innerHTML = renderChannelVersions(ctx.lesson, scene);
     body.appendChild(channels);
 
     var choices = document.createElement("div");
@@ -693,10 +737,11 @@
           "<p class='eyebrow'>" + escapeHtml(opt.nearMiss ? "Near miss · consequence" : "Consequence") + "</p>" +
           "<h4>" + escapeHtml(opt.pragmaticStatus || opt.channel || "channel fit") + "</h4>" +
           "<p>" + escapeHtml(opt.consequence || opt.feedback || "") + "</p>" +
-          renderRepairLadder(opt.repairLadder || []);
+          renderRepairLadder(ctx.lesson, opt.repairLadder || []);
         var oldPanel = body.querySelector && body.querySelector(".flagship-consequence");
         if (oldPanel && oldPanel.remove) oldPanel.remove();
         body.appendChild(panel);
+        if (root.PlataAudio && root.PlataAudio.bind) root.PlataAudio.bind(ctx.sceneEl);
 
         if (opt.correct && opt.reasonOptions && opt.reasonOptions.length) {
           $("#feedback").className = "feedback show ok";
@@ -717,9 +762,10 @@
           ctx.state.completed[scene.id] = true;
           markRepairPlanStepComplete(ctx, scene);
         }
+        revealModelAnswer(ctx, scene);
         ctx.renderSidebar();
       });
-      choices.appendChild(btn);
+      choices.appendChild(wrapInteractiveAudio(btn, renderAudioControl(ctx.lesson, opt.audio, opt.label), "choice-audio-row flagship-choice-audio-row"));
     });
     body.appendChild(choices);
   }
@@ -729,6 +775,7 @@
     var lesson = ctx.lesson;
     var ending = findEnding(lesson, ctx.state.endingId);
     var html = "";
+    if (root.PlataAudio && root.PlataAudio.stop) root.PlataAudio.stop();
     if (!ctx.state.repair || !ctx.state.repair.active) {
       markLessonPlanStepComplete(ctx, "lesson-complete");
     } else if (repairResolved(ctx)) {
@@ -751,7 +798,7 @@
       html += "<p class='eyebrow'>Lesson complete · " + ending.id + "</p>";
       html += "<h2>" + escapeHtml(ending.title) + "</h2>";
       html += "<p class='narrative'>" + escapeHtml(ending.narrative) + "</p>";
-      if (ending.danish) html += renderDanishLine(ending.danish);
+      if (ending.danish) html += renderDanishLine(lesson, ending.danish, ending.audio);
       html += "<p class='carry-forward'>" + escapeHtml(ending.carry) + "</p>";
 
       if (lesson.variables) {
@@ -786,6 +833,7 @@
 
     html += "<div class='lesson-actions'><a class='primary link-button' href='../../'>Back to practice</a><button class='ghost' id='again' type='button'>Run again</button></div>";
     ctx.sceneEl.innerHTML = html;
+    if (root.PlataAudio && root.PlataAudio.bind) root.PlataAudio.bind(ctx.sceneEl);
 
     $("#again").addEventListener("click", function () {
       ctx.reset();
@@ -802,6 +850,7 @@
   /* ---- main render ---- */
   function renderScene(ctx) {
     var scene = ctx.lesson.scenes[ctx.state.index];
+    if (root.PlataAudio && root.PlataAudio.stop) root.PlataAudio.stop();
     syncSceneHash(ctx.lesson, ctx.state);
     renderRoute(ctx.lesson, ctx.state, ctx.routeEl, ctx.countEl, function () { renderScene(ctx); });
     renderVariables(ctx.lesson, ctx.state, ctx.varsEl);
@@ -822,8 +871,8 @@
     if (ctx.state.repair && ctx.state.repair.active) {
       html += "<aside class='repair-focus'><strong>" + escapeHtml(ctx.state.repair.cta) + "</strong><span><b>" + escapeHtml(ctx.state.repair.label) + "</b>" + (ctx.state.repair.action ? " — " + escapeHtml(ctx.state.repair.action) : "") + "</span></aside>";
     }
-    if (scene.dialogue) html += renderDialogue(scene.dialogue);
-    if (scene.danish) html += renderDanishLine(scene.danish);
+    if (scene.dialogue) html += renderDialogue(ctx.lesson, scene.dialogue);
+    if (scene.danish) html += renderDanishLine(ctx.lesson, scene.danish, scene.danishAudio);
     if (scene.notice) html += "<aside class='notice'><strong>Notice</strong><span>" + escapeHtml(scene.notice) + "</span></aside>";
     html += "</div><div class='exercise'>" + renderLanguageKey() + "<div class='exercise-prompt'>" + renderLanguageMarker("en") + "<h3 lang='en'>" + escapeHtml(scene.prompt) + "</h3></div><div id='exercise-body'></div><div id='feedback' class='feedback' aria-live='polite'></div></div></div>";
     if (scene.carry) html += "<p class='carry-forward'>" + escapeHtml(scene.carry) + "</p>";
@@ -840,6 +889,7 @@
     } else {
       $("#exercise-body").innerHTML = "<p class='narrative'>Unsupported exercise type: " + escapeHtml(scene.type) + "</p>";
     }
+    if (root.PlataAudio && root.PlataAudio.bind) root.PlataAudio.bind(ctx.sceneEl);
 
     // Navigation
     $("#prev").disabled = ctx.state.index === 0;

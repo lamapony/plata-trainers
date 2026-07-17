@@ -19,15 +19,22 @@ function contentType(filePath) {
   const ext = path.extname(filePath).toLowerCase();
   return {
     ".css": "text/css; charset=utf-8",
+    ".aac": "audio/aac",
+    ".flac": "audio/flac",
     ".html": "text/html; charset=utf-8",
     ".js": "text/javascript; charset=utf-8",
     ".json": "application/json; charset=utf-8",
     ".md": "text/markdown; charset=utf-8",
+    ".m4a": "audio/mp4",
+    ".mp3": "audio/mpeg",
+    ".ogg": "audio/ogg",
+    ".opus": "audio/ogg; codecs=opus",
     ".png": "image/png",
     ".svg": "image/svg+xml; charset=utf-8",
     ".txt": "text/plain; charset=utf-8",
     ".webmanifest": "application/manifest+json; charset=utf-8",
     ".woff2": "font/woff2",
+    ".wav": "audio/wav",
     ".xml": "application/xml; charset=utf-8"
   }[ext] || "application/octet-stream";
 }

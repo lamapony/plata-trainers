@@ -74,6 +74,8 @@ const requiredGates = [
   { id: "check:evaluator-path", category: "runtime", contract: "Home evaluator path connects the first-visit CTA to the read-only demo learner and proof-backed guided session route." },
   { id: "check:evaluator-journey", category: "runtime", contract: "Deterministic evaluator journey proves the public demo-to-proof-to-guided-return path as an acceptance trace." },
   { id: "check:lesson-engine", category: "runtime", contract: "Gold simulation paths replay through the real lesson engine." },
+  { id: "check:audio-pipeline", category: "assets", contract: "Danish audio contracts, provider adapters, atomic generation, incremental reuse, stream/QC validation, stale detection, and human review gates are smoke-tested without network calls." },
+  { id: "check:audio", category: "assets", contract: "Committed Danish audio manifests and real files match lesson text, hashes, coverage, decoded QC evidence, publication state, and human review; legacy lessons remain advisory." },
   { id: "check:dashboard", category: "runtime", contract: "Dashboard renders diagnostics, plans, ledger, catalog loading, and profile portability." },
   { id: "check:demo-learner-report", category: "report", contract: "Read-only demo learner profile builds as a deterministic public contract report." },
   { id: "check:demo-learner-diff", category: "review", contract: "Demo learner report changes produce compact review diffs and regression flags." },

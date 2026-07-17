@@ -1,6 +1,7 @@
 // @ts-check
 const { test, expect } = require("@playwright/test");
 const AxeBuilder = require("@axe-core/playwright").default;
+const { makeWav } = require("../../scripts/lib/audio-providers/mock");
 
 const FLAGSHIP = "/lessons/lesson-b2-job-followup/";
 const LESSONS = [
@@ -14,6 +15,32 @@ const LESSONS = [
 ];
 const TODAY = "/dashboard.html";
 const DEMO = "/dashboard.html?demo=learner";
+
+function browserAudioManifest(overrides) {
+  const source = `data:audio/wav;base64,${makeWav(4).toString("base64")}`;
+  return {
+    schemaVersion: 1,
+    lessonId: "lesson-b2-job-followup",
+    locale: "da-DK",
+    disclosure: "AI-generated Danish voice",
+    clips: [
+      {
+        utteranceId: "silence-pressure-recruiter",
+        text: "Vi regner med at give besked senest tirsdag.",
+        spokenText: "Vi regner med at give besked senest tirsdag.",
+        src: overrides && overrides.dialogueSrc || source,
+        provider: "openai"
+      },
+      {
+        utteranceId: "silence-pressure-model",
+        text: "Skriv en kort opfølgning i dag og henvis roligt til den tidsplan, de nævnte.",
+        spokenText: "Skriv en kort opfølgning i dag og henvis roligt til den tidsplan, de nævnte.",
+        src: source,
+        provider: "openai"
+      }
+    ]
+  };
+}
 
 function collectRuntimeProblems(page) {
   const problems = [];
@@ -226,6 +253,67 @@ test.describe("public pages smoke", () => {
       await page.waitForLoadState("networkidle");
       await assertNoHorizontalOverflow(page);
     }
+  });
+});
+
+test.describe("Danish lesson audio", () => {
+  test("uses one lazy player, persists speed, reveals repair audio after an attempt, and stops on navigation", async ({ page }) => {
+    let audioRequests = 0;
+    await page.route("**/audio-fixture.wav", async (route) => {
+      audioRequests += 1;
+      await route.fulfill({ status: 200, contentType: "audio/wav", body: makeWav(4) });
+    });
+    await page.addInitScript((manifest) => {
+      window.PLATA_AUDIO_MANIFESTS = { "lesson-b2-job-followup": manifest };
+    }, browserAudioManifest({ dialogueSrc: "/audio-fixture.wav" }));
+    await page.goto(FLAGSHIP);
+    await expect(page.locator(".plata-audio-button")).toHaveCount(1);
+    await expect(page.locator("audio#plata-audio-player")).toHaveCount(0);
+    expect(audioRequests).toBe(0);
+    await expect(page.locator(".plata-audio-speed")).toHaveValue("1");
+    await expect(page.locator(".plata-audio-disclosure")).toHaveText("AI-generated Danish voice");
+    await assertNoCriticalAxe(page, "flagship audio before playback");
+
+    const dialogueButton = page.locator(".plata-audio-button").first();
+    await dialogueButton.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.locator("audio#plata-audio-player")).toHaveCount(1);
+    await expect.poll(() => audioRequests).toBeGreaterThan(0);
+    await expect(dialogueButton).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator(".dialogue-line")).toHaveClass(/is-playing/);
+    await page.locator(".plata-audio-speed").selectOption("0.75");
+    expect(await page.evaluate(() => localStorage.getItem("plata.audio.speed.v1"))).toBe("0.75");
+    expect(await page.locator("audio#plata-audio-player").evaluate((audio) => audio.playbackRate)).toBe(0.75);
+
+    await page.getByRole("button", { name: /skriv en kort opfølgning i dag/i }).click();
+    await expect(page.locator(".plata-model-answer")).toBeVisible();
+    await expect(page.locator(".plata-model-answer")).toContainText("Listen once, then say it aloud.");
+    await expect(page.locator(".plata-audio-button")).toHaveCount(2);
+    await page.locator(".plata-model-answer .plata-audio-button").click();
+    await expect(dialogueButton).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("audio#plata-audio-player")).toHaveCount(1);
+
+    await page.locator(".route-step").nth(1).click();
+    await expect(page.locator("audio#plata-audio-player")).not.toHaveAttribute("src", /.+/);
+    await expect(page.locator(".plata-model-answer")).toHaveCount(0);
+    await expect(page.locator(".plata-audio-speed")).toHaveCount(0);
+    await page.locator(".route-step").first().click();
+    await expect(page.locator(".plata-audio-speed")).toHaveValue("0.75");
+    await assertNoHorizontalOverflow(page);
+  });
+
+  test("announces a calm fallback only after a user-triggered decode failure", async ({ page }) => {
+    const pageErrors = [];
+    page.on("pageerror", error => pageErrors.push(error.message));
+    await page.addInitScript((manifest) => {
+      window.PLATA_AUDIO_MANIFESTS = { "lesson-b2-job-followup": manifest };
+    }, browserAudioManifest({ dialogueSrc: "data:audio/mpeg;base64,AAAA" }));
+    await page.goto(FLAGSHIP);
+    await expect(page.locator(".plata-audio-status")).toHaveText("");
+    await page.locator(".plata-audio-button").click();
+    await expect(page.locator(".plata-audio-status")).toContainText("Audio is unavailable", { timeout: 10_000 });
+    await expect(page.locator(".dialogue-copy")).toContainText("Vi regner med at give besked");
+    expect(pageErrors).toEqual([]);
   });
 });
 

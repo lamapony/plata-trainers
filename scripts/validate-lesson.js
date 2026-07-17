@@ -4,6 +4,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
+const { extractUtterances } = require("./lib/audio-contract");
 
 const root = path.resolve(__dirname, "..");
 const issues = [];
@@ -505,6 +506,11 @@ function validateTargetPhrases(lessonMeta, lesson, scene, si) {
 }
 
 function validateLesson(lessonMeta, lesson) {
+  if (lesson && lesson.audio) {
+    const audioContract = extractUtterances(lesson);
+    audioContract.issues.forEach(message => issue(`${lessonMeta.id}: ${message}`));
+    audioContract.warnings.forEach(message => warn(`${lessonMeta.id}: ${message}`));
+  }
   if (!lesson) {
     issue(`${lessonMeta.id}: no lesson object found in ${lessonMeta.dataPath}`);
     return;

@@ -5,6 +5,22 @@
   var FALLBACK_VERSION = "plata-dev";
   var CORE_URLS = ["./", "./index.html", "./styles.css", "./site.webmanifest"];
 
+  function isAudioUrl(url) {
+    return /\.(?:aac|flac|m4a|mp3|ogg|opus|wav)$/i.test(url.pathname);
+  }
+
+  function cacheSuccessful(request, response) {
+    if (!response || response.status !== 200 || response.type === "opaque") return Promise.resolve();
+    var copy = response.clone();
+    return readManifest().then(function (manifest) {
+      return caches.open(manifest.version).then(function (cache) {
+        return cache.put(request, copy);
+      });
+    }).catch(function () {
+      return undefined;
+    });
+  }
+
   function readManifest() {
     return fetch("./precache-manifest.json", { cache: "no-store" })
       .then(function (response) {
@@ -44,17 +60,23 @@
     var url = new URL(event.request.url);
     if (url.origin !== self.location.origin) return;
 
+    // Audio is deliberately absent from the install precache. The first user-initiated
+    // play fetches a complete response and stores it under a range-free cache key.
+    if (isAudioUrl(url)) {
+      var audioRequest = new Request(url.href, { credentials: "same-origin" });
+      event.respondWith(caches.match(audioRequest).then(function (cachedAudio) {
+        if (cachedAudio) return cachedAudio;
+        return fetch(audioRequest).then(function (response) {
+          return cacheSuccessful(audioRequest, response).then(function () { return response; });
+        });
+      }).catch(function () { return Response.error(); }));
+      return;
+    }
+
     event.respondWith(caches.match(event.request).then(function (cached) {
       if (cached) return cached;
       return fetch(event.request).then(function (response) {
-        if (!response || response.status !== 200 || response.type === "opaque") return response;
-        var copy = response.clone();
-        readManifest().then(function (manifest) {
-          caches.open(manifest.version).then(function (cache) {
-            cache.put(event.request, copy);
-          });
-        });
-        return response;
+        return cacheSuccessful(event.request, response).then(function () { return response; });
       }).catch(function () {
         if (event.request.mode === "navigate") {
           return caches.match("./index.html");

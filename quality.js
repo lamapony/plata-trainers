@@ -48,6 +48,7 @@
       ["Tested routes", report.totals.simulationPaths],
       ["Storyboard panels", report.totals.comicPanels],
       ["Skills tracked", report.totals.masterySignals],
+      ["Validated audio clips", report.totals.audioValid || 0],
       ["Open issues", report.totals.issues]
     ].map(function (item) {
       return "<li><span>" + escapeHtml(item[0]) + "</span><strong>" + escapeHtml(item[1]) + "</strong></li>";
@@ -67,6 +68,10 @@
       metric("Practice attempts replayed", report.totals.simulatedAttempts, "Sample attempts replayed to make sure feedback still works."),
       metric("Possible endings", report.totals.endings, "Consequences the automated checks make sure learners can reach."),
       metric("Evidence links", report.totals.evidenceRows, "Connections between each scene, its goal, source, feedback, and repair."),
+      metric("Audio-ready lessons", report.totals.audioConfiguredLessons || 0, "Lessons with stable Danish utterance IDs and a reproducible generation contract."),
+      metric("Validated audio clips", report.totals.audioValid || 0, "Manifest-backed files whose checksum, stream structure, duration, sample rate, bitrate, loudness and silence checks pass."),
+      metric("Human-reviewed audio", report.totals.audioHumanReviewedLessons || 0, "Lessons whose explicit listening checklist is approved; automated checks never claim naturalness."),
+      metric("Orphan audio files", report.totals.audioOrphans || 0, "Unreferenced files are reported and are never deleted automatically."),
       metric("Open issues", report.totals.issues, "The site cannot pass its quality check while one of these remains open.")
     ].join("");
   }
@@ -195,6 +200,7 @@
         "<li><span>Gold lesson</span><strong>" + escapeHtml(jobFollowup.id) + "</strong></li>" +
         "<li><span>Scenes</span><strong>" + escapeHtml(jobFollowup.counts.scenes) + "</strong></li>" +
         "<li><span>Simulation paths</span><strong>" + escapeHtml(jobFollowup.counts.simulationPaths) + "</strong></li>" +
+        "<li><span>Audio</span><strong>" + escapeHtml(jobFollowup.audio && jobFollowup.audio.coveragePercent != null ? jobFollowup.audio.coveragePercent + "% · " + jobFollowup.audio.publicationStatus : "legacy") + "</strong></li>" +
         "<li><span>Repair ladder</span><strong>email trap → bøjning categories</strong></li>" +
       "</ul>" +
       "<p>" + escapeHtml(jobFollowup.title || jobFollowup.id) + "</p>" +
@@ -230,6 +236,9 @@
     var issues = lesson.issues.length
       ? "<div class=\"quality-issues\">" + lesson.issues.map(function (issue) { return "<p>" + escapeHtml(issue) + "</p>"; }).join("") + "</div>"
       : "";
+    var audio = lesson.audio && lesson.audio.configured
+      ? "<span>audio " + escapeHtml(lesson.audio.coveragePercent) + "% · " + escapeHtml(lesson.audio.publicationStatus) + (lesson.audio.humanReviewApproved ? " · listened" : " · review pending") + "</span>"
+      : "<span>audio advisory</span>";
 
     return "<article id=\"" + escapeHtml(lesson.id) + "\" class=\"quality-lesson " + status + "\">" +
       "<div class=\"quality-card-head\">" +
@@ -244,6 +253,7 @@
         "<span>" + escapeHtml(lesson.counts.masterySignals) + " mastery</span>" +
         "<span>" + escapeHtml(lesson.counts.comicPanels) + " comic panels</span>" +
         "<span>" + escapeHtml(lesson.counts.simulationPaths) + " paths</span>" +
+        audio +
       "</div>" +
       (mastery ? "<div class=\"quality-chip-row\">" + mastery + "</div>" : "") +
       (comicPanels ? "<div class=\"quality-chip-row\">" + comicPanels + "</div>" : "") +

@@ -42,13 +42,18 @@ function walkFiles(dir) {
 }
 
 function buildPrecacheManifest(publicRoot) {
-  const files = walkFiles(publicRoot).filter(shouldPrecache);
+  const allFiles = walkFiles(publicRoot).filter(file => file !== "precache-manifest.json");
+  const files = allFiles.filter(shouldPrecache);
   const urls = ["./"];
   files.forEach(file => {
     const url = `./${file}`;
     if (!urls.includes(url)) urls.push(url);
   });
-  const version = `plata-${crypto.createHash("sha256").update(files.join("\n")).digest("hex").slice(0, 12)}`;
+  const versionInput = allFiles.map(file => {
+    const digest = crypto.createHash("sha256").update(fs.readFileSync(path.join(publicRoot, file))).digest("hex");
+    return `${file}\0${digest}`;
+  }).join("\n");
+  const version = `plata-${crypto.createHash("sha256").update(versionInput).digest("hex").slice(0, 12)}`;
   return { version, urls };
 }
 

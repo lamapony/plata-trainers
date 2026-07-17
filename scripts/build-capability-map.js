@@ -139,6 +139,23 @@ const capabilitySpecs = [
     ]
   },
   {
+    id: "reviewed-danish-audio",
+    title: "Reviewed Danish lesson audio",
+    stage: "foundation",
+    userValue: "Learners can listen to manifest-backed Danish dialogue and repair language with one accessible, lazy player while legacy lessons keep working without empty controls.",
+    surfaces: ["Audio-ready gold lessons", "quality.html", "reports/quality.json", "GitHub Pages PWA"],
+    proofGates: ["check:audio-pipeline", "check:audio", "check:lesson-engine", "check:quality-report", "check:pwa", "check:pages"],
+    publicReports: ["quality", "project-health"],
+    docs: ["docs/AUDIO_PIPELINE.md", "docs/LESSON_SCHEMA.md", "docs/AGENT_LESSON_WORKFLOW.md"],
+    sourcePaths: ["shared/plata-audio.js", "shared/plata-lesson-engine.js", "scripts/generate-lesson-audio.js", "scripts/validate-lesson-audio.js", "scripts/lib/audio-contract.js", "scripts/lib/audio-file.js", "scripts/lib/audio-providers/openai.js", "tests/browser/public-smoke.spec.js"],
+    contracts: [
+      "Only Danish fields with stable utterance IDs can generate audio; generated sources and manifests remain static and auditable.",
+      "Production clips require real stream, checksum, duration, sample-rate, bitrate, decoded loudness/silence/cutoff, coverage, and explicit human listening evidence.",
+      "One lazy player stops on competing playback and navigation, persists 0.75×/1× speed, exposes keyboard and ARIA state, and leaves text usable after failure.",
+      "Audio stays out of PWA install precache and provider calls stay out of CI."
+    ]
+  },
+  {
     id: "private-learner-memory",
     title: "Private learner memory pipeline",
     stage: "shipped",
