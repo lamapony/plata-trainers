@@ -27,6 +27,11 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Install audio validation dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends ffmpeg
+
       - name: Run full QA suite
         run: npm run check
 
