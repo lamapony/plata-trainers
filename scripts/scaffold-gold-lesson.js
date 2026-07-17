@@ -131,6 +131,20 @@ function buildLesson(options) {
   subtitle: ${js(subtitle)},
   estimatedMinutes: ${options.minutes},
   qualityTier: "gold",
+  audio: {
+    schemaVersion: 1,
+    publicationStatus: "draft",
+    locale: "da-DK",
+    defaultVoice: "cedar",
+    speakerVoices: { "You": "cedar", "Colleague": "marin", "Internal note": "marin" },
+    generation: {
+      provider: "openai",
+      model: "gpt-4o-mini-tts-2025-12-15",
+      format: "mp3",
+      voiceProfile: "default",
+      instructions: "Speak natural contemporary Danish from Denmark at a calm pace. Preserve Danish pronunciation and punctuation. Do not add words."
+    }
+  },
   editorialFocus: "Replace the scaffold topic with a real pressure situation while preserving the gold chain: source -> goal -> phrase -> diagnostic -> mastery -> repair.",
   comicStoryboard: {
     style: "Quiet editorial comic, warm ink linework, muted modern Danish interiors, natural light, expressive body language, no readable text, no speech bubbles, no UI screenshots.",
@@ -356,10 +370,11 @@ function buildLesson(options) {
       masteryTags: ["context-reading"],
       pressure: "You need to answer a professional message. The facts matter, but the first risk is tone: too little clarity sounds evasive; too much force sounds impatient.",
       narrative: "This scaffold scene is deliberately generic. Replace the situation with a real Danish pressure moment, but keep the diagnostic structure.",
-      dialogue: [{ speaker: "You", line: "Hvad er situationen, og hvor meget pres kan sproget bære?" }],
+      dialogue: [{ speaker: "You", line: "Hvad er situationen, og hvor meget pres kan sproget bære?", audio: { utteranceId: "read-context-dialogue" } }],
       notice: "Start by reading the room. Kort og konkret does not mean cold; it means the reader can see the situation and the next move.",
       targetPhrases: ["kort og konkret", "hvad er situationen", "skriv med ro"],
       prompt: "What is the professional first move?",
+      modelAnswer: { text: "Skriv kort og konkret: hvad er situationen, og hvad beder du om?", audio: { utteranceId: "read-context-model", voice: "cedar" } },
       options: [
         { id: "read-calmly", diagnostic: "reads-context-before-writing", label: "Skriv kort og konkret: hvad er situationen, og hvad beder du om?", detail: "clear and calm", correct: true, effects: { clarity: 1, professionalTrust: 1 }, feedback: "Good. The message can be direct without sounding pressured." },
         { id: "wait-vaguely", diagnostic: "hides-the-request", label: "Skriv meget forsigtigt og håb, at de forstår resten.", detail: "too vague", correct: false, effects: { clarity: -1 }, feedback: "The polite wording hides the request. The reader cannot act on what you did not say." },
@@ -378,10 +393,11 @@ function buildLesson(options) {
       masteryTags: ["register-signal-control"],
       pressure: "The phrases look simple. The mistake is treating them as decoration instead of register control.",
       narrative: "Before you write the full reply, you isolate three phrase types: acknowledgement, action, and next step.",
-      dialogue: [{ speaker: "Colleague", line: "Tak for din besked. Jeg vender tilbage, når vi kan aftale næste skridt." }],
+      dialogue: [{ speaker: "Colleague", line: "Tak for din besked. Jeg vender tilbage, når vi kan aftale næste skridt.", audio: { utteranceId: "register-signals-dialogue" } }],
       notice: "A professional reply often combines acknowledgement, action, and process. Missing one part changes the social reading.",
       targetPhrases: ["tak for din besked", "jeg vender tilbage", "aftale næste skridt"],
       prompt: "Match each phrase to the job it does.",
+      modelAnswer: { text: "Tak for din besked. Jeg vender tilbage, så vi kan aftale næste skridt.", audio: { utteranceId: "register-signals-model", voice: "cedar" } },
       pairs: [
         { id: "acknowledge", left: "Tak for din besked.", right: "acknowledges contact", feedback: "Tak for din besked confirms receipt without adding pressure." },
         { id: "action", left: "Jeg vender tilbage.", right: "owns the next action", feedback: "Jeg vender tilbage makes it clear who will act next." },
@@ -400,10 +416,11 @@ function buildLesson(options) {
       masteryTags: ["agency-without-pressure"],
       pressure: "You need the message to move, but you also need the relationship to survive the sentence.",
       narrative: "This is where B2 Danish stops being vocabulary and becomes judgement: the action stays clear while the tone stays workable.",
-      dialogue: [{ speaker: "You", line: "Jeg foreslår, at vi aftaler næste skridt uden at gøre det større end nødvendigt." }],
+      dialogue: [{ speaker: "You", line: "Jeg foreslår, at vi aftaler næste skridt uden at gøre det større end nødvendigt.", audio: { utteranceId: "professional-response-dialogue" } }],
       notice: "Jeg foreslår is active but not demanding. Uden pres keeps the door open while the next step stays concrete.",
       targetPhrases: ["jeg foreslår", "næste skridt", "uden pres"],
       prompt: "Choose the sentence that keeps the action clear without adding unnecessary pressure.",
+      modelAnswer: { text: "Jeg foreslår, at vi aftaler næste skridt, når det passer jer.", audio: { utteranceId: "professional-response-model", voice: "cedar" } },
       options: [
         { id: "active-low-pressure", diagnostic: "active-low-pressure-next-step", label: "Jeg foreslår, at vi aftaler næste skridt, når det passer jer.", detail: "active and workable", correct: true, effects: { relationshipTension: -1, clarity: 1, professionalTrust: 1 }, feedback: "Jeg foreslår makes the action visible, and når det passer jer keeps the request flexible." },
         { id: "too-soft", diagnostic: "softness-removes-action", label: "Det er helt fint, hvis det måske kan vente lidt.", detail: "too soft", correct: false, effects: { clarity: -1, professionalTrust: -1 }, feedback: "The tone is friendly, but the action disappears. The reader cannot see what should happen next." },
@@ -422,12 +439,13 @@ function buildLesson(options) {
       masteryTags: ["concrete-next-step"],
       pressure: "A polite sentence can still fail if nobody knows who does what next.",
       narrative: "You write the last line. It needs to be short, concrete, and socially usable.",
-      dialogue: [{ speaker: "You", line: "Jeg kan sende et kort forslag ..." }],
+      dialogue: [{ speaker: "You", line: "Jeg kan sende et kort forslag ...", audio: { utteranceId: "next-step-dialogue", spokenText: "Jeg kan sende et kort forslag." } }],
       notice: "Concrete Danish does not need to be long. It needs an action and a next-step signal.",
       targetPhrases: ["jeg kan sende", "et kort forslag", "inden fredag", "næste skridt"],
       prompt: "Complete the sentence with one action and one time or next-step signal.",
       prefix: "Jeg kan sende et kort forslag",
       placeholder: "inden fredag og aftale næste skridt",
+      modelAnswer: { text: "Jeg kan sende et kort forslag inden fredag, så vi kan aftale næste skridt.", audio: { utteranceId: "next-step-model", voice: "cedar" } },
       acceptKeywordGroups: [
         { name: "agency verb", keywords: ["sende", "skrive", "foreslå", "aftale"] },
         { name: "time or next step", keywords: ["fredag", "næste", "skridt", "tid", "dato"] }
@@ -448,10 +466,11 @@ function buildLesson(options) {
       masteryTags: ["consequence-aware-register"],
       pressure: "The exchange ends. What remains is not only the answer, but the way you were read.",
       narrative: "End with a fresh situation that proves the learner can use the same skill again.",
-      dialogue: [{ speaker: "Internal note", line: "Tone er handling, især når relationen stadig skal bruges." }],
+      dialogue: [{ speaker: "Internal note", line: "Tone er handling, især når relationen stadig skal bruges.", audio: { utteranceId: "principle-dialogue" } }],
       notice: "Professionel dansk is concrete without pressure. The principle transfers across email, chat, workplace, and public-service writing.",
       targetPhrases: ["professionel dansk", "konkret uden pres", "tone er handling"],
       prompt: "Which principle should this lesson teach?",
+      modelAnswer: { text: "Professionel dansk er konkret uden pres: tone er handling.", audio: { utteranceId: "principle-model", voice: "cedar" } },
       options: [
         { id: "clarity-with-relationship", diagnostic: "names-clarity-relationship-principle", label: "Professionel dansk er konkret uden pres: tone er handling.", detail: "transferable principle", correct: true, feedback: "The wording makes the next step visible while keeping the conversation workable." },
         { id: "maximum-politeness", diagnostic: "confuses-register-with-politeness", label: "Professionel dansk er altid så høfligt som muligt.", detail: "over-formal", correct: false, feedback: "Maximum politeness can create distance. The goal is useful clarity, not ceremonial language." },
@@ -472,6 +491,7 @@ function buildLesson(options) {
       title: "Clear and trusted",
       narrative: "The reply is specific and human. The next step is agreed without extra friction, and your Danish reads as calm professional judgement.",
       danish: "Du gjorde sagen tydelig uden at gøre relationen mindre.",
+      audio: { utteranceId: "ending-strong", voice: "cedar" },
       carry: "B2 unlocked: clarity and relationship control can reinforce each other."
     },
     {
@@ -479,6 +499,7 @@ function buildLesson(options) {
       title: "Clear cost",
       narrative: "The message gets attention, but the tone becomes the story. The next step happens with less trust than before.",
       danish: "Du fik svar, men presset blev husket.",
+      audio: { utteranceId: "ending-strained", voice: "cedar" },
       carry: "B2 unlocked: force can solve the immediate case while damaging the room."
     },
     {
@@ -486,6 +507,7 @@ function buildLesson(options) {
       title: "Understood, but not yet specific",
       narrative: "The exchange stays polite and functional. Nothing breaks, but your Danish does not add much confidence either.",
       danish: "Det var korrekt, men ikke stærkt.",
+      audio: { utteranceId: "ending-neutral", voice: "cedar" },
       carry: "Add a named action and a visible next step to make the reply useful."
     }
   ]
@@ -529,6 +551,7 @@ function renderIndex(options) {
   <script src="../../shared/plata-repair-bridge.js"></script>
   <script src="../../shared/plata-guided-session.js"></script>
   <script src="../../shared/plata-next-step.js"></script>
+  <script src="../../shared/plata-audio.js"></script>
   <script src="../../shared/plata-lesson-engine.js"></script>
   <script src="./data.js"></script>
   <script src="./app.js"></script>
@@ -611,6 +634,7 @@ function writeScaffold(options) {
   console.log(`Gold lesson scaffold created: ${path.relative(options.root, lessonDir)}`);
   if (options.updateCatalog) console.log("Catalog updated: shared/plata-catalog.js");
   console.log(`Next: node scripts/validate-lesson.js --file lessons/${options.slug}/data.js`);
+  console.log(`Audio plan: npm run generate:lesson-audio -- --lesson ${options.slug} --dry-run`);
 }
 
 function main() {

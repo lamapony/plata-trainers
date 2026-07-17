@@ -53,7 +53,8 @@
         <div><strong>1</strong><span><strong>Tell</strong> — describe the situation, your level, and what you want to be able to do.</span></div>
         <div><strong>2</strong><span><strong>Preview</strong> — the agent repeats its plan and assumptions before changing the project.</span></div>
         <div><strong>3</strong><span><strong>Build</strong> — it creates a short lesson with a realistic choice, clear feedback, and a focused repair.</span></div>
-        <div><strong>4</strong><span><strong>Check</strong> — the project tests the lesson and refuses to treat an unfinished or unsourced draft as ready.</span></div>
+        <div><strong>4</strong><span><strong>Listen</strong> — Danish lines may be generated from stable audio IDs, then checked by software and a real listening review.</span></div>
+        <div><strong>5</strong><span><strong>Check</strong> — the project tests the lesson and refuses to treat an unfinished, unsourced, or unreviewed draft as ready.</span></div>
       </div>
     </section>
 
@@ -79,6 +80,7 @@
           <div class="copy-block" style="padding:20px;">
             <pre style="margin:0; white-space:pre-wrap; font-family:var(--font-mono); font-size:13px; line-height:1.5; color:var(--muted);"><code>npm run lesson:new -- --topic "…" --goal "…" --situation "…" --preview
 # repeat without --preview, then author and source the real lesson
+npm run generate:lesson-audio -- --lesson &lt;slug&gt; --dry-run
 npm run lesson:verify -- --lesson &lt;slug&gt;
 npm run check</code></pre>
           </div>

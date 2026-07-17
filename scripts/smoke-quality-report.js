@@ -33,6 +33,14 @@ function makeElement(selector) {
 
 async function run() {
   assertQualityPageHtml();
+  const flagshipAudio = report.lessons.find(lesson => lesson.id === "lesson-b2-job-followup").audio;
+  assert(report.totals.audioConfiguredLessons === 1, "quality report must count audio-ready lessons");
+  assert(report.totals.audioAssetBytes === 0, "draft fixture must report factual zero audio bytes");
+  assert(Array.isArray(report.totals.audioFormats) && Array.isArray(report.totals.audioVoices), "quality totals must expose formats and voices");
+  assert(report.totals.audioConfiguredVoices.includes("cedar") && report.totals.audioConfiguredVoices.includes("marin"), "quality report must expose planned flagship casting separately");
+  assert(flagshipAudio.generatedClips === 0 && flagshipAudio.assetBytes === 0, "flagship draft must not imply generated clips");
+  assert(flagshipAudio.lastGeneratedAt === null && flagshipAudio.manifestHash === null, "flagship draft must not fabricate generation evidence");
+  assert(flagshipAudio.validationStatus === "draft-pass", "flagship draft contract must remain valid but non-published");
 
   const elements = {};
   [
@@ -80,6 +88,10 @@ async function run() {
   assert(elements["#quality-metrics"].innerHTML.includes("Routes tested"), "quality page did not render metrics");
   assert(elements["#quality-metrics"].innerHTML.includes("Storyboard panels"), "quality page did not render comic metrics");
   assert(elements["#quality-metrics"].innerHTML.includes("Evidence links"), "quality page did not render evidence metric");
+  assert(elements["#quality-metrics"].innerHTML.includes("Audio asset size"), "quality page did not render factual audio size");
+  assert(elements["#quality-metrics"].innerHTML.includes("Audio formats"), "quality page did not render audio formats");
+  assert(elements["#quality-metrics"].innerHTML.includes("Audio voices"), "quality page did not render audio voices");
+  assert(elements["#quality-metrics"].innerHTML.includes("Configured audio voices"), "quality page did not render planned casting");
   assert(elements["#quality-evidence"].innerHTML.includes("official-reply-passive"), "quality page did not render scene evidence rows");
   assert(elements["#quality-evidence"].innerHTML.includes("Every scene is replayed by simulation"), "quality page did not render evidence guarantees");
   assert(elements["#quality-evidence"].innerHTML.includes("ok Sources"), "quality page did not render scene check labels");
@@ -94,6 +106,9 @@ async function run() {
   assert(elements["#quality-channel-callout"].innerHTML.includes("lesson-a2-doctor"), "quality page did not render doctor channel callout");
   assert(elements["#quality-channel-callout"].innerHTML.includes("apotek → skrive sundhed"), "quality page did not render doctor repair ladder");
   assert(elements["#quality-lessons"].innerHTML.includes("lesson-b2-job-followup"), "quality page did not render job lesson");
+  assert(elements["#quality-lessons"].innerHTML.includes("0 clips"), "quality page must expose zero generated flagship clips honestly");
+  assert(elements["#quality-lessons"].innerHTML.includes("not generated"), "quality page must expose missing generation evidence honestly");
+  assert(elements["#quality-lessons"].innerHTML.includes("planned voices cedar, marin"), "quality page must expose planned flagship voices without claiming generated audio");
   assert(elements["#quality-lessons"].innerHTML.includes("official-reply-passive"), "quality page did not render generated comic panel status");
   assert(elements["#quality-lessons"].innerHTML.includes("group-chat-particles (prompt)"), "quality page did not render comic panel prompt status");
   assert(elements["#quality-json-link"].href === "./reports/quality.json", "quality JSON link was not enabled");

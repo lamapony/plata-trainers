@@ -326,6 +326,7 @@
 
   function renderStartCard(recommendation) {
     if (!recommendation || !recommendation.trainer) return;
+    var panel = document.querySelector(".home-next-panel");
     var primary = $("#home-primary-action");
     var title = $("#home-start-title");
     var copy = $("#home-start-copy");
@@ -343,6 +344,9 @@
     }
     if (meta && recommendation.mode && recommendation.mode !== "start") {
       meta.textContent = recommendation.meta;
+    }
+    if (panel) {
+      panel.classList.toggle("is-personalized", recommendation.mode !== "start");
     }
   }
 

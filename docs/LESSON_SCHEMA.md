@@ -11,7 +11,8 @@ lessons/<lesson-slug>/
 ├── data.js          ← YOU write this (follow this schema)
 ├── app.js           ← auto-generated: PlataLessonEngine.run(window.PLATA_LESSON_*)
 ├── index.html       ← template (copy from any existing lesson, change title/meta)
-└── styles.css       ← optional overrides; shared styles are inherited
+├── styles.css       ← optional overrides; shared styles are inherited
+└── audio/           ← generated only after synthesis: clips + manifests + review checklist
 ```
 
 For B2 gold lessons, generate this structure with the checked scaffold:
@@ -21,6 +22,8 @@ npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic"
 ```
 
 The scaffold emits a validator-clean gold lesson with `masteryMap`, `comicStoryboard`, grouped completion checks, `simulation.paths`, `endingLogic`, and a catalog entry. Replace the generated scenario with sourced Danish content, then run `npm run check`.
+
+The scaffold is audio-ready but does not reference nonexistent files. Every lesson page loads `shared/plata-audio.js`; controls appear only when a validated `audio/manifest.js` registers a real clip.
 
 ## data.js — top-level fields
 
@@ -33,6 +36,22 @@ window.PLATA_LESSON_XX = {
   estimatedMinutes: 10,             // shown in UI, approximate
   qualityTier: "gold",              // optional; enables stricter validator rules
   editorialFocus: "What this lesson must teach especially well",
+
+  // --- OPTIONAL AND BACKWARD COMPATIBLE: Danish audio generation contract ---
+  audio: {
+    schemaVersion: 1,
+    publicationStatus: "draft",     // switch to published only after generation + human review
+    locale: "da-DK",
+    defaultVoice: "cedar",
+    speakerVoices: { "Mette": "marin", "You": "cedar" },
+    generation: {
+      provider: "openai",
+      model: "gpt-4o-mini-tts-2025-12-15",
+      format: "mp3",
+      voiceProfile: "default",
+      instructions: "Speak natural contemporary Danish from Denmark. Do not add words."
+    }
+  },
 
   // --- REQUIRED FOR GOLD: scene-bound comic storyboard prompts ---
   comicStoryboard: {
@@ -166,18 +185,79 @@ Every scene follows the `pressure → notice → action → feedback → carry-f
   pressure: "What is at stake right now?",
   narrative: "What is happening in the world?",
   dialogue: [                        // optional
-    { speaker: "Name", line: "Danish text here." }
+    {
+      speaker: "Name",
+      line: "Danish text here.",
+      audio: { utteranceId: "scene-id-speaker" }
+    }
   ],
   danish: "Danish text",             // optional: highlighted Danish block
+  danishAudio: { utteranceId: "scene-id-danish-line" },
   notice: "One compact linguistic observation.",
   targetPhrases: [
     "Danish phrase actively trained in this scene"
   ],
   prompt: "The action the learner must take.",
+  modelAnswer: {                      // hidden until the first attempt
+    text: "A complete Danish model answer.",
+    audio: { utteranceId: "scene-id-model", voice: "cedar" }
+  },
   carry: "What this scene stores for later reuse.",
   tags: ["skill", "word", "pattern"]
 }
 ```
+
+## Danish audio contract and pipeline
+
+Audio is static, optional, and schema-compatible with every legacy lesson. The source of truth is the Danish lesson content plus its nearby metadata; generated manifests are derived artifacts and must not be hand-edited.
+
+Supported declarations:
+
+- `dialogue[].audio` for scene speech;
+- `scene.danishAudio` for a highlighted Danish line;
+- `scene.modelAnswer.audio` for repair/model language revealed after an attempt;
+- `channelVersions[].audio` and `repairLadder[].audio` for flagship transfer/repair content;
+- `ending.audio` for a Danish ending line;
+- `options[].audio` and `pairs[].audio` for pedagogically useful Danish variants; the engine renders a separate sibling control so buttons are never nested.
+
+Every ref needs a stable kebab-case `utteranceId`. `spokenText` is optional and is useful for display-only brackets, abbreviations, or punctuation:
+
+```js
+{
+  line: "Hej [Navn] …",
+  audio: {
+    utteranceId: "email-opening-draft",
+    spokenText: "Hej navn.",
+    required: true,
+    voice: "cedar"
+  }
+}
+```
+
+Keep `spokenText`, speaker names, voice names, and IDs as plain data—never HTML. IDs remain stable when wording changes; the content hash makes the clip stale and the incremental generator replaces it.
+
+```bash
+# No network, cost, or file writes
+npm run generate:lesson-audio -- --lesson lesson-b2-your-topic --dry-run
+
+# Generate one lesson (requires an authorized provider credential)
+npm run generate:lesson-audio -- --lesson lesson-b2-your-topic
+
+# Generate every configured gold lesson; unchanged hashes are reused
+npm run generate:lesson-audio -- --all-gold --coverage required
+
+# Validate contracts, real stream signatures, checksums, coverage and QC evidence
+npm run check:audio
+
+# Release gate: every gold lesson must be published, at 100%, and human-reviewed
+npm run check:audio-release
+```
+
+Useful overrides are `--force`, `--provider`, `--model`, `--format`, `--voice-profile`, and `--coverage required|all`. Generation stages temporary files, validates before a rollback-capable batch replacement, updates `manifest.json` and the browser `manifest.js`, and reports orphans without deleting them. The manifest records start/end cutoff evidence and a maximum 6 dB inter-clip RMS range. CI installs `ffmpeg` to decode committed production clips but never calls a paid provider.
+
+The human reviewer completes `audio/human-review.json` after listening for exact words, natural Danish prosody, stress/pauses, speaker consistency, artifacts/cutoffs, and acceptable playback at 0.75× and 1×. Automated checks must never claim that a voice sounds natural.
+
+At runtime there is one lazy `<audio>` element, no autoplay, one active utterance, whole-line highlighting, keyboard-native controls, and persisted 0.75×/1× speed. A scene change stops playback. A network/decode error is announced only after the learner presses Listen, while the visible Danish text remains usable.
 
 ### Scene type: `choice`
 

@@ -6,6 +6,36 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
   subtitle: "Use the employer's timeline, write a natural email, and respond professionally whatever comes back.",
   estimatedMinutes: 15,
   qualityTier: "gold",
+  audio: {
+    schemaVersion: 1,
+    publicationStatus: "draft",
+    locale: "da-DK",
+    defaultVoice: "marin",
+    speakerVoices: {
+      "Recruiter (at the interview)": "marin",
+      "Recruiter (memory)": "marin",
+      "You (drafting)": "cedar",
+      "Mette": "marin"
+    },
+    voiceProfiles: {
+      "hiring-dialogue": {
+        defaultVoice: "cedar",
+        speakerVoices: {
+          "Recruiter (at the interview)": "marin",
+          "Recruiter (memory)": "marin",
+          "You (drafting)": "cedar",
+          "Mette": "marin"
+        }
+      }
+    },
+    generation: {
+      provider: "openai",
+      model: "gpt-4o-mini-tts-2025-12-15",
+      format: "mp3",
+      voiceProfile: "hiring-dialogue",
+      instructions: "Speak natural contemporary Danish from Denmark at a calm professional pace. Preserve Danish pronunciation, sentence stress, and punctuation. Do not add words."
+    }
+  },
   editorialFocus: "Choose professional Danish under hiring uncertainty: timed follow-up, formal warmth, platform-specific register, and agency without pressure.",
   comicStoryboard: {
     style: "Nordic editorial comic, restrained linework, muted green-gray office palette with ember accents, realistic Copenhagen professional context, adult applicant perspective, no readable text inside the image, no logos, no watermarks.",
@@ -339,16 +369,20 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       id: "silence-pressure",
       type: "choice",
       eyebrow: "Scene 1 · The promised date",
-      title: "Use their timeline, not a universal waiting rule.",
+      title: "Use their timeline.",
       learningGoal: "Decide when to follow up from what the recruiter actually said.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["process-patience"],
       pressure: "At Thursday's interview, the recruiter said: Vi regner med at give besked senest tirsdag. It is now Wednesday afternoon and you have heard nothing.",
       narrative: "The stated deadline has passed. A short follow-up now is tied to the process, not to an arbitrary number of days.",
-      dialogue: [{ speaker: "Recruiter (at the interview)", line: "Vi regner med at give besked senest tirsdag." }],
+      dialogue: [{ speaker: "Recruiter (at the interview)", line: "Vi regner med at give besked senest tirsdag.", audio: { utteranceId: "silence-pressure-recruiter" } }],
       notice: "Follow up after the date they named. If no date was given, ask about the expected timeline instead of inventing one.",
       targetPhrases: ["senest tirsdag", "opfølgning", "tidsplan"],
       prompt: "What is the most proportionate move on Wednesday?",
+      modelAnswer: {
+        text: "Skriv en kort opfølgning i dag og henvis roligt til den tidsplan, de nævnte.",
+        audio: { utteranceId: "silence-pressure-model", voice: "cedar" }
+      },
       options: [
         { id: "wait-calm", diagnostic: "process-calibrated-wait", label: "Skriv en kort opfølgning i dag og henvis roligt til den tidsplan, de nævnte.", detail: "the stated date has passed", correct: true, effects: { employerTone: 1, desperation: 0, professionalism: 1 }, feedback: "The timing is easy to justify: you are following up after the date the recruiter gave you." },
         { id: "wait-anxious", diagnostic: "anxious-early-followup", label: "Vent en uge mere, så du er helt sikker på ikke at virke utålmodig.", detail: "unnecessary delay", correct: false, effects: { desperation: 1 }, feedback: "Waiting is possible, but it ignores the timeline they gave you. A short message now is a normal way to ask for an update." },
@@ -361,20 +395,24 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       id: "email-register",
       type: "choice",
       eyebrow: "Scene 2 · Follow-up email",
-      title: "Open with thanks, context, and purpose.",
+      title: "Open with thanks and purpose.",
       learningGoal: "Write a natural post-interview opening that sounds like a candidate, not a form letter.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning", "Den Danske Ordbog / ordnet.dk"],
       masteryTags: ["professional-email-agency"],
       pressure: "You open the email thread from the recruiter. The company has used first names and Hej throughout the process.",
       narrative: "A natural opening acknowledges the conversation and names the role you are following up on.",
       dialogue: [
-        { speaker: "You (drafting)", line: "Hej Mette, tak for en god samtale i torsdags …" },
-        { speaker: "Recruiter (memory)", line: "Vi regner med at give besked senest tirsdag." }
+        { speaker: "You (drafting)", line: "Hej Mette, tak for en god samtale i torsdags …", audio: { utteranceId: "email-register-draft" } },
+        { speaker: "Recruiter (memory)", line: "Vi regner med at give besked senest tirsdag.", audio: { utteranceId: "email-register-recruiter-memory" } }
       ],
       notice: "Mirror the address form already used in the thread. In this thread, Hej Mette is professional and natural.",
       targetPhrases: ["Hej Mette", "tak for en god samtale", "følge op på stillingen"],
       vocabFocus: ["henvendelse", "opfølgning"],
       prompt: "Choose the opening that fits this email thread.",
+      modelAnswer: {
+        text: "Hej Mette. Tak for en god samtale i torsdags. Jeg vil gerne følge op på stillingen som projektleder.",
+        audio: { utteranceId: "email-register-model", voice: "cedar" }
+      },
       options: [
         { id: "formal-warm", diagnostic: "formal-warm-agency", label: "Hej Mette,\n\nTak for en god samtale i torsdags. Jeg vil gerne følge op på stillingen som projektleder.", detail: "natural address + specific purpose", correct: true, effects: { employerTone: 1, professionalism: 1, networkTrust: 1 }, feedback: "This matches the existing tone, names the interview, and makes the purpose of the email clear." },
         { id: "casual-generic", diagnostic: "casual-self-minimising", label: "Hej Mette,\n\nTak for sidst! Ville bare lige høre, om der er nyt?", detail: "natural speech, but too little context", correct: false, effects: { employerTone: -1, professionalism: -1, desperation: 1 }, feedback: "The tone is friendly, but bare lige and er der nyt? make the message vague. Name the role and the interview." },
@@ -389,19 +427,23 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       id: "email-closing",
       type: "choice",
       eyebrow: "Scene 2b · Email closing",
-      title: "Ask for an update without inventing a new deadline.",
+      title: "Ask without inventing a deadline.",
       learningGoal: "Refer to the employer's timeline and ask a direct, proportionate question.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["consequence-aware-tone"],
       pressure: "Your opening is ready. Now you need one sentence about the missed Tuesday update.",
       narrative: "The strongest closing uses their own timeline and asks whether there is an update on the process.",
       dialogue: [
-        { speaker: "You (drafting)", line: "I nævnte, at I forventede en afklaring i denne uge …" }
+        { speaker: "You (drafting)", line: "I nævnte, at I forventede en afklaring i denne uge …", audio: { utteranceId: "email-closing-draft" } }
       ],
       notice: "Har I en opdatering på processen? is direct but not demanding. It asks for information, not a decision on your timetable.",
       targetPhrases: ["I nævnte", "en afklaring", "en opdatering på processen"],
       vocabFocus: ["proces", "opfølgning"],
       prompt: "Choose the closing sentence that keeps warm professional Danish intact.",
+      modelAnswer: {
+        text: "I nævnte, at I forventede en afklaring senest tirsdag. Har I en opdatering på processen?",
+        audio: { utteranceId: "email-closing-model", voice: "cedar" }
+      },
       options: [
         { id: "closing-balanced", diagnostic: "process-aware-closing", label: "I nævnte, at I forventede en afklaring senest tirsdag. Har I en opdatering på processen?", detail: "their timeline + direct question", correct: true, effects: { professionalism: 1, employerTone: 1 }, feedback: "This explains why you are following up and asks for an update without demanding an immediate decision." },
         { id: "closing-pushy", diagnostic: "deadline-pressure-closing", label: "Jeg forventer derfor at få jeres endelige svar senest i morgen.", detail: "replaces their timeline with your ultimatum", correct: false, weakTags: ["consequence-aware-tone"], effects: { desperation: 2, employerTone: -1, professionalism: -1 }, feedback: "The employer missed its date, but this sentence imposes a new one without context. Ask for an update instead." },
@@ -415,16 +457,20 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       id: "linkedin-choice",
       type: "choice",
       eyebrow: "Scene 3 · LinkedIn request",
-      title: "A networking note should add connection, not repeat the follow-up.",
+      title: "Make the connection useful.",
       learningGoal: "Adapt from formal email register to a short, specific, low-pressure LinkedIn note.",
       sourceRefs: ["Dansk Sproghistorie: dialogiske partikler", "borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["platform-register-shift"],
       pressure: "You also want to connect with the hiring manager. The email already asks about the process.",
       narrative: "The networking note should mention the real conversation and leave the hiring decision out of it.",
-      dialogue: [{ speaker: "You (drafting)", line: "Kære [Navn] / Hej [Navn] — tak for tiden / tak for interviewet?" }],
+      dialogue: [{ speaker: "You (drafting)", line: "Kære [Navn] / Hej [Navn] — tak for tiden / tak for interviewet?", audio: { utteranceId: "linkedin-choice-draft", spokenText: "Kære navn eller hej navn — tak for tiden eller tak for interviewet?" } }],
       notice: "Keep it short and specific. The invitation is about staying in contact, not getting a faster answer.",
       targetPhrases: ["Hej Mette", "tak for en god samtale", "holde kontakten"],
       prompt: "Choose the LinkedIn note that complements, not duplicates, your email.",
+      modelAnswer: {
+        text: "Hej Mette, tak for en god samtale om jeres nye projekt. Jeg vil gerne holde kontakten.",
+        audio: { utteranceId: "linkedin-choice-model", voice: "cedar" }
+      },
       options: [
         { id: "linkedin-good", diagnostic: "platform-specific-low-pressure", label: "Hej Mette, tak for en god samtale om jeres nye projekt. Jeg vil gerne holde kontakten. — [Dit navn]", detail: "specific conversation + simple invitation", correct: true, effects: { networkTrust: 2, professionalism: 1 }, feedback: "This note has a real reason for connecting and does not use the platform to chase the decision." },
         { id: "linkedin-pushy", diagnostic: "platform-pressure-duplicate", label: "Hej Mette, jeg har netop sendt en opfølgning og håber på et hurtigt svar. — [Dit navn]", detail: "uses the connection request as a second follow-up", correct: false, effects: { desperation: 1, networkTrust: -1 }, feedback: "The note repeats the email and adds pressure in a second channel." },
@@ -437,18 +483,22 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       id: "reply-consequence",
       type: "completion",
       eyebrow: "Scene 4 · A call request",
-      title: "Reply with an acknowledgement and a concrete time.",
+      title: "Offer a concrete time.",
       learningGoal: "Accept a short call request and state when you are available.",
       sourceRefs: ["borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["reply-tone-reading"],
       pressure: "Mette replies: Tak for din mail. Har du mulighed for en kort telefonsamtale i morgen?",
       narrative: "Your reply should acknowledge the message and offer a time that can be put straight into the calendar.",
-      dialogue: [{ speaker: "Mette", line: "Har du mulighed for en kort telefonsamtale i morgen?" }],
+      dialogue: [{ speaker: "Mette", line: "Har du mulighed for en kort telefonsamtale i morgen?", audio: { utteranceId: "reply-consequence-mette" } }],
       notice: "Tak for beskeden opens naturally. Jeg kan tale … gives a complete answer.",
       targetPhrases: ["tak for beskeden", "jeg kan tale", "klokken 10"],
       prompt: "Complete your reply with thanks and one concrete time.",
       prefix: "Hej Mette,\n\n",
       placeholder: "Tak for beskeden. Jeg kan tale i morgen klokken 10.",
+      modelAnswer: {
+        text: "Tak for beskeden. Jeg kan tale i morgen klokken 10.",
+        audio: { utteranceId: "reply-consequence-model", voice: "cedar" }
+      },
       acceptKeywordGroups: [
         { name: "acknowledgement", keywords: ["tak", "gerne", "ja"] },
         { name: "time", keywords: ["klokken", "morgen", "formiddag", "eftermiddag", "10", "11", "12", "13", "14"] }
@@ -463,16 +513,20 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       id: "epilogue",
       type: "choice",
       eyebrow: "Final · A rejection",
-      title: "Close this process without closing every future door.",
+      title: "Close the process, not the door.",
       learningGoal: "Acknowledge a rejection and keep future contact possible in one concise reply.",
       sourceRefs: ["Den Danske Ordbog / ordnet.dk", "borger.dk/lifeindenmark.dk skrivevejledning"],
       masteryTags: ["professional-agency-principle"],
       pressure: "A week later, Mette writes that they have chosen another candidate.",
       narrative: "You can be disappointed and still answer in a way that leaves the relationship intact.",
-      dialogue: [{ speaker: "Mette", line: "Tak for din tid. Vi har valgt at gå videre med en anden kandidat." }],
+      dialogue: [{ speaker: "Mette", line: "Tak for din tid. Vi har valgt at gå videre med en anden kandidat.", audio: { utteranceId: "epilogue-mette" } }],
       notice: "A concise reply can thank them for the process, acknowledge the decision, and invite future contact without arguing the outcome.",
       targetPhrases: ["tak for tilbagemeldingen", "skuffet", "have mig i tankerne"],
       prompt: "Which reply sounds honest, professional, and open to future contact?",
+      modelAnswer: {
+        text: "Tak for tilbagemeldingen og for et godt forløb. Jeg er selvfølgelig skuffet, men I må gerne have mig i tankerne, hvis en lignende stilling bliver ledig.",
+        audio: { utteranceId: "epilogue-model", voice: "cedar" }
+      },
       options: [
         { id: "principle-owned", diagnostic: "agency-register-principle", label: "Tak for tilbagemeldingen og for et godt forløb. Jeg er selvfølgelig skuffet, men I må gerne have mig i tankerne, hvis en lignende stilling bliver ledig.", detail: "acknowledgement + honest reaction + future contact", correct: true, feedback: "This accepts the decision without pretending not to care and gives the recruiter a clear reason to remember you." },
         { id: "principle-polite", diagnostic: "overformal-politeness", label: "Jeg tager afslaget til efterretning og takker for den fremsendte orientering.", detail: "grammatical but distant and bureaucratic", correct: false, feedback: "The message is correct, but it sounds like an administrative notice. A brief human thank-you fits this relationship better." },
@@ -493,6 +547,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       title: "Clear from start to finish",
       narrative: "Your messages make the timeline and your availability easy to understand. Whatever the hiring decision, the exchange ends professionally.",
       danish: "Tak for tilbagemeldingen og for et godt forløb.",
+      audio: { utteranceId: "ending-professional", voice: "cedar" },
       carry: "Reuse this structure for another role, but always replace the company, position, conversation, and promised date."
     },
     {
@@ -500,6 +555,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       title: "Correct, with a few missing details",
       narrative: "The recruiter can follow the exchange, but one message lacks the role, timeline, or exact availability and requires an extra question.",
       danish: "Tak for din mail. Hvornår har du mulighed for at tale?",
+      audio: { utteranceId: "ending-acceptable", voice: "marin" },
       carry: "Make the next reply complete enough to schedule: Ja tak, jeg kan tale i morgen klokken 10."
     },
     {
@@ -507,6 +563,7 @@ window.PLATA_LESSON_B2_JOB_FOLLOWUP = {
       title: "The process becomes harder than it needs to be",
       narrative: "Repeated pressure across email and networking messages makes it difficult for the recruiter to answer the practical question you actually have.",
       danish: "Vi vender tilbage, når der er nyt i processen.",
+      audio: { utteranceId: "ending-damaged", voice: "marin" },
       carry: "Return to the employer's stated date and ask one question in one channel: Har I en opdatering på processen?"
     }
   ]

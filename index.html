@@ -55,31 +55,25 @@
     <section class="hero hero-simple home-hero" aria-labelledby="home-title">
       <div class="home-hero-layout">
         <div class="hero-simple-body home-hero-copy">
-          <p class="eyebrow">Danish for real life · A2–B2</p>
-          <h1 id="home-title">Practise the conversation before it happens.</h1>
-          <p class="lead">A landlord writes back. A recruiter calls. A pharmacist asks a question. Platå lets you try the moment, shows exactly what went wrong, and gives you one short repair.</p>
-          <p class="pitch-line">One situation. One precise correction. Then try again.</p>
+          <p class="home-intro-note">A2–B2 <span>Real situations</span> <span>One useful correction</span></p>
+          <h1 id="home-title">Danish, before it happens.</h1>
+          <p class="lead">A landlord writes back. A recruiter calls. A pharmacist asks a question. Try the moment, see the exact gap, then repair it while it is still fresh.</p>
           <div class="hero-actions">
             <a class="btn primary" id="home-primary-action" href="./lessons/lesson-b2-job-followup/">Try a 15-minute lesson</a>
-            <a class="btn" href="./dashboard.html?demo=learner">See how progress works</a>
           </div>
-
-          <div class="home-loop-heading" aria-hidden="true">
-            <span>Inside every lesson</span>
-            <span>3 short steps</span>
-          </div>
-          <ol class="product-loop" aria-label="How Platå works">
-            <li><span>1</span><div><strong>Enter the situation</strong><small>Choose what you would really say or do.</small></div></li>
-            <li><span>2</span><div><strong>See the exact gap</strong><small>Understand the word, grammar, or tone that slipped.</small></div></li>
-            <li><span>3</span><div><strong>Repair it now</strong><small>Practise that skill and return to the moment.</small></div></li>
-          </ol>
+          <a class="home-progress-link" href="./dashboard.html?demo=learner">Preview a learner’s next practice</a>
         </div>
 
         <aside class="home-next-panel" aria-labelledby="home-start-title">
-          <p class="eyebrow">A good place to begin</p>
+          <div class="home-sheet-meta"><span>Next rehearsal</span><span>Private to this browser</span></div>
           <div id="home-start-card">
             <h2 id="home-start-title">Follow up after a job interview</h2>
             <p id="home-start-copy">Practise when to write, how to sound interested without pushing, and what to say when the employer calls back.</p>
+            <div class="home-dialogue-sample" aria-label="Example from the lesson">
+              <span>Recruiter</span>
+              <p lang="da">Vi regner med at give besked senest tirsdag.</p>
+              <small>Tuesday passed. Follow up on their timeline, not on a universal waiting rule.</small>
+            </div>
             <dl class="home-next-facts">
               <div><dt>Level</dt><dd>B2</dd></div>
               <div><dt>Time</dt><dd>About 15 minutes</dd></div>
@@ -89,6 +83,15 @@
             <p class="start-meta" id="home-start-meta">No account. Your progress stays in this browser.</p>
           </div>
         </aside>
+
+        <div class="home-method" aria-labelledby="home-method-title">
+          <p id="home-method-title">One situation. One precise correction. Then try again.</p>
+          <ol class="product-loop">
+            <li><strong>Enter the scene</strong><small>Choose what you would really say.</small></li>
+            <li><strong>Read the correction</strong><small>Find the exact word, grammar, or tone gap.</small></li>
+            <li><strong>Try the repair</strong><small>Return to the moment with one better move.</small></li>
+          </ol>
+        </div>
       </div>
     </section>
 
@@ -105,8 +108,7 @@
     <section class="section home-library-section" id="trainers" aria-labelledby="narrative-gallery-title">
       <div class="section-head home-section-head">
         <div>
-          <p class="eyebrow">Ready to practise now</p>
-          <h2 id="narrative-gallery-title">Choose a situation you recognise.</h2>
+          <h2 id="narrative-gallery-title">Find the scene closest to your life.</h2>
           <p class="section-copy">Start with the interview lesson above, or open the library and choose the conversation that is closest to your life.</p>
         </div>
         <p class="home-section-note"><strong>7 complete situations</strong><span>Every lesson includes choices, feedback, and a focused repair.</span></p>
@@ -143,30 +145,28 @@
       <div class="custom-lesson-shell">
         <div class="custom-lesson-layout">
           <div>
-            <p class="eyebrow">Need a different conversation?</p>
-            <h2 id="custom-lesson-title">Describe the moment. Turn it into a checked lesson.</h2>
+            <h2 id="custom-lesson-title">Bring your real conversation.</h2>
             <p class="custom-lesson-lead">Tell a coding assistant what is about to happen: who you need to speak to, what you want to achieve, and what you do not want to sound like. The open Platå repository supplies the lesson structure and quality checks.</p>
             <p class="plain-promise"><strong>No forms, JSON, or lesson-design vocabulary.</strong> Ordinary language is enough.</p>
           </div>
 
           <aside class="request-example" aria-labelledby="request-example-title">
-            <p class="eyebrow" id="request-example-title">For example, say this</p>
-            <blockquote>“Create a 12-minute B1 Danish lesson about telling my landlord that the radiator is still cold. I want to be clear without sounding rude.”</blockquote>
+            <p class="request-example-label" id="request-example-title">A useful brief</p>
+            <blockquote>Create a 12-minute B1 Danish lesson about telling my landlord that the radiator is still cold. I want to be clear without sounding rude.</blockquote>
             <p>The assistant can infer sensible defaults, add relevant sources, run the checks, and prepare the lesson for review.</p>
           </aside>
         </div>
 
         <ol class="custom-lesson-steps" aria-label="How to request your own Platå lesson">
-          <li><span>1</span><div><strong>Share the repository</strong><small>Give the GitHub link to a coding assistant such as Codex.</small></div></li>
-          <li><span>2</span><div><strong>Describe the real moment</strong><small>Explain the person, goal, and tone in your own words.</small></div></li>
-          <li><span>3</span><div><strong>Receive a checked lesson</strong><small>The assistant runs the project checks before publishing.</small></div></li>
+          <li><strong>Repository</strong><small>Give the GitHub link to a coding assistant such as Codex.</small></li>
+          <li><strong>Your moment</strong><small>Explain the person, goal, and tone in your own words.</small></li>
+          <li><strong>Checked output</strong><small>The assistant runs the project checks before publishing.</small></li>
         </ol>
 
         <div class="hero-actions custom-lesson-actions">
           <a class="btn primary" href="./factory.html">Read the simple guide</a>
-          <a class="btn" href="https://github.com/lamapony/plata-trainers#ask-an-agent-to-create-a-lesson">Give the repository to an agent</a>
         </div>
-        <p class="custom-lesson-boundary"><strong>One honest boundary:</strong> the website is where you practise. The assistant creates the new lesson in the repository, where it can be inspected and reviewed before it reaches the site.</p>
+        <p class="custom-lesson-boundary"><a href="https://github.com/lamapony/plata-trainers#ask-an-agent-to-create-a-lesson">Give the repository to an agent</a>. The website is where you practise; the assistant creates the lesson in the repository so it can be inspected before it reaches the site.</p>
       </div>
     </section>
 

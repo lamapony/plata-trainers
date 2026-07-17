@@ -5,6 +5,7 @@ const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
+const { extractUtterances, loadLessonData } = require("./lib/audio-contract");
 
 const root = path.resolve(__dirname, "..");
 const sandboxRoot = path.join(root, ".dist", "scaffold-smoke");
@@ -38,7 +39,7 @@ fs.copyFileSync(
   path.join(sandboxRoot, "lessons", "lesson-b2-job-followup", "styles.css")
 );
 
-run(process.execPath, [
+const scaffoldResult = run(process.execPath, [
   "scripts/scaffold-gold-lesson.js",
   "--root", sandboxRoot,
   "--slug", slug,
@@ -68,9 +69,21 @@ assert(dataSource.includes("masteryMap:"), "generated lesson missing mastery map
 assert(dataSource.includes("comicStoryboard:"), "generated lesson missing comic storyboard");
 assert(dataSource.includes("./assets/comic/read-context.png"), "generated lesson missing comic asset path");
 assert(dataSource.includes("assetReady: false"), "generated lesson must not publish unreviewed comic assets");
+assert(dataSource.includes("publicationStatus: \"draft\""), "generated lesson audio must start as an honest draft");
+assert(dataSource.includes("locale: \"da-DK\""), "generated lesson audio must declare da-DK");
+assert(dataSource.includes("speakerVoices:"), "generated lesson audio must include a speaker-to-voice profile");
+const generatedLesson = loadLessonData(path.dirname(dataPath));
+const generatedAudio = extractUtterances(generatedLesson);
+assert(generatedAudio.issues.length === 0, `generated lesson audio contract must be valid: ${generatedAudio.issues.join("; ")}`);
+assert(generatedAudio.utterances.length === 13, "generated lesson must declare dialogue, model-answer, and ending audio IDs");
+assert(new Set(generatedAudio.utterances.map(utterance => utterance.utteranceId)).size === 13, "generated lesson audio IDs must be stable and unique");
 assert(indexSource.includes('class="story-layout"'), "generated lesson is missing the shared story layout");
 assert(indexSource.includes('class="story-sidebar"'), "generated lesson is missing visible story progress");
 assert(indexSource.includes("Scene 1 of 5"), "generated lesson is missing the human-readable scene count");
+assert(indexSource.includes("../../shared/plata-audio.js"), "generated lesson must load the shared audio runtime");
+assert(!indexSource.includes("./audio/manifest.js"), "generated lesson must not reference a manifest before generation");
+assert(!fs.existsSync(path.join(sandboxRoot, "lessons", slug, "audio")), "scaffold must not create fake or missing audio assets");
+assert(scaffoldResult.stdout.includes(`npm run generate:lesson-audio -- --lesson ${slug} --dry-run`), "scaffold must print the exact safe audio dry-run command");
 
 const invalidAssetPath = path.join(sandboxRoot, "lessons", "lesson-b2-scaffold-asset-missing", "data.js");
 fs.mkdirSync(path.dirname(invalidAssetPath), { recursive: true });
@@ -86,6 +99,7 @@ assert(`${invalidAssetResult.stdout}\n${invalidAssetResult.stderr}`.includes("tr
 console.log("ok - gold lesson scaffold generates a validator-clean lesson");
 console.log("ok - generated gold lesson passes simulator and runtime replay");
 console.log("ok - generated comic assets remain unpublished until reviewed and committed");
+console.log("ok - generated gold lesson is audio-ready without fake assets or provider calls");
 
 fs.rmSync(catalogSandboxRoot, { recursive: true, force: true });
 fs.mkdirSync(path.join(catalogSandboxRoot, "lessons", "lesson-b2-job-followup"), { recursive: true });

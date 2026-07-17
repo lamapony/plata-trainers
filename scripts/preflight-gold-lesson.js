@@ -107,6 +107,7 @@ function runLessonScoped(target) {
   const fileArgs = ["--file", target.dataPath];
   console.log(`\n=== Gold lesson preflight: ${target.id} ===`);
   runNodeStep("Schema + source/mastery/remediation contract", ["scripts/validate-lesson.js", ...fileArgs]);
+  runNodeStep("Danish audio contract + publication-state gate", ["scripts/validate-lesson-audio.js", "--lesson", target.id]);
   runNodeStep("Gold simulation paths + mastery coverage", ["scripts/simulate-gold-lessons.js", ...fileArgs]);
   runNodeStep("Lesson engine replay + LocalStorage attempts", ["scripts/smoke-lesson-engine.js", ...fileArgs]);
 }

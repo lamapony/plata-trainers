@@ -24,6 +24,8 @@ This is a public MVP roadmap, not a promise. Platå is not a from-zero Danish co
 - [ ] Add a “practice due now” entry point on the landing page.
 - [ ] Extract narrative lesson engine docs for contributors.
 - [ ] Expand Lesson 01 with optional native audio / pronunciation blocks.
+- [x] Add the backward-compatible Danish audio contract, generator/QC pipeline, accessible single-player runtime, and PWA cache boundary.
+- [ ] Publish the first manifest-backed flagship voice set after authorized synthesis and human Danish listening review.
 
 ## Later: more skill types
 

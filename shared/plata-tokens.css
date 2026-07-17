@@ -1,36 +1,35 @@
 /**
- * Platå visual system — editorial desk
- * Warm paper, near-black ink, one restrained brick accent.
- * No glass, no radial glow, no pill chrome, no AI-serif kits.
+ * Platå visual system: Copenhagen rehearsal desk.
+ * Cold mineral paper, pine ink, and one red-pencil correction colour.
  */
 :root {
   color-scheme: light;
 
-  --bg: #f4f1ea;
-  --bg-elev: #ebe6dc;
-  --surface: #faf8f4;
-  --card: #faf8f4;
+  --bg: #dfe7e2;
+  --bg-elev: #cbd8d1;
+  --surface: #f5f9f6;
+  --card: #f5f9f6;
 
-  --text: #161513;
+  --text: #13231b;
   --fg: var(--text);
-  --ink: #161513;
-  --muted: #5f5b54;
-  --forest: #161513;
+  --ink: #13231b;
+  --muted: #41554b;
+  --forest: #234c3a;
 
-  --line: #d8d2c6;
+  --line: #a9bbb1;
   --border: var(--line);
 
-  /* Brick — used sparingly as text/underline, not as glow */
-  --ember: #9b4a2e;
+  /* Red pencil: corrections and warnings only. */
+  --ember: #9b3f34;
   --accent: var(--ember);
   --ember-soft: transparent;
-  --ember-deep: #7a3a24;
+  --ember-deep: #7b3028;
 
-  --green: #2f6b45;
+  --green: #315f49;
   --good: var(--green);
-  --bad: #9b2e2e;
-  --sage: #5f5b54;
-  --cream: #faf8f4;
+  --bad: #9b3f34;
+  --sage: #41554b;
+  --cream: #f5f9f6;
 
   --shadow: none;
   --soft-shadow: none;

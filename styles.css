@@ -2433,7 +2433,7 @@ a.program-chip:hover { color: var(--text); border-color: var(--line); }
   transition: all 0.2s ease;
 }
 .choice-card:hover {
-  transform: translateY(-3px);
+  transform: none;
   box-shadow: none;
   border-color: var(--forest);
 }
@@ -2445,11 +2445,11 @@ a.program-chip:hover { color: var(--text); border-color: var(--line); }
 /* Landing cards */
 .narrative-grid article,
 .trainer-grid article {
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: background-color 0.2s, border-color 0.2s;
 }
 .narrative-grid article:hover,
 .trainer-grid article:hover {
-  transform: translateY(-4px);
+  transform: none;
   box-shadow: none;
 }
 
@@ -2549,7 +2549,7 @@ article, .card, .trainer-card, .evaluator-card, .today-program-card { padding: 1
 .section-head { margin-bottom: 1.4rem; }
 .embed-preview { margin: 1.2rem 0; }
 .embed-section { background: #f8f9f7; border: 1px solid var(--line); border-radius: 6px; padding: 2rem; margin: 2rem 0; }
-.embed-preview iframe { border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+.embed-preview iframe { border-radius: 6px; box-shadow: none; }
 .embed-code { background: white; border: 1px solid var(--line); border-radius: 10px; padding: .8rem; font-family: var(--mono); font-size: .82rem; display: flex; align-items: center; gap: .6rem; }
 .embed-code button { white-space: nowrap; }
 /* Stronger hides for raw first-run dashboard view */

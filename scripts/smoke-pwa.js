@@ -5,6 +5,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const vm = require("node:vm");
+const os = require("node:os");
+const { buildPrecacheManifest } = require("./build-precache-manifest");
 
 const root = path.resolve(__dirname, "..");
 
@@ -40,6 +42,8 @@ function main() {
   assert(sw.includes("activate"), "sw.js: missing activate handler");
   assert(sw.includes("fetch"), "sw.js: missing fetch handler");
   assert(sw.includes("precache-manifest.json"), "sw.js: must load precache-manifest.json");
+  assert(sw.includes("event.waitUntil(audioResponse.then"), "sw.js: first audio response must cache in background without delaying playback");
+  assert(!sw.includes("cacheSuccessful(audioRequest, response).then"), "sw.js: audio playback must not wait for cache.put completion");
 
   const manifest = JSON.parse(read("site.webmanifest"));
   assert(Array.isArray(manifest.icons) && manifest.icons.length >= 2, "site.webmanifest: need at least two icons");
@@ -100,6 +104,19 @@ function main() {
   assert(indexHtml.includes("summary_large_image"), "index.html: twitter card should be summary_large_image");
 
   assert(fs.existsSync(path.join(root, "scripts", "build-precache-manifest.js")), "scripts/build-precache-manifest.js: missing");
+  assert(sw.includes("isAudioUrl"), "sw.js: audio needs an explicit lazy runtime-cache path");
+  const pwaTemp = fs.mkdtempSync(path.join(os.tmpdir(), "plata-precache-"));
+  try {
+    fs.writeFileSync(path.join(pwaTemp, "index.html"), "one");
+    fs.writeFileSync(path.join(pwaTemp, "voice.mp3"), "audio-one");
+    const first = buildPrecacheManifest(pwaTemp);
+    assert(!first.urls.includes("./voice.mp3"), "precache manifest must not include audio files");
+    fs.writeFileSync(path.join(pwaTemp, "voice.mp3"), "audio-two");
+    const second = buildPrecacheManifest(pwaTemp);
+    assert(first.version !== second.version, "audio content changes must rotate the service-worker cache version");
+  } finally {
+    fs.rmSync(pwaTemp, { recursive: true, force: true });
+  }
 
   const publicRoot = path.join(root, ".dist", "pages");
   if (fs.existsSync(publicRoot)) {

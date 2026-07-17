@@ -66,8 +66,21 @@ The persisted contract is `schemas/lesson-request.schema.json`; `examples/lesson
 - Route each miss to an exact scene repair or an existing drill. Do not claim a drill repairs a signal it does not contain.
 - Cover strong, plausible-near-miss, and damaging paths in `simulation.paths`.
 - Storyboard prompts may remain without generated images, but must cite the same scene sources and mastery tags.
+- Keep stable audio metadata next to Danish dialogue, model answers, repair steps, or endings. Do not paste asset paths into authored lesson data and do not attach audio metadata to English help text.
 
-## 4. Complete delivery evidence
+## 4. Plan, generate, and review Danish audio
+
+Every new gold scaffold contains a draft audio contract. Confirm exactly what would be voiced before any provider call:
+
+```bash
+npm run generate:lesson-audio -- --lesson lesson-b1-example --dry-run
+```
+
+The dry run must show the utterance ID, resolved speaker/voice, text, incremental action, coverage, and any orphans without writing or calling a provider. If the user has authorized a licensed paid provider and its credential is available, repeat without `--dry-run`. Never put provider calls in CI.
+
+After generation, listen to the flagship clips and complete `audio/human-review.json`. Software checks container signatures, duration, sample rate, bitrate, loudness, silence, cutoff risk, hashes, and coverage; human review owns words, Danish prosody, stress, pauses, voice consistency, and artifacts. Keep `audio.publicationStatus` as `draft` until both checks pass. Legacy lessons without audio remain functional and must not show empty controls.
+
+## 5. Complete delivery evidence
 
 Edit `lesson-request.json.delivery`:
 
@@ -86,10 +99,11 @@ Edit `lesson-request.json.delivery`:
 
 Each objective tag must exist in `masteryMap`; each covered scene must exist; each reviewed URL must exist in `sourceNotes`. Do not use `ready` as a progress indicator.
 
-## 5. Verify and hand off
+## 6. Verify and hand off
 
 ```bash
 npm run lesson:verify -- --lesson lesson-b1-example
+npm run check:audio
 npm run check
 ```
 

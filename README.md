@@ -31,6 +31,7 @@ The current trainers share a small static learning kernel in [`shared/`](./share
 - **Private by default:** browser LocalStorage only; no accounts, backend, analytics, or tracking.
 - **Contributor-friendly data:** exercises are plain JavaScript data files with validation scripts and narrative lesson schemas.
 - **Gold lesson QA:** source-backed lessons can be validated as testable learning artifacts with mastery signals, deterministic simulation, remediation, and comic storyboard prompts.
+- **Optional reviewed Danish audio:** stable utterance IDs generate static manifest-backed clips with stream/QC validation, one accessible lazy player, and a separate human listening gate.
 - **Public proof reports:** Pages publishes generated JSON for quality, exercise value, skill coverage, Today shell states, guided sessions, profile portability, project health, quickstart proof, and a capability map that links product claims to checks, source files, and docs.
 - **Flagship exercise chains:** B2 gold lessons can prove consequence feedback, grammatical near-misses, repair ladders, channel transfer, memory recurrence, and reason evidence instead of relying on flat right/wrong quizzes.
 - **Portable learner profile proof:** a generated acceptance trace exports a real local profile, imports it into a clean session, replays both timelines, and checks plan execution, memory corrections, guided outcomes, and privacy guardrails.
@@ -57,6 +58,7 @@ npm run lesson:new -- \
 # review the normalized request, then repeat without --preview
 # the agent replaces the generic scaffold and completes lesson-request.json.delivery
 npm run lesson:verify -- --lesson lesson-b1-a-noisy-neighbour
+npm run generate:lesson-audio -- --lesson lesson-b1-a-noisy-neighbour --dry-run
 npm run check
 ```
 
@@ -144,6 +146,7 @@ npm run check:proof-page
 npm run check:comic-prompts
 npm run check:public-runtime
 npm run check:public-runtime-mutations
+npm run check:audio
 npm run proof:quickstart
 npm run check:quickstart-proof
 node scripts/build-capability-map.js --out .dist/capabilities.json --text
@@ -174,6 +177,17 @@ Gold lesson scaffold:
 npm run scaffold:gold -- --slug lesson-b2-your-topic --title "Your Topic"
 npm run check
 ```
+
+Danish audio planning and release validation:
+
+```bash
+npm run generate:lesson-audio -- --lesson lesson-b2-job-followup --dry-run
+npm run check:audio
+# strict only when every gold lesson is intended for audio publication:
+npm run check:audio-release
+```
+
+See [docs/AUDIO_PIPELINE.md](./docs/AUDIO_PIPELINE.md) for provider boundaries, manifest provenance, decoded quality checks, human listening review, accessibility, PWA caching, and recovery.
 
 Gold lesson preflight (fast local validation before full suite):
 
@@ -298,7 +312,7 @@ npm run generate:comics -- --lesson lesson-b2-radiator-register --panel official
 
 Do not commit API keys. The dry-run prompt manifest is part of `npm run check`; generated images should be visually reviewed before commit.
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. Use [LESSON_QUALITY_STANDARD.md](./docs/LESSON_QUALITY_STANDARD.md) for learner-facing editorial rules and [GOLD_LESSON_QUALITY_ENGINE.md](./docs/GOLD_LESSON_QUALITY_ENGINE.md) for the automated gold lesson contract. See [ROADMAP.md](./ROADMAP.md) for planned trainer expansion.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for data conventions and PR guidance. Use [LESSON_QUALITY_STANDARD.md](./docs/LESSON_QUALITY_STANDARD.md) for learner-facing editorial rules, [GOLD_LESSON_QUALITY_ENGINE.md](./docs/GOLD_LESSON_QUALITY_ENGINE.md) for the automated gold lesson contract, and [AUDIO_PIPELINE.md](./docs/AUDIO_PIPELINE.md) for Danish audio. See [ROADMAP.md](./ROADMAP.md) for planned trainer expansion.
 
 ## Good first contributions
 

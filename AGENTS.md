@@ -20,6 +20,14 @@ When the user asks for a new lesson:
 8. Complete `lessons/<slug>/lesson-request.json.delivery`. Never change `status` to `ready` until the content, request coverage, sources, and avoid-list have been reviewed.
 9. Run `npm run lesson:verify -- --lesson <slug>`, then `npm run check` before describing the lesson as publishable.
 
+## Danish audio
+
+- Keep audio metadata beside the Danish utterance it voices. Use stable kebab-case `utteranceId` values; never put generated `src` paths or HTML in lesson data.
+- Preview coverage with `npm run generate:lesson-audio -- --lesson <slug> --dry-run`. Provider calls are opt-in, paid calls still require user authorization, and CI must never synthesize audio.
+- Treat audio as publishable only after file/manifest validation and an explicit human listening checklist. `audio.publicationStatus: "published"` is a release assertion, not a progress marker.
+- Do not hand-edit generated manifests or silently delete orphan files. Re-run the generator for text/voice changes and inspect reported orphans.
+- Legacy lessons without audio remain valid. The shared runtime must not render empty controls, autoplay, or reveal a model answer before the learner attempts the scene.
+
 ## Delivery contract
 
 Report:

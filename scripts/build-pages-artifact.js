@@ -61,7 +61,9 @@ const publicDirs = [
 const ignoredNames = new Set([".DS_Store", "Thumbs.db"]);
 const disallowedTopLevel = new Set([".git", ".github", "docs", "opendesign", "scripts", "package.json"]);
 const publicExtensions = new Set([
+  ".aac",
   ".css",
+  ".flac",
   ".gif",
   ".html",
   ".ico",
@@ -73,6 +75,7 @@ const publicExtensions = new Set([
   ".mp3",
   ".mp4",
   ".ogg",
+  ".opus",
   ".pdf",
   ".png",
   ".svg",

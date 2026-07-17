@@ -221,9 +221,10 @@ async function run() {
     assert(elements["#proof-distribution"].innerHTML.includes("precache-manifest.json"), "proof page did not render distribution required entries");
     assert(elements["#proof-distribution"].innerHTML.includes("npm run build:distribution"), "proof page did not render distribution build command");
     assert(elements["#proof-distribution"].innerHTML.includes("build-distribution-bundle.js"), "proof page did not link distribution bundle builder");
-    assert(elements["#proof-capability-matrix"].innerHTML.includes("10 capabilities"), "proof page did not render capability matrix summary");
+    assert(elements["#proof-capability-matrix"].innerHTML.includes("11 capabilities"), "proof page did not render capability matrix summary");
     assert(elements["#proof-capability-matrix"].innerHTML.includes("Static, forkable trainer runtime"), "proof page did not render capability rows");
     assert(elements["#proof-capability-matrix"].innerHTML.includes("Public GitHub proof surface"), "proof page did not render public proof capability row");
+    assert(elements["#proof-capability-matrix"].innerHTML.includes("Reviewed Danish lesson audio"), "proof page did not render Danish audio capability row");
     assert(elements["#proof-capability-matrix"].innerHTML.includes("./reports/capabilities.json"), "proof page did not link the capability map report from the matrix");
     assert(elements["#proof-capability-matrix"].innerHTML.includes("./reports/profile-portability.json"), "proof page did not link profile portability report from the matrix");
     assert(elements["#proof-capability-matrix"].innerHTML.includes("./reports/exercise-value.json"), "proof page did not link exercise value report from the matrix");

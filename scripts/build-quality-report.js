@@ -4,6 +4,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
+const { validateLessonAudio } = require("./validate-lesson-audio");
 
 const repoRoot = path.resolve(__dirname, "..");
 
@@ -421,6 +422,9 @@ function summarizeLesson(entry, catalogById, root) {
   const evidenceMatrix = lesson.qualityTier === "gold"
     ? buildEvidenceMatrix(lesson, scenes, masteryMap, sourceTitles, simulationPaths, endings)
     : { guarantees: [], sceneRows: [], sourceRows: [] };
+  const audioReport = validateLessonAudio(path.join(root, path.dirname(dataPath)), {});
+  audioReport.issues.forEach(audioIssue => issues.push(`audio: ${audioIssue}`));
+  audioReport.invalid.forEach(entry => issues.push(`audio ${entry.utteranceId}: ${entry.problems.join("; ")}`));
 
   return {
     id: lesson.id,
@@ -449,7 +453,44 @@ function summarizeLesson(entry, catalogById, root) {
       comicAssets: comicPanels.filter(panel => fs.existsSync(assetPathForPanel(root, dataPath, panel.assetPath))).length,
       endings: endings.length,
       simulationPaths: simulationPaths.length,
-      simulatedAttempts: simulationPaths.reduce((sum, pathSpec) => sum + attemptCountForPath(lesson, pathSpec), 0)
+      simulatedAttempts: simulationPaths.reduce((sum, pathSpec) => sum + attemptCountForPath(lesson, pathSpec), 0),
+      audioRequired: audioReport.required,
+      audioValid: audioReport.valid,
+      audioGenerated: audioReport.generatedClips,
+      audioAssetBytes: audioReport.assetBytes,
+      audioOrphans: audioReport.orphans.length
+    },
+    audio: {
+      configured: Boolean(lesson.audio),
+      publicationStatus: audioReport.publicationStatus,
+      coveragePercent: audioReport.coveragePercent,
+      required: audioReport.required,
+      valid: audioReport.valid,
+      missing: audioReport.missing,
+      stale: audioReport.stale,
+      invalid: audioReport.invalid.map(entry => entry.utteranceId),
+      orphans: audioReport.orphans,
+      humanReviewApproved: audioReport.humanReviewApproved,
+      validationStatus: audioReport.validationStatus,
+      generatedClips: audioReport.generatedClips,
+      assetFiles: audioReport.assetFiles,
+      assetBytes: audioReport.assetBytes,
+      averageAssetBytes: audioReport.averageAssetBytes,
+      voices: audioReport.voices,
+      configuredVoices: audioReport.configuredVoices,
+      formats: audioReport.formats,
+      validFormats: audioReport.validFormats,
+      mimeTypes: audioReport.mimeTypes,
+      providers: audioReport.providers,
+      models: audioReport.models,
+      configuredProvider: audioReport.configuredProvider,
+      configuredModel: audioReport.configuredModel,
+      configuredFormat: audioReport.configuredFormat,
+      configuredVoiceProfile: audioReport.configuredVoiceProfile,
+      loudnessRangeDb: audioReport.loudnessRangeDb,
+      lastGeneratedAt: audioReport.lastGeneratedAt,
+      manifestHash: audioReport.manifestHash,
+      notes: audioReport.warnings
     },
     masterySignals: masteryKeys.map(key => ({
       key,
@@ -516,6 +557,19 @@ function buildQualityReport(options = {}) {
     acc.simulatedAttempts += lesson.counts.simulatedAttempts;
     acc.endings += lesson.counts.endings;
     acc.evidenceRows += lesson.evidenceMatrix.sceneRows.length;
+    if (lesson.audio.configured) acc.audioConfiguredLessons += 1;
+    if (lesson.audio.publicationStatus === "published") acc.audioPublishedLessons += 1;
+    acc.audioRequired += lesson.audio.required;
+    acc.audioValid += lesson.audio.valid;
+    acc.audioGenerated += lesson.audio.generatedClips;
+    acc.audioAssetFiles += lesson.audio.assetFiles;
+    acc.audioAssetBytes += lesson.audio.assetBytes;
+    acc.audioVoices = unique(acc.audioVoices.concat(lesson.audio.voices));
+    acc.audioConfiguredVoices = unique(acc.audioConfiguredVoices.concat(lesson.audio.configuredVoices));
+    acc.audioFormats = unique(acc.audioFormats.concat(lesson.audio.formats));
+    acc.audioProviders = unique(acc.audioProviders.concat(lesson.audio.providers));
+    acc.audioOrphans += lesson.audio.orphans.length;
+    if (lesson.audio.humanReviewApproved) acc.audioHumanReviewedLessons += 1;
     acc.issues += lesson.issues.length;
     return acc;
   }, {
@@ -529,6 +583,19 @@ function buildQualityReport(options = {}) {
     simulatedAttempts: 0,
     endings: 0,
     evidenceRows: 0,
+    audioConfiguredLessons: 0,
+    audioPublishedLessons: 0,
+    audioHumanReviewedLessons: 0,
+    audioRequired: 0,
+    audioValid: 0,
+    audioGenerated: 0,
+    audioAssetFiles: 0,
+    audioAssetBytes: 0,
+    audioVoices: [],
+    audioConfiguredVoices: [],
+    audioFormats: [],
+    audioProviders: [],
+    audioOrphans: 0,
     issues: 0
   });
 
