@@ -253,7 +253,7 @@ npm run check:audio
 npm run check:audio-release
 ```
 
-Useful overrides are `--force`, `--provider`, `--model`, `--format`, `--voice-profile`, and `--coverage required|all`. Generation stages temporary files, validates before atomic replacement, updates `manifest.json` and the browser `manifest.js`, and reports orphans without deleting them. CI only validates committed artifacts; it never calls a paid provider.
+Useful overrides are `--force`, `--provider`, `--model`, `--format`, `--voice-profile`, and `--coverage required|all`. Generation stages temporary files, validates before a rollback-capable batch replacement, updates `manifest.json` and the browser `manifest.js`, and reports orphans without deleting them. The manifest records start/end cutoff evidence and a maximum 6 dB inter-clip RMS range. CI installs `ffmpeg` to decode committed production clips but never calls a paid provider.
 
 The human reviewer completes `audio/human-review.json` after listening for exact words, natural Danish prosody, stress/pauses, speaker consistency, artifacts/cutoffs, and acceptable playback at 0.75× and 1×. Automated checks must never claim that a voice sounds natural.
 

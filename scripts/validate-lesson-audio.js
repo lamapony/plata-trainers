@@ -12,9 +12,14 @@ const {
   generationSettings,
   loadLessonData,
   readManifest,
+  sha256,
   sha256File
 } = require("./lib/audio-contract");
-const { inspectAudioFile, qualityIssues } = require("./lib/audio-file");
+const {
+  MAX_INTER_CLIP_LOUDNESS_RANGE_DB,
+  inspectAudioFile,
+  qualityIssues
+} = require("./lib/audio-file");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const REVIEW_CHECKLIST_KEYS = [
@@ -25,10 +30,51 @@ const REVIEW_CHECKLIST_KEYS = [
   "noArtifactsOrCutoffs",
   "safeAt075And1x"
 ];
+const MIME_BY_FORMAT = { mp3: "audio/mpeg", wav: "audio/wav" };
 
 function round(value, places) {
   const factor = 10 ** (places || 1);
   return Math.round(value * factor) / factor;
+}
+
+function manifestEvidence(lessonDir, manifest) {
+  const audioDir = path.join(lessonDir, "audio");
+  const clips = manifest && Array.isArray(manifest.clips) ? manifest.clips : [];
+  const assetFiles = fs.existsSync(audioDir) ? fs.readdirSync(audioDir).filter((name) => {
+    if (name.startsWith(".") || ["manifest.json", "manifest.js", "human-review.json"].includes(name)) return false;
+    return fs.statSync(path.join(audioDir, name)).isFile();
+  }) : [];
+  const assetBytes = assetFiles.reduce((sum, name) => sum + fs.statSync(path.join(audioDir, name)).size, 0);
+  const formats = [...new Set(clips.map((clip) => clip && clip.format).filter(Boolean))].sort();
+  return {
+    generatedClips: clips.length,
+    assetFiles: assetFiles.length,
+    assetBytes,
+    averageAssetBytes: assetFiles.length ? Math.round(assetBytes / assetFiles.length) : 0,
+    voices: [...new Set(clips.map((clip) => clip && clip.voice).filter(Boolean))].sort(),
+    formats,
+    mimeTypes: formats.map((format) => MIME_BY_FORMAT[format] || "application/octet-stream"),
+    providers: [...new Set(clips.map((clip) => clip && clip.provider).filter(Boolean))].sort(),
+    models: [...new Set(clips.map((clip) => clip && clip.model).filter(Boolean))].sort(),
+    lastGeneratedAt: manifest && manifest.generatedAt || null,
+    manifestHash: manifest ? sha256(JSON.stringify(manifest)) : null
+  };
+}
+
+function configuredAudioEvidence(lesson) {
+  const config = lesson && lesson.audio && typeof lesson.audio === "object" ? lesson.audio : {};
+  const generation = config.generation && typeof config.generation === "object" ? config.generation : {};
+  const profileVoices = Object.values(config.voiceProfiles || {}).flatMap((profile) => {
+    if (!profile || typeof profile !== "object") return [];
+    return [profile.defaultVoice, ...Object.values(profile.speakerVoices || {})];
+  });
+  return {
+    configuredVoices: [...new Set([config.defaultVoice, ...Object.values(config.speakerVoices || {}), ...profileVoices].filter(Boolean))].sort(),
+    configuredProvider: generation.provider || null,
+    configuredModel: generation.model || null,
+    configuredFormat: generation.format || null,
+    configuredVoiceProfile: generation.voiceProfile || "default"
+  };
 }
 
 function applyManifestVoiceProfile(utterance, config, settings) {
@@ -73,6 +119,7 @@ function validateLessonAudio(lessonDir, options) {
   const issues = extracted.issues.slice();
   const warnings = extracted.warnings.slice();
   const manifest = readManifest(lessonDir);
+  const evidence = Object.assign({}, configuredAudioEvidence(lesson), manifestEvidence(lessonDir, manifest));
   const indexPath = path.join(lessonDir, "index.html");
   const indexSource = fs.existsSync(indexPath) ? fs.readFileSync(indexPath, "utf8") : "";
   const manifestScriptTag = '<script src="./audio/manifest.js"></script>';
@@ -95,6 +142,10 @@ function validateLessonAudio(lessonDir, options) {
       orphans: [],
       coveragePercent: null,
       humanReviewApproved: false,
+      loudnessRangeDb: null,
+      validFormats: [],
+      validationStatus: issues.length ? "fail" : "advisory",
+      ...evidence,
       issues,
       warnings
     };
@@ -106,6 +157,8 @@ function validateLessonAudio(lessonDir, options) {
   const stale = [];
   const invalid = [];
   const validIds = new Set();
+  const validFormats = new Set();
+  const liveRmsValues = [];
   const referencedNames = new Set();
 
   if (!manifest) {
@@ -137,6 +190,14 @@ function validateLessonAudio(lessonDir, options) {
     if (typeof manifest.disclosure !== "string" || !manifest.disclosure.trim()) issues.push("manifest.disclosure is required");
     if (manifest.generation && manifest.generation.provider === "openai" && manifest.disclosure !== "AI-generated Danish voice") {
       issues.push("OpenAI audio manifest must disclose an AI-generated Danish voice");
+    }
+    if (!manifest.quality || typeof manifest.quality !== "object" || Array.isArray(manifest.quality)) {
+      issues.push("manifest.quality is required");
+    } else {
+      if (manifest.quality.maxInterClipLoudnessRangeDb !== MAX_INTER_CLIP_LOUDNESS_RANGE_DB) {
+        issues.push(`manifest.quality.maxInterClipLoudnessRangeDb must be ${MAX_INTER_CLIP_LOUDNESS_RANGE_DB}`);
+      }
+      if (!Number.isFinite(manifest.quality.loudnessRangeDb)) issues.push("manifest.quality.loudnessRangeDb must be numeric");
     }
     const manifestJsPath = path.join(lessonDir, "audio", "manifest.js");
     const expectedBrowserJson = JSON.stringify(manifest).replace(/</g, "\\u003c");
@@ -170,12 +231,15 @@ function validateLessonAudio(lessonDir, options) {
       const utterance = applyManifestVoiceProfile(baseUtterance, extracted.config, settings);
       const expectedHash = contentHash(utterance, settings);
       const clipProblems = [];
+      let liveRmsDbfs = null;
       if (clip.text !== utterance.text) clipProblems.push("text differs from lesson source");
       if (clip.spokenText !== utterance.spokenText) clipProblems.push("spokenText differs from lesson metadata");
       if (clip.speaker !== utterance.speaker) clipProblems.push("speaker differs from lesson metadata");
       if (clip.voice !== utterance.voice) clipProblems.push("voice differs from selected voice profile");
       if (clip.locale !== utterance.locale) clipProblems.push("locale differs from lesson metadata");
-      if (clip.source !== utterance.source || clip.kind !== utterance.kind) clipProblems.push("source or kind differs from lesson contract");
+      if (clip.source !== utterance.source || clip.sceneId !== utterance.sceneId || clip.kind !== utterance.kind) {
+        clipProblems.push("source, sceneId, or kind differs from lesson contract");
+      }
       if (clip.required !== utterance.required) clipProblems.push("required flag differs from lesson contract");
       if (clip.contentHash !== expectedHash) stale.push(clip.utteranceId);
       let expectedSrc;
@@ -203,6 +267,7 @@ function validateLessonAudio(lessonDir, options) {
           try {
             const productionClip = clip.provider !== "mock";
             const metrics = inspectAudioFile(filePath, clip.format, { decode: productionClip });
+            liveRmsDbfs = Number.isFinite(metrics.rmsDbfs) ? metrics.rmsDbfs : null;
             clipProblems.push(...qualityIssues(metrics));
             if (Math.abs(metrics.durationSeconds - Number(clip.durationSeconds)) > 0.08) clipProblems.push("duration differs from parsed audio stream");
             if (metrics.bytes !== clip.bytes) clipProblems.push("byte size differs from manifest");
@@ -219,6 +284,9 @@ function validateLessonAudio(lessonDir, options) {
                   clipProblems.push(`qc.${field} differs from current decode`);
                 }
               });
+              if (!clip.qc || typeof clip.qc.startCutoffRisk !== "boolean") clipProblems.push("production clip lacks qc.startCutoffRisk");
+              if (!clip.qc || typeof clip.qc.cutoffRisk !== "boolean") clipProblems.push("production clip lacks qc.cutoffRisk");
+              if (clip.qc && clip.qc.startCutoffRisk !== metrics.startCutoffRisk) clipProblems.push("qc.startCutoffRisk differs from current decode");
               if (clip.qc && clip.qc.cutoffRisk !== metrics.cutoffRisk) clipProblems.push("qc.cutoffRisk differs from current decode");
             }
           } catch (error) {
@@ -227,7 +295,11 @@ function validateLessonAudio(lessonDir, options) {
         }
       }
       if (clipProblems.length) invalid.push({ utteranceId: clip.utteranceId, problems: clipProblems });
-      else if (!stale.includes(clip.utteranceId)) validIds.add(clip.utteranceId);
+      else if (!stale.includes(clip.utteranceId)) {
+        validIds.add(clip.utteranceId);
+        validFormats.add(clip.format);
+        if (Number.isFinite(liveRmsDbfs)) liveRmsValues.push(liveRmsDbfs);
+      }
     });
     required.forEach((utterance) => {
       if (!seen.has(utterance.utteranceId)) missing.push(utterance.utteranceId);
@@ -241,6 +313,15 @@ function validateLessonAudio(lessonDir, options) {
   if (orphans.length) warnings.push(`orphan audio files: ${orphans.join(", ")}`);
   const requiredValid = required.filter((utterance) => validIds.has(utterance.utteranceId)).length;
   const coveragePercent = required.length ? round((requiredValid / required.length) * 100) : 100;
+  const loudnessRangeDb = liveRmsValues.length > 1 ? round(Math.max(...liveRmsValues) - Math.min(...liveRmsValues), 2) : 0;
+  if (manifest && manifest.quality && Number.isFinite(manifest.quality.loudnessRangeDb) && Math.abs(manifest.quality.loudnessRangeDb - loudnessRangeDb) > 0.2) {
+    issues.push("manifest.quality.loudnessRangeDb differs from current validated clips");
+  }
+  if (loudnessRangeDb > MAX_INTER_CLIP_LOUDNESS_RANGE_DB) {
+    const message = `lesson clip loudness range ${loudnessRangeDb} dB exceeds ${MAX_INTER_CLIP_LOUDNESS_RANGE_DB} dB`;
+    if (enforceAssets) issues.push(message);
+    else warnings.push(`${message}; draft audio remains non-publishable`);
+  }
   const review = validateReview(lessonDir, lesson.id, required.map((utterance) => utterance.utteranceId));
   if (enforceAssets) {
     extracted.warnings.filter((warning) => warning.includes("speakerVoices mapping")).forEach((warning) => {
@@ -266,6 +347,10 @@ function validateLessonAudio(lessonDir, options) {
     orphans,
     coveragePercent,
     humanReviewApproved: review.approved,
+    loudnessRangeDb,
+    validFormats: [...validFormats].sort(),
+    validationStatus: issues.length || invalid.length ? "fail" : (enforceAssets ? "published-pass" : "draft-pass"),
+    ...evidence,
     issues,
     warnings
   };

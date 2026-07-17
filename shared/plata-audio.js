@@ -8,6 +8,7 @@
   var activeUtterance = null;
   var activeClip = null;
   var userRequestedPlayback = false;
+  var playbackState = "idle";
 
   function escapeHtml(value) {
     return String(value == null ? "" : value).replace(/[&<>'"]/g, function (character) {
@@ -57,7 +58,7 @@
     var excerpt = String(visibleText || clip.text || clip.spokenText || "Danish phrase").replace(/\s+/g, " ").trim();
     if (excerpt.length > 96) excerpt = excerpt.slice(0, 93) + "…";
     return "<span class='plata-audio-control'>" +
-      "<button class='plata-audio-button' type='button' data-plata-audio-lesson='" + escapeHtml(lessonId) + "' data-plata-audio-id='" + escapeHtml(utteranceId) + "' data-plata-audio-label='" + escapeHtml(excerpt) + "' aria-label='Play Danish: &quot;" + escapeHtml(excerpt) + "&quot;' aria-pressed='false'>" +
+      "<button class='plata-audio-button' type='button' data-plata-audio-lesson='" + escapeHtml(lessonId) + "' data-plata-audio-id='" + escapeHtml(utteranceId) + "' data-plata-audio-label='" + escapeHtml(excerpt) + "' aria-label='Play Danish: &quot;" + escapeHtml(excerpt) + "&quot;' aria-pressed='false' aria-busy='false'>" +
         "<span aria-hidden='true' class='plata-audio-icon'>▶</span><span class='plata-audio-button-label'>Listen</span>" +
       "</button>" +
       "<span class='plata-audio-status' role='status' aria-live='polite'></span>" +
@@ -72,13 +73,15 @@
     if (!button) return;
     var label = button.querySelector(".plata-audio-button-label");
     var icon = button.querySelector(".plata-audio-icon");
-    var text = state === "playing" ? "Pause" : (state === "ended" ? "Replay" : (state === "paused" ? "Resume" : "Listen"));
-    var action = state === "playing" ? "Pause" : (state === "ended" ? "Replay" : (state === "paused" ? "Resume" : "Play"));
+    var text = state === "loading" ? "Loading…" : (state === "playing" ? "Pause" : (state === "ended" ? "Replay" : (state === "paused" ? "Resume" : "Listen")));
+    var action = state === "loading" ? "Cancel loading for" : (state === "playing" ? "Pause" : (state === "ended" ? "Replay" : (state === "paused" ? "Resume" : "Play")));
     if (label) label.textContent = text;
-    if (icon) icon.textContent = state === "playing" ? "Ⅱ" : (state === "ended" ? "↻" : "▶");
+    if (icon) icon.textContent = state === "loading" ? "…" : (state === "playing" ? "Ⅱ" : (state === "ended" ? "↻" : "▶"));
     button.setAttribute("aria-pressed", state === "playing" ? "true" : "false");
+    button.setAttribute("aria-busy", state === "loading" ? "true" : "false");
     button.setAttribute("aria-label", action + " Danish: “" + (button.getAttribute("data-plata-audio-label") || "Danish phrase") + "”");
     button.classList.toggle("is-playing", state === "playing");
+    button.classList.toggle("is-loading", state === "loading");
     var container = utteranceContainer(button);
     if (container) container.classList.toggle("is-playing", state === "playing");
   }
@@ -91,6 +94,7 @@
 
   function showError(button) {
     if (!button) return;
+    playbackState = "idle";
     setButtonState(button, "idle");
     var container = button.closest ? button.closest(".plata-audio-control") : null;
     var status = container && container.querySelector ? container.querySelector(".plata-audio-status") : null;
@@ -105,8 +109,19 @@
     player.preload = "none";
     player.hidden = true;
     player.playbackRate = speedFromStorage();
+    player.addEventListener("playing", function () {
+      if (!userRequestedPlayback || !activeButton) return;
+      playbackState = "playing";
+      setButtonState(activeButton, "playing");
+    });
+    player.addEventListener("waiting", function () {
+      if (!userRequestedPlayback || !activeButton) return;
+      playbackState = "loading";
+      setButtonState(activeButton, "loading");
+    });
     player.addEventListener("ended", function () {
       userRequestedPlayback = false;
+      playbackState = "ended";
       setButtonState(activeButton, "ended");
     });
     player.addEventListener("error", function () {
@@ -119,6 +134,7 @@
 
   function stop() {
     userRequestedPlayback = false;
+    playbackState = "idle";
     if (player) {
       try { player.pause(); } catch (_error) { /* already stopped */ }
       player.removeAttribute("src");
@@ -145,11 +161,12 @@
       element.src = clip.src;
       element.playbackRate = speedFromStorage();
       try { element.load(); } catch (_error) { /* browser loads on play */ }
-    } else if (element.ended) {
+    } else if (element.ended || playbackState === "ended") {
       element.currentTime = 0;
     }
     userRequestedPlayback = true;
-    setButtonState(button, "playing");
+    playbackState = "loading";
+    setButtonState(button, "loading");
     var promise;
     try {
       promise = element.play();
@@ -159,8 +176,13 @@
       return;
     }
     if (promise && typeof promise.catch === "function") {
-      promise.catch(function () {
-        if (userRequestedPlayback) showError(button);
+      promise.then(function () {
+        if (!userRequestedPlayback || activeButton !== button) return;
+        playbackState = "playing";
+        setButtonState(button, "playing");
+      }).catch(function () {
+        if (!userRequestedPlayback || activeButton !== button) return;
+        showError(button);
         userRequestedPlayback = false;
       });
     }
@@ -175,9 +197,14 @@
       return;
     }
     var element = ensurePlayer();
-    if (button === activeButton && element && !element.paused && !element.ended) {
+    if (button === activeButton && playbackState === "loading") {
+      stop();
+      return;
+    }
+    if (button === activeButton && playbackState !== "ended" && element && !element.paused && !element.ended) {
       userRequestedPlayback = false;
       element.pause();
+      playbackState = "paused";
       setButtonState(button, "paused");
       return;
     }
@@ -220,7 +247,13 @@
     bind(container);
   }
 
-  if (root.addEventListener) root.addEventListener("pagehide", stop);
+  function destroy() {
+    stop();
+    if (player && player.parentNode) player.parentNode.removeChild(player);
+    player = null;
+  }
+
+  if (root.addEventListener) root.addEventListener("pagehide", destroy);
 
   root.PlataAudio = {
     bind: bind,
@@ -231,7 +264,7 @@
     stop: stop,
     version: 1,
     _debug: function () {
-      return { activeUtterance: activeUtterance, activeClip: activeClip, hasPlayer: Boolean(player), speed: speedFromStorage() };
+      return { activeUtterance: activeUtterance, activeClip: activeClip, hasPlayer: Boolean(player), speed: speedFromStorage(), state: playbackState };
     }
   };
 })(typeof window !== "undefined" ? window : this);

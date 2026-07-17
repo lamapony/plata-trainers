@@ -9,7 +9,8 @@ const { contentHash, extractUtterances, generationSettings, loadLessonData } = r
 const { inspectAudioBuffer, qualityIssues } = require("./lib/audio-file");
 const { makeWav } = require("./lib/audio-providers/mock");
 const { createOpenAiProvider, ENDPOINT } = require("./lib/audio-providers/openai");
-const { generateLesson } = require("./generate-lesson-audio");
+const { generateLesson, replaceFilesTransaction } = require("./generate-lesson-audio");
+const { contentType } = require("./serve-pages");
 const { validateLessonAudio } = require("./validate-lesson-audio");
 
 function lessonSource(text, publicationStatus) {
@@ -57,6 +58,12 @@ async function run() {
   assert.strictEqual(metrics.codec, "pcm");
   assert(metrics.durationSeconds >= 1.19 && metrics.durationSeconds <= 1.21);
   assert.strictEqual(qualityIssues(metrics).length, 0);
+  assert.strictEqual(metrics.startCutoffRisk, false);
+  assert.strictEqual(contentType("lesson.mp3"), "audio/mpeg");
+  assert.strictEqual(contentType("lesson.wav"), "audio/wav");
+  const hardStart = Buffer.from(wav);
+  for (let offset = 44; offset < 44 + 480 * 2; offset += 2) hardStart.writeInt16LE(6000, offset);
+  assert(qualityIssues(inspectAudioBuffer(hardStart, "wav")).some((issue) => issue.includes("decoded start")));
 
   const baseLesson = {
     id: "contract",
@@ -72,6 +79,37 @@ async function run() {
   assert(contract.issues.some((issue) => issue.includes("Duplicate utteranceId")));
   assert(contract.issues.some((issue) => issue.includes("plain text, not HTML")));
   assert(contract.issues.some((issue) => issue.includes("spokenText must not be empty")));
+  const supportedKinds = extractUtterances({
+    id: "supported-kinds",
+    audio: { schemaVersion: 1, locale: "da-DK", defaultVoice: "fixture" },
+    scenes: [{
+      id: "all-kinds",
+      danish: "En nøglefrase.",
+      danishAudio: { utteranceId: "standalone" },
+      dialogue: [{ speaker: "Mette", line: "En replik.", audio: { utteranceId: "dialogue" } }],
+      options: [{
+        label: "Et valg.",
+        audio: { utteranceId: "choice" },
+        repairLadder: [{ text: "En rettelse.", audio: { utteranceId: "repair" } }]
+      }],
+      pairs: [{ left: "Et ord.", right: "A word.", audio: { utteranceId: "match" } }],
+      channelVersions: [{ sample: "En kanalversion.", audio: { utteranceId: "channel" } }],
+      modelAnswer: { text: "Et modelsvar.", audio: { utteranceId: "model" } }
+    }],
+    endings: [{ danish: "En afslutning.", audio: { utteranceId: "ending" } }]
+  });
+  assert.deepStrictEqual(supportedKinds.issues, []);
+  assert.deepStrictEqual(
+    [...new Set(supportedKinds.utterances.map((utterance) => utterance.kind))].sort(),
+    ["channel-version", "choice", "danish-line", "dialogue", "ending", "match", "model-answer", "repair"]
+  );
+  const unsupportedEnglishAudio = extractUtterances({
+    id: "unsupported-english",
+    audio: { schemaVersion: 1, locale: "da-DK", defaultVoice: "fixture" },
+    scenes: [{ id: "english", english: "Do not voice this.", englishAudio: { utteranceId: "wrong-field" } }],
+    endings: []
+  });
+  assert(unsupportedEnglishAudio.issues.some((issue) => issue.includes("unsupported or non-Danish field")));
   const hashSettings = { provider: "mock", model: "one", format: "wav", voiceProfile: "default", instructions: null };
   assert.notStrictEqual(
     contentHash({ text: "Hej", spokenText: "Hej", speaker: null, voice: "a", locale: "da-DK" }, hashSettings),
@@ -116,6 +154,33 @@ async function run() {
   fs.writeFileSync(path.join(lessonDir, "index.html"), '  <script src="../../shared/plata-audio.js"></script>\n');
   process.env.NODE_ENV = "test";
   try {
+    const transactionDir = path.join(tempRoot, "transaction");
+    fs.mkdirSync(transactionDir);
+    const finalOne = path.join(transactionDir, "one.txt");
+    const finalTwo = path.join(transactionDir, "two.txt");
+    const tempOne = path.join(transactionDir, "one.tmp");
+    fs.writeFileSync(finalOne, "old-one");
+    fs.writeFileSync(finalTwo, "old-two");
+    fs.writeFileSync(tempOne, "new-one");
+    assert.throws(() => replaceFilesTransaction([
+      { tempPath: tempOne, finalPath: finalOne },
+      { tempPath: path.join(transactionDir, "missing.tmp"), finalPath: finalTwo }
+    ]), /atomic audio commit failed/);
+    assert.strictEqual(fs.readFileSync(finalOne, "utf8"), "old-one");
+    assert.strictEqual(fs.readFileSync(finalTwo, "utf8"), "old-two");
+    assert(!fs.readdirSync(transactionDir).some((name) => name.includes(".bak-")));
+
+    let dryRunProviderCalls = 0;
+    const dryRun = await generateLesson(lessonDir, {
+      coverage: "required", dryRun: true, force: false, provider: "mock", model: "fixture-v1", format: "wav", voiceProfile: "default",
+      providerInstance: { async synthesize() { dryRunProviderCalls += 1; throw new Error("dry-run called provider"); } }
+    });
+    assert.strictEqual(dryRun.planned, 1);
+    assert.strictEqual(dryRun.selectedCharacters, "Hej fra Mette.".length);
+    assert.strictEqual(dryRun.synthesisCharacters, "Hej fra Mette.".length);
+    assert.strictEqual(dryRunProviderCalls, 0);
+    assert(!fs.existsSync(path.join(lessonDir, "audio")));
+
     const first = await generateLesson(lessonDir, {
       coverage: "required", dryRun: false, force: false, provider: "mock", model: "fixture-v1", format: "wav", voiceProfile: "default"
     });
@@ -126,6 +191,15 @@ async function run() {
     assert.strictEqual(draft.coveragePercent, 100);
     assert.strictEqual(draft.invalid.length, 0);
     assert.strictEqual(draft.issues.length, 0);
+    assert.strictEqual(draft.generatedClips, 1);
+    assert.strictEqual(draft.assetFiles, 1);
+    assert(draft.assetBytes > 1000);
+    assert.deepStrictEqual(draft.voices, ["fixture"]);
+    assert.deepStrictEqual(draft.formats, ["wav"]);
+    assert.deepStrictEqual(draft.validFormats, ["wav"]);
+    assert.deepStrictEqual(draft.mimeTypes, ["audio/wav"]);
+    assert(draft.lastGeneratedAt && draft.manifestHash && draft.manifestHash.length === 64);
+    assert.strictEqual(draft.loudnessRangeDb, 0);
     const strictDraft = validateLessonAudio(lessonDir, { requirePublishedGold: true });
     assert(strictDraft.issues.some((issue) => issue.includes("human audio review")));
 
@@ -148,6 +222,7 @@ async function run() {
     assert.strictEqual(published.humanReviewApproved, true);
 
     const canonicalManifest = JSON.parse(fs.readFileSync(path.join(lessonDir, "audio", "manifest.json"), "utf8"));
+    assert.strictEqual(canonicalManifest.clips[0].sceneId, "scene-one");
     const productionLikeManifest = JSON.parse(JSON.stringify(canonicalManifest));
     productionLikeManifest.generation.provider = "openai";
     productionLikeManifest.generation.model = "fixture-openai-v1";
@@ -164,6 +239,12 @@ async function run() {
     const productionLike = validateLessonAudio(lessonDir, { requirePublishedGold: true });
     assert.deepStrictEqual(productionLike.issues, []);
     assert.deepStrictEqual(productionLike.invalid, []);
+    writeManifestPair(lessonDir, canonicalManifest);
+
+    const traversalManifest = JSON.parse(JSON.stringify(canonicalManifest));
+    traversalManifest.clips[0].src = "../escape.wav";
+    writeManifestPair(lessonDir, traversalManifest);
+    assert(validateLessonAudio(lessonDir, { requirePublishedGold: true }).invalid.some((entry) => entry.problems.some((problem) => problem.includes("src must be") || problem.includes("escapes"))));
     writeManifestPair(lessonDir, canonicalManifest);
 
     const malformedManifest = Object.assign({}, canonicalManifest, { clips: {} });
@@ -192,6 +273,9 @@ async function run() {
 
     const audioPath = path.join(lessonDir, "audio", "scene-one-mette.wav");
     const audioBytes = fs.readFileSync(audioPath);
+    fs.unlinkSync(audioPath);
+    assert(validateLessonAudio(lessonDir, { requirePublishedGold: true }).invalid.some((entry) => entry.problems.some((problem) => problem.includes("audio file is missing"))));
+    fs.writeFileSync(audioPath, audioBytes);
     fs.writeFileSync(audioPath, Buffer.from("not audio"));
     assert(validateLessonAudio(lessonDir, { requirePublishedGold: true }).invalid.some((entry) => entry.utteranceId === "scene-one-mette"));
     fs.writeFileSync(audioPath, audioBytes);
@@ -228,6 +312,33 @@ async function run() {
     }), /fixture interruption/);
     assert.strictEqual(providerCalls, 2);
     assert.deepStrictEqual(fs.readdirSync(path.join(interruptedDir, "audio")), []);
+
+    const loudnessDir = path.join(tempRoot, "lesson-audio-loudness");
+    fs.mkdirSync(loudnessDir);
+    fs.writeFileSync(path.join(loudnessDir, "data.js"), interruptedLessonSource().replace(/lesson-audio-interrupted/g, "lesson-audio-loudness"));
+    fs.writeFileSync(path.join(loudnessDir, "index.html"), '  <script src="../../shared/plata-audio.js"></script>\n');
+    let loudnessCalls = 0;
+    await assert.rejects(() => generateLesson(loudnessDir, {
+      coverage: "required",
+      dryRun: false,
+      force: false,
+      provider: "mock",
+      model: "fixture-v1",
+      format: "wav",
+      voiceProfile: "default",
+      providerInstance: {
+        async synthesize() {
+          loudnessCalls += 1;
+          const bytes = makeWav(1);
+          if (loudnessCalls === 2) {
+            for (let offset = 44; offset + 1 < bytes.length; offset += 2) bytes.writeInt16LE(Math.round(bytes.readInt16LE(offset) * 0.2), offset);
+          }
+          return { bytes, providerRequestId: "fixture" };
+        }
+      }
+    }), /dB RMS/);
+    assert.strictEqual(loudnessCalls, 2);
+    assert.deepStrictEqual(fs.readdirSync(path.join(loudnessDir, "audio")), []);
   } finally {
     fs.rmSync(tempRoot, { recursive: true, force: true });
   }

@@ -393,7 +393,7 @@ a.ghost:hover,
 .dialogue-line > p {
   position: relative;
   display: grid;
-  grid-template-columns: 27px minmax(0, 1fr) auto;
+  grid-template-columns: 27px minmax(0, 1fr);
   align-items: start;
   gap: 10px;
   margin: 0;
@@ -421,7 +421,7 @@ a.ghost:hover,
 
 .danish-line {
   display: grid;
-  grid-template-columns: 27px minmax(0, 1fr) auto;
+  grid-template-columns: 27px minmax(0, 1fr);
   align-items: start;
   gap: 12px;
   margin: 0 0 25px;
@@ -482,13 +482,19 @@ a.ghost:hover,
   font-size: 0.72rem;
 }
 
+.dialogue-line > p .plata-audio-control,
+.danish-line > .plata-audio-control {
+  grid-column: 2;
+  justify-self: start;
+}
+
 .plata-audio-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   min-width: 82px;
-  min-height: 38px;
+  min-height: 44px;
   padding: 7px 10px;
   border: 1px solid color-mix(in srgb, var(--green) 50%, var(--line));
   border-radius: var(--radius);
@@ -500,10 +506,13 @@ a.ghost:hover,
 }
 
 .plata-audio-button:hover,
-.plata-audio-button.is-playing {
+.plata-audio-button.is-playing,
+.plata-audio-button.is-loading {
   border-color: var(--green);
   background: color-mix(in srgb, var(--green) 8%, var(--surface));
 }
+
+.plata-audio-button.is-loading { cursor: progress; }
 
 .plata-audio-icon {
   width: 0.8rem;

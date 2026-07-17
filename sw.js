@@ -64,25 +64,33 @@
     // play fetches a complete response and stores it under a range-free cache key.
     if (isAudioUrl(url)) {
       var audioRequest = new Request(url.href, { credentials: "same-origin" });
-      event.respondWith(caches.match(audioRequest).then(function (cachedAudio) {
+      var audioCacheWork = Promise.resolve();
+      var audioResponse = caches.match(audioRequest).then(function (cachedAudio) {
         if (cachedAudio) return cachedAudio;
         return fetch(audioRequest).then(function (response) {
-          return cacheSuccessful(audioRequest, response).then(function () { return response; });
+          audioCacheWork = cacheSuccessful(audioRequest, response);
+          return response;
         });
-      }).catch(function () { return Response.error(); }));
+      }).catch(function () { return Response.error(); });
+      event.respondWith(audioResponse);
+      event.waitUntil(audioResponse.then(function () { return audioCacheWork; }).catch(function () { return undefined; }));
       return;
     }
 
-    event.respondWith(caches.match(event.request).then(function (cached) {
+    var runtimeCacheWork = Promise.resolve();
+    var runtimeResponse = caches.match(event.request).then(function (cached) {
       if (cached) return cached;
       return fetch(event.request).then(function (response) {
-        return cacheSuccessful(event.request, response).then(function () { return response; });
+        runtimeCacheWork = cacheSuccessful(event.request, response);
+        return response;
       }).catch(function () {
         if (event.request.mode === "navigate") {
           return caches.match("./index.html");
         }
         return Response.error();
       });
-    }));
+    });
+    event.respondWith(runtimeResponse);
+    event.waitUntil(runtimeResponse.then(function () { return runtimeCacheWork; }).catch(function () { return undefined; }));
   });
 })();

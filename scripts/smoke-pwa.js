@@ -42,6 +42,8 @@ function main() {
   assert(sw.includes("activate"), "sw.js: missing activate handler");
   assert(sw.includes("fetch"), "sw.js: missing fetch handler");
   assert(sw.includes("precache-manifest.json"), "sw.js: must load precache-manifest.json");
+  assert(sw.includes("event.waitUntil(audioResponse.then"), "sw.js: first audio response must cache in background without delaying playback");
+  assert(!sw.includes("cacheSuccessful(audioRequest, response).then"), "sw.js: audio playback must not wait for cache.put completion");
 
   const manifest = JSON.parse(read("site.webmanifest"));
   assert(Array.isArray(manifest.icons) && manifest.icons.length >= 2, "site.webmanifest: need at least two icons");

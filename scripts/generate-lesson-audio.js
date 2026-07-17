@@ -14,10 +14,15 @@ const {
   readManifest,
   sha256File
 } = require("./lib/audio-contract");
-const { inspectAudioFile, qualityIssues } = require("./lib/audio-file");
+const {
+  MAX_INTER_CLIP_LOUDNESS_RANGE_DB,
+  inspectAudioFile,
+  qualityIssues
+} = require("./lib/audio-file");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const GENERATOR_VERSION = 1;
+let tempSequence = 0;
 
 function usage() {
   return [
@@ -95,6 +100,7 @@ function manifestClipReusable(clip, utterance, hash, lessonDir, format) {
   try {
     const metrics = inspectAudioFile(filePath, format, { decode: false });
     if (qualityIssues(Object.assign({}, metrics, clip.qc || {})).length) return false;
+    if (!clip.qc || typeof clip.qc.startCutoffRisk !== "boolean" || typeof clip.qc.cutoffRisk !== "boolean") return false;
     if (clip.provider !== "mock" && (!clip.qc || clip.qc.decodedForQc !== true || !Number.isFinite(clip.qc.rmsDbfs))) return false;
     return true;
   } catch (_error) {
@@ -109,10 +115,47 @@ function listOrphans(audioDir, referencedNames) {
   }).sort();
 }
 
-function writeAtomic(filePath, value) {
-  const tempPath = `${filePath}.tmp-${process.pid}`;
-  fs.writeFileSync(tempPath, value);
-  fs.renameSync(tempPath, filePath);
+function stageTextFile(filePath, value, staged) {
+  const tempPath = `${filePath}.tmp-${process.pid}-${tempSequence += 1}`;
+  fs.writeFileSync(tempPath, value, { flag: "wx" });
+  staged.push(tempPath);
+  return tempPath;
+}
+
+function replaceFilesTransaction(entries) {
+  const states = [];
+  try {
+    entries.forEach((entry) => {
+      const state = { finalPath: entry.finalPath, tempPath: entry.tempPath, backupPath: null, installed: false };
+      states.push(state);
+      if (fs.existsSync(entry.finalPath)) {
+        state.backupPath = `${entry.finalPath}.bak-${process.pid}-${tempSequence += 1}`;
+        fs.renameSync(entry.finalPath, state.backupPath);
+      }
+      fs.renameSync(entry.tempPath, entry.finalPath);
+      state.installed = true;
+    });
+  } catch (error) {
+    const rollbackProblems = [];
+    states.slice().reverse().forEach((state) => {
+      try {
+        if (state.installed && fs.existsSync(state.finalPath)) fs.unlinkSync(state.finalPath);
+        if (state.backupPath && fs.existsSync(state.backupPath)) fs.renameSync(state.backupPath, state.finalPath);
+      } catch (rollbackError) {
+        rollbackProblems.push(rollbackError.message);
+      }
+    });
+    const suffix = rollbackProblems.length ? `; rollback problems: ${rollbackProblems.join("; ")}` : "";
+    throw new Error(`atomic audio commit failed: ${error.message}${suffix}`);
+  }
+  const cleanupProblems = [];
+  states.forEach((state) => {
+    if (!state.backupPath || !fs.existsSync(state.backupPath)) return;
+    try { fs.unlinkSync(state.backupPath); } catch (error) {
+      cleanupProblems.push(`${path.basename(state.backupPath)}: ${error.message}`);
+    }
+  });
+  return cleanupProblems;
 }
 
 function assertManifestAnchor(indexPath) {
@@ -122,10 +165,10 @@ function assertManifestAnchor(indexPath) {
   return { source, anchor };
 }
 
-function ensureManifestScript(indexPath) {
+function updatedIndexSource(indexPath) {
   const { source, anchor } = assertManifestAnchor(indexPath);
-  if (source.includes('<script src="./audio/manifest.js"></script>')) return;
-  writeAtomic(indexPath, source.replace(anchor, `  <script src="./audio/manifest.js"></script>\n${anchor}`));
+  if (source.includes('<script src="./audio/manifest.js"></script>')) return null;
+  return source.replace(anchor, `  <script src="./audio/manifest.js"></script>\n${anchor}`);
 }
 
 function buildReviewTemplate(lessonId, clips) {
@@ -186,14 +229,17 @@ async function generateLesson(lessonDir, args) {
   const requiredCount = extracted.utterances.filter((utterance) => utterance.required).length;
   const currentRequiredValid = planned.filter((item) => item.utterance.required && item.action === "reuse").length;
   const currentCoverage = requiredCount ? Math.round((currentRequiredValid / requiredCount) * 1000) / 10 : 100;
+  const selectedCharacters = selected.reduce((sum, utterance) => sum + utterance.spokenText.length, 0);
+  const synthesisCharacters = planned.filter((item) => item.action === "generate").reduce((sum, item) => sum + item.utterance.spokenText.length, 0);
   process.stdout.write(`${lesson.id}: ${selected.length} selected (${requiredCount} required), current required coverage ${currentCoverage}% (${currentRequiredValid}/${requiredCount}), ${reusedCount} reusable, ${generatedCount} to generate\n`);
+  process.stdout.write(`  volume   ${selectedCharacters} spoken character(s) selected; ${synthesisCharacters} require provider synthesis\n`);
   planned.forEach((item) => process.stdout.write(`  ${item.action.padEnd(8)} ${item.utterance.utteranceId} [${item.reason}] · ${item.utterance.voice} · ${item.utterance.spokenText}\n`));
   if (retainedOptional.length) process.stdout.write(`  retain   ${retainedOptional.length} valid optional clip(s) outside required coverage\n`);
   const referencedNames = new Set(planned.concat(retainedOptional.map((utterance) => ({ utterance }))).map((item) => `${item.utterance.utteranceId}.${settings.format}`));
   const audioDir = path.join(lessonDir, "audio");
   const orphans = listOrphans(audioDir, referencedNames);
   if (orphans.length) process.stdout.write(`  orphans  ${orphans.join(", ")} (reported, never deleted automatically)\n`);
-  if (args.dryRun) return { selected: selected.length, reused: reusedCount, generated: 0, planned: generatedCount, orphans };
+  if (args.dryRun) return { selected: selected.length, selectedCharacters, synthesisCharacters, reused: reusedCount, generated: 0, planned: generatedCount, orphans };
 
   let provider = null;
   if (generatedCount) provider = args.providerInstance || createProvider(settings.provider);
@@ -210,6 +256,7 @@ async function generateLesson(lessonDir, args) {
           voice: item.utterance.voice,
           locale: item.utterance.locale,
           source: item.utterance.source,
+          sceneId: item.utterance.sceneId,
           kind: item.utterance.kind,
           required: item.utterance.required,
           contentHash: item.hash
@@ -241,6 +288,7 @@ async function generateLesson(lessonDir, args) {
         voice: item.utterance.voice,
         locale: item.utterance.locale,
         source: item.utterance.source,
+        sceneId: item.utterance.sceneId,
         kind: item.utterance.kind,
         required: item.utterance.required,
         src: expectedAudioSrc(item.utterance.utteranceId, settings.format),
@@ -262,6 +310,7 @@ async function generateLesson(lessonDir, args) {
           peakDbfs: Number.isFinite(metrics.peakDbfs) ? metrics.peakDbfs : null,
           leadingSilenceSeconds: Number.isFinite(metrics.leadingSilenceSeconds) ? metrics.leadingSilenceSeconds : null,
           trailingSilenceSeconds: Number.isFinite(metrics.trailingSilenceSeconds) ? metrics.trailingSilenceSeconds : null,
+          startCutoffRisk: metrics.startCutoffRisk === true,
           cutoffRisk: metrics.cutoffRisk === true
         }
       });
@@ -275,17 +324,18 @@ async function generateLesson(lessonDir, args) {
         voice: utterance.voice,
         locale: utterance.locale,
         source: utterance.source,
+        sceneId: utterance.sceneId,
         kind: utterance.kind,
         required: false,
         contentHash: contentHash(utterance, settings)
       }));
     });
-    for (const item of planned.filter((entry) => entry.action === "generate")) {
-      const tempPath = path.join(audioDir, `.tmp-${process.pid}-${item.utterance.utteranceId}.${settings.format}`);
-      fs.renameSync(tempPath, path.join(audioDir, `${item.utterance.utteranceId}.${settings.format}`));
-    }
-    staged.length = 0;
     clips.sort((left, right) => left.utteranceId.localeCompare(right.utteranceId));
+    const rmsValues = clips.map((clip) => clip.qc && clip.qc.rmsDbfs).filter(Number.isFinite);
+    const loudnessRangeDb = rmsValues.length > 1 ? Math.round((Math.max(...rmsValues) - Math.min(...rmsValues)) * 100) / 100 : 0;
+    if (loudnessRangeDb > MAX_INTER_CLIP_LOUDNESS_RANGE_DB) {
+      throw new Error(`lesson clips differ by ${loudnessRangeDb} dB RMS; maximum is ${MAX_INTER_CLIP_LOUDNESS_RANGE_DB} dB`);
+    }
     const manifest = {
       schemaVersion: MANIFEST_SCHEMA_VERSION,
       lessonId: lesson.id,
@@ -293,17 +343,42 @@ async function generateLesson(lessonDir, args) {
       generatedAt: new Date().toISOString(),
       generator: { name: "generate-lesson-audio", version: GENERATOR_VERSION },
       generation: settings,
+      quality: {
+        maxInterClipLoudnessRangeDb: MAX_INTER_CLIP_LOUDNESS_RANGE_DB,
+        loudnessRangeDb
+      },
       disclosure: settings.provider === "openai" ? "AI-generated Danish voice" : "Synthetic Danish voice",
       clips
     };
-    writeAtomic(path.join(audioDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+    const replacements = planned.filter((entry) => entry.action === "generate").map((item) => ({
+      tempPath: path.join(audioDir, `.tmp-${process.pid}-${item.utterance.utteranceId}.${settings.format}`),
+      finalPath: path.join(audioDir, `${item.utterance.utteranceId}.${settings.format}`)
+    }));
+    const manifestJsonPath = path.join(audioDir, "manifest.json");
+    replacements.push({ tempPath: stageTextFile(manifestJsonPath, `${JSON.stringify(manifest, null, 2)}\n`, staged), finalPath: manifestJsonPath });
     const browserJson = JSON.stringify(manifest).replace(/</g, "\\u003c");
-    writeAtomic(path.join(audioDir, "manifest.js"), `window.PLATA_AUDIO_MANIFESTS = window.PLATA_AUDIO_MANIFESTS || {};\nwindow.PLATA_AUDIO_MANIFESTS[${JSON.stringify(lesson.id)}] = ${browserJson};\n`);
+    const manifestJsPath = path.join(audioDir, "manifest.js");
+    replacements.push({
+      tempPath: stageTextFile(manifestJsPath, `window.PLATA_AUDIO_MANIFESTS = window.PLATA_AUDIO_MANIFESTS || {};\nwindow.PLATA_AUDIO_MANIFESTS[${JSON.stringify(lesson.id)}] = ${browserJson};\n`, staged),
+      finalPath: manifestJsPath
+    });
     const reviewPath = path.join(audioDir, "human-review.json");
-    if (!fs.existsSync(reviewPath) || generatedCount) writeAtomic(reviewPath, `${JSON.stringify(buildReviewTemplate(lesson.id, clips), null, 2)}\n`);
-    ensureManifestScript(path.join(lessonDir, "index.html"));
+    if (!fs.existsSync(reviewPath) || generatedCount) {
+      replacements.push({
+        tempPath: stageTextFile(reviewPath, `${JSON.stringify(buildReviewTemplate(lesson.id, clips), null, 2)}\n`, staged),
+        finalPath: reviewPath
+      });
+    }
+    const indexPath = path.join(lessonDir, "index.html");
+    const nextIndexSource = updatedIndexSource(indexPath);
+    if (nextIndexSource) replacements.push({ tempPath: stageTextFile(indexPath, nextIndexSource, staged), finalPath: indexPath });
+    const cleanupProblems = replaceFilesTransaction(replacements);
+    staged.length = 0;
+    if (cleanupProblems.length) {
+      process.stderr.write(`${lesson.id}: committed successfully, but old backup cleanup needs attention: ${cleanupProblems.join("; ")}\n`);
+    }
     process.stdout.write(`${lesson.id}: wrote ${clips.length} validated clips and manifest; run check:audio to verify review/publication state\n`);
-    return { selected: selected.length, reused: reusedCount, generated: generatedCount, orphans };
+    return { selected: selected.length, selectedCharacters, synthesisCharacters, reused: reusedCount, generated: generatedCount, orphans };
   } catch (error) {
     staged.forEach((tempPath) => {
       try { fs.unlinkSync(tempPath); } catch (_cleanupError) { /* best effort */ }
@@ -328,4 +403,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { applyVoiceProfile, generateLesson, parseArgs };
+module.exports = { applyVoiceProfile, generateLesson, parseArgs, replaceFilesTransaction };

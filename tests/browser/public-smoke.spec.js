@@ -261,6 +261,7 @@ test.describe("Danish lesson audio", () => {
     let audioRequests = 0;
     await page.route("**/audio-fixture.wav", async (route) => {
       audioRequests += 1;
+      await new Promise(resolve => setTimeout(resolve, 250));
       await route.fulfill({ status: 200, contentType: "audio/wav", body: makeWav(4) });
     });
     await page.addInitScript((manifest) => {
@@ -275,15 +276,33 @@ test.describe("Danish lesson audio", () => {
     await assertNoCriticalAxe(page, "flagship audio before playback");
 
     const dialogueButton = page.locator(".plata-audio-button").first();
+    const audioButtonBox = await dialogueButton.boundingBox();
+    expect(audioButtonBox && audioButtonBox.height).toBeGreaterThanOrEqual(44);
     await dialogueButton.focus();
     await page.keyboard.press("Enter");
+    await expect(dialogueButton).toContainText("Loading…");
+    await expect(dialogueButton).toHaveAttribute("aria-busy", "true");
     await expect(page.locator("audio#plata-audio-player")).toHaveCount(1);
     await expect.poll(() => audioRequests).toBeGreaterThan(0);
     await expect(dialogueButton).toHaveAttribute("aria-pressed", "true");
+    await expect(dialogueButton).toHaveAttribute("aria-busy", "false");
     await expect(page.locator(".dialogue-line")).toHaveClass(/is-playing/);
+    await dialogueButton.click();
+    await expect(dialogueButton).toContainText("Resume");
+    await expect(dialogueButton).toHaveAttribute("aria-pressed", "false");
+    await dialogueButton.click();
+    await expect(dialogueButton).toHaveAttribute("aria-pressed", "true");
     await page.locator(".plata-audio-speed").selectOption("0.75");
     expect(await page.evaluate(() => localStorage.getItem("plata.audio.speed.v1"))).toBe("0.75");
     expect(await page.locator("audio#plata-audio-player").evaluate((audio) => audio.playbackRate)).toBe(0.75);
+    await page.locator("audio#plata-audio-player").evaluate((audio) => {
+      audio.currentTime = 1;
+      audio.dispatchEvent(new Event("ended"));
+    });
+    await expect(dialogueButton).toContainText("Replay");
+    await dialogueButton.click();
+    await expect(dialogueButton).toHaveAttribute("aria-pressed", "true");
+    await expect.poll(() => page.locator("audio#plata-audio-player").evaluate((audio) => audio.currentTime)).toBeLessThan(0.5);
 
     await page.getByRole("button", { name: /skriv en kort opfølgning i dag/i }).click();
     await expect(page.locator(".plata-model-answer")).toBeVisible();
@@ -299,6 +318,9 @@ test.describe("Danish lesson audio", () => {
     await expect(page.locator(".plata-audio-speed")).toHaveCount(0);
     await page.locator(".route-step").first().click();
     await expect(page.locator(".plata-audio-speed")).toHaveValue("0.75");
+    await page.reload();
+    await expect(page.locator(".plata-audio-speed")).toHaveValue("0.75");
+    await expect(page.locator("audio#plata-audio-player")).toHaveCount(0);
     await assertNoHorizontalOverflow(page);
   });
 
@@ -314,6 +336,56 @@ test.describe("Danish lesson audio", () => {
     await expect(page.locator(".plata-audio-status")).toContainText("Audio is unavailable", { timeout: 10_000 });
     await expect(page.locator(".dialogue-copy")).toContainText("Vi regner med at give besked");
     expect(pageErrors).toEqual([]);
+  });
+
+  test("keeps choice and matching audio controls outside interactive answer buttons", async ({ page }) => {
+    const source = `data:audio/wav;base64,${makeWav(2).toString("base64")}`;
+    await page.addInitScript(({ audioSource }) => {
+      Object.defineProperty(window, "PLATA_LESSON_B2_JOB_FOLLOWUP", {
+        configurable: true,
+        set(value) {
+          value.scenes[0].options[0].audio = { utteranceId: "fixture-choice-audio" };
+          Object.defineProperty(window, "PLATA_LESSON_B2_JOB_FOLLOWUP", { configurable: true, writable: true, value });
+        }
+      });
+      Object.defineProperty(window, "PLATA_LESSON_01", {
+        configurable: true,
+        set(value) {
+          const matchScene = value.scenes.find(scene => scene.type === "match");
+          matchScene.pairs[0].audio = { utteranceId: "fixture-match-audio" };
+          Object.defineProperty(window, "PLATA_LESSON_01", { configurable: true, writable: true, value });
+        }
+      });
+      window.PLATA_AUDIO_MANIFESTS = {
+        "lesson-b2-job-followup": {
+          disclosure: "Synthetic Danish voice",
+          clips: [{ utteranceId: "fixture-choice-audio", src: audioSource }]
+        },
+        "lesson-01-arrival": {
+          disclosure: "Synthetic Danish voice",
+          clips: [{ utteranceId: "fixture-match-audio", src: audioSource }]
+        }
+      };
+    }, { audioSource: source });
+
+    await page.goto(FLAGSHIP);
+    const choiceRow = page.locator(".choice-audio-row").first();
+    await expect(choiceRow).toBeVisible();
+    await expect(choiceRow.locator(":scope > .choice-card")).toHaveCount(1);
+    await expect(choiceRow.locator(".choice-card .plata-audio-button")).toHaveCount(0);
+    await expect(page.locator("#feedback")).toHaveText("");
+    await choiceRow.locator(".plata-audio-sibling .plata-audio-button").click();
+    await expect(page.locator("#feedback")).toHaveText("");
+
+    await page.goto("/lessons/lesson-01/");
+    await page.locator(".route-step").nth(2).click();
+    const matchRow = page.locator(".match-audio-row").first();
+    await expect(matchRow).toBeVisible();
+    await expect(matchRow.locator(":scope > .sign-card")).toHaveCount(1);
+    await expect(matchRow.locator(".sign-card .plata-audio-button")).toHaveCount(0);
+    await matchRow.locator(".plata-audio-sibling .plata-audio-button").click();
+    await expect(matchRow.locator(":scope > .sign-card")).not.toHaveClass(/selected/);
+    await assertNoCriticalAxe(page, "choice and match audio siblings");
   });
 });
 

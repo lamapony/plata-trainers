@@ -3,6 +3,8 @@
 const fs = require("fs");
 const { spawnSync } = require("child_process");
 
+const MAX_INTER_CLIP_LOUDNESS_RANGE_DB = 6;
+
 const MP3_BITRATES = {
   "1-1": [0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448],
   "1-2": [0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384],
@@ -138,10 +140,15 @@ function analyzePcm16(buffer, sampleRate, channels) {
   let lastSound = amplitudes.length - 1;
   while (lastSound >= 0 && amplitudes[lastSound] < threshold) lastSound -= 1;
   const edgeSamples = Math.max(1, Math.round(sampleRate * 0.02));
+  let startEdgeSum = 0;
+  for (let index = 0; index < Math.min(edgeSamples, amplitudes.length); index += 1) {
+    startEdgeSum += amplitudes[index] * amplitudes[index];
+  }
   let edgeSum = 0;
   for (let index = Math.max(0, amplitudes.length - edgeSamples); index < amplitudes.length; index += 1) {
     edgeSum += amplitudes[index] * amplitudes[index];
   }
+  const startEdgeRms = Math.sqrt(startEdgeSum / Math.min(edgeSamples, amplitudes.length));
   const edgeRms = Math.sqrt(edgeSum / Math.min(edgeSamples, amplitudes.length));
   const toDb = (value) => value > 0 ? 20 * Math.log10(value) : -120;
   return {
@@ -149,6 +156,7 @@ function analyzePcm16(buffer, sampleRate, channels) {
     peakDbfs: round(toDb(peak), 2),
     leadingSilenceSeconds: round(firstSound / sampleRate),
     trailingSilenceSeconds: round((amplitudes.length - 1 - lastSound) / sampleRate),
+    startCutoffRisk: startEdgeRms > 10 ** (-24 / 20),
     cutoffRisk: edgeRms > 10 ** (-24 / 20)
   };
 }
@@ -214,11 +222,13 @@ function qualityIssues(metrics) {
   if (Number.isFinite(metrics.peakDbfs) && metrics.peakDbfs > -0.05) issues.push("audio peak indicates clipping");
   if (Number.isFinite(metrics.leadingSilenceSeconds) && metrics.leadingSilenceSeconds > 0.8) issues.push("leading silence exceeds 0.8 seconds");
   if (Number.isFinite(metrics.trailingSilenceSeconds) && metrics.trailingSilenceSeconds > 1) issues.push("trailing silence exceeds 1 second");
+  if (metrics.startCutoffRisk === true) issues.push("decoded start has a possible hard cutoff");
   if (metrics.cutoffRisk === true) issues.push("decoded tail has a possible hard cutoff");
   return issues;
 }
 
 module.exports = {
+  MAX_INTER_CLIP_LOUDNESS_RANGE_DB,
   inspectAudioBuffer,
   inspectAudioFile,
   qualityIssues

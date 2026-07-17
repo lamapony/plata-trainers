@@ -50,25 +50,35 @@ function publicFileFromRequest(root, rawUrl) {
   return absolute;
 }
 
-if (!fs.existsSync(publicRoot)) {
-  console.error(`Pages artifact missing at ${publicRoot}. Run: npm run build:pages`);
-  process.exit(1);
+function startServer(options) {
+  const root = path.resolve(options && options.publicRoot || publicRoot);
+  const listenPort = Number(options && options.port || port);
+  const listenHost = options && options.host || host;
+  if (!fs.existsSync(root)) throw new Error(`Pages artifact missing at ${root}. Run: npm run build:pages`);
+  const server = http.createServer((req, res) => {
+    const filePath = publicFileFromRequest(root, req.url || "/");
+    if (!filePath || !fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+      res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
+      res.end("not found");
+      return;
+    }
+    res.writeHead(200, {
+      "cache-control": "no-store",
+      "content-type": contentType(filePath)
+    });
+    fs.createReadStream(filePath).pipe(res);
+  });
+  server.listen(listenPort, listenHost, () => {
+    console.log(`serving ${root} at http://${listenHost}:${listenPort}/`);
+  });
+  return server;
 }
 
-const server = http.createServer((req, res) => {
-  const filePath = publicFileFromRequest(publicRoot, req.url || "/");
-  if (!filePath || !fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
-    res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
-    res.end("not found");
-    return;
+if (require.main === module) {
+  try { startServer(); } catch (error) {
+    console.error(error.message);
+    process.exit(1);
   }
-  res.writeHead(200, {
-    "cache-control": "no-store",
-    "content-type": contentType(filePath)
-  });
-  fs.createReadStream(filePath).pipe(res);
-});
+}
 
-server.listen(port, host, () => {
-  console.log(`serving ${publicRoot} at http://${host}:${port}/`);
-});
+module.exports = { contentType, publicFileFromRequest, startServer };

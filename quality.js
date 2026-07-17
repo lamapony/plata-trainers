@@ -7,9 +7,16 @@
   }
 
   function escapeHtml(value) {
-    return String(value || "").replace(/[&<>'"]/g, function (char) {
+    return String(value == null ? "" : value).replace(/[&<>'"]/g, function (char) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", "\"": "&quot;" }[char];
     });
+  }
+
+  function formatBytes(value) {
+    var bytes = Number(value) || 0;
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KiB";
+    return (bytes / 1024 / 1024).toFixed(2) + " MiB";
   }
 
   function metric(label, value, detail) {
@@ -49,6 +56,7 @@
       ["Storyboard panels", report.totals.comicPanels],
       ["Skills tracked", report.totals.masterySignals],
       ["Validated audio clips", report.totals.audioValid || 0],
+      ["Audio asset size", formatBytes(report.totals.audioAssetBytes)],
       ["Open issues", report.totals.issues]
     ].map(function (item) {
       return "<li><span>" + escapeHtml(item[0]) + "</span><strong>" + escapeHtml(item[1]) + "</strong></li>";
@@ -70,6 +78,10 @@
       metric("Evidence links", report.totals.evidenceRows, "Connections between each scene, its goal, source, feedback, and repair."),
       metric("Audio-ready lessons", report.totals.audioConfiguredLessons || 0, "Lessons with stable Danish utterance IDs and a reproducible generation contract."),
       metric("Validated audio clips", report.totals.audioValid || 0, "Manifest-backed files whose checksum, stream structure, duration, sample rate, bitrate, loudness and silence checks pass."),
+      metric("Audio asset size", formatBytes(report.totals.audioAssetBytes), "Actual lesson audio bytes in this build. Audio is lazy-loaded and excluded from the initial PWA precache."),
+      metric("Audio formats", (report.totals.audioFormats || []).join(", ") || "none", "Formats declared by lesson manifests; a format counts as validated only after its file signature and MIME contract pass."),
+      metric("Audio voices", (report.totals.audioVoices || []).join(", ") || "none", "Stable provider voice IDs used by generated lesson clips; this does not claim natural Danish pronunciation."),
+      metric("Configured audio voices", (report.totals.audioConfiguredVoices || []).join(", ") || "none", "Planned lesson-level casting, shown separately from voices that already have generated and validated files."),
       metric("Human-reviewed audio", report.totals.audioHumanReviewedLessons || 0, "Lessons whose explicit listening checklist is approved; automated checks never claim naturalness."),
       metric("Orphan audio files", report.totals.audioOrphans || 0, "Unreferenced files are reported and are never deleted automatically."),
       metric("Open issues", report.totals.issues, "The site cannot pass its quality check while one of these remains open.")
@@ -237,8 +249,18 @@
       ? "<div class=\"quality-issues\">" + lesson.issues.map(function (issue) { return "<p>" + escapeHtml(issue) + "</p>"; }).join("") + "</div>"
       : "";
     var audio = lesson.audio && lesson.audio.configured
-      ? "<span>audio " + escapeHtml(lesson.audio.coveragePercent) + "% · " + escapeHtml(lesson.audio.publicationStatus) + (lesson.audio.humanReviewApproved ? " · listened" : " · review pending") + "</span>"
+      ? "<span>audio " + escapeHtml(lesson.audio.coveragePercent) + "% · " + escapeHtml(lesson.audio.publicationStatus) + " · " + escapeHtml(lesson.audio.generatedClips) + " clips · " + escapeHtml(formatBytes(lesson.audio.assetBytes)) + (lesson.audio.humanReviewApproved ? " · listened" : " · review pending") + "</span>"
       : "<span>audio advisory</span>";
+    var audioEvidence = lesson.audio && lesson.audio.configured
+      ? [
+        (lesson.audio.formats || []).length ? "format " + lesson.audio.formats.join(", ") : "planned format " + (lesson.audio.configuredFormat || "not set"),
+        (lesson.audio.voices || []).length ? "voices " + lesson.audio.voices.join(", ") : "planned voices " + ((lesson.audio.configuredVoices || []).join(", ") || "not set"),
+        lesson.audio.providers && lesson.audio.providers.length ? "provider " + lesson.audio.providers.join(", ") : "planned provider " + (lesson.audio.configuredProvider || "not set"),
+        lesson.audio.loudnessRangeDb == null ? "loudness not measured" : "loudness range " + lesson.audio.loudnessRangeDb + " dB",
+        lesson.audio.lastGeneratedAt ? "generated " + new Date(lesson.audio.lastGeneratedAt).toLocaleDateString() : "not generated",
+        lesson.audio.manifestHash ? "manifest " + lesson.audio.manifestHash.slice(0, 10) : "no manifest"
+      ].map(function (value) { return chip(value, "audio"); }).join("")
+      : "";
 
     return "<article id=\"" + escapeHtml(lesson.id) + "\" class=\"quality-lesson " + status + "\">" +
       "<div class=\"quality-card-head\">" +
@@ -255,6 +277,7 @@
         "<span>" + escapeHtml(lesson.counts.simulationPaths) + " paths</span>" +
         audio +
       "</div>" +
+      (audioEvidence ? "<div class=\"quality-chip-row\">" + audioEvidence + "</div>" : "") +
       (mastery ? "<div class=\"quality-chip-row\">" + mastery + "</div>" : "") +
       (comicPanels ? "<div class=\"quality-chip-row\">" + comicPanels + "</div>" : "") +
       (paths ? "<div class=\"quality-chip-row\">" + paths + "</div>" : "") +

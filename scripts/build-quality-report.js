@@ -456,6 +456,8 @@ function summarizeLesson(entry, catalogById, root) {
       simulatedAttempts: simulationPaths.reduce((sum, pathSpec) => sum + attemptCountForPath(lesson, pathSpec), 0),
       audioRequired: audioReport.required,
       audioValid: audioReport.valid,
+      audioGenerated: audioReport.generatedClips,
+      audioAssetBytes: audioReport.assetBytes,
       audioOrphans: audioReport.orphans.length
     },
     audio: {
@@ -469,6 +471,25 @@ function summarizeLesson(entry, catalogById, root) {
       invalid: audioReport.invalid.map(entry => entry.utteranceId),
       orphans: audioReport.orphans,
       humanReviewApproved: audioReport.humanReviewApproved,
+      validationStatus: audioReport.validationStatus,
+      generatedClips: audioReport.generatedClips,
+      assetFiles: audioReport.assetFiles,
+      assetBytes: audioReport.assetBytes,
+      averageAssetBytes: audioReport.averageAssetBytes,
+      voices: audioReport.voices,
+      configuredVoices: audioReport.configuredVoices,
+      formats: audioReport.formats,
+      validFormats: audioReport.validFormats,
+      mimeTypes: audioReport.mimeTypes,
+      providers: audioReport.providers,
+      models: audioReport.models,
+      configuredProvider: audioReport.configuredProvider,
+      configuredModel: audioReport.configuredModel,
+      configuredFormat: audioReport.configuredFormat,
+      configuredVoiceProfile: audioReport.configuredVoiceProfile,
+      loudnessRangeDb: audioReport.loudnessRangeDb,
+      lastGeneratedAt: audioReport.lastGeneratedAt,
+      manifestHash: audioReport.manifestHash,
       notes: audioReport.warnings
     },
     masterySignals: masteryKeys.map(key => ({
@@ -540,6 +561,13 @@ function buildQualityReport(options = {}) {
     if (lesson.audio.publicationStatus === "published") acc.audioPublishedLessons += 1;
     acc.audioRequired += lesson.audio.required;
     acc.audioValid += lesson.audio.valid;
+    acc.audioGenerated += lesson.audio.generatedClips;
+    acc.audioAssetFiles += lesson.audio.assetFiles;
+    acc.audioAssetBytes += lesson.audio.assetBytes;
+    acc.audioVoices = unique(acc.audioVoices.concat(lesson.audio.voices));
+    acc.audioConfiguredVoices = unique(acc.audioConfiguredVoices.concat(lesson.audio.configuredVoices));
+    acc.audioFormats = unique(acc.audioFormats.concat(lesson.audio.formats));
+    acc.audioProviders = unique(acc.audioProviders.concat(lesson.audio.providers));
     acc.audioOrphans += lesson.audio.orphans.length;
     if (lesson.audio.humanReviewApproved) acc.audioHumanReviewedLessons += 1;
     acc.issues += lesson.issues.length;
@@ -560,6 +588,13 @@ function buildQualityReport(options = {}) {
     audioHumanReviewedLessons: 0,
     audioRequired: 0,
     audioValid: 0,
+    audioGenerated: 0,
+    audioAssetFiles: 0,
+    audioAssetBytes: 0,
+    audioVoices: [],
+    audioConfiguredVoices: [],
+    audioFormats: [],
+    audioProviders: [],
     audioOrphans: 0,
     issues: 0
   });
